@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentores y Docentes | PROGRAMA-PRI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-docentes">
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+                <h2>PROGRAMA-PRI</h2>
+            </a>
+        </div>
+
+        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Inicio</a></li>
+                <li><a href="ppri.html">Sobre PRI</a></li>
+                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
+                <li><a href="pre-test.html">PRE-TEST</a></li>
+                <li><a href="docentes.html">Docentes</a></li>
+                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="module-header">
+        <div class="sky-background"></div>
+        <div class="module-title">
+            <h1>Nuestros <span class="highlight">Mentores</span></h1>
+            <p>Conoce al talento universitario que está construyendo la ingeniería de Tumaco.</p>
+        </div>
+    </section>
+
+    <section class="mentors-section">
+        <div class="mentors-grid">
+            
+            <div class="mentor-card">
+                <div class="mentor-photo">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop" alt="Ana Lia Castro">
+                </div>
+                <div class="mentor-info">
+                    <span class="mentor-career">Ingeniería Informática</span>
+                    <h3>Ana Lia Castro</h3>
+                    <p>Especialista en lógica de programación y algoritmos. Enfocada en cerrar la brecha digital.</p>
+                    <button class="btn-material">Ver su Material</button>
+                </div>
+            </div>
+
+            <div class="mentor-card">
+                <div class="mentor-photo">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" alt="Carlos Quintero">
+                </div>
+                <div class="mentor-info">
+                    <span class="mentor-career">Ingeniería Mecatrónica</span>
+                    <h3>Carlos Quintero</h3>
+                    <p>Mentor de física dinámica y matemáticas aplicadas. Convirtiendo la teoría en acción.</p>
+                    <button class="btn-material">Ver su Material</button>
+                </div>
+            </div>
+
+            <div class="mentor-card">
+                <div class="mentor-photo">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop" alt="Lauryn Ramos">
+                </div>
+                <div class="mentor-info">
+                    <span class="mentor-career">Trabajo Social</span>
+                    <h3>Lauryn Ramos</h3>
+                    <p>Líder del componente psicoemocional. Fortaleciendo la confianza para el entorno universitario.</p>
+                    <button class="btn-material">Ver su Material</button>
+                </div>
+            </div>
+
+            <div class="mentor-card">
+                <div class="mentor-photo">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop" alt="Lauryn Ramos">
+                </div>
+                <div class="mentor-info">
+                    <span class="mentor-career">Trabajo Social</span>
+                    <h3>Lauryn Ramos</h3>
+                    <p>Líder del componente psicoemocional. Fortaleciendo la confianza para el entorno universitario.</p>
+                    <button class="btn-material">Ver su Material</button>
+                </div>
+            </div>
+
+        mobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.toggle('is-active'); /* Transforma la hamburguesa en X */
+            navLinks.classList.toggle('active');      /* Desliza el menú inmersivo */
+        });
+    </script>

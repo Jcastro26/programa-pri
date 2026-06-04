@@ -1,0 +1,1212 @@
+/* ==================== VARIABLES MAXIMALISTAS ==================== */
+:root {
+    --azul-deep-tumaco: #021a36; 
+    --azul-oceano-medio: #063162;
+    --azul-superficie-teal: #1f7a8c; 
+    --naranja-atardecer: #FF5E00; 
+    --oro-sol: #FFD700; 
+    --blanco-espuma: #fafafa;
+    
+    --fuente-titulos: 'Montserrat', sans-serif;
+    --fuente-textos: 'Lora', serif;
+    
+    --patron-grid: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><g fill="%239C9C99" fill-opacity="0.05"><path d="M0 0h40v40H0V0zm20 20h20v20H20V20zM0 20h20v20H0V20zM20 0h20v20H20V0z"/></g></svg>');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--azul-deep-tumaco);
+    color: var(--blanco-espuma);
+    font-family: var(--fuente-textos);
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+h1, h2, h3 {
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+}
+
+/* ==================== NAVEGACIÓN IMPACTANTE ==================== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background: rgba(2, 26, 54, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--naranja-atardecer);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo-container h2 {
+    font-size: 1.8rem;
+    color: var(--blanco-espuma);
+    text-shadow: 2px 2px 0 var(--naranja-atardecer);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--blanco-espuma);
+    font-family: var(--fuente-titulos);
+    font-weight: 800;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: var(--naranja-atardecer);
+    transform: scale(1.1);
+}
+
+.btn-login {
+    background-color: var(--naranja-atardecer);
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+}
+.btn-login:hover {
+    box-shadow: 2px 2px 0 var(--oro-sol);
+    background-color: var(--naranja-atardecer); /* El fondo cambia a dorado */
+    color: var(--blanco-espuma) !important; /* El texto pasa a azul profundo */
+}
+
+.btn-login:hover {
+    box-shadow: 2px 2px 0 var(--oro-sol);
+}
+/* --- Contenedor del Logo Clickeable --- */
+.logo-link {
+    display: flex;          /* Obliga a los elementos a estar lado a lado */
+    align-items: center;    /* Los centra verticalmente */
+    gap: 1rem;              /* Espacio entre el logo y el texto */
+    text-decoration: none;  /* Quita la línea subrayada típica de los enlaces */
+}
+
+/* --- Texto del Logo --- */
+.logo-link h2 {
+    font-size: 1.8rem;
+    color: var(--blanco-espuma);
+    text-shadow: 2px 2px 0 var(--naranja-atardecer);
+    transition: color 0.3s ease, transform 0.3s ease;
+    margin: 0; /* Asegura que no tenga márgenes extra que lo desalineen */
+}
+
+/* --- Efectos al pasar el mouse por todo el bloque --- */
+.logo-link:hover h2 {
+    color: var(--blanco-espuma); /* El texto cambia a naranja, ya no xd */
+    transform: scale(1.02) rotate(-2deg); /* El logo hace un pequeño giro */
+}
+
+.logo-link:hover .logo-img {
+    transform: scale(1.05) rotate(-5deg); /* El logo hace un pequeño giro */
+}
+
+/* ==================== HERO SECTION (MAREAS MAXIMALISTAS) ==================== */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 80px;
+}
+
+/* --- Iluminación --- */
+.sky-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #010c1a 0%, var(--azul-oceano-medio) 80%);
+    z-index: 1;
+}
+
+.sun-reflection {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, rgba(255,215,0,0) 70%);
+    z-index: 2;
+    animation: sunFlare 4s infinite alternate ease-in-out;
+}
+
+/* --- Sistema de Océano --- */
+.ocean-system {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50vh;
+    z-index: 3;
+}
+
+.wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-repeat: repeat-x;
+    background-position: bottom;
+    background-size: 50% 100%;
+}
+
+/* Texturas SVG Optimizadas */
+.wave-deep {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%23021a36" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,144C672,139,768,181,864,197.3C960,213,1056,203,1152,176C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    z-index: 1;
+    animation: waveMove 25s infinite linear;
+    bottom: -2vh;
+}
+
+.wave-mid {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%23063162" fill-opacity="0.8" d="M0,256L48,229.3C96,203,192,149,288,149.3C384,149,480,203,576,213.3C672,224,768,192,864,170.7C960,149,1056,139,1152,149.3C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    z-index: 2;
+    animation: waveMove 20s infinite linear reverse;
+    bottom: -5vh;
+}
+
+.wave-surface {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg"><path fill="%231f7a8c" fill-opacity="0.9" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,192C960,203,1056,181,1152,165.3C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    z-index: 3;
+    animation: waveMove 15s infinite linear;
+    bottom: -8vh;
+}
+
+/* --- Contenido Impactante --- */
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 1000px;
+    padding: 0 5%;
+}
+
+.hero-content h1 {
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    color: var(--blanco-espuma);
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    text-shadow: 6px 6px 0 var(--azul-deep-tumaco);
+}
+
+.hero-content .highlight {
+    color: var(--naranja-atardecer);
+    position: relative;
+    -webkit-text-stroke: 1px var(--oro-sol);
+}
+
+.hero-content p {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 700;
+    max-width: 800px;
+    margin: 0 auto 3rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary, .btn-secondary {
+    text-decoration: none;
+    padding: 1.2rem 2.5rem;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+}
+
+.btn-primary {
+    background-color: var(--naranja-atardecer);
+    color: var(--blanco-espuma);
+    box-shadow: 6px 6px 0 var(--oro-sol);
+}
+
+.btn-primary:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 10px 10px 0 var(--oro-sol);
+}
+
+.btn-secondary {
+    background-color: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    box-shadow: 6px 6px 0 var(--azul-oceano-medio);
+}
+
+.btn-secondary:hover {
+    background-color: var(--azul-oceano-medio);
+    color: var(--blanco-espuma);
+    box-shadow: 6px 6px 0 var(--blanco-espuma);
+}
+
+/* ==================== ANIMACIONES ==================== */
+@keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes sunFlare {
+    0% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+    100% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+}
+
+/* ==================== SECCIÓN SOBRE PRI ==================== */
+.about-section {
+    position: relative;
+    padding: 8rem 5%;
+    display: flex;
+    justify-content: center;
+    background-color: var(--azul-deep-tumaco);
+}
+
+.engineering-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: var(--patron-grid);
+    opacity: 0.5;
+}
+
+.maximalist-container {
+    position: relative;
+    z-index: 10;
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 4rem;
+}
+
+.subtitle {
+    color: var(--oro-sol);
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.mission-block h2 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--blanco-espuma);
+}
+
+.mission-block p {
+    font-size: 1.2rem;
+    color: #e0e0e0;
+}
+
+.bold { font-weight: 700; color: var(--naranja-atardecer); }
+
+.founder-block {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 3rem;
+    border-left: 8px solid var(--naranja-atardecer);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.founder-text h3 {
+    font-size: 2.2rem;
+    color: var(--oro-sol);
+    margin-bottom: 1rem;
+}
+
+.founder-text p {
+    font-size: 1.1rem;
+    color: #EEE;
+}
+
+/* ==================== DISEÑO RESPONSIVO MAXIMALISTA (MOBILE) ==================== */
+@media (min-width: 992px) {
+    .maximalist-container {
+        grid-template-columns: 1.5fr 1fr;
+        align-items: start;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links { display: none; }
+    
+    .hero-content h1 { text-shadow: 4px 4px 0 var(--azul-deep-tumaco); }
+    
+    .founder-block {
+        padding: 1.5rem;
+        border-left: 5px solid var(--naranja-atardecer);
+    }
+    
+    .hero-buttons { flex-direction: column; }
+}
+/* ==================== ESTILOS DE IMÁGENES MAXIMALISTAS ==================== */
+
+/* --- Logo Animado --- */
+.logo-img {
+    height: 45px; /* Ajusta este valor si tu logo se ve muy grande o pequeño */
+    filter: drop-shadow(3px 3px 0px var(--naranja-atardecer)); /* Sombra ruda */
+    transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+    transform: scale(1.05) rotate(-2deg); /* Se mueve al pasar el mouse */
+}
+
+/* --- Foto del Fundador (Capas y Profundidad) --- */
+.founder-block {
+    /* Ajustamos el grid para que la foto y el texto estén lado a lado en PC */
+    grid-template-columns: auto 1fr;
+    align-items: center;
+}
+
+.founder-image-wrapper {
+    position: relative;
+    z-index: 5;
+}
+
+.founder-img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border: 4px solid var(--oro-sol);
+    /* Sombra doble brutalista */
+    box-shadow: 12px 12px 0 var(--naranja-atardecer), 
+                24px 24px 0 rgba(0, 0, 0, 0.4);
+    transform: rotate(3deg); /* Ligeramente torcida para romper la cuadrícula */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animación elástica */
+}
+
+.founder-img:hover {
+    transform: rotate(0deg) scale(1.05); /* Se endereza al pasar el mouse */
+    box-shadow: 6px 6px 0 var(--naranja-atardecer), 
+                12px 12px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* --- Ajuste para Celulares (Mobile-First) --- */
+@media (max-width: 768px) {
+    .founder-block {
+        grid-template-columns: 1fr; /* Apila la foto arriba del texto en móviles */
+        text-align: center;
+    }
+    
+    .founder-img {
+        margin-bottom: 1rem;
+        transform: rotate(0deg); /* Recta en celulares para ahorrar espacio */
+    }
+}
+/* ========================================================== */
+/* ==================== PÁGINA PRE-TEST ==================== */
+/* ========================================================== */
+
+.page-pre-test {
+    background-color: var(--azul-deep-tumaco);
+}
+
+/* --- Cabecera del Módulo --- */
+.module-header {
+    position: relative;
+    padding: 120px 5% 40px;
+    text-align: center;
+    border-bottom: 2px solid var(--naranja-atardecer);
+}
+
+.module-title {
+    position: relative;
+    z-index: 10;
+}
+
+.module-title h1 {
+    font-size: clamp(2rem, 5vw, 4rem);
+    text-shadow: 4px 4px 0 var(--azul-deep-tumaco);
+}
+
+/* --- Panel de Gamificación (HUD) --- */
+.gamification-hud {
+    background-color: var(--azul-oceano-medio);
+    padding: 2rem 5%;
+    border-bottom: 4px solid var(--azul-superficie-teal);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.hud-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap; /* Para que se adapte a móviles */
+}
+
+.stat-box {
+    background: rgba(2, 26, 54, 0.8);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--blanco-espuma);
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+}
+
+.timer-box { border-left-color: #ff3366; } /* Rojo/Rosa para urgencia */
+.score-box { border-left-color: var(--oro-sol); } /* Dorado para los puntos */
+
+.stat-label {
+    display: block;
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #ccc;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    display: block;
+    font-family: var(--fuente-titulos);
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--blanco-espuma);
+}
+
+.timer { color: #ff3366; text-shadow: 0 0 10px rgba(255,51,102,0.5); }
+.score { color: var(--oro-sol); text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+
+/* --- Barra de Progreso --- */
+.progress-container {
+    max-width: 1000px;
+    margin: 1.5rem auto 0.5rem;
+    height: 10px;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--naranja-atardecer), var(--oro-sol));
+    box-shadow: 0 0 10px var(--naranja-atardecer);
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #aaa;
+}
+
+/* --- Área de Preguntas --- */
+.quiz-section {
+    padding: 4rem 5%;
+    display: flex;
+    justify-content: center;
+}
+
+.quiz-container {
+    max-width: 800px; /* Ancho de lectura contenido (Regla de oro) */
+    width: 100%;
+}
+
+.question-card {
+    background-color: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 8px 8px 0 var(--naranja-atardecer);
+    margin-bottom: 2rem;
+}
+
+.question-category {
+    font-family: var(--fuente-titulos);
+    color: var(--azul-superficie-teal);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.question-text {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+/* --- Botones de Opciones --- */
+.options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.option-btn {
+    background-color: transparent;
+    border: 2px solid var(--azul-oceano-medio);
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: var(--fuente-textos);
+    font-size: 1.1rem;
+    color: var(--azul-deep-tumaco);
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.option-letter {
+    background-color: var(--azul-oceano-medio);
+    color: var(--blanco-espuma);
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.option-btn:hover {
+    background-color: var(--azul-deep-tumaco);
+    color: var(--blanco-espuma);
+    border-color: var(--azul-deep-tumaco);
+    transform: translateX(10px); /* Efecto de movimiento lateral */
+}
+
+.quiz-actions {
+    text-align: right;
+}
+
+/* --- Diseño Móvil para PRE-TEST --- */
+@media (max-width: 768px) {
+    .question-card {
+        padding: 1.5rem;
+    }
+    
+    .stat-box {
+        min-width: 100%; /* Las estadísticas se apilan en el celular */
+        margin-bottom: 0.5rem;
+    }
+}
+/* ========================================================== */
+/* ==================== PÁGINA DOCENTES ===================== */
+/* ========================================================== */
+
+.page-docentes {
+    background-color: var(--azul-deep-tumaco);
+}
+
+.mentors-section {
+    padding: 4rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- Cuadrícula Automática --- */
+.mentors-grid {
+    display: grid;
+    /* Esto hace que las tarjetas se adapten solas. En móvil 1, en PC 3 o 4 */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
+    margin-bottom: 5rem;
+}
+
+/* --- Tarjeta de Mentor Maximalista --- */
+.mentor-card {
+    background-color: rgba(6, 49, 98, 0.4); /* Azul océano con transparencia */
+    border: 2px solid var(--azul-superficie-teal);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.mentor-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 10px 10px 0 var(--oro-sol);
+    background-color: rgba(6, 49, 98, 0.8);
+}
+
+.mentor-photo {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    border-bottom: 4px solid var(--naranja-atardecer);
+}
+
+.mentor-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(80%) contrast(120%); /* Filtro dramático/editorial */
+    transition: filter 0.3s ease;
+}
+
+.mentor-card:hover .mentor-photo img {
+    filter: grayscale(0%) contrast(100%); /* A color al pasar el mouse */
+}
+
+.mentor-info {
+    padding: 2rem 1.5rem;
+    text-align: left;
+}
+
+.mentor-career {
+    color: var(--oro-sol);
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.mentor-info h3 {
+    font-size: 1.8rem;
+    color: var(--blanco-espuma);
+    margin-bottom: 1rem;
+    line-height: 1.1;
+}
+
+.mentor-info p {
+    color: #ccc;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.btn-material {
+    background-color: transparent;
+    color: var(--blanco-espuma);
+    border: 2px solid var(--naranja-atardecer);
+    padding: 0.8rem 1.5rem;
+    font-family: var(--fuente-titulos);
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.btn-material:hover {
+    background-color: var(--naranja-atardecer);
+    color: var(--azul-deep-tumaco);
+}
+
+/* --- Panel de Subida de Archivos (Visual por ahora) --- */
+.upload-panel-hint {
+    background-image: var(--patron-grid);
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 4rem 2rem;
+    text-align: center;
+    border: 2px dashed var(--oro-sol);
+    border-radius: 10px;
+}
+
+.upload-panel-hint h3 {
+    font-size: 2.5rem;
+    color: var(--oro-sol);
+    margin-bottom: 1rem;
+}
+
+.upload-panel-hint p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+/* ========================================================== */
+/* ==================== PÁGINA DASHBOARD ==================== */
+/* ========================================================== */
+
+.page-dashboard {
+    background-color: var(--azul-deep-tumaco);
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- Menú Lateral (Sidebar) --- */
+.sidebar {
+    width: 250px;
+    background-color: rgba(2, 26, 54, 0.95);
+    border-right: 2px solid var(--naranja-atardecer);
+    padding: 2rem 1rem;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-logo img {
+    width: 40px;
+}
+
+.sidebar-logo h2 {
+    font-size: 1.2rem;
+    color: var(--blanco-espuma);
+}
+
+.sidebar-menu {
+    list-style: none;
+}
+
+.sidebar-menu li {
+    margin-bottom: 1rem;
+}
+
+.sidebar-menu a {
+    text-decoration: none;
+    color: #ccc;
+    font-family: var(--fuente-titulos);
+    font-size: 0.9rem;
+    font-weight: 700;
+    display: block;
+    padding: 0.8rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-menu a:hover, .sidebar-menu a.active {
+    background-color: var(--azul-oceano-medio);
+    color: var(--naranja-atardecer);
+    transform: translateX(5px);
+}
+
+/* --- Contenido Principal --- */
+.dashboard-content {
+    flex: 1;
+    margin-left: 250px; /* Deja espacio para el sidebar fijo */
+    padding: 3rem 5%;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 3rem;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    padding-bottom: 1rem;
+}
+
+.dashboard-header h1 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    color: var(--blanco-espuma);
+}
+
+/* --- Tarjetas KPI (Indicadores Clave) --- */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.kpi-card {
+    background-color: rgba(6, 49, 98, 0.4);
+    border: 1px solid var(--azul-superficie-teal);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 var(--azul-oceano-medio);
+    transition: transform 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 4px 8px 0 var(--oro-sol);
+}
+
+.kpi-card h3 {
+    font-size: 1rem;
+    color: #ccc;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-number {
+    font-family: var(--fuente-titulos);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--oro-sol);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-trend {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.kpi-trend.positive { color: #00ffaa; }
+.kpi-trend.neutral { color: #aaaaaa; }
+
+/* --- Sección de Gráficas --- */
+.charts-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.chart-container {
+    background-color: rgba(6, 49, 98, 0.4);
+    border: 1px solid var(--azul-superficie-teal);
+    padding: 2rem;
+    border-radius: 10px;
+}
+
+.chart-container h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--naranja-atardecer);
+}
+
+/* Lista de Temas a Fortalecer */
+.weakness-list {
+    list-style: none;
+}
+
+.weakness-list li {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.red { background-color: #ff3366; box-shadow: 0 0 8px #ff3366; }
+.dot.orange { background-color: #FF5E00; }
+.dot.yellow { background-color: #FFD700; }
+
+/* --- Diseño Móvil (Mobile-First) --- */
+@media (max-width: 992px) {
+    .charts-section {
+        grid-template-columns: 1fr; /* Pone las gráficas una debajo de otra en tablets */
+    }
+}
+
+@media (max-width: 768px) {
+    .page-dashboard {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 2px solid var(--naranja-atardecer);
+    }
+    .dashboard-content {
+        margin-left: 0;
+        padding: 1.5rem;
+    }
+    /* ==================== MENÚ MÓVIL INMERSIVO ==================== */
+
+/* Ocultamos la hamburguesa en PC */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    z-index: 1001; /* Siempre por encima de todo */
+}
+
+.menu-toggle .bar {
+    width: 35px;
+    height: 4px;
+    background-color: var(--blanco-espuma);
+    margin: 4px 0;
+    border-radius: 2px;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Animación elástica */
+}
+
+@media (max-width: 768px) {
+    /* Mostramos el botón en celulares */
+    .menu-toggle { display: flex; }
+    
+    /* Transformamos la lista en una pantalla completa */
+    @media (max-width: 768px) {
+    /* Transformamos la lista en una pantalla completa */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: 100%; /* Empieza fuera de la pantalla por la derecha */
+        width: 100vw;
+        height: 100vh;
+        background: rgba(2, 26, 54, 0.98);
+        backdrop-filter: blur(20px); /* Efecto cristal denso */
+        display: flex !important; /* ESTA LÍNEA ES LA CLAVE */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1); /* Entrada líquida */
+        z-index: 1000;
+    }
+
+    /* Clase que activamos con JavaScript para mostrar el menú */
+    .nav-links.active { 
+        left: 0 !important; /* Fuerza la entrada ignorando otras reglas */
+    }
+}
+
+    /* Clase que activaremos con JavaScript para mostrar el menú */
+    .nav-links.active { left: 0; }
+
+    /* Tipografía masiva para el menú móvil */
+    .nav-links a {
+        font-size: 3rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        -webkit-text-stroke: 1px var(--blanco-espuma);
+        color: transparent; /* Texto hueco por defecto */
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+        color: var(--naranja-atardecer);
+        -webkit-text-stroke: 0px;
+        transform: scale(1.1);
+    }
+
+    /* Animación del icono: de Hamburguesa a "X" */
+    .menu-toggle.is-active .bar:nth-child(1) {
+        transform: translateY(12px) rotate(45deg);
+        background-color: var(--naranja-atardecer);
+    }
+    .menu-toggle.is-active .bar:nth-child(2) { opacity: 0; }
+    .menu-toggle.is-active .bar:nth-child(3) {
+        transform: translateY(-12px) rotate(-45deg);
+        background-color: var(--naranja-atardecer);
+    }
+}
+}
+/* ========================================================== */
+/* ==================== PÁGINA ACCESO TOTAL ================= */
+/* ========================================================== */
+
+.page-login {
+    background-color: var(--azul-deep-tumaco);
+    overflow: hidden; /* Evita que la pantalla se mueva en PC */
+    height: 100vh;
+}
+
+.back-btn {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    color: var(--blanco-espuma);
+    text-decoration: none;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    z-index: 100;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+}
+
+.back-btn:hover { color: var(--naranja-atardecer); }
+
+/* --- Split Screen Maximalista --- */
+.login-split {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr; /* El lado visual ocupa un poco más de espacio */
+    height: 100vh;
+}
+
+/* --- Lado Visual (Marea Líquida y Tipografía Masiva) --- */
+.login-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Centramos el contenido internamente */
+    padding: 5% 8%; /* Aumentamos el padding lateral para respirar */
+    overflow: hidden;
+    background: linear-gradient(45deg, var(--azul-deep-tumaco), var(--azul-oceano-medio));
+}
+
+/* Textura líquida rotatoria */
+.liquid-bg {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(31, 122, 140, 0.4) 0%, transparent 60%);
+    animation: liquidRotate 20s linear infinite;
+    z-index: 1;
+}
+
+@keyframes liquidRotate {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Textos gigantes rompiendo la caja */
+/* Textos gigantes rompiendo la caja con elegancia */
+.massive-text {
+    position: relative;
+    z-index: 2;
+    font-family: var(--fuente-titulos);
+    font-size: clamp(4rem, 8vw, 10rem); /* Escala más controlada para evitar desbordes feos */
+    line-height: 0.9;
+    color: var(--blanco-espuma);
+    text-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+    margin-left: 0; /* Eliminamos el margen negativo que lo sacaba de la pantalla */
+    transform: translateX(3vw); /* Lo empujamos fluidamente hacia la derecha para encontrarse con el formulario */
+}
+
+/* Efecto de texto hueco delineado */
+.outline-text {
+    color: transparent;
+    -webkit-text-stroke: 3px var(--naranja-atardecer);
+}
+
+/* --- Lado del Formulario (Glassmorphism Superpuesto) --- */
+.login-form-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--azul-oceano-medio);
+    position: relative;
+}
+
+/* El resto del código de .outline-text y .liquid-bg se mantiene igual... */
+
+.glass-form {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px); /* Efecto cristal */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 4rem 3rem; /* Mayor espacio interno para que el formulario respire */
+    border-radius: 15px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: -15px 15px 0 var(--oro-sol); /* Sombra brutalista ajustada para no dominar */
+    transform: translateX(-50px); /* Superposición reducida para un efecto de capas más limpio */
+    z-index: 10;
+}
+
+.glass-form h2 {
+    font-size: 2.5rem;
+    color: var(--oro-sol);
+    margin-bottom: 0.5rem;
+}
+
+.glass-form p {
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+
+.input-group { margin-bottom: 1.5rem; }
+
+.input-group label {
+    display: block;
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--blanco-espuma);
+    margin-bottom: 0.5rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 2px solid transparent;
+    color: var(--blanco-espuma);
+    font-family: var(--fuente-textos);
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--naranja-atardecer);
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.btn-full {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.register-hint {
+    margin-top: 2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.register-hint a {
+    color: var(--naranja-atardecer);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* --- Control Maximalista en Móviles (Adaptabilidad Estricta) --- */
+@media (max-width: 992px) {
+    .page-login { height: auto; overflow: visible; }
+    
+    .login-split {
+        grid-template-columns: 1fr !important; /* Apilamiento vertical obligatorio */
+        height: auto;
+    }
+    
+    .massive-text { 
+        margin-left: 0; 
+        font-size: 4rem; 
+        margin-top: 4rem; 
+    }
+    
+    .login-form-area { padding: 4rem 1rem; }
+    
+    .glass-form {
+        transform: translateX(0); /* Quita la superposición horizontal */
+        margin-top: -3rem; /* Superposición vertical sutil para mantener el diseño roto */
+        box-shadow: 8px 8px 0 var(--oro-sol);
+    }
+}

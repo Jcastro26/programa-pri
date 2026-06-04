@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenamiento PRE-TEST | PROGRAMA-PRI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-pre-test">
+
+    <header class="navbar">
+        <div class="logo-container">
+            <a href="index.html" class="logo-link">
+               <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+                <h2>PROGRAMA-PRI</h2>
+            </a>
+        </div>
+        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Inicio</a></li>
+                <li><a href="ppri.html">Sobre PRI</a></li>
+                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
+                <li><a href="pre-test.html">PRE-TEST</a></li>
+                <li><a href="docentes.html">Docentes</a></li>
+                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="module-header">
+        <div class="sky-background"></div>
+        <div class="module-title">
+            <h1>Simulador <span class="highlight">STEM</span></h1>
+            <p>Pensamiento Crítico, Matemáticas y Física. Supera tus límites.</p>
+        </div>
+    </section>
+
+    <section class="gamification-hud">
+        <div class="hud-container">
+            <div class="stat-box">
+                <span class="stat-label">Nivel Actual</span>
+                <span class="stat-value">Fase 1: Piloto</span>
+            </div>
+            <div class="stat-box timer-box">
+                <span class="stat-label">Tiempo Restante</span>
+                <span class="stat-value timer">45:00</span>
+            </div>
+            <div class="stat-box score-box">
+                <span class="stat-label">Puntos PRI</span>
+                <span class="stat-value score">1,250</span>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" style="width: 35%;"></div>
+        </div>
+        <p class="progress-text">Pregunta 7 de 20</p>
+    </section>
+
+    <section class="quiz-section">
+        <div class="quiz-container">
+            
+            <div class="question-card">
+                <span class="question-category">Física Dinámica</span>
+                <h3 class="question-text">Si un bloque de 5kg se desliza por un plano inclinado sin fricción, ¿cuál de las siguientes fuerzas NO realiza trabajo sobre el bloque?</h3>
+                
+                <div class="options-grid">
+                    <button class="option-btn">
+                        <span class="option-letter">A</span> La fuerza de gravedad.
+                    </button>
+                    <button class="option-btn">
+                        <span class="option-letter">B</span> La fuerza normal.
+                    </button>
+                    <button class="option-btn">
+                        <span class="option-letter">C</span> La componente paralela del peso.
+                    </button>
+                    <button class="option-btn">
+                        <span class="option-letter">D</span> Ninguna de las anteriores.
+                    </button>
+                </div>
+            </div>
+
+            <div class="quiz-actions">
+                <button class="btn-primary">Siguiente Desafío &#8594;</button>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

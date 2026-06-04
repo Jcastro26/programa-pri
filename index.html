@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROGRAMA-PRI | Océano Realista Maximalista</title>
+    
+    <!-- Importando las tipografías impactantes: Montserrat (Títulos) y Lora (Textos) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    
+    <!-- Vinculando el archivo de estilos -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ==================== MENÚ DE NAVEGACIÓN ==================== -->
+    <header class="navbar">
+       <div class="logo-container">
+            <a href="index.html" class="logo-link">
+                <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+                <h2>PROGRAMA-PRI</h2>
+            </a>
+        </div>
+        
+        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Inicio</a></li>
+                <li><a href="ppri.html">Sobre PRI</a></li>
+                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
+                <li><a href="pre-test.html">PRE-TEST</a></li>
+                <li><a href="docentes.html">Docentes</a></li>
+                 <li><a href="productos.html">Productos</a></li>
+                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ==================== SECCIÓN HERO (OCÉANO REALISTA MAXIMALISTA) ==================== -->
+    <section class="hero-section">
+        
+        <!-- Capas de la iluminación maximalista -->
+        <div class="sky-background"></div>
+        <div class="sun-reflection"></div> <!-- El destello del sol pegando en el agua -->
+        
+        <!-- Contenedor del Océano Realista -->
+        <div class="ocean-system">
+            <!-- Capas de olas con textura orgánica -->
+            <div class="wave wave-deep"></div>
+            <div class="wave wave-mid"></div>
+            <div class="wave wave-surface"></div>
+            <div class="wave wave-surf"></div>
+            <div class="wave wave-foam"></div> <!-- Espuma detallada -->
+            
+            <!-- Capa de partículas de brillo (NUEVO) -->
+            <div class="ocean-shimmer"></div>
+        </div>
+
+        <div class="hero-content">
+            <h1>El Pacífico <span class="highlight">Renaciendo</span> con Ingeniería Propia</h1>
+            <p>Pasamos del diagnóstico a la acción técnica. Aseguramos que el talento de Tumaco lidere la transformación de su territorio.</p>
+            <div class="hero-buttons">
+                <a href="pre-icfes.html" class="btn-primary">Entrena Ahora</a>
+                <a href="#about" class="btn-secondary">Explora PRI</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SECCIÓN SOBRE EL PROGRAMA (Integrada e Intensa) ==================== -->
+    <section id="about" class="about-section">
+        <!-- Textura de fondo ingenieril -->
+        <div class="engineering-grid"></div>
+
+        <article class="maximalist-container">
+            <div class="mission-block">
+                <span class="subtitle">La Misión Técnica</span>
+                <h2>Inmersión STEM y Fuerza Psicoemocional</h2>
+                <p>Nuestra metodología cierra la brecha entre el colegio público y la facultad. Unimos matemáticas básicas, física y programación con pensamiento crítico para asegurar que no solo ingreses, sino que <span class="bold">lideres</span>.</p>
+            </div>
+            
+            <div class="founder-block">
+                <!-- Contenedor Maximalista para la foto -->
+                <div class="founder-image-wrapper">
+                    <img src="joseluis.jpg" alt="José Luis Castro" class="founder-img">
+                </div>
+                
+                <div class="founder-text">
+                    <h3>José Luis Castro Góngora</h3>
+                    <p>Líder del Proyecto PRI. Estudiante de Ingeniería Mecatrónica (UNAL) y orgullosamente Tumaqueño. Fundador apostando por la educación, conciencia social y empoderamiento de las siguientes generaciones.</p>
+                </div>
+            </div>
+            
+        </article>
+    </section>
+<!-- Script del Menú Móvil -->
+    <script>
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        mobileMenu.addEventListener('click', () => {
+            mobileMenu.classList.toggle('is-active'); /* Transforma la hamburguesa en X */
+            navLinks.classList.toggle('active');      /* Desliza el menú inmersivo */
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métricas de Impacto | PROGRAMA-PRI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="page-dashboard">
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+            <h2>PRI Admin</h2>
+        </div>
+        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
+        <div class="menu-toggle" id="mobile-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="index.html">← Volver al Sitio</a></li>
+            <li><a href="#" class="active">📊 Panel de Impacto</a></li>
+            <li><a href="#">👥 Gestión de Estudiantes</a></li>
+            <li><a href="#">📚 Material Educativo</a></li>
+        </ul>
+    </aside>
+
+    <main class="dashboard-content">
+        <header class="dashboard-header">
+            <div>
+                <h1>Métricas de Tránsito Universitario</h1>
+                <p>Progreso hacia la meta del 50% (Generación 2026-2028)</p>
+            </div>
+            <div class="user-profile">
+                <span>Hola, <strong>José Luis</strong></span>
+            </div>
+        </header>
+
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <h3>Estudiantes Activos</h3>
+                <span class="kpi-number">90</span>
+                <span class="kpi-trend positive">+12% este mes</span>
+            </div>
+            <div class="kpi-card">
+                <h3>Promedio PRE-TEST</h3>
+                <span class="kpi-number">315 <small>pts</small></span>
+                <span class="kpi-trend positive">+25% mejora</span>
+            </div>
+            <div class="kpi-card">
+                <h3>Tasa de Retención</h3>
+                <span class="kpi-number">94%</span>
+                <span class="kpi-trend neutral">Estable</span>
+            </div>
+        </section>
+
+        <section class="charts-section">
+            <div class="chart-container">
+                <h3>Evolución de Puntajes por Área (Tumaco)</h3>
+                <canvas id="impactChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>Temas a Fortalecer</h3>
+                <ul class="weakness-list">
+                    <li><span class="dot red"></span> Física Dinámica (Requiere atención urgente)</li>
+                    <li><span class="dot orange"></span> Lectura Crítica (En progreso)</li>
+                    <li><span class="dot yellow"></span> Matemáticas Básicas (Mejorando)</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const ctx = document.getElementById('impactChart').getContext('2d');
+        const impactChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Fase 1 (Inicio)', 'Ciclo 1', 'Ciclo 2', 'Simulacro Final'],
+                datasets: [{
+                    label: 'Promedio Global PRI',
+                    data: [202, 245, 280, 315],
+                    borderColor: '#FF5E00', /* Naranja Atardecer */
+                    backgroundColor: 'rgba(255, 94, 0, 0.2)',
+                    borderWidth: 3,
+                    tension: 0.4, /* Hace que la línea sea curva y suave */
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                color: '#fafafa',
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 150,
+                        max: 500,
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    },
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
