@@ -359,16 +359,80 @@ h1, h2, h3 {
 }
 
 @media (max-width: 768px) {
-    .nav-links { display: none; }
-    
-    .hero-content h1 { text-shadow: 4px 4px 0 var(--azul-deep-tumaco); }
-    
-    .founder-block {
-        padding: 1.5rem;
-        border-left: 5px solid var(--naranja-atardecer);
+    /* 1. Contenedor de Pantalla Completa Inmersivo y Opaco */
+    .nav-links {
+        position: fixed;
+        top: 0;
+        left: 100%; /* Empieza oculto a la derecha */
+        width: 100vw;
+        height: 100vh;
+        /* Subimos la opacidad para tapar por completo el texto de fondo */
+        background: rgba(2, 26, 54, 0.98) !important; 
+        backdrop-filter: blur(25px); /* Efecto cristal de alta densidad */
+        -webkit-backdrop-filter: blur(25px);
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 3.5rem; /* Más espacio vertical entre enlaces */
+        padding: 2rem;
+        transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        z-index: 2000 !important; /* Por encima de absolutamente todo */
+        box-sizing: border-box;
+    }
+
+    /* Activación del menú deslizante */
+    .nav-links.active { 
+        left: 0 !important; 
+    }
+
+    /* 2. Refinamiento de las Tipografías Masivas */
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+        list-style: none;
+    }
+
+    .nav-links a {
+        display: inline-block;
+        font-size: 2.2rem !important; /* Ajuste de escala para que no se corte */
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        /* Trazo fino y elegante */
+        -webkit-text-stroke: 1.5px var(--blanco-espuma, #ffffff);
+        color: transparent; 
+        transition: all 0.3s ease;
+        width: auto;
+    }
+
+    /* Estado Activo o Hover en Móviles */
+    .nav-links a:hover, 
+    .nav-links a.active {
+        color: var(--naranja-atardecer, #ff5722) !important;
+        -webkit-text-stroke: 0px transparent !important;
+        transform: scale(1.05);
+    }
+
+    /* 3. Corrección Estricta del Botón Acceso Total */
+    .nav-links a.btn-login {
+        color: var(--blanco-espuma, #ffffff) !important;
+        background-color: var(--naranja-atardecer, #ff5722) !important;
+        -webkit-text-stroke: 0px transparent !important;
+        padding: 12px 35px !important;
+        border-radius: 4px;
+        font-size: 1.8rem !important;
+        letter-spacing: 1px;
+        width: 80%; /* Botón ancho y estilizado para pantallas táctiles */
+        max-width: 300px;
+        margin-top: 1rem;
+        box-shadow: 0 10px 25px rgba(255, 87, 34, 0.3);
     }
     
-    .hero-buttons { flex-direction: column; }
+    .nav-links a.btn-login:hover {
+        transform: scale(1.02);
+        background-color: #e04714 !important;
+    }
 }
 /* ==================== ESTILOS DE IMÁGENES MAXIMALISTAS ==================== */
 
