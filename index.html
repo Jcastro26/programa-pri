@@ -3,112 +3,1082 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROGRAMA-PRI | Océano Realista Maximalista</title>
-    
-    <!-- Importando las tipografías impactantes: Montserrat (Títulos) y Lora (Textos) -->
+    <title>PROGRAMA-PRI | El Pacífico Renaciendo con Ingeniería</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    
-    <!-- Vinculando el archivo de estilos -->
     <link rel="stylesheet" href="style.css">
+
+<style>
+/* ===== MEJORAS INTERACTIVAS - INDEX ===== */
+
+/* Cursor personalizado */
+.cursor-dot {
+    width: 8px; height: 8px;
+    background: var(--naranja-atardecer);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+}
+.cursor-ring {
+    width: 32px; height: 32px;
+    border: 2px solid rgba(255,94,0,0.5);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+}
+body:hover .cursor-dot { opacity: 1; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+/* Barra de progreso de lectura */
+#reading-bar {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 2000;
+    background: linear-gradient(90deg, var(--naranja-atardecer), var(--oro-sol));
+    width: 0%; transition: width 0.1s linear;
+}
+
+/* Navbar mejorada con glassmorphism real */
+.navbar { transition: padding 0.3s ease, box-shadow 0.3s ease; }
+.navbar.scrolled { padding: 0.6rem 5%; box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.nav-links a { position: relative; }
+.nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 2px; background: var(--naranja-atardecer);
+    transition: width 0.3s ease;
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* ===== SECCIÓN HERO CON PARTÍCULAS ===== */
+#particles-canvas {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; z-index: 4; pointer-events: none;
+}
+
+/* ===== SECCIÓN DE ESTADÍSTICAS ANIMADAS ===== */
+.stats-section {
+    background: linear-gradient(135deg, #010d1a 0%, #021a36 50%, #031428 100%);
+    padding: 6rem 5%;
+    position: relative;
+    border-top: 3px solid var(--naranja-atardecer);
+    border-bottom: 3px solid #063162;
+    overflow: hidden;
+}
+.stats-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: var(--patron-grid);
+    opacity: 0.04;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative; z-index: 1;
+}
+.stat-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border: 1px solid rgba(255,94,0,0.2);
+    background: rgba(255,94,0,0.03);
+    position: relative;
+    transition: all 0.4s ease;
+    cursor: default;
+}
+.stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--naranja-atardecer), transparent);
+    transform: scaleX(0); transition: transform 0.4s ease;
+}
+.stat-card:hover::before { transform: scaleX(1); }
+.stat-card:hover {
+    background: rgba(255,94,0,0.07);
+    border-color: rgba(255,94,0,0.5);
+    transform: translateY(-6px);
+}
+.stat-number {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(3rem, 7vw, 5rem);
+    font-weight: 900;
+    color: var(--naranja-atardecer);
+    line-height: 1;
+    display: block;
+    -webkit-text-stroke: 1px rgba(255,215,0,0.3);
+}
+.stat-label {
+    font-family: var(--fuente-textos);
+    font-size: 1rem;
+    color: #94a3b8;
+    margin-top: 0.8rem;
+    display: block;
+    line-height: 1.4;
+}
+.stat-sublabel {
+    font-family: var(--fuente-titulos);
+    font-size: 0.75rem;
+    color: var(--azul-superficie-teal);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+/* ===== SECCIÓN MISIÓN REDISEÑADA ===== */
+.mision-section {
+    background: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    padding: 7rem 5%;
+    position: relative;
+    overflow: hidden;
+}
+.mision-section::after {
+    content: 'PRI';
+    position: absolute;
+    right: -2%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--fuente-titulos);
+    font-size: 25vw;
+    font-weight: 900;
+    color: rgba(2,26,54,0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+}
+.mision-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 5rem;
+    align-items: center;
+    position: relative; z-index: 1;
+}
+.mision-tag {
+    display: inline-block;
+    background: var(--naranja-atardecer);
+    color: white;
+    padding: 0.4rem 1rem;
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    box-shadow: 3px 3px 0 var(--azul-deep-tumaco);
+}
+.mision-h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    color: var(--azul-deep-tumaco);
+}
+.mision-h2 em {
+    font-style: normal;
+    color: var(--naranja-atardecer);
+}
+.mision-p {
+    font-family: var(--fuente-textos);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: #334155;
+    margin-bottom: 1.2rem;
+}
+.founder-card {
+    background: var(--azul-deep-tumaco);
+    color: var(--blanco-espuma);
+    padding: 3rem;
+    border: 3px solid var(--azul-deep-tumaco);
+    box-shadow: 10px 10px 0 var(--naranja-atardecer);
+    position: relative;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.founder-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 14px 14px 0 var(--naranja-atardecer);
+}
+.founder-card::before {
+    content: '"';
+    position: absolute;
+    top: -1.5rem; left: 1.5rem;
+    font-size: 8rem;
+    font-family: Georgia, serif;
+    color: var(--naranja-atardecer);
+    line-height: 1;
+    opacity: 0.4;
+}
+.founder-name {
+    font-family: var(--fuente-titulos);
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+    color: var(--oro-sol);
+}
+.founder-role {
+    font-family: var(--fuente-textos);
+    font-size: 0.9rem;
+    color: var(--azul-superficie-teal);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+.founder-quote {
+    font-family: var(--fuente-textos);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #cbd5e1;
+}
+.img-founder {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 3px solid var(--naranja-atardecer);
+    object-fit: cover;
+    margin-bottom: 1.2rem;
+    display: block;
+}
+
+/* ===== SECCIÓN NIVELES / FASES MEJORADA ===== */
+.niveles-section {
+    background: linear-gradient(to bottom, #031428, #010d1a);
+    padding: 7rem 5%;
+    position: relative;
+}
+.niveles-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 5rem;
+}
+.niveles-header h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    color: var(--blanco-espuma);
+    margin-bottom: 1rem;
+}
+.niveles-header p {
+    font-family: var(--fuente-textos);
+    color: #94a3b8;
+    font-size: 1.15rem;
+    line-height: 1.6;
+}
+.niveles-track {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+.niveles-track::before {
+    content: '';
+    position: absolute;
+    left: 42px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--naranja-atardecer), var(--azul-superficie-teal), transparent);
+}
+.nivel-item {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    align-items: start;
+}
+.nivel-num-circle {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: var(--azul-deep-tumaco);
+    border: 3px solid var(--naranja-atardecer);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative; z-index: 1;
+    cursor: default;
+}
+.nivel-num-circle:hover {
+    background: var(--naranja-atardecer);
+    transform: scale(1.1) rotate(5deg);
+}
+.nivel-num-circle span:first-child { font-size: 0.65rem; color: var(--oro-sol); letter-spacing: 2px; }
+.nivel-num-circle span:last-child { font-size: 1.8rem; color: var(--blanco-espuma); line-height: 1; }
+.nivel-body {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 2rem;
+    position: relative;
+    transition: all 0.35s ease;
+}
+.nivel-body:hover {
+    background: rgba(255,94,0,0.06);
+    border-color: rgba(255,94,0,0.3);
+    transform: translateX(8px);
+}
+.nivel-grado {
+    font-family: var(--fuente-titulos);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--azul-superficie-teal);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+.nivel-body h3 {
+    font-family: var(--fuente-titulos);
+    font-size: 1.4rem;
+    color: var(--blanco-espuma);
+    margin-bottom: 0.8rem;
+}
+.nivel-body p {
+    font-family: var(--fuente-textos);
+    color: #94a3b8;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* ===== SECCIÓN IMPACTO / TIMELINE ===== */
+.impacto-section {
+    background: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    padding: 7rem 5%;
+}
+.impacto-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.impacto-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+.impacto-header h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    color: var(--azul-deep-tumaco);
+    margin-bottom: 1rem;
+}
+.impacto-header p {
+    font-family: var(--fuente-textos);
+    color: #64748b;
+    font-size: 1.15rem;
+}
+.timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+}
+.timeline-card {
+    background: var(--azul-deep-tumaco);
+    color: var(--blanco-espuma);
+    padding: 2.5rem 2rem;
+    border: 2px solid var(--azul-deep-tumaco);
+    box-shadow: 6px 6px 0 #000;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.timeline-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 4px; width: 0;
+    background: var(--naranja-atardecer);
+    transition: width 0.4s ease;
+}
+.timeline-card:hover::after { width: 100%; }
+.timeline-card:hover { transform: translate(-4px, -4px); box-shadow: 10px 10px 0 var(--naranja-atardecer); }
+.timeline-num {
+    font-family: var(--fuente-titulos);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--naranja-atardecer);
+    margin-bottom: 1rem;
+    display: block;
+}
+.timeline-card h3 {
+    font-family: var(--fuente-titulos);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+.timeline-card p {
+    font-family: var(--fuente-textos);
+    font-size: 0.98rem;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+/* ===== SECCIÓN CTA FINAL ===== */
+.cta-final {
+    background: linear-gradient(135deg, var(--naranja-atardecer) 0%, #c44700 100%);
+    padding: 8rem 5%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.cta-final::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+        45deg, transparent, transparent 10px,
+        rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 11px
+    );
+}
+.cta-final h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    color: var(--blanco-espuma);
+    text-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+    margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+}
+.cta-final p {
+    font-family: var(--fuente-textos);
+    font-size: 1.3rem;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 3rem;
+    position: relative; z-index: 1;
+}
+.cta-buttons { position: relative; z-index: 1; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+.btn-cta-white {
+    background: var(--blanco-espuma);
+    color: var(--naranja-atardecer);
+    padding: 1.2rem 2.5rem;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 3px solid #000;
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+.btn-cta-white:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 rgba(0,0,0,0.3); }
+.btn-cta-dark {
+    background: transparent;
+    color: var(--blanco-espuma);
+    padding: 1.2rem 2.5rem;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 3px solid rgba(255,255,255,0.7);
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+.btn-cta-dark:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translate(-3px,-3px);
+    box-shadow: 9px 9px 0 rgba(0,0,0,0.2);
+}
+
+/* ===== TOOLTIP FLOTANTE EN HERO ===== */
+.hero-tooltip {
+    position: absolute;
+    background: rgba(2,26,54,0.95);
+    border: 1px solid var(--naranja-atardecer);
+    color: var(--blanco-espuma);
+    padding: 0.8rem 1.2rem;
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+/* ===== PROGRESS BAR NIVELES ===== */
+.nivel-progress {
+    height: 4px;
+    background: rgba(255,255,255,0.05);
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+.nivel-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--naranja-atardecer), var(--oro-sol));
+    width: 0%;
+    transition: width 1.5s ease;
+}
+.nivel-body.visible .nivel-progress-fill { }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .mision-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .niveles-track::before { left: 38px; }
+    .nivel-item { grid-template-columns: 76px 1fr; }
+    .nivel-num-circle { width: 76px; height: 76px; }
+}
+@media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+}
+</style>
 </head>
 <body>
 
-    <!-- ==================== MENÚ DE NAVEGACIÓN ==================== -->
-    <header class="navbar">
-       <div class="logo-container">
-            <a href="index.html" class="logo-link">
-                <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-                <h2>PROGRAMA-PRI</h2>
-            </a>
+<!-- Cursor personalizado -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Barra de progreso de lectura -->
+<div id="reading-bar"></div>
+
+<!-- ==================== NAVBAR ==================== -->
+<header class="navbar" id="mainNav">
+    <div class="logo-container">
+        <a href="index.html" class="logo-link">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+            <h2>PROGRAMA-PRI</h2>
+        </a>
+    </div>
+    <div class="menu-toggle" id="mobile-menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Inicio</a></li>
+            <li><a href="ppri.html">Sobre PRI</a></li>
+            <li><a href="preicfes.html">PRE-ICFES</a></li>
+            <li><a href="pre-test.html">PRE-TEST</a></li>
+            <li><a href="docentes.html">Docentes</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="ocean-system cloudy-theme">
+        <div class="natural-sky">
+            <svg width="100%" height="100%" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#1b232e" />
+                        <stop offset="40%" stop-color="#2d3a4b" />
+                        <stop offset="70%" stop-color="#465669" />
+                        <stop offset="100%" stop-color="#5c6d81" />
+                    </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#skyGradient)" />
+            </svg>
         </div>
         
-        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
+        <div class="animated-sun">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-sun">
+                <defs>
+                    <radialGradient id="sunCore" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#fff7a0"/>
+                        <stop offset="35%" stop-color="#FFD700"/>
+                        <stop offset="70%" stop-color="#FFA500"/>
+                        <stop offset="100%" stop-color="#FF6B00" stop-opacity="0.6"/>
+                    </radialGradient>
+                    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#FFD700" stop-opacity="0.4"/>
+                        <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
+                    </radialGradient>
+                    <filter id="sunBlur"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+                </defs>
+                <circle cx="100" cy="100" r="90" fill="url(#sunGlow)" class="sun-corona"/>
+                <g class="sun-rays-long" transform-origin="100 100">
+                    <line x1="100" y1="5" x2="100" y2="30" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="100" y1="170" x2="100" y2="195" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="5" y1="100" x2="30" y2="100" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="170" y1="100" x2="195" y2="100" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="28" y1="28" x2="48" y2="48" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="152" y1="152" x2="172" y2="172" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="172" y1="28" x2="152" y2="48" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="28" y1="172" x2="48" y2="152" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                </g>
+                <circle cx="100" cy="100" r="42" fill="url(#sunCore)" filter="url(#sunBlur)"/>
+                <circle cx="85" cy="85" r="12" fill="white" opacity="0.25"/>
+            </svg>
         </div>
 
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Inicio</a></li>
-                <li><a href="ppri.html">Sobre PRI</a></li>
-                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
-                <li><a href="pre-test.html">PRE-TEST</a></li>
-                <li><a href="docentes.html">Docentes</a></li>
-                 <li><a href="productos.html">Productos</a></li>
-                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+        <div class="tumaco-rock" id="tumaco-rock-el">
+            <svg viewBox="0 0 520 620" preserveAspectRatio="xMaxYMax slice" class="svg-morro" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="rockTex2" x="-10%" y="-10%" width="120%" height="120%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.032 0.048" numOctaves="5" seed="17" result="n"/>
+                        <feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+                    </filter>
+                    <filter id="vegTex2" x="-6%" y="-6%" width="112%" height="112%">
+                        <feTurbulence type="turbulence" baseFrequency="0.045 0.065" numOctaves="4" seed="7" result="n2"/>
+                        <feDisplacementMap in="SourceGraphic" in2="n2" scale="6" xChannelSelector="G" yChannelSelector="R"/>
+                    </filter>
+                    <filter id="softShadow2"><feGaussianBlur stdDeviation="5"/></filter>
+                    <linearGradient id="faceLit" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#cbbf9a"/>
+                        <stop offset="55%" stop-color="#8a7558"/>
+                        <stop offset="100%" stop-color="#2e1e0e"/>
+                    </linearGradient>
+                    <linearGradient id="faceDark" x1="0%" y1="0%" x2="100%" y2="80%">
+                        <stop offset="0%" stop-color="#6d5d44"/>
+                        <stop offset="100%" stop-color="#120a02"/>
+                    </linearGradient>
+                    <clipPath id="rockClip"><rect width="520" height="620"/></clipPath>
+                </defs>
+                <g clip-path="url(#rockClip)">
+                    <ellipse cx="260" cy="614" rx="160" ry="10" fill="#000" opacity="0.30" filter="url(#softShadow2)"/>
+                    <path d="M 80,620 C 85,592 92,562 102,532 C 113,500 127,468 144,438 C 162,406 182,376 204,348 C 226,320 250,294 272,270 C 290,250 306,230 318,212 C 328,196 334,182 338,170 C 342,158 344,148 346,140 C 350,126 352,122 358,116 C 362,119 364,126 368,138 C 373,155 380,175 389,200 C 400,228 412,256 425,285 C 438,316 450,347 462,378 C 472,408 480,437 488,466 C 493,494 494,521 494,547 C 492,572 486,595 483,607 C 478,614 474,620 474,620 Z" fill="url(#faceLit)" filter="url(#rockTex2)"/>
+                    <path d="M 296,148 C 282,136 266,128 250,126 C 232,124 216,130 206,142 C 196,154 196,170 206,182 C 216,194 232,200 250,202 C 268,202 286,196 300,186 C 314,176 322,163 320,152 Z" fill="#15441a" filter="url(#vegTex2)"/>
+                    <path d="M 316,120 C 302,106 284,98 266,96 C 246,94 228,102 218,116 C 208,130 210,148 224,160 C 236,172 256,178 276,178 C 294,178 312,171 323,158 C 332,148 332,134 324,124 Z" fill="#2e8038" filter="url(#vegTex2)"/>
+                    <path d="M 80,620 C 110,612 150,608 200,610 C 260,612 320,614 370,612 C 410,610 445,607 474,612 C 477,614 474,620 474,620 Z" fill="rgba(195,215,230,0.28)" filter="url(#softShadow2)"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="boat-wrapper" id="animBoat">
+            <svg viewBox="0 0 120 55" xmlns="http://www.w3.org/2000/svg" class="svg-boat">
+                <path d="M 8,40 C 14,47 26,51 44,52 C 62,53 80,52 92,50 C 100,48 103,44 100,40 Z" fill="#b0c4d8"/>
+                <path d="M 8,40 L 100,40 C 100,44 96,47 88,49 C 74,51 55,52 38,51 C 24,50 14,47 8,40 Z" fill="#8aacc4"/>
+                <path d="M 12,40 C 18,36 32,32 52,31 C 70,30 84,33 96,40 Z" fill="#d8e8f2"/>
+                <rect x="36" y="21" width="26" height="14" rx="3" fill="#98b8d0"/>
+                <rect x="39" y="23" width="8" height="7" rx="1" fill="#c8e4f4" opacity="0.75"/>
+                <rect x="50" y="23" width="8" height="7" rx="1" fill="#c8e4f4" opacity="0.75"/>
+            </svg>
+        </div>
+
+        <div class="gull g1"><svg viewBox="0 0 60 30"><path class="wl" d="M30 15 C20 5, 5 8, 0 14 C10 17, 22 20, 30 15Z" fill="#dde6f0"/><path class="wr" d="M30 15 C40 5, 55 8, 60 14 C50 17, 38 20, 30 15Z" fill="#c8d4e0"/></svg></div>
+        <div class="gull g2"><svg viewBox="0 0 60 30"><path class="wl" d="M30 15 C20 5, 5 8, 0 14 C10 17, 22 20, 30 15Z" fill="#cdd8e8"/><path class="wr" d="M30 15 C40 5, 55 8, 60 14 C50 17, 38 20, 30 15Z" fill="#b8c8d8"/></svg></div>
+        <div class="gull g3"><svg viewBox="0 0 60 30"><path class="wl" d="M30 15 C20 5, 5 8, 0 14 C10 17, 22 20, 30 15Z" fill="#b8c8da"/><path class="wr" d="M30 15 C40 5, 55 8, 60 14 C50 17, 38 20, 30 15Z" fill="#a8b8cc"/></svg></div>
+
+        <div class="wave wave-deep"></div>
+        <div class="wave wave-mid"></div>
+        <div class="wave wave-surface"></div>
+        <canvas id="fishCanvas" class="fish-canvas"></canvas>
+    </div>
+
+    <div class="hero-content" id="hero-content-block">
+        <h1 class="hero-title">
+            El Pacífico<br>
+            <span class="hero-title-accent">Renaciendo</span><br>
+            con Ingeniería Propia
+        </h1>
+        <p class="hero-subtitle">Pasamos del diagnóstico a la acción técnica. Un programa universitario que transforma el potencial de Tumaco en futuros ingenieros.</p>
+        <div class="hero-buttons">
+            <a href="pre-test.html" class="btn btn-primary">🚀 Entrena Ahora</a>
+            <a href="ppri.html" class="btn btn-secondary">Explora PRI →</a>
+        </div>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <div style="position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:20;text-align:center;animation:bounceDown 2s infinite ease-in-out;">
+        <div style="font-family:var(--fuente-titulos);font-size:0.7rem;letter-spacing:3px;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">SCROLL</div>
+        <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+            <path d="M8 0V20M8 20L2 14M8 20L14 14" stroke="rgba(255,94,0,0.7)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+</section>
+
+<style>
+@keyframes bounceDown { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+</style>
+
+<!-- ==================== ESTADÍSTICAS ANIMADAS ==================== -->
+<section class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card reveal">
+            <span class="stat-sublabel">Brecha actual</span>
+            <span class="stat-number" data-target="202" data-suffix="">202</span>
+            <span class="stat-label">Puntos promedio regional en Saber 11 vs. estándar nacional</span>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.15s">
+            <span class="stat-sublabel">Meta PRI</span>
+            <span class="stat-number" data-target="36" data-suffix="%">+36%</span>
+            <span class="stat-label">Incremento proyectado en tránsito inmediato a la universidad</span>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.3s">
+            <span class="stat-sublabel">Cobertura</span>
+            <span class="stat-number" data-target="90" data-suffix="">90</span>
+            <span class="stat-label">Estudiantes activos formándose en ciencias exactas e ingeniería</span>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.45s">
+            <span class="stat-sublabel">Retención</span>
+            <span class="stat-number" data-target="94" data-suffix="%">94%</span>
+            <span class="stat-label">Tasa de permanencia en el programa — por encima del promedio nacional</span>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SECCIÓN MISIÓN ==================== -->
+<section class="mision-section">
+    <div class="mision-inner">
+        <div class="reveal-left">
+            <div class="mision-tag">La Misión</div>
+            <h2 class="mision-h2">Inmersión <em>STEM</em> y Fuerza Psicoemocional</h2>
+            <p class="mision-p">Nuestra metodología cierra la brecha entre el colegio público de Tumaco y la exigencia universitaria. Unimos matemáticas, física y programación con pensamiento crítico para asegurar que no solo ingreses, sino que <strong>lideres</strong>.</p>
+            <p class="mision-p">Operamos bajo el programa PEAMA de la Universidad Nacional, con un modelo de nivelación escalonada que ataca el rezago desde grado 8° hasta el primer semestre universitario.</p>
+            <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
+                <a href="ppri.html" style="display:inline-block;background:var(--azul-deep-tumaco);color:white;padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);box-shadow:5px 5px 0 var(--naranja-atardecer);transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='8px 8px 0 var(--naranja-atardecer)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 var(--naranja-atardecer)'">Ver el Programa</a>
+                <a href="dashboard.html" style="display:inline-block;background:transparent;color:var(--azul-deep-tumaco);padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);transition:all 0.3s ease;" onmouseover="this.style.background='var(--azul-deep-tumaco)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--azul-deep-tumaco)'">Ver Métricas</a>
+            </div>
+        </div>
+        <div class="reveal-right">
+            <div class="founder-card">
+                <img src="joseluis.jpg" alt="José Luis Castro Góngora" class="img-founder" onerror="this.style.display='none'">
+                <div class="founder-name">José Luis Castro Góngora</div>
+                <div class="founder-role">Fundador & Líder — Ingeniería Mecatrónica, UNAL</div>
+                <p class="founder-quote">"Construir ingeniería en el Pacífico no es solo técnica — es acto político, cultural y de amor al territorio. PRI nació de la necesidad propia y se sostiene del compromiso colectivo."</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== NIVELES ACADÉMICOS ==================== -->
+<section class="niveles-section">
+    <div class="niveles-header reveal">
+        <div class="mision-tag" style="background:var(--azul-superficie-teal);box-shadow:3px 3px 0 rgba(0,0,0,0.5);">Estructura Académica</div>
+        <h2>4 Niveles de Inmersión en Ingeniería</h2>
+        <p>Un modelo pedagógico escalonado — desde despertar el interés en grado 8° hasta preparar el choque cultural del primer semestre universitario.</p>
+    </div>
+    <div class="niveles-track">
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal">
+                <span>NIVEL</span>
+                <span>1</span>
+            </div>
+            <div class="nivel-body reveal" data-progress="45">
+                <div class="nivel-grado">Grado 8° · Exploración</div>
+                <h3>Bases y Despertar Científico</h3>
+                <p>Nivelación aritmética elemental, lógica matemática básica y talleres lúdicos diseñados para despertar el interés por la ciencia aplicada al territorio costero del Pacífico.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:45%"></div></div>
+            </div>
+        </div>
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal" style="transition-delay:0.1s">
+                <span>NIVEL</span>
+                <span>2</span>
+            </div>
+            <div class="nivel-body reveal" style="transition-delay:0.1s" data-progress="60">
+                <div class="nivel-grado">Grado 9° · Consolidación</div>
+                <h3>Álgebra y Pensamiento Técnico</h3>
+                <p>Introducción al álgebra matricial, geometría plana, física del movimiento y desarrollo de habilidades lógico-abstractas para resolver problemas complejos con estructura.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:60%"></div></div>
+            </div>
+        </div>
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal" style="transition-delay:0.2s;border-color:var(--azul-superficie-teal)">
+                <span>NIVEL</span>
+                <span>3</span>
+            </div>
+            <div class="nivel-body reveal" style="transition-delay:0.2s" data-progress="78">
+                <div class="nivel-grado">Grado 10° · Profundización</div>
+                <h3>Trigonometría, Física y Química</h3>
+                <p>Trigonometría analítica, mecánica elemental, química inorgánica aplicada y metodologías ágiles orientadas a solucionar problemas reales de ingeniería comunitaria.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:78%"></div></div>
+            </div>
+        </div>
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal" style="transition-delay:0.3s;border-color:var(--oro-sol)">
+                <span>NIVEL</span>
+                <span>4</span>
+            </div>
+            <div class="nivel-body reveal" style="transition-delay:0.3s" data-progress="100">
+                <div class="nivel-grado">Grado 11° · Inmersión Total</div>
+                <h3>Cálculo, ICFES y Vida Universitaria</h3>
+                <p>Cálculo diferencial pre-universitario, física eléctrica, simulacros intensivos Saber 11 y talleres psicoemocionales para el choque cultural del primer semestre en la universidad.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:100%;background:linear-gradient(90deg,var(--naranja-atardecer),var(--oro-sol))"></div></div>
+            </div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:4rem;" class="reveal">
+        <a href="ppri.html" style="display:inline-block;background:var(--naranja-atardecer);color:white;padding:1.2rem 2.5rem;font-family:var(--fuente-titulos);font-weight:900;font-size:1rem;text-transform:uppercase;text-decoration:none;border:2px solid #000;box-shadow:6px 6px 0 #000;transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='9px 9px 0 #000'" onmouseout="this.style.transform='';this.style.boxShadow='6px 6px 0 #000'">Ver Programa Completo →</a>
+    </div>
+</section>
+
+<!-- ==================== TIMELINE / HISTORIA ==================== -->
+<section class="impacto-section">
+    <div class="impacto-inner">
+        <div class="impacto-header reveal">
+            <div class="mision-tag" style="background:var(--azul-deep-tumaco);">Historia & Hoja de Ruta</div>
+            <h2>Cómo Nació y Hacia Dónde Va el PRI</h2>
+            <p>De la necesidad propia al sistema educativo colectivo — una trayectoria de acción técnica y voluntad.</p>
+        </div>
+        <div class="timeline-grid">
+            <div class="timeline-card reveal" style="transition-delay:0s">
+                <span class="timeline-num">01 • EL ORIGEN</span>
+                <h3>La Semilla</h3>
+                <p>El proyecto germina de la experiencia propia de estudiantes tumaqueños en la UNAL, decididos a diseñar un plan estructurado para evitar el rezago académico regional.</p>
+            </div>
+            <div class="timeline-card reveal" style="transition-delay:0.12s">
+                <span class="timeline-num" style="color:var(--oro-sol)">02 • PILOTO</span>
+                <h3>Laboratorio Inicial</h3>
+                <p>Despliegue de grupos de control en Tumaco para medir vacíos formativos en ciencias avanzadas y respuestas psicológicas a la presión académica del examen Saber 11.</p>
+            </div>
+            <div class="timeline-card reveal" style="transition-delay:0.24s">
+                <span class="timeline-num" style="color:var(--azul-superficie-teal)">03 • FASE 1</span>
+                <h3>Entrada a las Aulas</h3>
+                <p>Entrada robusta a los colegios públicos asociados, estableciendo un estándar metodológico enfocado en competencias lógicas, analíticas y psicoemocionales.</p>
+            </div>
+            <div class="timeline-card reveal" style="transition-delay:0.36s">
+                <span class="timeline-num" style="color:#a78bfa">04 • ESCALA</span>
+                <h3>Plataforma Digital</h3>
+                <p>Lanzamiento del ecosistema digital con simuladores Pre-Test, panel de métricas en tiempo real y expansión hacia todas las fronteras del municipio de Tumaco.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== CTA FINAL ==================== -->
+<section class="cta-final">
+    <h2 class="reveal">¿LISTO PARA EL<br>SIGUIENTE NIVEL?</h2>
+    <p class="reveal">Únete a los 90 estudiantes que ya están construyendo su futuro universitario con PRI.</p>
+    <div class="cta-buttons reveal">
+        <a href="pre-test.html" class="btn-cta-white">🎯 Hacer el Pre-Test</a>
+        <a href="https://wa.me/573183553653?text=Hola!%20Quiero%20información%20sobre%20el%20Programa%20PRI" target="_blank" class="btn-cta-dark">📲 Contactar por WhatsApp</a>
+    </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer-masivo">
+    <div class="footer-grid">
+        <div class="footer-col brand-col">
+            <div class="footer-brand-wrapper">
+                <img src="logo.png" alt="Sello PROGRAMA-PRI" class="footer-logo">
+                <h2 class="massive-footer-text">PROGRAMA<span class="outline-text">-PRI</span></h2>
+            </div>
+        </div>
+        <div class="footer-col links-col">
+            <h3>ENLACES TÁCTICOS</h3>
+            <ul>
+                <li><a href="index.html">Base de Operaciones (Inicio)</a></li>
+                <li><a href="pre-test.html">Simulador de Entrenamiento Pre-Test</a></li>
+                <li><a href="productos.html">Bóveda de Recompensas (Catálogo)</a></li>
+                <li><a href="docentes.html">Módulo de Mentores & Docentes</a></li>
+                <li><a href="dashboard.html">Panel de Métricas e Impacto</a></li>
             </ul>
-        </nav>
-    </header>
-
-    <!-- ==================== SECCIÓN HERO (OCÉANO REALISTA MAXIMALISTA) ==================== -->
-    <section class="hero-section">
-        
-        <!-- Capas de la iluminación maximalista -->
-        <div class="sky-background"></div>
-        <div class="sun-reflection"></div> <!-- El destello del sol pegando en el agua -->
-        
-        <!-- Contenedor del Océano Realista -->
-        <div class="ocean-system">
-            <!-- Capas de olas con textura orgánica -->
-            <div class="wave wave-deep"></div>
-            <div class="wave wave-mid"></div>
-            <div class="wave wave-surface"></div>
-            <div class="wave wave-surf"></div>
-            <div class="wave wave-foam"></div> <!-- Espuma detallada -->
-            
-            <!-- Capa de partículas de brillo (NUEVO) -->
-            <div class="ocean-shimmer"></div>
         </div>
-
-        <div class="hero-content">
-            <h1>El Pacífico <span class="highlight">Renaciendo</span> con Ingeniería Propia</h1>
-            <p>Pasamos del diagnóstico a la acción técnica. Aseguramos que el talento de Tumaco lidere la transformación de su territorio.</p>
-            <div class="hero-buttons">
-                <a href="pre-icfes.html" class="btn-primary">Entrena Ahora</a>
-                <a href="#about" class="btn-secondary">Explora PRI</a>
+        <div class="footer-col info-col">
+            <h3>CONTACTO & COORDENADAS</h3>
+            <div class="contacto-datos">
+                <p><strong>📍 Ubicación:</strong> Sede de Presencia Nacional — El Mar Pacífico, Tumaco, Nariño.</p>
+                <p><strong>✉️ Correo Oficial:</strong> <a href="mailto:programapri_bog@unal.edu.co" class="link-inline">programapri_bog@unal.edu.co</a></p>
+                <p><strong>📞 Soporte:</strong> +57 (318) 355-3653</p>
+                <p><strong>🌐 Redes:</strong> @ProgramaPRI_UNAL</p>
             </div>
+            <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
         </div>
-    </section>
+    </div>
+    <div class="footer-marea"></div>
+</footer>
 
-    <!-- ==================== SECCIÓN SOBRE EL PROGRAMA (Integrada e Intensa) ==================== -->
-    <section id="about" class="about-section">
-        <!-- Textura de fondo ingenieril -->
-        <div class="engineering-grid"></div>
+<script>
+// ===== CURSOR PERSONALIZADO =====
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animateCursor() {
+    if (dot) { dot.style.left = mx+'px'; dot.style.top = my+'px'; }
+    rx += (mx - rx) * 0.15;
+    ry += (my - ry) *.15;
+    if (ring) { ring.style.left = rx+'px'; ring.style.top = ry+'px'; }
+    requestAnimationFrame(animateCursor);
+}
+animateCursor();
+document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { if(ring) ring.style.transform = 'translate(-50%,-50%) scale(1.8)'; });
+    el.addEventListener('mouseleave', () => { if(ring) ring.style.transform = 'translate(-50%,-50%) scale(1)'; });
+});
 
-        <article class="maximalist-container">
-            <div class="mission-block">
-                <span class="subtitle">La Misión Técnica</span>
-                <h2>Inmersión STEM y Fuerza Psicoemocional</h2>
-                <p>Nuestra metodología cierra la brecha entre el colegio público y la facultad. Unimos matemáticas básicas, física y programación con pensamiento crítico para asegurar que no solo ingreses, sino que <span class="bold">lideres</span>.</p>
-            </div>
-            
-            <div class="founder-block">
-                <!-- Contenedor Maximalista para la foto -->
-                <div class="founder-image-wrapper">
-                    <img src="joseluis.jpg" alt="José Luis Castro" class="founder-img">
-                </div>
-                
-                <div class="founder-text">
-                    <h3>José Luis Castro Góngora</h3>
-                    <p>Líder del Proyecto PRI. Estudiante de Ingeniería Mecatrónica (UNAL) y orgullosamente Tumaqueño. Fundador apostando por la educación, conciencia social y empoderamiento de las siguientes generaciones.</p>
-                </div>
-            </div>
-            
-        </article>
-    </section>
-<!-- Script del Menú Móvil -->
-    <script>
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navLinks = document.querySelector('.nav-links');
+// ===== BARRA DE PROGRESO DE LECTURA =====
+const bar = document.getElementById('reading-bar');
+window.addEventListener('scroll', () => {
+    const max = document.body.scrollHeight - window.innerHeight;
+    const pct = (window.scrollY / max) * 100;
+    if(bar) bar.style.width = pct + '%';
+});
 
-        mobileMenu.addEventListener('click', () => {
-            mobileMenu.classList.toggle('is-active'); /* Transforma la hamburguesa en X */
-            navLinks.classList.toggle('active');      /* Desliza el menú inmersivo */
+// ===== NAVBAR SCROLL =====
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+    if(window.scrollY > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+});
+
+// ===== MENÚ HAMBURGUESA =====
+document.getElementById('mobile-menu').addEventListener('click', function(){
+    this.classList.toggle('is-active');
+    document.querySelector('.nav-links').classList.toggle('active');
+});
+
+// ===== SCROLL REVEAL =====
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if(e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+}, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+revealEls.forEach(el => observer.observe(el));
+
+// ===== CONTADOR ANIMADO DE ESTADÍSTICAS =====
+function animateCount(el, target, suffix, duration) {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+        start = Math.min(start + step, target);
+        el.textContent = (suffix === '%' ? '+' : '') + Math.floor(start) + suffix;
+        if(start >= target) clearInterval(timer);
+    }, 16);
+}
+const statsObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if(e.isIntersecting) {
+            const numEl = e.target.querySelector('.stat-number');
+            if(numEl && !numEl.dataset.counted) {
+                numEl.dataset.counted = 'true';
+                const target = parseInt(numEl.dataset.target);
+                const suffix = numEl.dataset.suffix || '';
+                animateCount(numEl, target, suffix, 1800);
+            }
+        }
+    });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
+
+// ===== PARTÍCULAS EN EL HERO =====
+(function() {
+    const canvas = document.getElementById('particles-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+    const particles = Array.from({length: 40}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.6,
+        r: Math.random() * 2 + 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -Math.random() * 0.4 - 0.1,
+        alpha: Math.random() * 0.5 + 0.1,
+    }));
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.x += p.vx; p.y += p.vy;
+            if(p.y < -10) { p.y = canvas.height * 0.6; p.x = Math.random() * canvas.width; }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(255,215,0,${p.alpha})`;
+            ctx.fill();
         });
-    </script>
+        requestAnimationFrame(loop);
+    }
+    loop();
+})();
+
+// ===== LANCHA ANIMADA =====
+(function() {
+    const boat = document.getElementById('animBoat');
+    if (!boat) return;
+    const DURATION = 26000;
+    let startTime = null;
+    function waveOscY(t) {
+        return Math.sin(t*0.00160+0.50)*6 + Math.sin(t*0.00390+1.30)*3.5 + Math.sin(t*0.00870+2.20)*1.8;
+    }
+    function waveRoll(t) {
+        const step = 40;
+        return (waveOscY(t+step) - waveOscY(t-step)) / (step*2) * 55;
+    }
+    function animate(ts) {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+        const progress = (elapsed % DURATION) / DURATION;
+        const xPct = progress * 70;
+        const oscY = waveOscY(elapsed);
+        const roll = waveRoll(elapsed);
+        const heroEl = boat.closest('.hero') || document.body;
+        const baseB = (heroEl.offsetHeight || window.innerHeight) * 0.132;
+        let alpha = 1;
+        if (progress > 0.96) alpha = Math.max(0, 1 - (progress - 0.96) / 0.04);
+        boat.style.left = xPct + '%';
+        boat.style.bottom = (baseB - oscY) + 'px';
+        boat.style.top = 'auto';
+        boat.style.opacity = alpha;
+        boat.style.transform = `scaleX(-1) rotate(${-roll}deg)`;
+        requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+})();
+
+// ===== SISTEMA DE PECES =====
+(function() {
+    const canvas = document.getElementById('fishCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width=window.innerWidth; canvas.height=canvas.parentElement.offsetHeight||window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    class Fish {
+        constructor() { this.reset(true); }
+        reset(init=false) {
+            const ch=canvas.height,cw=canvas.width;
+            this.dir=Math.random()>0.5?1:-1;
+            this.x=init?Math.random()*cw:(this.dir===1?-60:cw+60);
+            const st=ch*0.55,margin=(ch-st)*0.08;
+            this.yBase=st+margin+Math.random()*((ch-st)-margin*2);
+            this.y=this.yBase;
+            this.size=8+Math.random()*18; this.speed=(1.2+Math.random()*2)*this.dir;
+            this.wAmp=1.5+Math.random()*3; this.wFreq=0.008+Math.random()*0.012;
+            this.phase=Math.random()*Math.PI*2; this.alpha=0; this.t=0;
+            this.jumping=false; this.jumpTimer=200+Math.floor(Math.random()*400);
+            this.jumpPhase=0; this.targetAlpha=0.85+Math.random()*0.15;
+            this.surfaceY=ch*0.55;
+        }
+        update() {
+            this.t++; this.x+=this.speed*0.8;
+            const swimY=Math.sin(this.t*this.wFreq+this.phase)*this.wAmp;
+            if(!this.jumping) {
+                this.jumpTimer--; this.alpha=0;
+                if(this.jumpTimer<=0){this.jumping=true;this.jumpPhase=0;}
+                this.y=this.yBase+swimY;
+            } else {
+                this.jumpPhase+=0.12;
+                const jp=this.jumpPhase/Math.PI;
+                this.y=this.yBase-Math.abs(Math.sin(this.jumpPhase))*(40+this.size*2.5);
+                if(jp<0.15) this.alpha=Math.min(this.alpha+0.15,this.targetAlpha);
+                else if(jp>0.85) this.alpha=Math.max(this.alpha-0.15,0);
+                if(this.jumpPhase>=Math.PI){this.jumping=false;this.jumpTimer=300+Math.floor(Math.random()*500);this.alpha=0;this.y=this.yBase;}
+            }
+            const cw=canvas.width;
+            if(this.dir===1&&this.x>cw+60)this.reset();
+            if(this.dir===-1&&this.x<-60)this.reset();
+        }
+        draw() {
+            ctx.save(); ctx.globalAlpha=this.alpha;
+            ctx.translate(this.x,this.y);
+            if(this.dir===-1)ctx.scale(-1,1);
+            const s=this.size;
+            ctx.beginPath(); ctx.ellipse(0,0,s,s*0.45,0,0,Math.PI*2);
+            ctx.fillStyle='#dde8f0'; ctx.fill();
+            ctx.beginPath(); ctx.moveTo(-s,0); ctx.lineTo(-s*1.5,-s*0.45); ctx.lineTo(-s*1.5,s*0.45); ctx.closePath();
+            ctx.fillStyle='#b0c8d8'; ctx.fill();
+            ctx.beginPath(); ctx.arc(s*0.55,-s*0.08,s*0.14,0,Math.PI*2);
+            ctx.fillStyle='#000'; ctx.fill();
+            ctx.restore();
+        }
+    }
+    const fishes=Array.from({length:12},()=>new Fish());
+    function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);fishes.forEach(f=>{f.update();f.draw();});requestAnimationFrame(loop);}
+    loop();
+})();
+</script>
 </body>
 </html>

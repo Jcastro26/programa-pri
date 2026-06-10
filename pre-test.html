@@ -10,91 +10,399 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-pre-test">
+    <div class="scroll-progress" id="scroll-progress"></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
 
     <header class="navbar">
-        <div class="logo-container">
-            <a href="index.html" class="logo-link">
-               <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-                <h2>PROGRAMA-PRI</h2>
-            </a>
-        </div>
-        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Inicio</a></li>
-                <li><a href="ppri.html">Sobre PRI</a></li>
-                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
-                <li><a href="pre-test.html">PRE-TEST</a></li>
-                <li><a href="docentes.html">Docentes</a></li>
-                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div class="logo-container">
+        <a href="index.html" class="logo-link">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+            <h2>PROGRAMA-PRI</h2>
+        </a>
+    </div>
+    <div class="menu-toggle" id="mobile-menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="ppri.html">Sobre PRI</a></li>
+            <li><a href="preicfes.html">PRE-ICFES</a></li>
+            <li><a href="preicfes.html" class="active">PRE-TEST</a></li>
+            <li><a href="docentes.html">Docentes</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+        </ul>
+    </nav>
+</header>
 
-    <section class="module-header">
-        <div class="sky-background"></div>
-        <div class="module-title">
-            <h1>Simulador <span class="highlight">STEM</span></h1>
-            <p>Pensamiento Crítico, Matemáticas y Física. Supera tus límites.</p>
-        </div>
-    </section>
 
-    <section class="gamification-hud">
-        <div class="hud-container">
-            <div class="stat-box">
-                <span class="stat-label">Nivel Actual</span>
-                <span class="stat-value">Fase 1: Piloto</span>
+<main class="simulador-container">
+    
+    <div class="briefing-wrapper" id="briefing-panel">
+        <div class="briefing-card">
+            <div class="briefing-header">
+                <h2>MÓDULO DE ENTRENAMIENTO PRE-TEST</h2>
+                <p class="subtitle">PROGRAMA-PRI • SEDE TUMACO</p>
             </div>
-            <div class="stat-box timer-box">
-                <span class="stat-label">Tiempo Restante</span>
-                <span class="stat-value timer">45:00</span>
+            <div class="briefing-body">
+                <p>Estás a punto de iniciar una simulación táctica de razonamiento lógico. Una vez que inicies, el sistema activará los protocolos de tiempo.</p>
+                <ul class="briefing-rules">
+                    <li><strong>⚡ Tiempo Límite:</strong> 45 segundos por vector de pregunta.</li>
+                    <li><strong>❌ Sin Retorno:</strong> Una vez seleccionada una opción, la respuesta es definitiva.</li>
+                    <li><strong>🎯 Objetivo:</strong> Medir tu velocidad de respuesta bajo presión industrial.</li>
+                </ul>
             </div>
-            <div class="stat-box score-box">
-                <span class="stat-label">Puntos PRI</span>
-                <span class="stat-value score">1,250</span>
-            </div>
+            <button class="start-btn" onclick="iniciarSimulador()">
+                INICIAR OPERACIÓN PRE-TEST
+            </button>
         </div>
+    </div>
+
+    <div class="game-layout" id="game-area">
         
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 35%;"></div>
-        </div>
-        <p class="progress-text">Pregunta 7 de 20</p>
-    </section>
+        <section class="question-panel">
+            <div class="question-header">
+                <span class="question-number" id="render-number">PREGUNTA -- <span class="dim-text">/ --</span></span>
+                <span class="question-category" id="render-category">--</span>
+            </div>
 
-    <section class="quiz-section">
-        <div class="quiz-container">
-            
-            <div class="question-card">
-                <span class="question-category">Física Dinámica</span>
-                <h3 class="question-text">Si un bloque de 5kg se desliza por un plano inclinado sin fricción, ¿cuál de las siguientes fuerzas NO realiza trabajo sobre el bloque?</h3>
-                
-                <div class="options-grid">
-                    <button class="option-btn">
-                        <span class="option-letter">A</span> La fuerza de gravedad.
-                    </button>
-                    <button class="option-btn">
-                        <span class="option-letter">B</span> La fuerza normal.
-                    </button>
-                    <button class="option-btn">
-                        <span class="option-letter">C</span> La componente paralela del peso.
-                    </button>
-                    <button class="option-btn">
-                        <span class="option-letter">D</span> Ninguna de las anteriores.
-                    </button>
+            <div id="question-media-container" class="question-media-wrapper"></div>
+
+            <h2 class="question-text" id="render-text">Cargando vector de datos...</h2>
+
+            <div class="answers-grid" id="answers-container">
+                </div>
+
+            <button id="next-btn" class="next-question-btn" onclick="pasarSiguientePregunta()">
+                SIGUIENTE VECTOR PREGUNTA ➔
+            </button>
+        </section>
+
+        <aside class="control-sidebar">
+            <div class="tactical-timer-wrapper">
+                <div class="timer-label">TIEMPO DE EXTRACCIÓN</div>
+                <div class="timer-display" id="countdown-timer">00:45</div>
+                <div class="timer-bar"><div class="timer-progress" id="timer-progress"></div></div>
+            </div>
+
+            <div class="score-db-panel">
+                <div class="db-label">DATOS DEL OPERADOR</div>
+                <div class="db-stat-box">
+                    <span class="stat-title">PUNTOS ACUMULADOS</span>
+                    <span class="stat-value" id="user-points">0000</span>
+                </div>
+                <div class="db-status-light">
+                    <span class="ping-indicator"></span> CONEXIÓN BD: ACTIVA
                 </div>
             </div>
+        </aside>
+    </div>
 
-            <div class="quiz-actions">
-                <button class="btn-primary">Siguiente Desafío &#8594;</button>
+</main>
+
+<footer class="footer-masivo">
+    <div class="footer-grid">
+        <div class="footer-col brand-col">
+            <div class="footer-brand-wrapper">
+                <img src="logo.png" alt="Sello PROGRAMA-PRI" class="footer-logo">
+                <h2 class="massive-footer-text">PROGRAMA<span class="outline-text">-PRI</span></h2>
             </div>
-
         </div>
-    </section>
+        <div class="footer-col links-col">
+            <h3>ENLACES TÁCTICOS</h3>
+            <ul>
+                <li><a href="index.html">Base de Operaciones (Inicio)</a></li>
+                <li><a href="pre-test.html">Simulador de Entrenamiento Pre-Test</a></li>
+                <li><a href="productos.html">Bóveda de Recompensas (Catálogo)</a></li>
+                <li><a href="docentes.html">Módulo de Mentores & Docentes</a></li>
+                <li><a href="dashboard.html">Panel de Métricas e Impacto</a></li>
+            </ul>
+        </div>
+        <div class="footer-col info-col">
+            <h3>CONTACTO & COORDENADAS</h3>
+            <div class="contacto-datos">
+                <p><strong>📍 Ubicación:</strong> Sede de Presencia Nacional - El Mar Pacífico, Tumaco, Nariño.</p>
+                <p><strong>✉️ Correo Oficial:</strong> <a href="mailto:programapri_bog@unal.edu.co" class="link-inline">programapri_bog@unal.edu.co</a></p>
+                <p><strong>📞 Soporte de Plataforma:</strong> +57 (318) 355-3653</p>
+                <p><strong>🌐 Canales Digitales:</strong> @ProgramaPRI_UNAL</p>
+            </div>
+            <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+        </div>
+    </div>
+    <div class="footer-marea"></div>
+</footer>
 
+<script>
+    // =========================================================================
+    // 💥 BANCO DE PREGUNTAS (AQUÍ ES DONDE AGREGAS, MODIFICAS O ELIMINAS TODO) 💥
+    // =========================================================================
+    // Cada pregunta es un bloque entre llaves { }. 
+    // - Para IMAGENES: Pon tipoMedia: "imagen" y en urlMedia pon la ruta de tu foto (ej: "img/grafico1.png").
+    // - Para VIDEOS: Pon tipoMedia: "video" y en urlMedia el link embebido de YouTube (ej: "https://www.youtube.com/embed/VIDEO_ID").
+    // - Sin multimedia: Pon tipoMedia: "ninguno" y urlMedia: "".
+    const bancoPreguntas = [
+        {
+            categoria: "RAZONAMIENTO LÓGICO",
+            texto: "Si una máquina produce 50 piezas en 2 horas, ¿cuántas horas tomará producir 150 piezas usando 3 máquinas operando al mismo ritmo?",
+            tipoMedia: "ninguno", 
+            urlMedia: "",
+            opciones: [
+                { letra: "A", texto: "4 horas", correcta: false },
+                { letra: "B", texto: "2 horas", correcta: true },
+                { letra: "C", texto: "6 horas", correcta: false },
+                { letra: "D", texto: "1.5 horas", correcta: false }
+            ]
+        },
+        {
+            categoria: "COMPONENTES MATEMÁTICOS",
+            texto: "Analiza la siguiente gráfica de rendimiento de datos e identifica cuál es el punto de inflexión crítico del algoritmo.",
+            tipoMedia: "imagen", 
+            urlMedia: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80", // Puedes cambiar esto por una imagen local, ej: "imagenes/pregunta2.jpg"
+            opciones: [
+                { letra: "A", texto: "Intersección X = 0", correcta: false },
+                { letra: "B", texto: "Punto máximo relativo en T=45s", correcta: true },
+                { letra: "C", texto: "Decrecimiento exponencial", correcta: false },
+                { letra: "D", texto: "Ninguna de las anteriores", correcta: false }
+            ]
+        },
+        {
+            categoria: "ANÁLISIS DE SISTEMAS",
+            texto: "Mira atentamente el siguiente video explicativo sobre la automatización neumática marina en Tumaco y responde qué presión es óptima.",
+            tipoMedia: "video", 
+            urlMedia: "https://www.youtube.com/embed/dQw4w9WgXcQ", // LINK EMBEDDED OBLIGATORIO DE YOUTUBE (Debe llevar /embed/)
+            opciones: [
+                { letra: "A", texto: "12 Bar de presión continua", correcta: false },
+                { letra: "B", texto: "6 Bar regulados dinámicamente", correcta: true },
+                { letra: "C", texto: "9 Bar sin retorno", correcta: false },
+                { letra: "D", texto: "0 Bar (Estado pasivo)", correcta: false }
+            ]
+        }
+        // 💡 PARA AGREGAR LA PREGUNTA 4: Copias desde la llave anterior, pones una coma (,) aquí abajo y pegas el bloque.
+    ];
+
+    // Variables de Estado del Motor
+    let preguntaActualIndex = 0;
+    let tiempoRestante = 45; 
+    let intervalo; 
+    const tiempoTotalPorPregunta = 45;
+    let puntosAcumulados = 0;
+
+    // Captura de Elementos de la Interfaz
+    const briefingPanel = document.getElementById('briefing-panel');
+    const gameArea = document.getElementById('game-area');
+    const timerDisplay = document.getElementById('countdown-timer');
+    const timerProgress = document.getElementById('timer-progress');
+    const nextBtn = document.getElementById('next-btn');
+
+    // Inicializador del simulador (Clic en COMENZAR)
+    function iniciarSimulador() {
+        briefingPanel.style.setProperty('display', 'none', 'important');
+        gameArea.style.setProperty('display', 'grid', 'important');
+        
+        preguntaActualIndex = 0;
+        puntosAcumulados = 0;
+        document.getElementById('user-points').textContent = "0000";
+
+        // Carga la primera pregunta de la lista
+        cargarPregunta(preguntaActualIndex);
+    }
+
+    // Función Central encargada de pintar la pregunta en pantalla
+    function cargarPregunta(index) {
+        // Ocultar el botón de "Siguiente" inmediatamente al cargar una nueva pregunta
+        nextBtn.style.display = "none";
+
+        // Verificar si ya se terminaron las preguntas del banco
+        if (index >= bancoPreguntas.length) {
+            finalizarSimulación();
+            return;
+        }
+
+        const datosPregunta = bancoPreguntas[index];
+
+        // 1. Renderizar Encabezados y Textos
+        let numeroFormateado = (index + 1) < 10 ? '0' + (index + 1) : (index + 1);
+        let totalFormateado = bancoPreguntas.length < 10 ? '0' + bancoPreguntas.length : bancoPreguntas.length;
+        document.getElementById('render-number').innerHTML = `PREGUNTA ${numeroFormateado} <span class="dim-text">/ ${totalFormateado}</span>`;
+        document.getElementById('render-category').textContent = datosPregunta.categoria;
+        document.getElementById('render-text').textContent = datosPregunta.texto;
+
+        // 2. Control e inyección Multimedia (Imágenes / Videos)
+        const mediaContainer = document.getElementById('question-media-container');
+        mediaContainer.innerHTML = ""; // Limpiar multimedia anterior
+
+        if (datosPregunta.tipoMedia === "imagen") {
+            mediaContainer.innerHTML = `<img src="${datosPregunta.urlMedia}" alt="Gráfico de Soporte" class="media-img-elemento">`;
+            mediaContainer.style.display = "block";
+        } else if (datosPregunta.tipoMedia === "video") {
+            mediaContainer.innerHTML = `
+                <div class="video-responsive-wrapper">
+                    <iframe src="${datosPregunta.urlMedia}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>`;
+            mediaContainer.style.display = "block";
+        } else {
+            mediaContainer.style.display = "none"; // Ocultar si no lleva nada
+        }
+
+        // 3. Renderizar las Opciones de Respuesta en Botones Sólidos
+        const answersContainer = document.getElementById('answers-container');
+        answersContainer.innerHTML = ""; // Limpiar botones anteriores
+
+        datosPregunta.opciones.forEach(opcion => {
+            const btn = document.createElement('button');
+            btn.className = "answer-btn";
+            // Le pasamos al validador el botón presionado y si es la correcta (true/false)
+            btn.onclick = function() { verificarRespuesta(this, opcion.correcta); };
+            btn.innerHTML = `<span class="answer-letter">${opcion.letra}</span> ${opcion.texto}`;
+            answersContainer.appendChild(btn);
+        });
+
+        // 4. Resetear y Encender el Cronómetro para esta pregunta
+        tiempoRestante = tiempoTotalPorPregunta;
+        timerDisplay.classList.remove('timer-danger');
+        timerProgress.classList.remove('danger');
+        arrancarReloj();
+    }
+
+    // Cronómetro Activo
+    function arrancarReloj() {
+        clearInterval(intervalo); // Evitar duplicación de hilos
+        intervalo = setInterval(() => {
+            tiempoRestante--;
+            
+            let segundos = tiempoRestante < 10 ? '0' + tiempoRestante : tiempoRestante;
+            timerDisplay.textContent = `00:${segundos}`;
+            
+            let porcentaje = (tiempoRestante / tiempoTotalPorPregunta) * 100;
+            timerProgress.style.width = `${porcentaje}%`;
+
+            if (tiempoRestante <= 10) {
+                timerDisplay.classList.add('timer-danger');
+                timerProgress.classList.add('danger');
+            }
+
+            if (tiempoRestante <= 0) {
+                clearInterval(intervalo);
+                timerDisplay.textContent = "00:00";
+                bloquearBotones();
+                
+                // Si el tiempo se agota, mostramos la correcta automáticamente
+                revelarRespuestaCorrectaFaltante();
+                // REVELAR EL BOTÓN DE SIGUIENTE porque la acción de la pregunta acabó
+                nextBtn.style.display = "block";
+            }
+        }, 1000);
+    }
+
+    // Validador de Respuesta por Clic
+    function verificarRespuesta(botonSeleccionado, esCorrecta) {
+        clearInterval(intervalo); // Detener el reloj en seco
+        bloquearBotones(); // Impedir que el usuario cambie su respuesta
+
+        if (esCorrecta) {
+            botonSeleccionado.classList.add('correct');
+            puntosAcumulados += 150; // Sumar 150 puntos por acierto
+            // Dar formato de 4 dígitos (Ej: 0150)
+            document.getElementById('user-points').textContent = puntosAcumulados.toString().padStart(4, '0');
+        } else {
+            botonSeleccionado.classList.add('incorrect');
+            revelarRespuestaCorrectaFaltante(); // Mostrar visualmente cuál era la respuesta ganadora
+        }
+
+        // 🎯 LOGRADO: Mostrar el botón para avanzar de fase
+        nextBtn.style.display = "block";
+    }
+
+    // Función auxiliar para forzar la iluminación del botón correcto si fallas o expira el tiempo
+    function revelarRespuestaCorrectaFaltante() {
+        const botones = document.querySelectorAll('.answer-btn');
+        const actualesOpciones = bancoPreguntas[preguntaActualIndex].opciones;
+        
+        botones.forEach((btn, i) => {
+            if (actualesOpciones[i].correcta) {
+                btn.classList.add('correct');
+            }
+        });
+    }
+
+    function bloquearBotones() {
+        const botones = document.querySelectorAll('.answer-btn');
+        botones.forEach(btn => {
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+        });
+    }
+
+    // Handler asignado al botón "SIGUIENTE VECTOR PREGUNTA"
+    function pasarSiguientePregunta() {
+        preguntaActualIndex++;
+        cargarPregunta(preguntaActualIndex);
+    }
+
+    // Pantalla de Cierre cuando se agotan todas las preguntas del array
+    function finalizarSimulación() {
+        clearInterval(intervalo);
+        const panelPregunta = document.querySelector('.question-panel');
+        panelPregunta.innerHTML = `
+            <div style="text-align: center; padding: 2rem;">
+                <h2 style="font-family: var(--fuente-titulos); color: var(--oro-sol); font-size: 2.5rem; margin-bottom: 1rem;">OPERACIÓN COMPLETADA</h2>
+                <p style="font-family: var(--fuente-textos); color: #fff; font-size: 1.2rem; margin-bottom: 2rem;">Tu vector de rendimiento ha sido procesado con éxito en la base de datos del PROGRAMA-PRI.</p>
+                <div style="background: #111; border-left: 5px solid var(--marea-electrica); padding: 1.5rem; display: inline-block; min-width: 250px; margin-bottom: 2rem;">
+                    <span style="color: #888; display:block; font-size: 0.9rem;">PUNTAJE FINAL</span>
+                    <span style="font-family: var(--fuente-titulos); font-size: 3rem; color: var(--marea-electrica); font-weight: 900;">${puntosAcumulados.toString().padStart(4, '0')} PTS</span>
+                </div>
+                <br>
+                <button class="start-btn" onclick="location.reload()" style="max-width: 300px;">REINICIAR SIMULACIÓN</button>
+            </div>
+        `;
+    }
+</script>
+<script>
+    // 1. Barra de progreso que se llena al bajar
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        const progressBar = document.getElementById('scroll-progress');
+        if(progressBar) progressBar.style.width = scrolled + '%';
+    });
+
+    // 2. Menú Móvil
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    if(mobileMenu && navLinks) {
+        // Clonamos el botón para evitar que se dupliquen eventos viejos
+        const newMobileMenu = mobileMenu.cloneNode(true);
+        mobileMenu.parentNode.replaceChild(newMobileMenu, mobileMenu);
+        newMobileMenu.addEventListener('click', () => {
+            newMobileMenu.classList.toggle('is-active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // 3. Cursor Personalizado
+    const dot = document.querySelector('.cursor-dot');
+    const ring = document.querySelector('.cursor-ring');
+    if(dot && ring) {
+        document.addEventListener('mousemove', (e) => {
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            ring.style.left = e.clientX + 'px';
+            ring.style.top = e.clientY + 'px';
+        });
+
+        // 4. Hacer que el cursor crezca al tocar botones, enlaces y tarjetas
+        const clickables = document.querySelectorAll('a, button, .menu-toggle, .fase-card, .mini-prod-card, .docente-card, .prod-card, input');
+        clickables.forEach(item => {
+            item.addEventListener('mouseenter', () => { ring.style.transform = 'translate(-50%, -50%) scale(1.6)'; });
+            item.addEventListener('mouseleave', () => { ring.style.transform = 'translate(-50%, -50%) scale(1)'; });
+        });
+    }
+</script>
 </body>
 </html>

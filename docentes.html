@@ -10,33 +10,40 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="page-docentes">
+<div class="scroll-progress" id="scroll-progress"></div>
 
-    <header class="navbar">
-        <div class="logo-container">
-            <a href="index.html" class="logo-link">
-                <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-                <h2>PROGRAMA-PRI</h2>
-            </a>
-        </div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+  <!-- ==================== MENÚ DE NAVEGACIÓN MAXIMALISTA ==================== -->
+<header class="navbar">
+    <div class="logo-container">
+        <a href="index.html" class="logo-link">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+            <h2>PROGRAMA-PRI</h2>
+        </a>
+    </div>
+    
+    <!-- BOTÓN HAMBURGUESA -->
+    <div class="menu-toggle" id="mobile-menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+    </div>
 
-        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Inicio</a></li>
-                <li><a href="ppri.html">Sobre PRI</a></li>
-                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
-                <li><a href="pre-test.html">PRE-TEST</a></li>
-                <li><a href="docentes.html">Docentes</a></li>
-                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
-            </ul>
-        </nav>
-    </header>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="ppri.html">Sobre PRI</a></li>
+            <li><a href="preicfes.html">PRE-ICFES</a></li>
+            <li><a href="pre-test.html">PRE-TEST</a></li>
+            <li><a href="docentes.html" class="active">Docentes</a></li>
+            <!-- NUEVA SECCIÓN DE PRODUCTOS CON IMPACTO -->
+            <!-- NUEVO CÓDIGO (SIN EL EFECTO) -->
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+        </ul>
+    </nav>
+</header>
 
     <section class="module-header">
         <div class="sky-background"></div>
@@ -97,8 +104,88 @@
                 </div>
             </div>
 
+        </div>
+       </div> <!-- Cierre de mentors-grid -->
+    </section> <!-- Cierre de mentors-section -->
+
+    <!-- Script del Menú Móvil Corregido -->
+    <script>
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+
         mobileMenu.addEventListener('click', () => {
-            mobileMenu.classList.toggle('is-active'); /* Transforma la hamburguesa en X */
-            navLinks.classList.toggle('active');      /* Desliza el menú inmersivo */
+            mobileMenu.classList.toggle('is-active'); 
+            navLinks.classList.toggle('active');      
         });
     </script>
+       <footer class="footer-masivo">
+    <div class="footer-grid">
+        
+        <div class="footer-col brand-col">
+            <div class="footer-brand-wrapper">
+                <img src="logo.png" alt="Sello PROGRAMA-PRI" class="footer-logo">
+                
+                <h2 class="massive-footer-text">
+                    PROGRAMA<span class="outline-text">-PRI</span>
+                </h2>
+            </div>
+        </div>
+        
+        <div class="footer-col links-col">
+            <h3>ENLACES TÁCTICOS</h3>
+            <ul>
+                <li><a href="index.html">Base de Operaciones (Inicio)</a></li>
+                <li><a href="pre-test.html">Simulador de Entrenamiento Pre-Test</a></li>
+                <li><a href="productos.html">Bóveda de Recompensas (Catálogo)</a></li>
+                <li><a href="docentes.html">Módulo de Mentores & Docentes</a></li>
+                <li><a href="dashboard.html">Panel de Métricas e Impacto</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col info-col">
+            <h3>CONTACTO & COORDENADAS</h3>
+            <div class="contacto-datos">
+                <p><strong>📍 Ubicación:</strong> Sede de Presencia Nacional - El Mar Pacífico, Tumaco, Nariño.</p>
+                <p><strong>✉️ Correo Oficial:</strong> <a href="mailto:programapri_bog@unal.edu.co" class="link-inline">programapri_bog@unal.edu.co</a></p>
+                <p><strong>📞 Soporte de Plataforma:</strong> +57 (318) 355-3653</p>
+                <p><strong>🌐 Canales Digitales:</strong> @ProgramaPRI_UNAL</p>
+            </div>
+            <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+        </div>
+    </div>
+    
+    <div class="footer-marea"></div>
+</footer>
+<script>
+    // 1. Barra de progreso que se llena al bajar
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        const progressBar = document.getElementById('scroll-progress');
+        if(progressBar) progressBar.style.width = scrolled + '%';
+    });
+
+   
+
+    // 3. Cursor Personalizado
+    const dot = document.querySelector('.cursor-dot');
+    const ring = document.querySelector('.cursor-ring');
+    if(dot && ring) {
+        document.addEventListener('mousemove', (e) => {
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            ring.style.left = e.clientX + 'px';
+            ring.style.top = e.clientY + 'px';
+        });
+
+        // 4. Hacer que el cursor crezca al tocar botones, enlaces y tarjetas
+        const clickables = document.querySelectorAll('a, button, .menu-toggle, .fase-card, .mini-prod-card, .docente-card, .prod-card, input');
+        clickables.forEach(item => {
+            item.addEventListener('mouseenter', () => { ring.style.transform = 'translate(-50%, -50%) scale(1.6)'; });
+            item.addEventListener('mouseleave', () => { ring.style.transform = 'translate(-50%, -50%) scale(1)'; });
+        });
+    }
+</script>
+</body>
+</html>
