@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Capacitación | PROGRAMA-PRI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --azul-deep: #021a36; --azul-panel: #062040; --azul-card: #041830;
+            --naranja: #ff5e00; --oro: #ffd700; --blanco: #f0f4f8;
+            --teal: #38bdf8; --verde: #22c55e; --rojo: #ef4444;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lora', serif; background: var(--azul-deep); color: var(--blanco); min-height: 100vh; display: flex; flex-direction: column; }
+        body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(255,94,0,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,94,0,0.025) 1px, transparent 1px); background-size: 48px 48px; }
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; z-index: 9000; background: linear-gradient(90deg, var(--naranja), var(--oro)); width: 0%; transition: width 0.1s linear; }
+        .cursor-dot { width:8px;height:8px;background:var(--naranja);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%); }
+        .cursor-ring { width:32px;height:32px;border:2px solid rgba(255,94,0,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.18s ease; }
+
+        .main-wrapper { flex: 1; position: relative; z-index: 1; }
+
+        /* HEADER */
+        .cap-header { position: sticky; top: 0; z-index: 500; background: rgba(2,26,54,0.95); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0.9rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .header-brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .header-brand img { height: 36px; width: auto; object-fit: contain; }
+        .header-brand h2 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--blanco); margin: 0; }
+        .header-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        .header-user-name { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: rgba(240,244,248,0.5); }
+        .btn-volver { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(240,244,248,0.4); background: none; border: 1px solid rgba(255,255,255,0.1); padding: 0.45rem 0.9rem; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+        .btn-volver:hover { color: var(--blanco); border-color: rgba(255,255,255,0.25); }
+
+        /* HERO */
+        .cap-hero { text-align: center; padding: 3.5rem 2rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .cap-hero .eyebrow { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.75rem; }
+        .cap-hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem,5vw,3rem); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; line-height: 1.1; margin-bottom: 0.75rem; }
+        .cap-hero h1 span { color: var(--naranja); }
+        .cap-hero p { color: rgba(240,244,248,0.5); font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+
+        /* LAYOUT */
+        .cap-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+        @media(max-width:768px) { .cap-layout { grid-template-columns: 1fr; } }
+
+        /* PANEL */
+        .cap-panel { background: var(--azul-panel); border: 1px solid rgba(255,255,255,0.07); padding: 2rem; }
+        .cap-panel-title { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: rgba(240,244,248,0.35); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .cap-panel h2 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 900; color: var(--blanco); margin-bottom: 1.5rem; }
+
+        /* FORM */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(240,244,248,0.5); margin-bottom: 0.5rem; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea { width: 100%; background: rgba(2,26,54,0.8); border: 1px solid rgba(255,255,255,0.1); color: var(--blanco); font-family: 'Lora', serif; font-size: 0.85rem; padding: 0.75rem 1rem; transition: border-color 0.2s; outline: none; }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { border-color: var(--naranja); }
+        .form-group select option { background: #021a36; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .btn-submit { width: 100%; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; padding: 1rem; cursor: pointer; transition: background 0.2s; margin-top: 0.5rem; }
+        .btn-submit:hover { background: #e05200; }
+        .btn-submit:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.3); cursor: not-allowed; }
+
+        /* MÓDULOS DISPONIBLES */
+        .modulo-card { background: var(--azul-card); border: 1px solid rgba(255,255,255,0.06); padding: 1.25rem; margin-bottom: 0.75rem; cursor: pointer; transition: border-color 0.2s; position: relative; }
+        .modulo-card:hover { border-color: rgba(56,189,248,0.35); }
+        .modulo-card.seleccionado { border-color: var(--naranja); background: rgba(255,94,0,0.06); }
+        .modulo-card.seleccionado::before { content: '✓'; position: absolute; top: 0.75rem; right: 1rem; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 900; color: var(--naranja); }
+        .modulo-area { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); margin-bottom: 0.3rem; }
+        .modulo-nombre { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; font-weight: 900; color: var(--blanco); margin-bottom: 0.25rem; }
+        .modulo-desc { font-size: 0.75rem; color: rgba(240,244,248,0.4); line-height: 1.4; }
+        .modulo-meta { display: flex; gap: 1rem; margin-top: 0.6rem; }
+        .modulo-meta span { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; color: rgba(240,244,248,0.3); letter-spacing: 1px; }
+
+        /* HISTORIAL */
+        .sol-item { background: var(--azul-card); border: 1px solid rgba(255,255,255,0.06); border-left: 3px solid var(--teal); padding: 1rem 1.25rem; margin-bottom: 0.75rem; }
+        .sol-item.pendiente { border-left-color: var(--oro); }
+        .sol-item.aceptada { border-left-color: var(--verde); }
+        .sol-item.rechazada { border-left-color: var(--rojo); }
+        .sol-tema { font-family: 'Montserrat', sans-serif; font-size: 0.8rem; font-weight: 900; color: var(--blanco); margin-bottom: 0.3rem; }
+        .sol-meta { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 1px; color: rgba(240,244,248,0.3); }
+        .sol-estado { display: inline-block; font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 0.2rem 0.6rem; margin-top: 0.4rem; }
+        .sol-estado.pendiente { background: rgba(255,215,0,0.1); color: var(--oro); }
+        .sol-estado.aceptada { background: rgba(34,197,94,0.1); color: var(--verde); }
+        .sol-estado.rechazada { background: rgba(239,68,68,0.1); color: var(--rojo); }
+
+        /* ALERTA SIN SESION */
+        .alert-sesion { background: rgba(255,94,0,0.08); border: 1px solid rgba(255,94,0,0.25); padding: 1rem 2rem; margin: 1.5rem 2rem 0; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: rgba(240,244,248,0.6); display: none; }
+        .alert-sesion a { color: var(--naranja); }
+
+        /* TOAST */
+        #toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9000; display: flex; flex-direction: column; gap: 0.75rem; max-width: 360px; width: 100%; }
+        .toast { padding: 1.1rem 1.4rem; border-left: 4px solid; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; box-shadow: 6px 6px 0 rgba(0,0,0,0.4); transition: all 0.3s ease; transform: translateX(30px); opacity: 0; background: var(--azul-panel); position: relative; }
+        .toast.visible { transform: translateX(0); opacity: 1; }
+        .toast.success { border-color: #22c55e; color: #86efac; }
+        .toast.error { border-color: #ef4444; color: #fca5a5; }
+        .toast.info { border-color: var(--teal); color: var(--teal); }
+        .toast .t-titulo { font-size: 0.8rem; color: var(--blanco); margin-bottom: 0.2rem; }
+        .toast .t-icono { font-size: 1.2rem; display: block; margin-bottom: 0.2rem; }
+    </style>
+</head>
+<body>
+<div id="scroll-progress"></div>
+<div class="cursor-dot" id="cdot"></div>
+<div class="cursor-ring" id="cring"></div>
+<div id="toast-container"></div>
+
+<div class="main-wrapper">
+
+    <header class="cap-header">
+        <a href="index.html" class="header-brand">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" onerror="this.outerHTML='<span style=\'font-family:Montserrat,sans-serif;font-weight:900;font-size:1.2rem;color:#ff5e00;\'>PRI</span>'">
+            <h2>PROGRAMA-PRI</h2>
+        </a>
+        <div class="header-right">
+            <span class="header-user-name" id="header-user-name"></span>
+            <a href="dashboard.html" class="btn-volver">← Volver al Panel</a>
+        </div>
+    </header>
+
+    <div class="alert-sesion" id="alert-sesion">
+        ⚠️ Debes <a href="login.html">iniciar sesión</a> para solicitar una capacitación.
+    </div>
+
+    <div class="cap-hero">
+        <span class="eyebrow">Programa PRI · Red de Apoyo</span>
+        <h1>Solicitar <span>Capacitación</span></h1>
+        <p>Elige un módulo temático y solicita una sesión con un voluntario universitario del programa. Recibirás confirmación directa.</p>
+    </div>
+
+    <div class="cap-layout">
+
+        <!-- IZQUIERDA: Módulos disponibles + formulario -->
+        <div>
+            <div class="cap-panel" style="margin-bottom:1.5rem;">
+                <p class="cap-panel-title">📚 Módulos Disponibles</p>
+                <p style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.35);margin-bottom:1rem;">Haz clic en un módulo para seleccionarlo</p>
+                <div id="modulos-list">
+                    <div class="modulo-card" data-id="mat-basica" onclick="seleccionarModulo(this)">
+                        <p class="modulo-area">Matemáticas</p>
+                        <p class="modulo-nombre">Matemáticas Básicas ICFES</p>
+                        <p class="modulo-desc">Álgebra, geometría, estadística y razonamiento numérico enfocado en el examen.</p>
+                        <div class="modulo-meta"><span>⏱ 1–2 horas</span><span>🎯 Grados 9–11</span></div>
+                    </div>
+                    <div class="modulo-card" data-id="lec-critica" onclick="seleccionarModulo(this)">
+                        <p class="modulo-area">Lenguaje</p>
+                        <p class="modulo-nombre">Lectura Crítica y Comprensión</p>
+                        <p class="modulo-desc">Análisis de textos, inferencias, estructura argumentativa y vocabulario técnico.</p>
+                        <div class="modulo-meta"><span>⏱ 1–2 horas</span><span>🎯 Todos los grados</span></div>
+                    </div>
+                    <div class="modulo-card" data-id="ciencias" onclick="seleccionarModulo(this)">
+                        <p class="modulo-area">Ciencias</p>
+                        <p class="modulo-nombre">Ciencias Naturales Integradas</p>
+                        <p class="modulo-desc">Física, química y biología con ejercicios tipo ICFES. Experimentos conceptuales.</p>
+                        <div class="modulo-meta"><span>⏱ 2 horas</span><span>🎯 Grados 10–11</span></div>
+                    </div>
+                    <div class="modulo-card" data-id="soc-civica" onclick="seleccionarModulo(this)">
+                        <p class="modulo-area">Sociales</p>
+                        <p class="modulo-nombre">Ciencias Sociales y Cívica</p>
+                        <p class="modulo-desc">Historia, geografía, economía y constitución política de Colombia.</p>
+                        <div class="modulo-meta"><span>⏱ 1 hora</span><span>🎯 Grados 9–11</span></div>
+                    </div>
+                    <div class="modulo-card" data-id="ingles" onclick="seleccionarModulo(this)">
+                        <p class="modulo-area">Inglés</p>
+                        <p class="modulo-nombre">Inglés Funcional ICFES</p>
+                        <p class="modulo-desc">Comprensión de lectura en inglés, vocabulario contextual y gramática aplicada.</p>
+                        <div class="modulo-meta"><span>⏱ 1 hora</span><span>🎯 Grados 10–11</span></div>
+                    </div>
+                    <div class="modulo-card" data-id="orientacion" onclick="seleccionarModulo(this)">
+                        <p class="modulo-area">Orientación</p>
+                        <p class="modulo-nombre">Orientación Vocacional Universitaria</p>
+                        <p class="modulo-desc">Carreras disponibles en la UNAL, proceso de admisión, puntajes y becas.</p>
+                        <div class="modulo-meta"><span>⏱ 1–1.5 horas</span><span>🎯 Grado 11 / Egresados</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMULARIO -->
+            <div class="cap-panel" id="panel-form">
+                <p class="cap-panel-title">✍️ Datos de la Solicitud</p>
+                <div class="form-group">
+                    <label>Módulo seleccionado</label>
+                    <input type="text" id="form-modulo" readonly placeholder="Selecciona un módulo arriba..." style="cursor:default;color:rgba(240,244,248,0.5);">
+                </div>
+                <div class="form-group">
+                    <label>Fecha preferida</label>
+                    <input type="date" id="form-fecha" min="">
+                </div>
+                <div class="form-group">
+                    <label>Horario preferido</label>
+                    <select id="form-horario">
+                        <option value="">Selecciona un horario...</option>
+                        <option value="mañana">Mañana (7am – 12pm)</option>
+                        <option value="tarde">Tarde (12pm – 5pm)</option>
+                        <option value="noche">Noche (5pm – 8pm)</option>
+                        <option value="finde">Fin de semana (flexible)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Modalidad</label>
+                    <select id="form-modalidad">
+                        <option value="virtual">Virtual (videollamada)</option>
+                        <option value="presencial">Presencial (sede Tumaco)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notas adicionales (opcional)</label>
+                    <textarea id="form-notas" placeholder="Temas específicos que quieres repasar, dudas puntuales, etc."></textarea>
+                </div>
+                <button class="btn-submit" id="btn-solicitar" onclick="enviarSolicitud()">📩 Enviar Solicitud</button>
+            </div>
+        </div>
+
+        <!-- DERECHA: Mis solicitudes -->
+        <div>
+            <div class="cap-panel">
+                <p class="cap-panel-title">📋 Mis Solicitudes</p>
+                <div id="mis-solicitudes">
+                    <p style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.3);text-align:center;padding:2rem 0;">Cargando solicitudes...</p>
+                </div>
+            </div>
+
+            <!-- INFO BOX -->
+            <div class="cap-panel" style="margin-top:1.5rem;border-left:3px solid var(--teal);">
+                <p class="cap-panel-title">ℹ️ ¿Cómo Funciona?</p>
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+                    <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+                        <span style="font-size:1.2rem;flex-shrink:0;">1️⃣</span>
+                        <div>
+                            <p style="font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;">Elige y solicita</p>
+                            <p style="font-size:0.78rem;color:rgba(240,244,248,0.45);line-height:1.5;">Selecciona el módulo que necesitas reforzar y completa el formulario.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+                        <span style="font-size:1.2rem;flex-shrink:0;">2️⃣</span>
+                        <div>
+                            <p style="font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;">Un voluntario te contacta</p>
+                            <p style="font-size:0.78rem;color:rgba(240,244,248,0.45);line-height:1.5;">Un voluntario universitario revisará tu solicitud y te enviará un mensaje de confirmación.</p>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:0.75rem;align-items:flex-start;">
+                        <span style="font-size:1.2rem;flex-shrink:0;">3️⃣</span>
+                        <div>
+                            <p style="font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;">Sesión y puntos</p>
+                            <p style="font-size:0.78rem;color:rgba(240,244,248,0.45);line-height:1.5;">Completa la sesión y gana <strong style="color:var(--oro);">+100 PTS</strong> al confirmar tu asistencia.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA<span class="outline-text-footer">-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="dashboard.html">Mi Panel</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Tumaco, Nariño</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">programapri_bog@unal.edu.co</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+    getFirestore, collection, addDoc, getDocs, query,
+    where, orderBy, serverTimestamp, doc, getDoc, updateDoc, increment
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+    authDomain: "proyecto-pri-81fd5.firebaseapp.com",
+    projectId: "proyecto-pri-81fd5",
+    storageBucket: "proyecto-pri-81fd5.firebasestorage.app",
+    messagingSenderId: "876748063075",
+    appId: "1:876748063075:web:6e075f73a385bb804e5356"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const sesionRaw = localStorage.getItem('usuario_sesion_activa');
+let usuario = sesionRaw ? JSON.parse(sesionRaw) : null;
+
+// ── Toast ──────────────────────────────────────────────────────────
+function toast(titulo, msg, icono, tipo) {
+    const cont = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = `toast ${tipo||'info'}`;
+    el.innerHTML = `<span class="t-icono">${icono||'ℹ️'}</span><div class="t-titulo">${titulo}</div><div>${msg||''}</div>`;
+    cont.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), 10);
+    setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 300); }, 5000);
+}
+
+// ── Sin sesión ────────────────────────────────────────────────────
+if (!usuario) {
+    document.getElementById('alert-sesion').style.display = 'block';
+    document.getElementById('btn-solicitar').disabled = true;
+    document.getElementById('mis-solicitudes').innerHTML =
+        '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.3);text-align:center;padding:2rem 0;"><a href="login.html" style="color:var(--naranja);">Inicia sesión</a> para ver tus solicitudes.</p>';
+} else {
+    // Refrescar desde Firestore
+    if (usuario.uid && usuario.uid !== 'admin-jcastrogo') {
+        getDoc(doc(db, "usuarios", usuario.uid)).then(snap => {
+            if (snap.exists()) {
+                usuario = { ...usuario, ...snap.data() };
+                localStorage.setItem('usuario_sesion_activa', JSON.stringify(usuario));
+            }
+            iniciar();
+        }).catch(() => iniciar());
+    } else {
+        iniciar();
+    }
+}
+
+function iniciar() {
+    const el = document.getElementById('header-user-name');
+    if (el) el.textContent = usuario.nombre || '';
+    // Fecha mínima = hoy
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('form-fecha').min = hoy;
+    document.getElementById('form-fecha').value = hoy;
+    cargarMisSolicitudes();
+}
+
+// ── Selección de módulo ────────────────────────────────────────────
+let moduloSeleccionadoId = '';
+let moduloSeleccionadoNombre = '';
+
+window.seleccionarModulo = function(card) {
+    document.querySelectorAll('.modulo-card').forEach(c => c.classList.remove('seleccionado'));
+    card.classList.add('seleccionado');
+    moduloSeleccionadoId = card.dataset.id;
+    moduloSeleccionadoNombre = card.querySelector('.modulo-nombre').textContent;
+    document.getElementById('form-modulo').value = moduloSeleccionadoNombre;
+    document.getElementById('panel-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+// ── Enviar solicitud ───────────────────────────────────────────────
+window.enviarSolicitud = async function() {
+    if (!usuario) { window.location.href = 'login.html'; return; }
+    if (!moduloSeleccionadoId) {
+        toast('Selecciona un módulo', 'Haz clic en el módulo que deseas estudiar.', '⚠️', 'info');
+        return;
+    }
+    const fecha = document.getElementById('form-fecha').value;
+    const horario = document.getElementById('form-horario').value;
+    const modalidad = document.getElementById('form-modalidad').value;
+    const notas = document.getElementById('form-notas').value.trim();
+
+    if (!fecha) { toast('Falta la fecha', 'Selecciona una fecha preferida.', '⚠️', 'info'); return; }
+    if (!horario) { toast('Falta el horario', 'Selecciona un horario.', '⚠️', 'info'); return; }
+
+    const btn = document.getElementById('btn-solicitar');
+    btn.textContent = 'Enviando...'; btn.disabled = true;
+
+    try {
+        await addDoc(collection(db, "solicitudes_capacitacion"), {
+            uid: usuario.uid || '',
+            nombre: usuario.nombre || '',
+            correo: usuario.correo || '',
+            colegio: usuario.colegio || '',
+            grado: usuario.grado || '',
+            moduloId: moduloSeleccionadoId,
+            modulo: moduloSeleccionadoNombre,
+            fecha,
+            horario,
+            modalidad,
+            notas,
+            estado: 'pendiente',
+            timestamp: serverTimestamp()
+        });
+
+        toast('¡Solicitud enviada!', 'Un voluntario revisará tu solicitud y te contactará pronto.', '✅', 'success');
+        document.getElementById('form-notas').value = '';
+        document.querySelectorAll('.modulo-card').forEach(c => c.classList.remove('seleccionado'));
+        document.getElementById('form-modulo').value = '';
+        moduloSeleccionadoId = ''; moduloSeleccionadoNombre = '';
+        cargarMisSolicitudes();
+    } catch(err) {
+        toast('Error al enviar', err.message, '❌', 'error');
+    }
+    btn.textContent = '📩 Enviar Solicitud'; btn.disabled = false;
+};
+
+// ── Mis solicitudes ────────────────────────────────────────────────
+async function cargarMisSolicitudes() {
+    const cont = document.getElementById('mis-solicitudes');
+    if (!usuario || !usuario.uid) return;
+    try {
+        const snap = await getDocs(
+            query(collection(db, "solicitudes_capacitacion"),
+            where("uid", "==", usuario.uid),
+            orderBy("timestamp", "desc"))
+        );
+        if (snap.empty) {
+            cont.innerHTML = '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.3);text-align:center;padding:2rem 0;">Aún no has enviado ninguna solicitud.</p>';
+            return;
+        }
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const s = d.data();
+            const fecha = s.fecha || '—';
+            const estado = s.estado || 'pendiente';
+            const hora = s.timestamp ? new Date(s.timestamp.toDate()).toLocaleDateString('es-CO') : '';
+            cont.insertAdjacentHTML('beforeend', `
+                <div class="sol-item ${estado}">
+                    <p class="sol-tema">${s.modulo || '—'}</p>
+                    <p class="sol-meta">📅 ${fecha} · ${s.horario||''} · ${s.modalidad||''}</p>
+                    ${s.notas ? `<p style="font-size:0.75rem;color:rgba(240,244,248,0.4);margin-top:0.3rem;">"${s.notas}"</p>` : ''}
+                    <span class="sol-estado ${estado}">${estado === 'pendiente' ? '⏳ Pendiente' : estado === 'aceptada' ? '✅ Aceptada' : '❌ Rechazada'}</span>
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.55rem;color:rgba(240,244,248,0.2);margin-left:0.75rem;">${hora}</span>
+                </div>`);
+        });
+    } catch(err) {
+        cont.innerHTML = '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:1.5rem 0;">No se pudieron cargar las solicitudes.</p>';
+    }
+}
+</script>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const max = document.body.scrollHeight - window.innerHeight;
+        document.getElementById('scroll-progress').style.width = (window.scrollY / max * 100) + '%';
+    });
+    const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
+    let rx=0,ry=0,mx=0,my=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function tick(){ if(dot){dot.style.left=mx+'px';dot.style.top=my+'px';} rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14; if(ring){ring.style.left=rx+'px';ring.style.top=ry+'px';} requestAnimationFrame(tick); })();
+    document.addEventListener('mouseover', e => { if(e.target.closest('a,button')) ring.style.transform='translate(-50%,-50%) scale(1.6)'; });
+    document.addEventListener('mouseout', e => { if(e.target.closest('a,button')) ring.style.transform='translate(-50%,-50%) scale(1)'; });
+</script>
+</body>
+</html>

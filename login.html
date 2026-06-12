@@ -4,71 +4,381 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso Total | PROGRAMA-PRI</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --azul-deep: #021a36; --azul-medio: #031f42; --azul-panel: #062040;
+            --naranja: #ff5e00; --naranja-hover: #e05200; --oro: #ffd700;
+            --blanco: #f0f4f8; --teal: #38bdf8; --verde: #22c55e;
+            --fuente-titulo: 'Montserrat', sans-serif; --fuente-texto: 'Lora', serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--fuente-texto);
+            background-color: var(--azul-deep);
+            background-image: radial-gradient(ellipse 120% 60% at 50% -10%, rgba(255,94,0,0.07) 0%, transparent 70%);
+            color: var(--blanco); min-height: 100vh;
+            display: flex; flex-direction: column; align-items: stretch;
+            position: relative; overflow-x: hidden;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background-image: linear-gradient(rgba(255,94,0,0.03) 1px,transparent 1px), linear-gradient(90deg,rgba(255,94,0,0.03) 1px,transparent 1px);
+            background-size: 48px 48px; pointer-events: none; z-index: 0;
+        }
+        .cursor-dot { width:8px;height:8px;background:var(--naranja);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%); }
+        .cursor-ring { width:32px;height:32px;border:2px solid rgba(255,94,0,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.18s ease,background-color 0.18s ease; }
+        .back-link { position:fixed;top:1.5rem;left:1.5rem;font-family:var(--fuente-titulo);font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.5);text-decoration:none;z-index:10;transition:color 0.2s ease;display:flex;align-items:center;gap:0.5rem; }
+        .back-link:hover { color:var(--naranja); }
+        .back-link::before { content:'←';font-size:1rem; }
+
+        /* ALERTAS PRI */
+        #contenedor-alertas { position:fixed;top:1.5rem;right:1.5rem;z-index:9000;display:flex;flex-direction:column;gap:0.75rem;max-width:360px;width:100%; }
+        .alerta-pri { background:var(--azul-panel);border-left:4px solid;padding:1.1rem 1.25rem;font-family:var(--fuente-titulo);font-size:0.72rem;font-weight:700;letter-spacing:0.5px;box-shadow:6px 6px 0 rgba(0,0,0,0.5);transition:all 0.3s ease;transform:translateX(30px);opacity:0;position:relative; }
+        .alerta-pri.visible { transform:translateX(0);opacity:1; }
+        .alerta-pri.success { border-color:#22c55e;color:#86efac; }
+        .alerta-pri.error { border-color:#ef4444;color:#fca5a5; }
+        .alerta-pri.info { border-color:var(--teal);color:var(--teal); }
+        .alerta-pri .alerta-icono { font-size:1.3rem;display:block;margin-bottom:0.3rem; }
+        .alerta-pri .alerta-titulo { font-size:0.8rem;color:var(--blanco);margin-bottom:0.2rem; }
+        .alerta-pri .alerta-cerrar { position:absolute;top:0.5rem;right:0.75rem;background:none;border:none;color:rgba(240,244,248,0.3);font-size:1rem;cursor:pointer;transition:color 0.2s; }
+        .alerta-pri .alerta-cerrar:hover { color:var(--blanco); }
+
+        .login-main { flex:1; display:flex; align-items:center; justify-content:center; padding:2rem 1.5rem; }
+        .login-wrapper { width:100%;max-width:560px;position:relative;z-index:1; }
+        .brand-header { text-align:center;margin-bottom:2.5rem; }
+        .brand-icon { display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:linear-gradient(135deg,var(--naranja),#cc4400);font-family:var(--fuente-titulo);font-weight:900;font-size:1.3rem;color:var(--azul-deep);border:3px solid var(--azul-deep);box-shadow:5px 5px 0 var(--naranja);margin-bottom:1.2rem;overflow:hidden;border-radius:50%; }
+        .brand-icon img { width:100%;height:100%;object-fit:cover;border-radius:50%; }
+        .brand-icon img { width:100%;height:100%;object-fit:cover; }
+        .brand-title { font-family:var(--fuente-titulo);font-size:1.8rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--blanco);line-height:1; }
+        .brand-title span { color:var(--naranja); }
+        .brand-tagline { font-family:var(--fuente-titulo);font-size:0.65rem;letter-spacing:4px;color:var(--teal);text-transform:uppercase;margin-top:0.5rem; }
+        .card { background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:2.5rem;box-shadow:10px 10px 0 rgba(0,0,0,0.5);position:relative; }
+        .card::before { content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--naranja),var(--oro),var(--teal)); }
+        .mode-tabs { display:flex;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:2rem; }
+        .mode-tab { flex:1;padding:0.75rem 1rem;font-family:var(--fuente-titulo);font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all 0.25s ease;margin-bottom:-1px; }
+        .mode-tab.active { color:var(--blanco);border-bottom-color:var(--naranja); }
+        .mode-tab:hover:not(.active) { color:rgba(240,244,248,0.7); }
+        .form-grid { display:grid;grid-template-columns:1fr 1fr;gap:1rem 1.2rem; }
+        .form-grid.full { grid-template-columns:1fr; }
+        .field-group { display:flex;flex-direction:column;gap:0.4rem; }
+        .field-group.span-2 { grid-column:span 2; }
+        label { font-family:var(--fuente-titulo);font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.5); }
+        input, select { background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:var(--fuente-texto);font-size:0.9rem;padding:0.75rem 1rem;outline:none;transition:border-color 0.2s ease,box-shadow 0.2s ease;width:100%;-webkit-appearance:none; }
+        input::placeholder { color:rgba(240,244,248,0.25); }
+        input:focus, select:focus { border-color:var(--naranja);box-shadow:0 0 0 3px rgba(255,94,0,0.1); }
+        select option { background:var(--azul-deep); }
+        .section-divider { display:flex;align-items:center;gap:1rem;margin:1.5rem 0 1rem; }
+        .section-divider::before,.section-divider::after { content:'';flex:1;height:1px;background:rgba(255,255,255,0.07); }
+        .section-divider span { font-family:var(--fuente-titulo);font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.25);white-space:nowrap; }
+        .btn-submit { width:100%;background:linear-gradient(135deg,var(--naranja) 0%,#cc4400 100%);color:white;font-family:var(--fuente-titulo);font-size:0.8rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;padding:1rem 1.5rem;border:3px solid var(--azul-deep);box-shadow:5px 5px 0 rgba(0,0,0,0.4);cursor:pointer;transition:all 0.2s ease;margin-top:1.5rem;display:flex;align-items:center;justify-content:center;gap:0.5rem; }
+        .btn-submit:hover { transform:translate(-2px,-2px);box-shadow:7px 7px 0 rgba(0,0,0,0.4); }
+        .btn-submit:active { transform:translate(1px,1px);box-shadow:4px 4px 0 rgba(0,0,0,0.4); }
+        .btn-submit:disabled { opacity:0.6;cursor:not-allowed;transform:none; }
+        .spinner { width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-left-color:white;border-radius:50%;animation:spin 0.7s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        #campos-registro { display:none; }
+        #campos-registro.visible { display:block;animation:slideDown 0.3s ease; }
+        @keyframes slideDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+
+        /* NOTA ROL */
+        .role-note { margin-top:0.75rem;padding:0.6rem 0.85rem;background:rgba(56,189,248,0.06);border-left:3px solid var(--teal);font-family:var(--fuente-titulo);font-size:0.62rem;letter-spacing:1px;color:rgba(240,244,248,0.55);display:none; }
+        .role-note.visible { display:block; }
+
+        /* FOTO PERFIL */
+        .foto-upload-wrap { display:flex;flex-direction:column;align-items:center;gap:0.6rem;padding:1rem;background:rgba(255,94,0,0.04);border:1px dashed rgba(255,94,0,0.3);cursor:pointer;transition:border-color 0.2s; }
+        .foto-upload-wrap:hover { border-color:rgba(255,94,0,0.7); }
+        #reg-foto-preview { width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,94,0,0.5);display:none; }
+        .foto-upload-label { font-family:var(--fuente-titulo);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4); }
+    </style>
 </head>
-<body class="page-login">
-    
-    <a href="index.html" class="back-btn">← Volver al Inicio</a>
+<body>
+<div class="cursor-dot" id="cdot"></div>
+<div class="cursor-ring" id="cring"></div>
+<div id="contenedor-alertas"></div>
+<a href="index.html" class="back-link">Inicio</a>
 
-    <main class="login-split">
-        <!-- Lado Izquierdo: Visual Maximalista -->
-        <div class="login-visual">
-    <!-- CAPAS DE LA MAREA VIVA -->
-    <div class="liquid-bg">
-        <div class="marea-layer layer-1"></div>
-        <div class="marea-layer layer-2"></div>
-        <div class="marea-layer layer-3"></div>
+<main class="login-main"><div class="login-wrapper">
+    <div class="brand-header">
+        <div class="brand-icon"><img src="logo.png" alt="PRI" onerror="this.outerHTML='PRI'"></div>
+        <h1 class="brand-title">PROGRAMA<span>-PRI</span></h1>
+        <p class="brand-tagline">El Pacífico Renaciendo con Ingeniería</p>
     </div>
-    
-    <h1 class="massive-text">
-        <span>INGRESA</span>
-        <span>AL</span>
-        <span class="outline-text">FUTURO</span>
-    </h1>
-</div>
+    <div class="card">
+        <div class="mode-tabs">
+            <button class="mode-tab active" onclick="cambiarModo('login',this)">Iniciar Sesión</button>
+            <button class="mode-tab" onclick="cambiarModo('registro',this)">Crear Cuenta</button>
+        </div>
 
-        <!-- Lado Derecho: Formulario Superpuesto -->
-<div class="login-form-area">
-    <div class="glass-form">
-        <h2>ACCESO PRI</h2>
-        <p class="form-subtitle">Plataforma exclusiva para el talento de Tumaco.</p>
-        
-        <form>
-            <div class="form-group">
-                <label for="email">Correo Electrónico</label>
-                <input type="email" id="email" placeholder="estudiante@correo.com" required>
+        <form id="auth-form">
+            <!-- LOGIN FIELDS -->
+            <div class="form-grid full">
+                <div class="field-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email">
+                </div>
+                <div class="field-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+                </div>
             </div>
-            
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" placeholder="••••••••" required>
+
+            <!-- REGISTRO FIELDS -->
+            <div id="campos-registro">
+                <div class="section-divider"><span>Datos Personales</span></div>
+                <div class="form-grid">
+                    <div class="field-group">
+                        <label>Nombre Completo *</label>
+                        <input type="text" id="reg-name" placeholder="Juan Pérez" autocomplete="name">
+                    </div>
+                    <div class="field-group">
+                        <label>Rol en el Programa *</label>
+                        <select id="reg-role" onchange="actualizarNotaRol(this.value)">
+                            <option value="" disabled selected>Selecciona tu rol</option>
+                            <option value="estudiante">Estudiante</option>
+                            <option value="docente">Docente Pre-ICFES</option>
+                            <option value="voluntario">Voluntario / Capacitador</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Colegio / Institución *</label>
+                        <input type="text" id="reg-colegio" placeholder="Nombre del colegio">
+                    </div>
+                    <div class="field-group">
+                        <label>Grado / Semestre</label>
+                        <select id="reg-grado">
+                            <option value="">Sin especificar</option>
+                            <option value="8">Octavo (8°)</option>
+                            <option value="9">Noveno (9°)</option>
+                            <option value="10">Décimo (10°)</option>
+                            <option value="11">Undécimo (11°)</option>
+                            <option value="Egresado">Egresado</option>
+                            <option value="Universitario">Universitario</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Estrato Socioeconómico</label>
+                        <select id="reg-estrato">
+                            <option value="">Sin especificar</option>
+                            <option value="0">Estrato 0 / Rural</option>
+                            <option value="1">Estrato 1</option>
+                            <option value="2">Estrato 2</option>
+                            <option value="3">Estrato 3 o más</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>WhatsApp / Contacto</label>
+                        <input type="tel" id="reg-contacto" placeholder="300 123 4567">
+                    </div>
+                    <div class="field-group span-2">
+                        <label>Nombre del Acudiente / Tutor</label>
+                        <input type="text" id="reg-acudiente" placeholder="Nombre del acudiente">
+                    </div>
+                </div>
+                <div class="section-divider"><span>Foto de Perfil (opcional)</span></div>
+                <div class="foto-upload-wrap" onclick="document.getElementById('reg-foto-file').click()">
+                    <img id="reg-foto-preview" src="" alt="preview">
+                    <span id="foto-upload-icon" style="font-size:2rem;opacity:0.4;">📷</span>
+                    <span class="foto-upload-label">Toca aquí para seleccionar tu foto</span>
+                    <input type="file" id="reg-foto-file" accept="image/png,image/jpeg,image/jpg,image/webp" style="display:none" onchange="previewRegFoto(this)">
+                </div>
+                <div id="nota-rol" class="role-note"></div>
             </div>
-            
-            <button type="submit" class="btn-primary">Entrar al Sistema</button>
-            
-            <!-- CONTENEDOR CORREGIDO PARA EL FOOTER -->
-            <div class="form-footer">
-                ¿No tienes cuenta? <a href="#">Solicita acceso</a>
-            </div>
+
+            <button type="submit" class="btn-submit" id="btn-submit">Entrar al Sistema</button>
         </form>
     </div>
 </div>
-<!-- Script del Menú Móvil -->
-    <script>
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navLinks = document.querySelector('.nav-links');
 
-        mobileMenu.addEventListener('click', () => {
-            mobileMenu.classList.toggle('is-active'); /* Transforma la hamburguesa en X */
-            navLinks.classList.toggle('active');      /* Desliza el menú inmersivo */
-        });
-    </script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <!--aqui -->
+    // ── Cloudinary (modo Unsigned – NO enviar public_id) ──────────────
+    async function subirImagenCloudinary(file) {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', 'fotos_perfil');
+        const res = await fetch('https://api.cloudinary.com/v1_1/dmh5xpxcg/image/upload', { method: 'POST', body: fd });
+        if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            console.error('Cloudinary error:', res.status, errData);
+            throw new Error(errData.error?.message || 'Cloudinary HTTP ' + res.status);
+        }
+        return (await res.json()).secure_url;
+    }
 
-    
+    window.previewRegFoto = function(input) {
+        const file = input.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = document.getElementById('reg-foto-preview');
+            img.src = e.target.result; img.style.display = 'block';
+            document.getElementById('foto-upload-icon').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+        authDomain: "proyecto-pri-81fd5.firebaseapp.com",
+        projectId: "proyecto-pri-81fd5",
+        storageBucket: "proyecto-pri-81fd5.firebasestorage.app",
+        messagingSenderId: "876748063075",
+        appId: "1:876748063075:web:6e075f73a385bb804e5356"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    let modoActual = 'login';
+    window.cambiarModo = function(modo, tab) {
+        modoActual = modo;
+        document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const campos = document.getElementById('campos-registro');
+        if (modo === 'registro') { campos.classList.add('visible'); document.getElementById('btn-submit').textContent = 'Crear Cuenta'; }
+        else { campos.classList.remove('visible'); document.getElementById('btn-submit').textContent = 'Entrar al Sistema'; }
+    };
+
+    const NOTAS_ROL = {
+        estudiante: 'Accederás al programa Pre-ICFES, retos, foro y podrás acumular puntos para premios.',
+        docente: 'Como docente, podrás gestionar clases, ver el progreso de los estudiantes y subir tu foto de perfil en el dashboard. Aparecerás en la página de Docentes.',
+        voluntario: 'Como voluntario, gestionarás capacitaciones, verás el progreso de los estudiantes y aparecerás en la página de Mentores.'
+    };
+    window.actualizarNotaRol = function(rol) {
+        const nota = document.getElementById('nota-rol');
+        if (NOTAS_ROL[rol]) { nota.textContent = '💡 ' + NOTAS_ROL[rol]; nota.classList.add('visible'); }
+        else nota.classList.remove('visible');
+    };
+
+    function notif(titulo, msg, icono='ℹ️', tipo='info') {
+        const cont = document.getElementById('contenedor-alertas');
+        const el = document.createElement('div');
+        el.className = `alerta-pri ${tipo}`;
+        el.innerHTML = `<button class="alerta-cerrar" onclick="this.parentElement.remove()">✕</button><span class="alerta-icono">${icono}</span><div class="alerta-titulo">${titulo}</div><div>${msg}</div>`;
+        cont.appendChild(el);
+        setTimeout(() => el.classList.add('visible'), 10);
+        setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 300); }, 5500);
+    }
+    function setLoading(text) { const btn=document.getElementById('btn-submit');btn.innerHTML=`<div class="spinner"></div>${text}`;btn.disabled=true; }
+    function resetBtn(text) { const btn=document.getElementById('btn-submit');btn.textContent=text;btn.disabled=false; }
+
+    document.getElementById('auth-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const pass = document.getElementById('login-pass').value;
+        if (pass.length < 6) { notif('Contraseña muy corta','Debe tener al menos 6 caracteres.','🔒','error'); return; }
+
+        if (modoActual === 'registro') {
+            const rol = document.getElementById('reg-role').value;
+            const nombre = document.getElementById('reg-name').value.trim();
+            if (!rol) { notif('Selecciona tu rol','Elige si eres estudiante, docente o voluntario.','⚠️','error'); return; }
+            if (!nombre) { notif('Nombre requerido','Por favor ingresa tu nombre completo.','⚠️','error'); return; }
+            try {
+                setLoading('Guardando en la nube...');
+                // Subir foto a Cloudinary antes de crear el usuario (si eligió una)
+                const fotoInput = document.getElementById('reg-foto-file');
+                let fotoUrl = '';
+                if (fotoInput.files && fotoInput.files[0]) {
+                    try {
+                        setLoading('Subiendo foto...');
+                        fotoUrl = await subirImagenCloudinary(fotoInput.files[0]);
+                    } catch (fotoErr) {
+                        console.warn('Foto no subida:', fotoErr);
+                    }
+                }
+                setLoading('Creando cuenta...');
+                const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                const datos = {
+                    uid: cred.user.uid, nombre, correo: email, rol, fotoUrl,
+                    colegio: document.getElementById('reg-colegio').value.trim(),
+                    grado: document.getElementById('reg-grado').value,
+                    estrato: document.getElementById('reg-estrato').value,
+                    acudiente: document.getElementById('reg-acudiente').value.trim(),
+                    contacto: document.getElementById('reg-contacto').value.trim(),
+                    puntos: 0, premiosMes: 0, fichaCompleta: false,
+                    caracterizacion_completa: false, progresoGlobal: 0,
+                    creadoEn: new Date().toISOString()
+                };
+                await setDoc(doc(db, "usuarios", cred.user.uid), datos);
+                if (rol === 'docente' || rol === 'voluntario') {
+                    await setDoc(doc(db, "docentes", cred.user.uid), {
+                        uid: cred.user.uid, nombre, correo: email, carrera: '', bio: 'Perfil en construcción.',
+                        fotoUrl, materias: '', materialUrl: '', rol, creadoEn: new Date().toISOString()
+                    });
+                }
+                localStorage.setItem('usuario_sesion_activa', JSON.stringify(datos));
+                notif('¡Registro exitoso!', `Bienvenido/a al Programa PRI, ${nombre}. ¡Tu cuenta está lista!`, '🎉', 'success');
+                setTimeout(() => { window.location.href = "dashboard.html"; }, 1800);
+            } catch (err) {
+                resetBtn('Crear Cuenta');
+                if (err.code === 'auth/email-already-in-use') notif('Correo ya registrado','Este correo ya tiene cuenta. Inicia sesión.','📧','error');
+                else notif('Error al registrar', err.message, '❌', 'error');
+            }
+        } else {
+            try {
+                setLoading('Verificando acceso...');
+                if (email === 'jcastrogo@unal.edu.co' && pass === '123456') {
+                    const adminData = { uid:'admin-jcastrogo', nombre:'José Luis Castro Góngora', correo:email, rol:'admin', puntos:0, fichaCompleta:true };
+                    localStorage.setItem('usuario_sesion_activa', JSON.stringify(adminData));
+                    notif('Acceso Admin','Bienvenido, Líder del Programa PRI.','🛡️','success');
+                    setTimeout(() => { window.location.href = "dashboard.html"; }, 1200);
+                    return;
+                }
+                const cred = await signInWithEmailAndPassword(auth, email, pass);
+                const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
+                if (snap.exists()) {
+                    const datos = snap.data();
+                    localStorage.setItem('usuario_sesion_activa', JSON.stringify(datos));
+                    const saludos = { estudiante:`¡Hola, ${datos.nombre}! Listo para aprender hoy.`, docente:`Bienvenido/a, Docente ${datos.nombre}.`, voluntario:`¡Hola, ${datos.nombre}! Gracias por tu voluntariado.`, admin:`Acceso de Administrador concedido.` };
+                    notif('Acceso concedido', saludos[datos.rol] || 'Bienvenido al programa.', '✅', 'success');
+                    setTimeout(() => { window.location.href = "dashboard.html"; }, 1200);
+                } else { throw new Error('Usuario no encontrado en la base de datos.'); }
+            } catch (err) {
+                resetBtn('Entrar al Sistema');
+                notif('Acceso denegado','Credenciales incorrectas o usuario inexistente.','🔐','error');
+            }
+        }
+    });
+</script>
+<script>
+    const dot=document.getElementById('cdot'), ring=document.getElementById('cring');
+    let rx=0,ry=0,mx=0,my=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function tick(){if(dot){dot.style.left=mx+'px';dot.style.top=my+'px';}rx+=(mx-rx)*0.14;ry+=(my-ry)*0.14;if(ring){ring.style.left=rx+'px';ring.style.top=ry+'px';}requestAnimationFrame(tick);})();
+    document.addEventListener('mouseover',e=>{if(e.target.closest('button,a,input,select')){ring.style.transform='translate(-50%,-50%) scale(1.7)';ring.style.backgroundColor='rgba(255,94,0,0.08)';}});
+    document.addEventListener('mouseout',e=>{if(e.target.closest('button,a,input,select')){ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.backgroundColor='transparent';}});
+</script>
+</div></main>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA<span class="outline-text-footer">-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pre-test.html">Pre-Test</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Tumaco, Nariño</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">programapri_bog@unal.edu.co</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+    </div>
+</footer>
 </body>
 </html>

@@ -3,406 +3,1400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrenamiento PRE-TEST | PROGRAMA-PRI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <title>Pre-Test Diagnóstico | PROGRAMA-PRI</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --azul-deep: #021a36;
+            --azul-panel: #062040;
+            --azul-card: #041830;
+            --naranja: #ff5e00;
+            --oro: #ffd700;
+            --blanco: #f0f4f8;
+            --teal: #38bdf8;
+            --verde: #22c55e;
+            --rojo: #ef4444;
+            --amarillo: #f59e0b;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--azul-deep);
+            background-image: radial-gradient(ellipse 100% 50% at 50% -5%, rgba(255,94,0,0.06) 0%, transparent 70%);
+            color: var(--blanco);
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: stretch;
+        }
+        .test-main { flex:1; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+        body::before {
+            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,94,0,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,94,0,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        h1, h2, h3, h4, button, label, .mono { font-family: 'Montserrat', sans-serif; }
+
+        /* ===== WRAPPER ===== */
+        .test-wrapper {
+            width: 100%; max-width: 680px; position: relative; z-index: 1;
+        }
+
+        /* ===== CARD BASE ===== */
+        .card {
+            background: var(--azul-panel);
+            border: 1px solid rgba(255,255,255,0.07);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .card-accent { height: 3px; background: linear-gradient(90deg, var(--naranja), var(--oro), var(--teal)); }
+
+        /* ===== PANTALLA: BIENVENIDA ===== */
+        .screen { padding: 2.5rem; }
+        .screen.hidden { display: none; }
+
+        .brand-eyebrow {
+            font-size: 0.55rem; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--teal); display: block; margin-bottom: 0.75rem;
+        }
+        .screen-title {
+            font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900;
+            text-transform: uppercase; line-height: 1.1; margin-bottom: 0.6rem;
+        }
+        .screen-title span { color: var(--naranja); }
+        .screen-desc { font-size: 0.85rem; color: rgba(240,244,248,0.5); line-height: 1.6; margin-bottom: 2rem; }
+
+        /* Info chips */
+        .info-chips { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .chip {
+            display: flex; align-items: center; gap: 0.4rem;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            padding: 0.4rem 0.8rem; font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; color: rgba(240,244,248,0.5);
+        }
+        .chip .chip-icon { font-size: 0.9rem; }
+
+        /* ===== FORMULARIO REGISTRO ===== */
+        .reg-box {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            padding: 1.5rem; margin-bottom: 1.5rem;
+        }
+        .reg-box-title {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--teal); margin-bottom: 1.2rem; display: block;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .form-row.full { grid-template-columns: 1fr; }
+        .field { display: flex; flex-direction: column; gap: 0.3rem; }
+        .field label {
+            font-size: 0.55rem; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: rgba(240,244,248,0.4);
+        }
+        .field input, .field select {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--blanco); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+            padding: 0.7rem 0.9rem; outline: none; transition: border-color 0.2s ease;
+        }
+        .field input:focus, .field select:focus { border-color: rgba(255,94,0,0.5); }
+        .field select option { background: var(--azul-panel); }
+
+        /* ===== BOTONES ===== */
+        .btn-primary {
+            width: 100%; padding: 1rem; font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+            background: var(--naranja); color: #fff; border: none;
+            cursor: pointer; transition: background 0.2s ease; display: flex;
+            align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .btn-primary:hover { background: #e05200; }
+        .btn-primary:disabled { background: rgba(255,94,0,0.25); cursor: not-allowed; }
+
+        .btn-secondary {
+            padding: 0.75rem 1.5rem; font-family: 'Montserrat', sans-serif;
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+            background: rgba(255,255,255,0.06); color: rgba(240,244,248,0.6);
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: var(--blanco); }
+
+        /* ===== PANTALLA: QUIZ ===== */
+        /* Barra de progreso */
+        .progress-header {
+            padding: 1rem 2rem;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .progress-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.08); }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--naranja), var(--oro)); transition: width 0.5s ease; }
+        .progress-text { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(240,244,248,0.35); white-space: nowrap; }
+
+        /* Timer */
+        .quiz-header {
+            padding: 1.5rem 2rem 0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .quiz-area-tag {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 700;
+        }
+        .area-mat { color: var(--teal); }
+        .area-cien { color: var(--verde); }
+        .area-lec { color: var(--oro); }
+        .area-soc { color: var(--amarillo); }
+
+        .timer {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.75rem; font-weight: 700; font-family: 'Montserrat', sans-serif;
+            color: rgba(240,244,248,0.4);
+        }
+        .timer.warning { color: var(--amarillo); }
+        .timer.danger { color: var(--rojo); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Pregunta */
+        .quiz-body { padding: 1.5rem 2rem 2rem; }
+        .question-num {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase;
+            color: rgba(240,244,248,0.25); margin-bottom: 0.75rem;
+        }
+        .question-text {
+            font-size: 1rem; font-weight: 600; color: var(--blanco);
+            line-height: 1.65; margin-bottom: 1.5rem;
+        }
+
+        /* Opciones */
+        .options-grid { display: flex; flex-direction: column; gap: 0.65rem; }
+        .option-btn {
+            display: flex; align-items: flex-start; gap: 0.85rem;
+            width: 100%; text-align: left; padding: 0.9rem 1rem;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(240,244,248,0.65); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s ease; line-height: 1.45;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: rgba(255,94,0,0.07); border-color: rgba(255,94,0,0.3); color: var(--blanco);
+        }
+        .option-btn.selected { background: rgba(255,94,0,0.1); border-color: rgba(255,94,0,0.5); color: var(--blanco); }
+        .option-btn.correct { background: rgba(34,197,94,0.1); border-color: var(--verde); color: #86efac; }
+        .option-btn.wrong { background: rgba(239,68,68,0.08); border-color: var(--rojo); color: #fca5a5; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-letter {
+            min-width: 24px; height: 24px; border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 900;
+            flex-shrink: 0; margin-top: 0.05rem;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover:not(:disabled) .option-letter,
+        .option-btn.selected .option-letter { border-color: var(--naranja); background: rgba(255,94,0,0.15); color: var(--naranja); }
+        .option-btn.correct .option-letter { border-color: var(--verde); background: rgba(34,197,94,0.15); color: var(--verde); }
+        .option-btn.wrong .option-letter { border-color: var(--rojo); background: rgba(239,68,68,0.12); color: var(--rojo); }
+
+        /* Feedback */
+        .feedback-bar {
+            margin: 1rem 0 0; padding: 0.75rem 1rem; font-size: 0.8rem;
+            display: none; align-items: center; gap: 0.6rem; font-weight: 600;
+        }
+        .feedback-bar.correct { background: rgba(34,197,94,0.1); border-left: 3px solid var(--verde); color: #86efac; }
+        .feedback-bar.wrong { background: rgba(239,68,68,0.08); border-left: 3px solid var(--rojo); color: #fca5a5; }
+
+        .btn-next-wrap { padding: 0 2rem 2rem; }
+
+        /* ===== PANTALLA: RESULTADOS ===== */
+        .results-screen { padding: 2.5rem; }
+        .score-circle {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 4px solid;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 0 auto 2rem;
+        }
+        .score-circle.excelente { border-color: var(--verde); }
+        .score-circle.bien { border-color: var(--teal); }
+        .score-circle.regular { border-color: var(--amarillo); }
+        .score-circle.reforzar { border-color: var(--rojo); }
+        .score-num { font-size: 2rem; font-weight: 900; line-height: 1; }
+        .score-label { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+
+        .results-title { font-size: 1.4rem; font-weight: 900; text-align: center; margin-bottom: 0.4rem; text-transform: uppercase; }
+        .results-msg { font-size: 0.85rem; color: rgba(240,244,248,0.5); text-align: center; margin-bottom: 2rem; }
+
+        /* Breakdown por área */
+        .area-breakdown { margin-bottom: 2rem; }
+        .area-breakdown-title {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase;
+            color: rgba(240,244,248,0.3); margin-bottom: 1rem;
+        }
+        .area-row { margin-bottom: 0.85rem; }
+        .area-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+        .area-row-name { font-size: 0.75rem; font-weight: 700; color: rgba(240,244,248,0.7); }
+        .area-row-score { font-size: 0.7rem; font-weight: 900; }
+        .area-bar-bg { height: 4px; background: rgba(255,255,255,0.06); }
+        .area-bar-fill { height: 100%; transition: width 1s ease; }
+
+        /* Recompensa de puntos */
+        .puntos-ganados {
+            background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.2);
+            padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .puntos-ganados .label { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(240,244,248,0.5); }
+        .puntos-ganados .valor { font-size: 1.4rem; font-weight: 900; color: var(--oro); }
+
+        .results-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+        /* ===== SPINNER ===== */
+        .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Área-check para voluntario */
+        .area-check-item { display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.65rem 0.85rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);transition:all 0.15s;user-select:none; }
+        .area-check-item:hover { border-color:rgba(255,94,0,0.3); }
+        .area-check-item input[type=checkbox] { width:14px;height:14px;accent-color:var(--naranja);flex-shrink:0; }
+        .area-check-item span { font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;color:rgba(240,244,248,0.7); }
+
+        @media (max-width: 520px) {
+            .screen, .quiz-body { padding: 1.5rem; }
+            .progress-header { padding: 0.75rem 1.5rem; }
+            .quiz-header { padding: 1.25rem 1.5rem 0; }
+            .btn-next-wrap { padding: 0 1.5rem 1.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .results-screen { padding: 1.5rem; }
+        }
+                /* ===== OPTIMIZACIONES MOBILE-FIRST Y MICRO-INTERACCIONES ===== */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .screen { padding: 1.5rem; }
+            /* Convertimos la grilla a 1 sola columna en móviles para evitar scroll horizontal */
+            .form-row.full-mobile { grid-template-columns: 1fr; }
+            .screen-title { font-size: 1.5rem; }
+            /* Touch Targets accesibles (Mínimo 48px según estándares de Apple/Google) */
+            .btn-primary, .option-btn, .field input, .field select { 
+                min-height: 48px; 
+            }
+        }
+
+        /* Haptic Feedback Visual (El botón se "hunde" al tocarlo, da sensación de app nativa) */
+        .option-btn { transform: scale(1); transition: transform 0.1s ease, background 0.2s, border-color 0.2s; }
+        .option-btn:active { transform: scale(0.97); }
+
+        /* Estilo Premium para el CTA Final (Invitación) */
+        .cta-final {
+            margin-top: 2rem; 
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255,94,0,0.08), rgba(255,215,0,0.03));
+            border: 1px solid rgba(255,94,0,0.3);
+            border-radius: 12px; 
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(255,94,0,0.05);
+        }
+        .cta-final h3 { color: var(--blanco); margin-bottom: 0.5rem; font-size: 1.2rem;}
+        .cta-final p { color: rgba(240,244,248,0.7); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.6;}
+
+        /* ===== MODAL PROPIO (sustituye alert/confirm) ===== */
+        .pri-modal-overlay {
+            position: fixed; inset: 0; background: rgba(2,26,54,0.75);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; backdrop-filter: blur(4px);
+            animation: fadeInModal 0.2s ease;
+        }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+        .pri-modal-box {
+            background: var(--azul-panel); border: 1px solid rgba(255,94,0,0.35);
+            border-radius: 12px; max-width: 360px; width: 90%; padding: 1.75rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            text-align: center; position: relative;
+        }
+        .pri-modal-box::before {
+            content: ''; display: block; height: 3px; width: 40px; margin: 0 auto 1rem;
+            background: linear-gradient(90deg, var(--naranja), var(--oro));
+        }
+        .pri-modal-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .pri-modal-title { font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--blanco); font-size: 1.05rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .pri-modal-msg { color: rgba(240,244,248,0.7); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.25rem; }
+        .pri-modal-btn {
+            background: var(--naranja); color: #fff; border: none; font-weight: 800;
+            padding: 0.65rem 1.5rem; border-radius: 6px; cursor: pointer; font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        /* ===== BARRA DATOS USUARIO (TOP del quiz) ===== */
+        .quiz-user-bar {
+            display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+            gap: 1rem; padding: 0.75rem 1.5rem;
+            background: linear-gradient(90deg, rgba(255,94,0,0.12), rgba(56,189,248,0.08));
+            border-bottom: 1px solid rgba(255,94,0,0.25);
+            font-family: 'Montserrat', sans-serif;
+        }
+        .quiz-user-chip {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            color: rgba(240,244,248,0.85);
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.3rem 0.75rem;
+        }
+        .quiz-user-chip .chip-label { color: rgba(240,244,248,0.4); font-weight: 400; margin-right: 0.2rem; }
+
+        /* ===== Fortalezas / Falencias ===== */
+        .fyf-grid { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .fyf-box { padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.8rem; line-height: 1.5; }
+        .fyf-box.fuerte { background: rgba(34,197,94,0.07); border-left: 3px solid var(--verde); color: #c9f7d8; }
+        .fyf-box.falencia { background: rgba(239,68,68,0.07); border-left: 3px solid var(--rojo); color: #fcd6d6; }
+        .fyf-box b { color: var(--blanco); }
+            </style>
 </head>
-<body class="page-pre-test">
-    <div class="scroll-progress" id="scroll-progress"></div>
+<body>
+<div id="pri-modal-root"></div>
+<main class="test-main"><div class="test-wrapper">
+<div class="card">
+<div class="card-accent"></div>
 
-    <div class="cursor-dot"></div>
-    <div class="cursor-ring"></div>
+<!-- ===================================================== -->
+<!-- PANTALLA 1: BIENVENIDA Y REGISTRO -->
+<!-- ===================================================== -->
+<div class="screen" id="pantalla-inicio">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;margin-bottom:1.5rem;">
+        <img src="logo.png" alt="PRI" style="width:42px;height:42px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,94,0,0.5);" onerror="this.style.display='none'">
+        <span style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.7);">PROGRAMA-PRI</span>
+    </a>
+    <span class="brand-eyebrow">PROGRAMA-PRI • Registro y Diagnóstico de Ingreso</span>
+    <h1 class="screen-title">Únete al <span>Programa PRI</span></h1>
+    <p class="screen-desc">Completa tu registro y realiza el diagnóstico adaptado a tu perfil. Los datos nos ayudan a diseñar la mejor ruta de aprendizaje para ti.</p>
 
-    <header class="navbar">
-    <div class="logo-container">
-        <a href="index.html" class="logo-link">
-            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-            <h2>PROGRAMA-PRI</h2>
-        </a>
+    <div class="info-chips">
+        <div class="chip"><span class="chip-icon">📋</span> Hasta 50 preguntas</div>
+        <div class="chip"><span class="chip-icon">⏱️</span> ~35 minutos</div>
+        <div class="chip"><span class="chip-icon">🏆</span> Gana hasta 250 PTS</div>
+        <div class="chip"><span class="chip-icon">📊</span> Retroalimentación inmediata</div>
     </div>
-    <div class="menu-toggle" id="mobile-menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-    </div>
-    <nav>
-        <ul class="nav-links">
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="ppri.html">Sobre PRI</a></li>
-            <li><a href="preicfes.html">PRE-ICFES</a></li>
-            <li><a href="preicfes.html" class="active">PRE-TEST</a></li>
-            <li><a href="docentes.html">Docentes</a></li>
-            <li><a href="productos.html">Productos</a></li>
-            <li><a href="login.html" class="btn-login">Acceso Total</a></li>
-        </ul>
-    </nav>
-</header>
 
-
-<main class="simulador-container">
-    
-    <div class="briefing-wrapper" id="briefing-panel">
-        <div class="briefing-card">
-            <div class="briefing-header">
-                <h2>MÓDULO DE ENTRENAMIENTO PRE-TEST</h2>
-                <p class="subtitle">PROGRAMA-PRI • SEDE TUMACO</p>
-            </div>
-            <div class="briefing-body">
-                <p>Estás a punto de iniciar una simulación táctica de razonamiento lógico. Una vez que inicies, el sistema activará los protocolos de tiempo.</p>
-                <ul class="briefing-rules">
-                    <li><strong>⚡ Tiempo Límite:</strong> 45 segundos por vector de pregunta.</li>
-                    <li><strong>❌ Sin Retorno:</strong> Una vez seleccionada una opción, la respuesta es definitiva.</li>
-                    <li><strong>🎯 Objetivo:</strong> Medir tu velocidad de respuesta bajo presión industrial.</li>
-                </ul>
-            </div>
-            <button class="start-btn" onclick="iniciarSimulador()">
-                INICIAR OPERACIÓN PRE-TEST
-            </button>
+<div class="reg-box">
+    <span class="reg-box-title">📋 Datos Personales</span>
+    <div class="form-row full-mobile">
+        <div class="field">
+            <label>Nombre Completo *</label>
+            <input type="text" id="aspirante-nombre" placeholder="Ej: Juan Pérez" required autocomplete="name">
+        </div>
+        <div class="field">
+            <label>Correo Electrónico *</label>
+            <input type="email" id="aspirante-correo" placeholder="tucorreo@ejemplo.com" required autocomplete="email">
         </div>
     </div>
-
-    <div class="game-layout" id="game-area">
-        
-        <section class="question-panel">
-            <div class="question-header">
-                <span class="question-number" id="render-number">PREGUNTA -- <span class="dim-text">/ --</span></span>
-                <span class="question-category" id="render-category">--</span>
-            </div>
-
-            <div id="question-media-container" class="question-media-wrapper"></div>
-
-            <h2 class="question-text" id="render-text">Cargando vector de datos...</h2>
-
-            <div class="answers-grid" id="answers-container">
-                </div>
-
-            <button id="next-btn" class="next-question-btn" onclick="pasarSiguientePregunta()">
-                SIGUIENTE VECTOR PREGUNTA ➔
-            </button>
-        </section>
-
-        <aside class="control-sidebar">
-            <div class="tactical-timer-wrapper">
-                <div class="timer-label">TIEMPO DE EXTRACCIÓN</div>
-                <div class="timer-display" id="countdown-timer">00:45</div>
-                <div class="timer-bar"><div class="timer-progress" id="timer-progress"></div></div>
-            </div>
-
-            <div class="score-db-panel">
-                <div class="db-label">DATOS DEL OPERADOR</div>
-                <div class="db-stat-box">
-                    <span class="stat-title">PUNTOS ACUMULADOS</span>
-                    <span class="stat-value" id="user-points">0000</span>
-                </div>
-                <div class="db-status-light">
-                    <span class="ping-indicator"></span> CONEXIÓN BD: ACTIVA
-                </div>
-            </div>
-        </aside>
-    </div>
-
-</main>
-
-<footer class="footer-masivo">
-    <div class="footer-grid">
-        <div class="footer-col brand-col">
-            <div class="footer-brand-wrapper">
-                <img src="logo.png" alt="Sello PROGRAMA-PRI" class="footer-logo">
-                <h2 class="massive-footer-text">PROGRAMA<span class="outline-text">-PRI</span></h2>
-            </div>
+    <div class="form-row full-mobile">
+        <div class="field">
+            <label>WhatsApp *</label>
+            <input type="tel" id="aspirante-tel" placeholder="300 123 4567" required autocomplete="tel">
         </div>
-        <div class="footer-col links-col">
-            <h3>ENLACES TÁCTICOS</h3>
-            <ul>
-                <li><a href="index.html">Base de Operaciones (Inicio)</a></li>
-                <li><a href="pre-test.html">Simulador de Entrenamiento Pre-Test</a></li>
-                <li><a href="productos.html">Bóveda de Recompensas (Catálogo)</a></li>
-                <li><a href="docentes.html">Módulo de Mentores & Docentes</a></li>
-                <li><a href="dashboard.html">Panel de Métricas e Impacto</a></li>
-            </ul>
-        </div>
-        <div class="footer-col info-col">
-            <h3>CONTACTO & COORDENADAS</h3>
-            <div class="contacto-datos">
-                <p><strong>📍 Ubicación:</strong> Sede de Presencia Nacional - El Mar Pacífico, Tumaco, Nariño.</p>
-                <p><strong>✉️ Correo Oficial:</strong> <a href="mailto:programapri_bog@unal.edu.co" class="link-inline">programapri_bog@unal.edu.co</a></p>
-                <p><strong>📞 Soporte de Plataforma:</strong> +57 (318) 355-3653</p>
-                <p><strong>🌐 Canales Digitales:</strong> @ProgramaPRI_UNAL</p>
-            </div>
-            <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+        <div class="field">
+            <label>Ciudad</label>
+            <input type="text" id="aspirante-ciudad" value="Tumaco, Nariño" placeholder="Ciudad">
         </div>
     </div>
-    <div class="footer-marea"></div>
-</footer>
+    <div class="form-row">
+        <div class="field">
+            <label>Tipo de Documento</label>
+            <select id="aspirante-doc-tipo">
+                <option value="">Selecciona...</option>
+                <option>TARJETA DE IDENTIDAD</option>
+                <option>CEDULA</option>
+                <option>CEDULA DE EXTRANJERÍA</option>
+                <option>PASAPORTE</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Número de Documento</label>
+            <input type="text" id="aspirante-doc-num" placeholder="Número">
+        </div>
+    </div>
+</div>
 
-<script>
-    // =========================================================================
-    // 💥 BANCO DE PREGUNTAS (AQUÍ ES DONDE AGREGAS, MODIFICAS O ELIMINAS TODO) 💥
-    // =========================================================================
-    // Cada pregunta es un bloque entre llaves { }. 
-    // - Para IMAGENES: Pon tipoMedia: "imagen" y en urlMedia pon la ruta de tu foto (ej: "img/grafico1.png").
-    // - Para VIDEOS: Pon tipoMedia: "video" y en urlMedia el link embebido de YouTube (ej: "https://www.youtube.com/embed/VIDEO_ID").
-    // - Sin multimedia: Pon tipoMedia: "ninguno" y urlMedia: "".
-    const bancoPreguntas = [
-        {
-            categoria: "RAZONAMIENTO LÓGICO",
-            texto: "Si una máquina produce 50 piezas en 2 horas, ¿cuántas horas tomará producir 150 piezas usando 3 máquinas operando al mismo ritmo?",
-            tipoMedia: "ninguno", 
-            urlMedia: "",
-            opciones: [
-                { letra: "A", texto: "4 horas", correcta: false },
-                { letra: "B", texto: "2 horas", correcta: true },
-                { letra: "C", texto: "6 horas", correcta: false },
-                { letra: "D", texto: "1.5 horas", correcta: false }
-            ]
-        },
-        {
-            categoria: "COMPONENTES MATEMÁTICOS",
-            texto: "Analiza la siguiente gráfica de rendimiento de datos e identifica cuál es el punto de inflexión crítico del algoritmo.",
-            tipoMedia: "imagen", 
-            urlMedia: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80", // Puedes cambiar esto por una imagen local, ej: "imagenes/pregunta2.jpg"
-            opciones: [
-                { letra: "A", texto: "Intersección X = 0", correcta: false },
-                { letra: "B", texto: "Punto máximo relativo en T=45s", correcta: true },
-                { letra: "C", texto: "Decrecimiento exponencial", correcta: false },
-                { letra: "D", texto: "Ninguna de las anteriores", correcta: false }
-            ]
-        },
-        {
-            categoria: "ANÁLISIS DE SISTEMAS",
-            texto: "Mira atentamente el siguiente video explicativo sobre la automatización neumática marina en Tumaco y responde qué presión es óptima.",
-            tipoMedia: "video", 
-            urlMedia: "https://www.youtube.com/embed/dQw4w9WgXcQ", // LINK EMBEDDED OBLIGATORIO DE YOUTUBE (Debe llevar /embed/)
-            opciones: [
-                { letra: "A", texto: "12 Bar de presión continua", correcta: false },
-                { letra: "B", texto: "6 Bar regulados dinámicamente", correcta: true },
-                { letra: "C", texto: "9 Bar sin retorno", correcta: false },
-                { letra: "D", texto: "0 Bar (Estado pasivo)", correcta: false }
-            ]
-        }
-        // 💡 PARA AGREGAR LA PREGUNTA 4: Copias desde la llave anterior, pones una coma (,) aquí abajo y pegas el bloque.
-    ];
-
-    // Variables de Estado del Motor
-    let preguntaActualIndex = 0;
-    let tiempoRestante = 45; 
-    let intervalo; 
-    const tiempoTotalPorPregunta = 45;
-    let puntosAcumulados = 0;
-
-    // Captura de Elementos de la Interfaz
-    const briefingPanel = document.getElementById('briefing-panel');
-    const gameArea = document.getElementById('game-area');
-    const timerDisplay = document.getElementById('countdown-timer');
-    const timerProgress = document.getElementById('timer-progress');
-    const nextBtn = document.getElementById('next-btn');
-
-    // Inicializador del simulador (Clic en COMENZAR)
-    function iniciarSimulador() {
-        briefingPanel.style.setProperty('display', 'none', 'important');
-        gameArea.style.setProperty('display', 'grid', 'important');
-        
-        preguntaActualIndex = 0;
-        puntosAcumulados = 0;
-        document.getElementById('user-points').textContent = "0000";
-
-        // Carga la primera pregunta de la lista
-        cargarPregunta(preguntaActualIndex);
-    }
-
-    // Función Central encargada de pintar la pregunta en pantalla
-    function cargarPregunta(index) {
-        // Ocultar el botón de "Siguiente" inmediatamente al cargar una nueva pregunta
-        nextBtn.style.display = "none";
-
-        // Verificar si ya se terminaron las preguntas del banco
-        if (index >= bancoPreguntas.length) {
-            finalizarSimulación();
-            return;
-        }
-
-        const datosPregunta = bancoPreguntas[index];
-
-        // 1. Renderizar Encabezados y Textos
-        let numeroFormateado = (index + 1) < 10 ? '0' + (index + 1) : (index + 1);
-        let totalFormateado = bancoPreguntas.length < 10 ? '0' + bancoPreguntas.length : bancoPreguntas.length;
-        document.getElementById('render-number').innerHTML = `PREGUNTA ${numeroFormateado} <span class="dim-text">/ ${totalFormateado}</span>`;
-        document.getElementById('render-category').textContent = datosPregunta.categoria;
-        document.getElementById('render-text').textContent = datosPregunta.texto;
-
-        // 2. Control e inyección Multimedia (Imágenes / Videos)
-        const mediaContainer = document.getElementById('question-media-container');
-        mediaContainer.innerHTML = ""; // Limpiar multimedia anterior
-
-        if (datosPregunta.tipoMedia === "imagen") {
-            mediaContainer.innerHTML = `<img src="${datosPregunta.urlMedia}" alt="Gráfico de Soporte" class="media-img-elemento">`;
-            mediaContainer.style.display = "block";
-        } else if (datosPregunta.tipoMedia === "video") {
-            mediaContainer.innerHTML = `
-                <div class="video-responsive-wrapper">
-                    <iframe src="${datosPregunta.urlMedia}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>`;
-            mediaContainer.style.display = "block";
-        } else {
-            mediaContainer.style.display = "none"; // Ocultar si no lleva nada
-        }
-
-        // 3. Renderizar las Opciones de Respuesta en Botones Sólidos
-        const answersContainer = document.getElementById('answers-container');
-        answersContainer.innerHTML = ""; // Limpiar botones anteriores
-
-        datosPregunta.opciones.forEach(opcion => {
-            const btn = document.createElement('button');
-            btn.className = "answer-btn";
-            // Le pasamos al validador el botón presionado y si es la correcta (true/false)
-            btn.onclick = function() { verificarRespuesta(this, opcion.correcta); };
-            btn.innerHTML = `<span class="answer-letter">${opcion.letra}</span> ${opcion.texto}`;
-            answersContainer.appendChild(btn);
-        });
-
-        // 4. Resetear y Encender el Cronómetro para esta pregunta
-        tiempoRestante = tiempoTotalPorPregunta;
-        timerDisplay.classList.remove('timer-danger');
-        timerProgress.classList.remove('danger');
-        arrancarReloj();
-    }
-
-    // Cronómetro Activo
-    function arrancarReloj() {
-        clearInterval(intervalo); // Evitar duplicación de hilos
-        intervalo = setInterval(() => {
-            tiempoRestante--;
-            
-            let segundos = tiempoRestante < 10 ? '0' + tiempoRestante : tiempoRestante;
-            timerDisplay.textContent = `00:${segundos}`;
-            
-            let porcentaje = (tiempoRestante / tiempoTotalPorPregunta) * 100;
-            timerProgress.style.width = `${porcentaje}%`;
-
-            if (tiempoRestante <= 10) {
-                timerDisplay.classList.add('timer-danger');
-                timerProgress.classList.add('danger');
-            }
-
-            if (tiempoRestante <= 0) {
-                clearInterval(intervalo);
-                timerDisplay.textContent = "00:00";
-                bloquearBotones();
-                
-                // Si el tiempo se agota, mostramos la correcta automáticamente
-                revelarRespuestaCorrectaFaltante();
-                // REVELAR EL BOTÓN DE SIGUIENTE porque la acción de la pregunta acabó
-                nextBtn.style.display = "block";
-            }
-        }, 1000);
-    }
-
-    // Validador de Respuesta por Clic
-    function verificarRespuesta(botonSeleccionado, esCorrecta) {
-        clearInterval(intervalo); // Detener el reloj en seco
-        bloquearBotones(); // Impedir que el usuario cambie su respuesta
-
-        if (esCorrecta) {
-            botonSeleccionado.classList.add('correct');
-            puntosAcumulados += 150; // Sumar 150 puntos por acierto
-            // Dar formato de 4 dígitos (Ej: 0150)
-            document.getElementById('user-points').textContent = puntosAcumulados.toString().padStart(4, '0');
-        } else {
-            botonSeleccionado.classList.add('incorrect');
-            revelarRespuestaCorrectaFaltante(); // Mostrar visualmente cuál era la respuesta ganadora
-        }
-
-        // 🎯 LOGRADO: Mostrar el botón para avanzar de fase
-        nextBtn.style.display = "block";
-    }
-
-    // Función auxiliar para forzar la iluminación del botón correcto si fallas o expira el tiempo
-    function revelarRespuestaCorrectaFaltante() {
-        const botones = document.querySelectorAll('.answer-btn');
-        const actualesOpciones = bancoPreguntas[preguntaActualIndex].opciones;
-        
-        botones.forEach((btn, i) => {
-            if (actualesOpciones[i].correcta) {
-                btn.classList.add('correct');
-            }
-        });
-    }
-
-    function bloquearBotones() {
-        const botones = document.querySelectorAll('.answer-btn');
-        botones.forEach(btn => {
-            btn.disabled = true;
-            btn.style.cursor = 'not-allowed';
-        });
-    }
-
-    // Handler asignado al botón "SIGUIENTE VECTOR PREGUNTA"
-    function pasarSiguientePregunta() {
-        preguntaActualIndex++;
-        cargarPregunta(preguntaActualIndex);
-    }
-
-    // Pantalla de Cierre cuando se agotan todas las preguntas del array
-    function finalizarSimulación() {
-        clearInterval(intervalo);
-        const panelPregunta = document.querySelector('.question-panel');
-        panelPregunta.innerHTML = `
-            <div style="text-align: center; padding: 2rem;">
-                <h2 style="font-family: var(--fuente-titulos); color: var(--oro-sol); font-size: 2.5rem; margin-bottom: 1rem;">OPERACIÓN COMPLETADA</h2>
-                <p style="font-family: var(--fuente-textos); color: #fff; font-size: 1.2rem; margin-bottom: 2rem;">Tu vector de rendimiento ha sido procesado con éxito en la base de datos del PROGRAMA-PRI.</p>
-                <div style="background: #111; border-left: 5px solid var(--marea-electrica); padding: 1.5rem; display: inline-block; min-width: 250px; margin-bottom: 2rem;">
-                    <span style="color: #888; display:block; font-size: 0.9rem;">PUNTAJE FINAL</span>
-                    <span style="font-family: var(--fuente-titulos); font-size: 3rem; color: var(--marea-electrica); font-weight: 900;">${puntosAcumulados.toString().padStart(4, '0')} PTS</span>
-                </div>
-                <br>
-                <button class="start-btn" onclick="location.reload()" style="max-width: 300px;">REINICIAR SIMULACIÓN</button>
+<div class="reg-box" style="margin-top:1rem;">
+    <span class="reg-box-title">🎯 Rol y Nivel</span>
+    <div class="form-row full-mobile">
+        <div class="field">
+            <label>¿Cómo deseas participar? *</label>
+            <select id="aspirante-rol" required onchange="actualizarCamposRol()">
+                <option value="" disabled selected>Selecciona tu rol</option>
+                <option value="ESTUDIANTE">Estudiante (quiero aprender)</option>
+                <option value="VOLUNTARIO">Voluntario universitario (quiero enseñar)</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Institución Educativa *</label>
+            <input type="text" id="aspirante-colegio" placeholder="Tu colegio o universidad" required>
+        </div>
+    </div>
+    <div class="form-row" id="campos-estudiante">
+        <div class="field">
+            <label>Grado Actual *</label>
+            <select id="aspirante-grado">
+                <option value="" disabled selected>Selecciona tu grado</option>
+                <option value="8">Octavo (8°)</option>
+                <option value="9">Noveno (9°)</option>
+                <option value="10">Décimo (10°)</option>
+                <option value="11">Undécimo (11°)</option>
+                <option value="Egresado">Egresado/Graduado</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Estrato Socioeconómico *</label>
+            <select id="aspirante-estrato">
+                <option value="" disabled selected>Selecciona tu estrato</option>
+                <option value="0">Estrato 0 (Sin clasificar)</option>
+                <option value="1">Estrato 1</option>
+                <option value="2">Estrato 2</option>
+                <option value="3">Estrato 3</option>
+                <option value="4">Estrato 4 o más</option>
+            </select>
+        </div>
+    </div>
+    <div id="campos-voluntario" style="display:none;">
+        <div class="form-row">
+            <div class="field">
+                <label>Semestre / Nivel universitario</label>
+                <select id="aspirante-semestre">
+                    <option value="">Selecciona...</option>
+                    <option value="Universitario (1er sem)">1er semestre</option>
+                    <option value="Universitario (2do sem)">2do semestre</option>
+                    <option value="Universitario (3er sem)">3er semestre</option>
+                    <option value="Universitario (4to sem)">4to semestre</option>
+                    <option value="Universitario (5to sem)">5to semestre</option>
+                    <option value="Universitario (6to sem+)">6to sem o más</option>
+                    <option value="Egresado/Graduado">Egresado/Graduado</option>
+                </select>
             </div>
-        `;
-    }
-</script>
-<script>
-    // 1. Barra de progreso que se llena al bajar
-    window.addEventListener('scroll', () => {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        const scrolled = (winScroll / height) * 100;
-        const progressBar = document.getElementById('scroll-progress');
-        if(progressBar) progressBar.style.width = scrolled + '%';
+            <div class="field">
+                <label>Estrato</label>
+                <select id="aspirante-estrato-vol">
+                    <option value="0">Estrato 0</option>
+                    <option value="1">Estrato 1</option>
+                    <option value="2">Estrato 2</option>
+                    <option value="3">Estrato 3</option>
+                    <option value="4">Estrato 4+</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button class="btn-primary" onclick="validarEIniciarTest()">
+    Continuar <span class="chip-icon">→</span>
+</button>
+
+</div>
+
+<!-- ===================================================== -->
+<!-- PANTALLA 1.5: ÁREAS PARA VOLUNTARIO -->
+<!-- ===================================================== -->
+<div class="screen hidden" id="pantalla-areas" style="padding:2.5rem;">
+    <span class="brand-eyebrow">Voluntario · Selección de Áreas</span>
+    <h2 class="screen-title" style="font-size:1.4rem;">¿En qué áreas quieres <span>enseñar</span>?</h2>
+    <p class="screen-desc">Selecciona mínimo 2 áreas. El diagnóstico evaluará tu dominio en esas áreas para analizar cómo puedes apoyar mejor a los estudiantes.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;margin-bottom:2rem;" id="areas-checkboxes">
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="mat"><span>📐 Matemáticas Básicas</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="fis"><span>⚡ Física</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="qui"><span>⚗️ Química</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="cien"><span>🧬 Ciencias Naturales</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="lec"><span>📖 Lectura Crítica</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="ing"><span>🇬🇧 Inglés</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="soc"><span>🌍 Ciencias Sociales</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="fil"><span>🧠 Filosofía</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="pol"><span>🏛️ Política/Economía</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="inf"><span>💻 Informática/Prog.</span></label>
+    </div>
+    <button class="btn-primary" onclick="iniciarTestVoluntario()">
+        Iniciar Diagnóstico <span class="chip-icon">⚡</span>
+    </button>
+</div>
+
+<!-- ===================================================== -->
+<!-- PANTALLA 2: QUIZ -->
+<!-- ===================================================== -->
+<div class="screen hidden" id="pantalla-quiz" style="padding:0;">
+
+    <!-- Barra datos usuario (TOP) -->
+    <div class="quiz-user-bar" id="quiz-user-bar">
+        <div class="quiz-user-chip"><span class="chip-label">👤</span><span id="ui-nombre">—</span></div>
+        <div class="quiz-user-chip"><span class="chip-label">🏫</span><span id="ui-colegio">—</span></div>
+        <div class="quiz-user-chip"><span class="chip-label">📚 Grado</span><span id="ui-grado">—</span></div>
+        <div class="quiz-user-chip"><span class="chip-label">🏠</span><span id="ui-estrato">—</span></div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-header">
+        <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="barra-progreso" style="width:0%"></div>
+        </div>
+        <span class="progress-text" id="txt-progreso">1 / 25</span>
+    </div>
+
+    <!-- Header pregunta -->
+    <div class="quiz-header">
+        <span class="quiz-area-tag" id="quiz-area">Matemáticas</span>
+        <div class="timer" id="timer-display">⏱ 45s</div>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="quiz-body">
+        <p class="question-num" id="question-num">Pregunta 1 de 9</p>
+        <p class="question-text" id="quiz-enunciado">Cargando pregunta...</p>
+        <div class="options-grid" id="quiz-opciones"></div>
+        <div class="feedback-bar" id="feedback-bar"></div>
+    </div>
+
+    <div class="btn-next-wrap">
+        <button class="btn-primary hidden" id="btn-siguiente" onclick="siguientePregunta()">
+            Siguiente →
+        </button>
+    </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- PANTALLA 3: RESULTADOS -->
+<!-- ===================================================== -->
+<div class="screen hidden results-screen" id="pantalla-resultados">
+
+    <span class="brand-eyebrow">Evaluación completada</span>
+    <div class="score-circle" id="score-circle">
+        <span class="score-num" id="res-puntos">0/9</span>
+        <span class="score-label">Aciertos</span>
+    </div>
+
+    <h2 class="results-title" id="results-title">¡Buen trabajo!</h2>
+    <p class="results-msg" id="results-msg">Tu diagnóstico ha sido procesado.</p>
+
+    <!-- Desglose por área -->
+    <div class="area-breakdown">
+        <p class="area-breakdown-title">Desempeño por Área</p>
+        <div id="area-breakdown-container"></div>
+    </div>
+
+    <!-- Fortalezas y falencias -->
+    <div class="area-breakdown">
+        <p class="area-breakdown-title">Tu Diagnóstico Personalizado</p>
+        <div class="fyf-grid" id="fyf-container"></div>
+    </div>
+
+    <!-- Puntos ganados -->
+    <div class="puntos-ganados" id="puntos-ganados-box">
+        <div>
+            <div class="label">Puntos ganados en este test</div>
+            <div style="font-size:0.7rem;color:rgba(240,244,248,0.3);margin-top:2px;">Acumulados en tu perfil</div>
+        </div>
+        <div class="valor" id="puntos-ganados-val">+0 PTS</div>
+    </div>
+
+    <div class="results-actions">
+        <button class="btn-secondary" onclick="reiniciarTest()">🔄 Repetir</button>
+        <button class="btn-primary" style="flex:1" onclick="window.location.href='dashboard.html'">Ir al Panel →</button>
+    </div>
+</div>
+
+</div><!-- /.card -->
+</div><!-- /.test-wrapper --></div></main>
+
+<script type="module">
+  // =======================================================
+  // 1. INICIALIZACIÓN OFICIAL DE FIREBASE (ES MODULES CDN)
+  // =======================================================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  // Optimizamos agregando 'updateDoc', 'doc' e 'increment' para que tu bloque de usuarios registrados no falle nunca
+  import { getFirestore, collection, addDoc, serverTimestamp, updateDoc, doc, increment, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+  // Usamos exactamente tu configuración proveída
+  const firebaseConfig = {
+    apiKey: "AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+    authDomain: "proyecto-pri-81fd5.firebaseapp.com",
+    projectId: "proyecto-pri-81fd5",
+    storageBucket: "proyecto-pri-81fd5.firebasestorage.app",
+    messagingSenderId: "876748063075",
+    appId: "1:876748063075:web:6e075f73a385bb804e5356",
+    measurementId: "G-BMD6293HG8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Variable global para guardar los datos temporalmente durante el test
+  window.datosAspiranteGlobal = {};
+  
+  // =======================================================
+  // 2. VALIDACIÓN Y ARRANQUE DEL TEST (COMPATIBILIDAD INTEGRAL)
+  // =======================================================
+  // Modal propio de PROGRAMA-PRI (reemplaza alert/confirm)
+  window.mostrarAvisoPRI = function(titulo, msg, icono = '⚠️') {
+      const root = document.getElementById('pri-modal-root');
+      root.innerHTML = `
+        <div class="pri-modal-overlay" onclick="if(event.target===this) this.remove()">
+          <div class="pri-modal-box">
+            <div class="pri-modal-icon">${icono}</div>
+            <div class="pri-modal-title">${titulo}</div>
+            <div class="pri-modal-msg">${msg}</div>
+            <button class="pri-modal-btn" onclick="this.closest('.pri-modal-overlay').remove()">Entendido</button>
+          </div>
+        </div>`;
+  };
+
+  // Mostrar/ocultar campos según rol
+  window.actualizarCamposRol = function() {
+      const rol = document.getElementById('aspirante-rol').value;
+      document.getElementById('campos-estudiante').style.display = rol === 'ESTUDIANTE' ? '' : 'none';
+      document.getElementById('campos-voluntario').style.display = rol === 'VOLUNTARIO' ? '' : 'none';
+  };
+
+  window.validarEIniciarTest = async function() {
+      const nombre = document.getElementById('aspirante-nombre').value.trim();
+      const correo = document.getElementById('aspirante-correo').value.trim();
+      const tel = document.getElementById('aspirante-tel').value.trim();
+      const colegio = document.getElementById('aspirante-colegio').value.trim();
+      const rol = document.getElementById('aspirante-rol').value;
+      const ciudad = document.getElementById('aspirante-ciudad').value.trim() || 'Tumaco, Nariño';
+      const docTipo = document.getElementById('aspirante-doc-tipo').value;
+      const docNum = document.getElementById('aspirante-doc-num').value.trim();
+
+      if (!nombre) { mostrarAvisoPRI('Falta el nombre', 'Por favor ingresa tu nombre completo.', '⚠️'); return; }
+      if (!colegio) { mostrarAvisoPRI('Falta la institución', 'Escribe el nombre de tu institución.', '⚠️'); return; }
+      if (!rol) { mostrarAvisoPRI('Selecciona tu rol', 'Indica si eres estudiante o voluntario.', '⚠️'); return; }
+
+      let grado = '', estrato = '', nivel = '';
+
+      if (rol === 'ESTUDIANTE') {
+          grado = document.getElementById('aspirante-grado').value;
+          estrato = document.getElementById('aspirante-estrato').value;
+          if (!grado) { mostrarAvisoPRI('Selecciona el grado', 'Indica en qué grado estás.', '⚠️'); return; }
+          if (!estrato) { mostrarAvisoPRI('Selecciona el estrato', 'Indica tu estrato socioeconómico.', '⚠️'); return; }
+          nivel = grado === 'Egresado' ? 'Egresado/Graduado' : `${grado}° grado`;
+      } else {
+          nivel = document.getElementById('aspirante-semestre').value || 'Universitario';
+          estrato = document.getElementById('aspirante-estrato-vol').value || '1';
+          grado = '11'; // Para voluntarios usamos banco G11 como base
+      }
+
+      window.datosAspiranteGlobal = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, docTipo, docNum, nivel };
+      datosAspirante = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, docTipo, docNum, nivel };
+
+      // Poblar barra superior del quiz
+      const setUI = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setUI('ui-nombre', nombre);
+      setUI('ui-colegio', colegio);
+      setUI('ui-grado', rol === 'VOLUNTARIO' ? nivel : (grado + '°'));
+      setUI('ui-estrato', 'Estrato ' + estrato);
+
+      if (rol === 'VOLUNTARIO') {
+          // Mostrar pantalla de selección de áreas
+          document.getElementById('pantalla-inicio').classList.add('hidden');
+          document.getElementById('pantalla-areas').classList.remove('hidden');
+          return;
+      }
+
+      // Estudiante: construir preguntas por grado y arrancar
+      await construirYArrancar(grado);
+  };
+
+  async function construirYArrancar(grado) {
+      PREGUNTAS = construirPreguntas(grado);
+      indice = 0;
+      respuestas = [];
+
+      // Cargar preguntas adicionales de Firebase banco_preguntas
+      try {
+          const gradoNum = grado.replace('Egresado','11');
+          const snap = await getDocs(query(collection(db,'banco_preguntas'), where('grado','==',gradoNum)));
+          snap.forEach(d => {
+              const p = d.data();
+              if (p.q && p.o && typeof p.a === 'number') {
+                  PREGUNTAS.push({
+                      q: p.q, o: p.o, a: p.a,
+                      tiempoCad: p.t || p.tiempoCad || 45,
+                      explicacion: p.e || p.explicacion || '',
+                      area: AREA_META[p.area] ? AREA_META[p.area].nombre : (p.area||'General'),
+                      areaKey: p.area||'mat',
+                      color: AREA_META[p.area] ? AREA_META[p.area].color : 'var(--teal)',
+                      numero: PREGUNTAS.length + 1
+                  });
+              }
+          });
+          PREGUNTAS.forEach((p, i) => p.numero = i + 1);
+      } catch(e) { /* continúa con banco estático */ }
+
+      document.getElementById('pantalla-inicio').classList.add('hidden');
+      document.getElementById('pantalla-areas').classList.add('hidden');
+      document.getElementById('pantalla-quiz').classList.remove('hidden');
+      cargarPregunta();
+  }
+
+  // Voluntario: construir preguntas filtradas por áreas elegidas
+  window.iniciarTestVoluntario = async function() {
+      const seleccionadas = Array.from(document.querySelectorAll('input[name="vol-area"]:checked')).map(c => c.value);
+      if (seleccionadas.length < 2) {
+          mostrarAvisoPRI('Selecciona más áreas', 'Elige al menos 2 áreas para el diagnóstico.', '⚠️');
+          return;
+      }
+
+      // Guardar áreas en datosAspirante
+      datosAspirante.areas_interes = seleccionadas;
+      window.datosAspiranteGlobal.areas_interes = seleccionadas;
+
+      // Construir banco con preguntas de BANCO_G11 filtradas por áreas elegidas
+      const todoBanco = [...BANCO_G11, ...BANCO_G10, ...BANCO_G9];
+      const filtrado = todoBanco.filter(p => seleccionadas.includes(p.area));
+      // Tomar hasta 10 preguntas por área seleccionada, mezcladas
+      const porArea = {};
+      seleccionadas.forEach(a => { porArea[a] = []; });
+      filtrado.forEach(p => { if (porArea[p.area] && porArea[p.area].length < 10) porArea[p.area].push(p); });
+      let bancoBuild = [];
+      seleccionadas.forEach(a => { bancoBuild = bancoBuild.concat(porArea[a].sort(() => Math.random()-0.5)); });
+      bancoBuild = bancoBuild.sort(() => Math.random() - 0.5).slice(0, 50);
+
+      PREGUNTAS = bancoBuild.map((p, idx) => ({
+          ...p,
+          tiempoCad: p.t || p.tiempoCad || 50,
+          explicacion: p.e || p.explicacion || '',
+          area: AREA_META[p.area] ? AREA_META[p.area].nombre : p.area,
+          areaKey: p.area,
+          color: AREA_META[p.area] ? AREA_META[p.area].color : 'var(--teal)',
+          numero: idx + 1
+      }));
+
+      indice = 0;
+      respuestas = [];
+      document.getElementById('pantalla-areas').classList.add('hidden');
+      document.getElementById('pantalla-quiz').classList.remove('hidden');
+      cargarPregunta();
+  };
+
+// ================================================================
+// METADATOS DE ÁREAS
+// ================================================================
+const AREA_META = {
+    mat:  { nombre: "Matemáticas",           icono: "📐", color: "var(--teal)" },
+    cien: { nombre: "Ciencias Naturales",     icono: "🧬", color: "var(--verde)" },
+    lec:  { nombre: "Lectura Crítica",        icono: "📖", color: "var(--oro)" },
+    soc:  { nombre: "Ciencias Sociales",      icono: "🌍", color: "var(--amarillo)" },
+    inf:  { nombre: "Informática",            icono: "💻", color: "#7ec8ff" },
+    qui:  { nombre: "Química",               icono: "⚗️", color: "#c084fc" },
+    fis:  { nombre: "Física",               icono: "⚡", color: "#f0abfc" },
+    ing:  { nombre: "Inglés",               icono: "🇬🇧", color: "#6ee7b7" },
+    fil:  { nombre: "Filosofía",            icono: "🧠", color: "#fda4af" },
+    pol:  { nombre: "C. Políticas y Económicas", icono: "🏛️", color: "#fdba74" }
+};
+
+// ================================================================
+// BANCO GRADO 8 — 50 preguntas
+// Áreas: Matemáticas, Lengua Castellana, Ciencias Naturales, Ciencias Sociales
+// ================================================================
+const BANCO_G8 = [
+  // MATEMÁTICAS (13)
+  {area:"mat",t:50,q:"Simplifica la expresión: 3x + 2x − x",o:["4x","5x","6x","3x"],a:0,e:"3x + 2x − x = (3+2−1)x = 4x."},
+  {area:"mat",t:45,q:"¿Cuál es el resultado de (−4) × (−5)?",o:["20","−20","9","−9"],a:0,e:"Negativo por negativo = positivo: (−4)×(−5) = 20."},
+  {area:"mat",t:50,q:"El área de un rectángulo es 48 cm². Si su largo es 8 cm, ¿cuánto mide su ancho?",o:["6 cm","4 cm","8 cm","5 cm"],a:0,e:"Ancho = Área ÷ largo = 48 ÷ 8 = 6 cm."},
+  {area:"mat",t:45,q:"¿Cuál es el MCM de 4 y 6?",o:["12","8","6","24"],a:0,e:"Los múltiplos de 4: 4,8,12... Los de 6: 6,12... El menor común es 12."},
+  {area:"mat",t:50,q:"Un estudiante tiene 3x + 5 puntos en un test. Si x = 4, ¿cuántos puntos obtuvo?",o:["17","12","20","15"],a:0,e:"3(4)+5 = 12+5 = 17 puntos."},
+  {area:"mat",t:45,q:"¿Cuál de estos ángulos es obtuso?",o:["120°","90°","45°","180°"],a:0,e:"Un ángulo obtuso mide entre 90° y 180°. Solo 120° cumple esta condición."},
+  {area:"mat",t:50,q:"Si 2x − 3 = 9, ¿cuánto vale x?",o:["6","3","5","4"],a:0,e:"2x = 9+3 = 12, entonces x = 6."},
+  {area:"mat",t:45,q:"El perímetro de un cuadrado es 28 cm. ¿Cuánto mide cada lado?",o:["7 cm","14 cm","4 cm","6 cm"],a:0,e:"Perímetro = 4 × lado → lado = 28÷4 = 7 cm."},
+  {area:"mat",t:50,q:"¿Cuánto es el 30% de 200?",o:["60","30","40","70"],a:0,e:"200 × 0.30 = 60."},
+  {area:"mat",t:45,q:"¿Cuál es la factorización de x² − 9?",o:["(x−3)(x+3)","(x−9)(x+1)","(x−3)²","x(x−9)"],a:0,e:"Diferencia de cuadrados: a²−b² = (a−b)(a+b). Aquí a=x, b=3."},
+  {area:"mat",t:50,q:"¿Qué tipo de triángulo tiene los tres lados iguales?",o:["Equilátero","Isósceles","Escaleno","Rectángulo"],a:0,e:"Un triángulo equilátero tiene sus tres lados y ángulos iguales (60° cada uno)."},
+  {area:"mat",t:45,q:"Si en un grupo de 30 estudiantes el 40% son mujeres, ¿cuántas mujeres hay?",o:["12","18","15","10"],a:0,e:"30 × 0.40 = 12 mujeres."},
+  {area:"mat",t:50,q:"¿Cuál es el valor de 2³ + 3²?",o:["17","13","15","11"],a:0,e:"2³ = 8, 3² = 9. Suma = 17."},
+  // LENGUA CASTELLANA (12)
+  {area:"lec",t:45,q:"¿Cuál es la idea principal de un párrafo?",o:["La que sustenta y da sentido a las demás","La primera oración siempre","La oración más larga","Un ejemplo detallado"],a:0,e:"La idea principal es el núcleo del párrafo; las demás ideas la apoyan."},
+  {area:"lec",t:45,q:"Un texto narrativo se caracteriza por:",o:["Contar eventos en orden cronológico o literario","Convencer con argumentos lógicos","Describir objetos con precisión","Explicar leyes científicas"],a:0,e:"El texto narrativo relata hechos reales o ficticios y presenta una secuencia de eventos."},
+  {area:"lec",t:50,q:"¿Qué conector indica causa?",o:["Porque","Sin embargo","Por lo tanto","Además"],a:0,e:"'Porque' introduce la causa o razón de algo: 'No fue porque llovió.'"},
+  {area:"lec",t:45,q:"El sinónimo de 'antiguo' es:",o:["Viejo","Nuevo","Moderno","Actual"],a:0,e:"Antiguo/viejo comparten el significado de algo de mucho tiempo atrás."},
+  {area:"lec",t:50,q:"¿Qué es una metáfora?",o:["Una comparación directa sin 'como'","Una exageración literaria","Una pregunta sin respuesta","Una descripción de lugar"],a:0,e:"La metáfora establece equivalencia directa: 'Tus ojos son luceros' (sin usar 'como')."},
+  {area:"lec",t:45,q:"La voz del narrador en primera persona usa pronombres como:",o:["Yo, nosotros","Él, ella, ellos","Tú, ustedes","Se, le, lo"],a:0,e:"La primera persona significa que el narrador participa en la historia: usa 'yo' y 'nosotros'."},
+  {area:"lec",t:50,q:"Un texto argumentativo tiene como propósito principal:",o:["Convencer al lector de una postura","Entretener con una historia","Informar sobre hechos históricos","Describir un paisaje"],a:0,e:"El texto argumentativo busca persuadir usando razones y evidencias."},
+  {area:"lec",t:45,q:"¿Qué significa la expresión 'no hay mal que por bien no venga'?",o:["Las adversidades traen oportunidades","Todas las cosas son malas","El bien no existe","Las personas son malas"],a:0,e:"Es un refrán que sugiere que las dificultades pueden generar consecuencias positivas."},
+  {area:"lec",t:50,q:"El antónimo de 'generoso' es:",o:["Tacaño","Valiente","Amable","Honesto"],a:0,e:"Generoso (que da) vs. tacaño (que no da): son opuestos directos."},
+  {area:"lec",t:45,q:"La estructura básica de un texto narrativo es:",o:["Inicio, nudo y desenlace","Tesis, argumentos y conclusión","Problema, hipótesis y resultado","Descripción, narración y diálogo"],a:0,e:"Todo relato tiene inicio (presentación), nudo (conflicto) y desenlace (resolución)."},
+  {area:"lec",t:50,q:"¿Qué es la coherencia en un texto?",o:["La relación lógica entre las ideas","El uso correcto de la puntuación","La extensión adecuada del texto","La rima de las palabras"],a:0,e:"Un texto coherente tiene ideas que se relacionan y tienen sentido entre sí."},
+  {area:"lec",t:45,q:"Identifica el tipo de texto: 'Hoy a las 5 pm cayó un meteorito en Tumaco.'",o:["Periodístico o informativo","Literario narrativo","Argumentativo","Científico"],a:0,e:"El texto informativo/periodístico reporta hechos con datos precisos (lugar, hora, evento)."},
+  // CIENCIAS NATURALES (12)
+  {area:"cien",t:45,q:"¿Cuál es la función principal de la mitocondria?",o:["Producir energía (ATP)","Controlar la reproducción celular","Almacenar el ADN","Realizar la fotosíntesis"],a:0,e:"La mitocondria es la 'central energética' de la célula: produce ATP mediante respiración celular."},
+  {area:"cien",t:50,q:"¿Qué diferencia a una célula animal de una vegetal?",o:["La célula vegetal tiene pared celular y cloroplastos","La célula animal tiene cloroplastos","La célula vegetal no tiene núcleo","La célula animal tiene pared celular"],a:0,e:"Las células vegetales tienen pared celular de celulosa y cloroplastos para la fotosíntesis."},
+  {area:"cien",t:45,q:"La fotosíntesis ocurre en:",o:["Los cloroplastos","Las mitocondrias","El núcleo","Los ribosomas"],a:0,e:"Los cloroplastos contienen clorofila, pigmento que captura la energía solar para la fotosíntesis."},
+  {area:"cien",t:50,q:"¿Qué tipo de reproducción produce individuos idénticos al padre?",o:["Asexual","Sexual","Hermafrodita","Vivípara"],a:0,e:"La reproducción asexual (gemación, escisión, etc.) produce clones sin variación genética."},
+  {area:"cien",t:45,q:"Los seres vivos que fabrican su propio alimento mediante fotosíntesis se llaman:",o:["Productores (autótrofos)","Consumidores","Descomponedores","Parásitos"],a:0,e:"Las plantas y algas son productores: sintetizan materia orgánica usando energía solar."},
+  {area:"cien",t:50,q:"¿Cuál de estos es un organismo descomponedor en el ecosistema?",o:["Hongo","León","Pez","Árbol"],a:0,e:"Los hongos y bacterias descomponen materia orgánica muerta, reciclando nutrientes."},
+  {area:"cien",t:45,q:"Los sistemas del cuerpo humano que trabajan juntos para el movimiento son:",o:["Óseo y muscular","Digestivo y respiratorio","Circulatorio y nervioso","Excretor y reproductor"],a:0,e:"Los huesos forman el esqueleto y los músculos se contraen para generar el movimiento."},
+  {area:"cien",t:50,q:"¿Qué función cumple la sangre en el cuerpo humano?",o:["Transportar oxígeno y nutrientes","Producir energía directamente","Filtrar el aire que respiramos","Formar el esqueleto"],a:0,e:"La sangre transporta O₂, CO₂, nutrientes, hormonas y células del sistema inmune."},
+  {area:"cien",t:45,q:"La cadena alimentaria: Pasto → Conejo → Zorro → Bacteria. ¿Qué es el conejo en esta cadena?",o:["Consumidor primario","Productor","Consumidor secundario","Descomponedor"],a:0,e:"El conejo come pasto (productor), por lo que es el consumidor de primer orden."},
+  {area:"cien",t:50,q:"¿Cuál es el componente principal del ADN?",o:["Nucleótidos (azúcar, fosfato y base)","Aminoácidos","Grasas","Glucosa"],a:0,e:"El ADN está formado por nucleótidos: desoxirribosa + fosfato + una base nitrogenada (A, T, C, G)."},
+  {area:"cien",t:45,q:"El efecto invernadero es causado principalmente por el exceso de:",o:["CO₂ y metano en la atmósfera","Oxígeno en el suelo","Nitrógeno líquido","Agua en los océanos"],a:0,e:"El CO₂ y CH₄ atrapan el calor del sol en la atmósfera, aumentando la temperatura global."},
+  {area:"cien",t:50,q:"¿Qué órgano produce la bilis en el cuerpo humano?",o:["El hígado","El estómago","El páncreas","El colon"],a:0,e:"El hígado produce bilis, que se almacena en la vesícula biliar y ayuda a emulsionar las grasas."},
+  // CIENCIAS SOCIALES (13)
+  {area:"soc",t:50,q:"¿Cuál fue la principal causa del descubrimiento de América en 1492?",o:["Buscar una nueva ruta a las Indias para el comercio","Escapar de la pobreza en Europa","Encontrar El Dorado","La persecución religiosa"],a:0,e:"España buscaba una ruta marítima alternativa hacia Asia (especias) tras el bloqueo otomano del Mediterráneo."},
+  {area:"soc",t:45,q:"La Revolución Francesa (1789) tuvo como lema:",o:["Libertad, Igualdad, Fraternidad","Paz, Orden, Progreso","Fe, Patria, Familia","Trabajo, Justicia, Libertad"],a:0,e:"'Liberté, Égalité, Fraternité' resume los ideales republicanos que guiaron la Revolución Francesa."},
+  {area:"soc",t:50,q:"¿Cuándo fue la Independencia de Colombia?",o:["20 de julio de 1810","7 de agosto de 1819","17 de diciembre de 1819","25 de diciembre de 1776"],a:0,e:"El 20 de julio de 1810 es considerado el día de la Declaración de Independencia de Colombia."},
+  {area:"soc",t:45,q:"¿Cuál es el sistema de gobierno de Colombia?",o:["República presidencialista","Monarquía parlamentaria","Dictadura militar","Confederación tribal"],a:0,e:"Colombia es una república con un presidente elegido popularmente cada 4 años como jefe de Estado."},
+  {area:"soc",t:50,q:"El fenómeno de la 'Violencia' en Colombia (1948-1958) se intensificó tras el asesinato de:",o:["Jorge Eliécer Gaitán","Simón Bolívar","Rafael Núñez","Laureano Gómez"],a:0,e:"El magnicidio de Gaitán el 9 de abril de 1948 (Bogotazo) desencadenó la guerra bipartidista."},
+  {area:"soc",t:45,q:"Los 'Afrodescendientes' del Pacífico colombiano llegaron originalmente debido a:",o:["La trata transatlántica de esclavizados","Una migración voluntaria del Caribe","La conquista española directa","La colonización británica"],a:0,e:"La trata esclavista trajo africanos forzados para trabajar en minas y haciendas desde el s. XVI."},
+  {area:"soc",t:50,q:"La globalización se refiere principalmente a:",o:["La integración económica y cultural entre países","El cierre de fronteras nacionales","La uniformidad climática mundial","El dominio de un solo país"],a:0,e:"La globalización conecta economías, culturas y política a escala mundial mediante comercio y tecnología."},
+  {area:"soc",t:45,q:"¿Qué es el PIB (Producto Interno Bruto)?",o:["El valor total de bienes y servicios producidos en un país","El presupuesto del gobierno","La deuda externa de la nación","El salario promedio de los ciudadanos"],a:0,e:"El PIB mide la riqueza generada en un país en un período (normalmente un año)."},
+  {area:"soc",t:50,q:"Los derechos fundamentales en Colombia están consagrados en:",o:["La Constitución Política de 1991","El Código Civil","El Plan Nacional de Desarrollo","La Ley 30 de Educación"],a:0,e:"La Constitución de 1991 reconoce los derechos fundamentales como la vida, la igualdad y la libertad."},
+  {area:"soc",t:45,q:"¿Qué es la democracia participativa?",o:["Sistema donde los ciudadanos intervienen directamente en decisiones","Gobierno de una sola persona","Sistema donde vota solo la élite","Dictadura benevolente"],a:0,e:"La democracia participativa va más allá del voto e incluye mecanismos como el referendo y el cabildo abierto."},
+  {area:"soc",t:50,q:"¿Cuál de los siguientes es un mecanismo de participación ciudadana en Colombia?",o:["El referendo","La revolución","La evasión fiscal","El golpe de Estado"],a:0,e:"El referendo, plebiscito, tutela, revocatoria del mandato son mecanismos de participación constitucional."},
+  {area:"soc",t:45,q:"La cordillera que atraviesa Colombia de sur a norte es:",o:["Los Andes","El Himalaya","Los Alpes","Los Cárpatos"],a:0,e:"La Cordillera de los Andes es el eje montañoso de Colombia, dividiéndose en Occidental, Central y Oriental."},
+  {area:"soc",t:50,q:"La Revolución Industrial (siglo XVIII-XIX) comenzó en:",o:["Gran Bretaña","Francia","Estados Unidos","Alemania"],a:0,e:"Gran Bretaña lideró la Revolución Industrial gracias a su carbón, telares mecánicos y máquina de vapor."},
+];
+
+// ================================================================
+// BANCO GRADO 9 — 50 preguntas
+// Áreas: Matemáticas, Lengua, Ciencias Naturales+Física intro, Ciencias Sociales
+// ================================================================
+const BANCO_G9 = [
+  // MATEMÁTICAS (13)
+  {area:"mat",t:50,q:"Factoriza: x² + 5x + 6",o:["(x+2)(x+3)","(x+1)(x+6)","(x−2)(x−3)","(x+5)(x+1)"],a:0,e:"Se buscan dos números cuyo producto sea 6 y suma 5: son 2 y 3. Entonces (x+2)(x+3)."},
+  {area:"mat",t:50,q:"¿Cuál es la pendiente de la recta y = 3x − 4?",o:["3","−4","−3","4"],a:0,e:"En y = mx + b, la pendiente m = 3 y el intercepto b = −4."},
+  {area:"mat",t:50,q:"Resuelve el sistema: x + y = 10, x − y = 2",o:["x=6, y=4","x=4, y=6","x=5, y=5","x=8, y=2"],a:0,e:"Sumando ambas: 2x=12, x=6. Sustituyendo: 6+y=10, y=4."},
+  {area:"mat",t:45,q:"¿Cuál es la función lineal que pasa por (0,3) y tiene pendiente 2?",o:["y = 2x + 3","y = 3x + 2","y = 2x − 3","y = x + 3"],a:0,e:"y = mx + b, m=2 y b=3 (intercepto en y es el punto cuando x=0)."},
+  {area:"mat",t:50,q:"El discriminante de x² − 4x + 4 = 0 es:",o:["0","8","−8","16"],a:0,e:"Δ = b²−4ac = 16−4(1)(4) = 0. Con Δ=0, hay una raíz doble."},
+  {area:"mat",t:50,q:"Si f(x) = x² − 2, ¿cuánto es f(3)?",o:["7","9","11","5"],a:0,e:"f(3) = 3² − 2 = 9 − 2 = 7."},
+  {area:"mat",t:45,q:"¿Cuánto es el 60% de 450?",o:["270","280","240","300"],a:0,e:"450 × 0.60 = 270."},
+  {area:"mat",t:50,q:"Un tren viaja a 80 km/h. ¿Cuánto tarda en recorrer 200 km?",o:["2.5 h","2 h","3 h","4 h"],a:0,e:"Tiempo = distancia ÷ velocidad = 200 ÷ 80 = 2.5 horas."},
+  {area:"mat",t:45,q:"Simplifica: (a³b²)/(ab) ",o:["a²b","a³b","ab²","a²b²"],a:0,e:"a³/a = a² y b²/b = b¹. Resultado: a²b."},
+  {area:"mat",t:50,q:"¿Cuál es el área de un trapecio con bases 8 y 12 cm y altura 5 cm?",o:["50 cm²","40 cm²","60 cm²","100 cm²"],a:0,e:"Área = ½(B+b)×h = ½(8+12)×5 = ½×100 = 50 cm²."},
+  {area:"mat",t:50,q:"La ecuación de segundo grado x² − 5x + 6 = 0 tiene raíces:",o:["x=2 y x=3","x=−2 y x=−3","x=1 y x=6","x=5 y x=1"],a:0,e:"Factorizando: (x−2)(x−3)=0 → x=2 o x=3."},
+  {area:"mat",t:45,q:"Si la suma de tres ángulos de un triángulo es 180° y dos son 60° y 80°, el tercero mide:",o:["40°","50°","60°","70°"],a:0,e:"180° − 60° − 80° = 40°."},
+  {area:"mat",t:50,q:"¿Cuál es el valor de √144?",o:["12","14","11","16"],a:0,e:"√144 = 12, porque 12² = 144."},
+  // LENGUA CASTELLANA (12)
+  {area:"lec",t:50,q:"Lee: 'A pesar del esfuerzo, el proyecto no avanzó.' ¿Qué tipo de conector se usa?",o:["Adversativo (contrasta ideas)","Consecutivo","Causal","Aditivo"],a:0,e:"'A pesar de' opone dos ideas: esfuerzo vs. no avance. Es adversativo."},
+  {area:"lec",t:45,q:"En un texto argumentativo, la 'tesis' es:",o:["La postura del autor que se defiende","El ejemplo que apoya la idea","La conclusión del texto","Un hecho histórico"],a:0,e:"La tesis es la afirmación central que el autor defiende con argumentos y evidencias."},
+  {area:"lec",t:50,q:"¿Cuál de estos textos es discontinuo?",o:["Un mapa","Un cuento","Una carta","Un artículo de opinión"],a:0,e:"Los textos discontinuos no son secuenciales: mapas, gráficas, tablas, infografías."},
+  {area:"lec",t:45,q:"El propósito de un texto expositivo es:",o:["Informar y explicar de forma objetiva","Convencer al lector","Narrar una aventura","Expresar sentimientos"],a:0,e:"El texto expositivo presenta información de manera clara y objetiva sin tomar partido."},
+  {area:"lec",t:50,q:"Identifica la figura retórica: 'El mar llora sal'",o:["Personificación","Hipérbole","Metáfora","Aliteración"],a:0,e:"Se atribuye al mar una acción humana (llorar): esto es personificación o prosopopeya."},
+  {area:"lec",t:45,q:"¿Qué es una oración subordinada?",o:["Una que depende de otra para tener sentido","Una que tiene sujeto y predicado completos","Una oración muy corta","Una oración exclamativa"],a:0,e:"La oración subordinada no puede existir sola: depende de la principal (ej: 'cuando llegues')."},
+  {area:"lec",t:50,q:"En la oración 'Juan compró un libro', el sujeto es:",o:["Juan","compró","un libro","Juan compró"],a:0,e:"El sujeto es quien realiza la acción. 'Juan' es quien 'compró'."},
+  {area:"lec",t:45,q:"La ironía literaria ocurre cuando:",o:["Se dice lo contrario de lo que se piensa","Se exagera algo extremadamente","Se repiten sonidos similares","Se omite el sujeto"],a:0,e:"La ironía expresa lo opuesto a lo que se quiere decir, generalmente con humor o crítica."},
+  {area:"lec",t:50,q:"Lee: 'La luz del sol bañaba las montañas de oro.' ¿Qué figura usa?",o:["Metáfora","Símil","Aliteración","Elipsis"],a:0,e:"'De oro' no usa 'como': es una metáfora que compara directamente la luz amarilla con el oro."},
+  {area:"lec",t:45,q:"¿Cuál es la diferencia entre 'haber' (verbo) y 'a ver' (preposición + infinitivo)?",o:["El primero es auxiliar verbal; el segundo es expresión de mirar","Son sinónimos","Solo se distinguen por tildes","Son lo mismo en todos los contextos"],a:0,e:"'Haber' funciona como auxiliar o impersonal ('hay', 'hubo'). 'A ver' equivale a 'vamos a ver'."},
+  {area:"lec",t:50,q:"El narrador omnisciente:",o:["Conoce todo: pensamientos, acciones y sentimientos de todos los personajes","Solo narra lo que ve directamente","Es un personaje que narra su historia","No participa en la historia"],a:0,e:"El narrador omnisciente tiene visión total de la historia, incluyendo la psicología de los personajes."},
+  {area:"lec",t:45,q:"¿Qué es la intertextualidad?",o:["La relación de un texto con otros textos","La extensión de un texto","El número de personajes","La puntuación del texto"],a:0,e:"La intertextualidad es la referencia explícita o implícita que un texto hace a otros textos culturales."},
+  // CIENCIAS NATURALES + FÍSICA BÁSICA (13)
+  {area:"cien",t:50,q:"La evolución de las especies fue propuesta por:",o:["Charles Darwin","Gregor Mendel","Louis Pasteur","Isaac Newton"],a:0,e:"Darwin propuso la selección natural como mecanismo de evolución en 'El origen de las especies' (1859)."},
+  {area:"cien",t:45,q:"¿Qué son los ecosistemas?",o:["Conjunto de seres vivos e inorgánicos que interactúan en un espacio","Solo los seres vivos de un lugar","El conjunto de ríos y montañas","El clima de una región"],a:0,e:"Un ecosistema incluye todos los organismos (biótico) y el ambiente físico-químico (abiótico) que interactúan."},
+  {area:"cien",t:50,q:"En la estructura atómica, los electrones se ubican en:",o:["Orbitales alrededor del núcleo","El núcleo junto a protones","El interior del protón","Las capas del núcleo"],a:0,e:"Los electrones orbitan el núcleo en niveles de energía (orbitales); el núcleo contiene protones y neutrones."},
+  {area:"cien",t:45,q:"¿Qué fenómeno natural causa terremotos?",o:["El movimiento de las placas tectónicas","La rotación de la Tierra","Los cambios de temperatura","El flujo de ríos"],a:0,e:"Las placas tectónicas se deslizan, chocan o separan, liberando energía que genera sismos."},
+  {area:"cien",t:50,q:"La herencia genética se transmite de padres a hijos a través de:",o:["El ADN en los cromosomas","La sangre directamente","El agua que bebemos","Los alimentos"],a:0,e:"El ADN contiene los genes que se transmiten mediante los gametos (óvulo y espermatozoide)."},
+  {area:"cien",t:45,q:"¿A qué temperatura hierve el agua a nivel del mar?",o:["100 °C","90 °C","80 °C","120 °C"],a:0,e:"El agua hierve a 100°C (373 K) a presión atmosférica estándar (1 atm) a nivel del mar."},
+  {area:"fis",t:50,q:"¿Qué describe la Primera Ley de Newton (Inercia)?",o:["Un objeto en reposo permanece así a menos que actúe una fuerza neta","La fuerza es igual a masa por aceleración","A toda acción hay una reacción igual y opuesta","La gravedad atrae los cuerpos"],a:0,e:"La inercia establece que los cuerpos mantienen su estado (reposo o movimiento) sin fuerza externa."},
+  {area:"fis",t:45,q:"La fórmula de la velocidad es:",o:["v = d/t","v = d×t","v = t/d","v = d + t"],a:0,e:"Velocidad = distancia recorrida ÷ tiempo empleado."},
+  {area:"fis",t:50,q:"Si un objeto tarda 4 segundos en caer desde una altura, la causa de su caída es:",o:["La gravedad terrestre","El viento","La presión atmosférica","La temperatura"],a:0,e:"La gravedad (g ≈ 9.8 m/s²) atrae todo cuerpo hacia el centro de la Tierra."},
+  {area:"fis",t:45,q:"¿Qué es la energía cinética?",o:["La energía de un objeto en movimiento","La energía almacenada por posición","La energía del sol","La energía química"],a:0,e:"Ec = ½mv². La energía cinética depende de la masa y la velocidad del objeto."},
+  {area:"fis",t:50,q:"Un carro recorre 150 km en 2 horas. ¿Cuál es su velocidad media?",o:["75 km/h","60 km/h","80 km/h","100 km/h"],a:0,e:"v = d/t = 150÷2 = 75 km/h."},
+  {area:"fis",t:45,q:"Las ondas sonoras son:",o:["Ondas mecánicas longitudinales","Ondas electromagnéticas transversales","Ondas de luz visibles","Rayos gamma"],a:0,e:"El sonido se propaga como comprensiones y rarefacciones del medio (onda mecánica longitudinal)."},
+  {area:"fis",t:50,q:"¿Cuál es la unidad de medida de la fuerza en el SI?",o:["Newton (N)","Joule (J)","Watt (W)","Pascal (Pa)"],a:0,e:"La fuerza se mide en Newtons (N). 1 N = 1 kg·m/s²."},
+  // CIENCIAS SOCIALES (12)
+  {area:"soc",t:50,q:"¿Qué fue la Segunda Guerra Mundial (1939-1945)?",o:["Un conflicto entre las potencias del Eje y los Aliados","Una guerra civil en Europa","Una disputa entre España y Portugal","Una revolución en América Latina"],a:0,e:"Fue el conflicto más devastador de la historia: Eje (Alemania, Italia, Japón) vs. Aliados (UK, URSS, EEUU)."},
+  {area:"soc",t:45,q:"La Declaración Universal de Derechos Humanos fue adoptada en:",o:["1948","1945","1919","1960"],a:0,e:"La ONU adoptó la DUDH el 10 de diciembre de 1948, tras los horrores de la Segunda Guerra Mundial."},
+  {area:"soc",t:50,q:"¿Cuál es el rol de la Constitución en un Estado democrático?",o:["Ser la norma suprema que regula los derechos y el poder","Ser un listado de leyes ordinarias","Ordenar el ejército nacional","Controlar el comercio exterior"],a:0,e:"La Constitución es la 'ley de leyes': establece derechos fundamentales y organiza los poderes del Estado."},
+  {area:"soc",t:45,q:"La pobreza extrema se mide internacionalmente con base en:",o:["Ingreso per cápita inferior a cierto umbral diario","El PIB total del país","El acceso a internet","La tasa de empleo formal"],a:0,e:"El Banco Mundial define la pobreza extrema como vivir con menos de $2.15 USD al día (2022)."},
+  {area:"soc",t:50,q:"El desplazamiento forzado en Colombia es principalmente causado por:",o:["El conflicto armado y la violencia","La búsqueda de empleo voluntaria","La contaminación ambiental","Las crisis económicas globales"],a:0,e:"El conflicto con grupos armados ha generado millones de desplazados internos en Colombia."},
+  {area:"soc",t:45,q:"¿Qué es la inflación?",o:["Aumento generalizado y sostenido de los precios","Disminución del valor del dólar","Reducción del empleo","Aumento del salario mínimo"],a:0,e:"Inflación = pérdida del poder adquisitivo cuando los precios suben y el dinero vale menos."},
+  {area:"soc",t:50,q:"La Organización de las Naciones Unidas (ONU) fue fundada después de:",o:["La Segunda Guerra Mundial","La Primera Guerra Mundial","La Guerra Fría","La Revolución Industrial"],a:0,e:"La ONU se fundó en 1945 para promover la paz y seguridad internacional tras la IIGM."},
+  {area:"soc",t:45,q:"¿Cuál de estos países NO comparte frontera con Colombia?",o:["Argentina","Venezuela","Perú","Ecuador"],a:0,e:"Colombia limita con Venezuela, Brasil, Perú, Ecuador, Panamá. Argentina está en el extremo sur del continente."},
+  {area:"soc",t:50,q:"La Reforma Agraria busca principalmente:",o:["Redistribuir la tierra para reducir la desigualdad","Industrializar el campo","Eliminar los cultivos de uso ilícito","Privatizar los recursos naturales"],a:0,e:"La Reforma Agraria busca que la tierra sea de quienes la trabajan, reduciendo el latifundismo."},
+  {area:"soc",t:45,q:"¿Qué es la soberanía de un Estado?",o:["El poder supremo e independiente de gobernarse a sí mismo","La fuerza militar del país","El presupuesto nacional","El número de ciudadanos"],a:0,e:"Soberanía: capacidad de un Estado de autogobernarse sin interferencia externa."},
+  {area:"soc",t:50,q:"El Acuerdo de Paz de 2016 en Colombia fue entre el gobierno y:",o:["Las FARC-EP","El ELN","Los paramilitares","El narcotráfico"],a:0,e:"El Acuerdo de La Habana (2016) fue firmado entre el gobierno de Santos y las FARC-EP."},
+  {area:"soc",t:45,q:"La revolución de las TIC (Tecnologías de Información) ha transformado principalmente:",o:["La comunicación y el acceso a la información","El clima global","Las riquezas mineras","La geografía física"],a:0,e:"Internet y los dispositivos digitales han revolucionado la forma en que las personas se comunican y aprenden."},
+];
+
+// ================================================================
+// BANCO GRADO 10 — 50 preguntas
+// Áreas: Matemáticas (Trig), Física, Química, Filosofía, C. Políticas, Lengua, Inglés
+// ================================================================
+const BANCO_G10 = [
+  // MATEMÁTICAS - TRIGONOMETRÍA (8)
+  {area:"mat",t:55,q:"En un triángulo rectángulo, el seno de un ángulo se define como:",o:["Cateto opuesto / Hipotenusa","Cateto adyacente / Hipotenusa","Cateto opuesto / Cateto adyacente","Hipotenusa / Cateto opuesto"],a:0,e:"sen(θ) = cateto opuesto ÷ hipotenusa. Mnemotécnico: SOH (S=O/H)."},
+  {area:"mat",t:55,q:"El coseno de 60° es igual a:",o:["0.5","0.866","1","0"],a:0,e:"cos(60°) = ½ = 0.5. Es uno de los valores trigonométricos exactos fundamentales."},
+  {area:"mat",t:50,q:"Si sen(θ) = 3/5, en un triángulo rectángulo, cos(θ) es:",o:["4/5","3/4","5/3","5/4"],a:0,e:"Por el Teorema de Pitágoras: si opuesto=3 e hipotenusa=5, adyacente=4. Cos(θ)=4/5."},
+  {area:"mat",t:55,q:"La tangente de 45° es igual a:",o:["1","0","√2","0.5"],a:0,e:"tan(45°) = sen(45°)/cos(45°) = (√2/2)/(√2/2) = 1."},
+  {area:"mat",t:60,q:"En un triángulo, el Teorema del Seno establece que:",o:["a/sen A = b/sen B = c/sen C","a² = b² + c²","a/b = sen C/sen A","sen A + sen B = 1"],a:0,e:"La Ley del Seno relaciona cada lado con el seno del ángulo opuesto en cualquier triángulo."},
+  {area:"mat",t:55,q:"¿Cuál es la identidad trigonométrica fundamental?",o:["sen²θ + cos²θ = 1","sen θ + cos θ = 1","sen θ × cos θ = 1","tan θ = 1"],a:0,e:"La identidad pitagórica es la base de la trigonometría: sen²θ + cos²θ = 1 siempre."},
+  {area:"mat",t:50,q:"Una función y = 2sen(x) tiene amplitud:",o:["2","1","π","0.5"],a:0,e:"La amplitud de A·sen(x) es |A|. En y=2sen(x), A=2, amplitud=2."},
+  {area:"mat",t:60,q:"Si una escalera de 10 m forma un ángulo de 30° con el suelo, ¿a qué altura llega?",o:["5 m","8.66 m","10 m","7 m"],a:0,e:"Altura = 10 × sen(30°) = 10 × 0.5 = 5 m."},
+  // FÍSICA - MECÁNICA (7)
+  {area:"fis",t:55,q:"La Segunda Ley de Newton establece que la fuerza es igual a:",o:["F = m × a","F = m / a","F = a / m","F = m + a"],a:0,e:"F = ma: la fuerza neta que actúa sobre un objeto es igual a su masa por su aceleración."},
+  {area:"fis",t:55,q:"Un objeto de 5 kg es sometido a una fuerza de 20 N. ¿Cuál es su aceleración?",o:["4 m/s²","25 m/s²","100 m/s²","15 m/s²"],a:0,e:"a = F/m = 20/5 = 4 m/s²."},
+  {area:"fis",t:55,q:"¿Qué es la energía potencial gravitacional?",o:["Energía que tiene un objeto por su posición en altura","Energía del movimiento","Energía química almacenada","Energía del calor"],a:0,e:"Ep = mgh. Depende de la masa (m), la gravedad (g) y la altura (h) sobre el suelo."},
+  {area:"fis",t:55,q:"La conservación de la energía mecánica implica que:",o:["La energía total (cinética + potencial) se mantiene constante","La energía siempre aumenta","La energía cinética siempre es mayor","El trabajo es siempre positivo"],a:0,e:"Sin fricción, la energía mecánica total E=Ec+Ep se conserva en cada instante."},
+  {area:"fis",t:60,q:"¿Cuál es la unidad de energía en el Sistema Internacional?",o:["Joule (J)","Newton (N)","Watt (W)","Pascal (Pa)"],a:0,e:"El Joule es la unidad de energía: 1 J = 1 N·m = 1 kg·m²/s²."},
+  {area:"fis",t:55,q:"Un proyectil lanzado horizontalmente sigue una trayectoria:",o:["Parabólica","Circular","Recta","Elíptica"],a:0,e:"La combinación de movimiento uniforme horizontal y caída libre vertical produce una parábola."},
+  {area:"fis",t:55,q:"La potencia se define como:",o:["P = W/t (Trabajo por unidad de tiempo)","P = F/m","P = E × t","P = m × v"],a:0,e:"Potencia = trabajo realizado ÷ tiempo empleado. Unidad: Watt (W) = J/s."},
+  // QUÍMICA INORGÁNICA (7)
+  {area:"qui",t:55,q:"¿Qué indica el número atómico de un elemento?",o:["La cantidad de protones en el núcleo","La masa del átomo","El número de neutrones","El número de electrones del átomo",""],a:0,e:"El número atómico (Z) = número de protones. Identifica al elemento en la tabla periódica."},
+  {area:"qui",t:55,q:"¿Qué son los isótopos?",o:["Átomos del mismo elemento con diferente número de neutrones","Átomos de diferentes elementos","Moléculas con misma fórmula","Iones de carga opuesta"],a:0,e:"Los isótopos tienen el mismo Z (mismo elemento) pero diferente A (diferente número de neutrones)."},
+  {area:"qui",t:55,q:"El enlace iónico se forma entre:",o:["Un metal y un no-metal (transferencia de electrones)","Dos no-metales (compartición)","Dos metales","Átomos iguales"],a:0,e:"En el enlace iónico, el metal cede electrones al no-metal: se forman catión (+) y anión (−)."},
+  {area:"qui",t:55,q:"Balancea: H₂ + O₂ → H₂O. La ecuación balanceada es:",o:["2H₂ + O₂ → 2H₂O","H₂ + O₂ → H₂O","H₂ + 2O₂ → H₂O","4H₂ + O₂ → H₂O"],a:0,e:"2H₂ + O₂ → 2H₂O conserva los átomos: 4H y 2O en cada lado."},
+  {area:"qui",t:55,q:"Un ácido, según Arrhenius, produce en agua:",o:["Iones H⁺ (protones)","Iones OH⁻","Iones metálicos","Gases inertes"],a:0,e:"Arrhenius definió ácidos como sustancias que liberan H⁺ en solución acuosa."},
+  {area:"qui",t:60,q:"La estequiometría estudia:",o:["Las proporciones cuantitativas en las reacciones químicas","La estructura del núcleo","Los estados de la materia","Las propiedades físicas de los elementos"],a:0,e:"La estequiometría calcula cantidades de reactivos y productos en una reacción balanceada."},
+  {area:"qui",t:55,q:"¿Cuántos electrones de valencia tiene el carbono (Z=6)?",o:["4","2","6","3"],a:0,e:"Carbono: 2,4 → 4 electrones en la capa de valencia. Por eso forma 4 enlaces."},
+  // FILOSOFÍA (7)
+  {area:"fil",t:50,q:"¿Qué es la epistemología?",o:["La rama filosófica que estudia el conocimiento","El estudio de los valores morales","La ciencia de la vida","El estudio del lenguaje"],a:0,e:"La epistemología (gnoseología) investiga la naturaleza, el origen y los límites del conocimiento humano."},
+  {area:"fil",t:50,q:"Sócrates es conocido por el método del:",o:["Mayéutica (diálogo interrogativo)","Deductivo formal","Empirismo sensorial","Racionalismo matemático"],a:0,e:"La mayéutica socrática usaba preguntas para que el interlocutor descubriera el conocimiento por sí mismo."},
+  {area:"fil",t:50,q:"El utilitarismo de John Stuart Mill propone que una acción es buena si:",o:["Produce el mayor bienestar para el mayor número de personas","Sigue las normas divinas","Está de acuerdo con el orden natural","Es aprobada por la tradición"],a:0,e:"El utilitarismo mide la moralidad por las consecuencias: maximizar la felicidad colectiva."},
+  {area:"fil",t:50,q:"El 'Cogito ergo sum' ('Pienso, luego existo') fue formulado por:",o:["René Descartes","Aristóteles","Platón","Kant"],a:0,e:"Descartes llegó a esta certeza mínima: si dudo, pienso; si pienso, existo."},
+  {area:"fil",t:50,q:"La ética estudia principalmente:",o:["Los principios que guían la conducta humana","Las leyes físicas del universo","La composición química de los seres vivos","La estructura del lenguaje"],a:0,e:"La ética es la disciplina filosófica que reflexiona sobre el bien, el mal y cómo debemos actuar."},
+  {area:"fil",t:50,q:"El empirismo sostiene que el conocimiento proviene de:",o:["La experiencia sensorial","La razón pura","Dios","La tradición"],a:0,e:"Filósofos como Hume y Locke afirmaban que todo conocimiento se origina en los sentidos."},
+  {area:"fil",t:50,q:"¿Qué es el relativismo moral?",o:["La creencia de que la moralidad varía según la cultura o individuo","La idea de que existen leyes morales universales","El estudio de las normas jurídicas","La negación de toda ética"],a:0,e:"El relativismo niega la existencia de verdades morales absolutas: cada cultura define lo correcto."},
+  // C. POLÍTICAS Y ECONÓMICAS (7)
+  {area:"pol",t:50,q:"El Estado colombiano se organiza en tres ramas del poder público que son:",o:["Legislativa, Ejecutiva y Judicial","Administrativa, Militar y Civil","Federal, Departamental y Municipal","Presidencial, Senatorial y Ministerial"],a:0,e:"Art. 113 de la Constitución: Congreso (legislativa), Presidente (ejecutiva), Cortes (judicial)."},
+  {area:"pol",t:50,q:"La inflación descontrolada tiene como principal efecto:",o:["Pérdida del poder adquisitivo","Aumento del empleo","Crecimiento económico","Reducción de precios"],a:0,e:"Cuando los precios suben más rápido que los salarios, la gente puede comprar menos con el mismo dinero."},
+  {area:"pol",t:50,q:"¿Qué es el desempleo estructural?",o:["El causado por cambios tecnológicos o sectoriales permanentes","El que ocurre en épocas de recesión","El desempleo estacional","El que resulta de cambiar de trabajo voluntariamente"],a:0,e:"El desempleo estructural surge cuando las habilidades de los trabajadores no coinciden con las demandas del mercado."},
+  {area:"pol",t:50,q:"¿Cuál es la función del Banco de la República en Colombia?",o:["Regular la política monetaria y emitir moneda","Cobrar impuestos","Dirigir el ejército","Construir obras públicas"],a:0,e:"El Banco de la República controla la inflación, emite dinero y es el banco de bancos del Estado."},
+  {area:"pol",t:50,q:"La democracia representativa funciona mediante:",o:["Elección de representantes que legislan en nombre del pueblo","El voto directo en todas las decisiones","El liderazgo de un partido único","La herencia del poder"],a:0,e:"En la democracia representativa, los ciudadanos eligen congresistas y gobernantes que los representan."},
+  {area:"pol",t:50,q:"El neoliberalismo económico propone principalmente:",o:["Libre mercado, privatización y reducción del Estado","Mayor intervención estatal en la economía","Proteccionismo comercial","Distribución igual de la riqueza"],a:0,e:"El neoliberalismo promueve la desregulación, las privatizaciones y la apertura comercial."},
+  {area:"pol",t:50,q:"Los tratados de libre comercio (TLC) buscan principalmente:",o:["Reducir aranceles para aumentar el comercio entre países","Eliminar la moneda nacional","Privatizar la educación","Unificar leyes penales"],a:0,e:"Los TLC reducen barreras arancelarias para facilitar el comercio bilateral o multilateral."},
+  // INGLÉS (7)
+  {area:"ing",t:45,q:"Choose the correct sentence: 'Yesterday, I ___ to school.'",o:["went","go","will go","going"],a:0,e:"'Yesterday' indicates past tense. The past tense of 'go' is 'went' (irregular verb)."},
+  {area:"ing",t:45,q:"What does 'moreover' mean in English?",o:["Furthermore / In addition","However / But","Therefore / So","Nevertheless / Yet"],a:0,e:"'Moreover' is an additive connector that adds more information: 'furthermore' or 'in addition'."},
+  {area:"ing",t:45,q:"'She has been studying for 3 hours.' This sentence is in:",o:["Present Perfect Continuous","Simple Present","Past Perfect","Future Simple"],a:0,e:"'Has been + -ing' = Present Perfect Continuous (action that started in the past and continues now)."},
+  {area:"ing",t:45,q:"Select the correct option: 'If it rains, I ___ stay home.'",o:["will","would","had","can"],a:0,e:"First conditional (real possibility): If + simple present, will + infinitive."},
+  {area:"ing",t:45,q:"The word 'although' introduces:",o:["A contrast or concession","A result","A cause","A condition"],a:0,e:"'Although' (= though/even though) introduces a contrasting or concessive clause: 'Although it was late, she came.'"},
+  {area:"ing",t:45,q:"Choose the right question tag: 'She likes music, ___?'",o:["doesn't she","does she","isn't she","didn't she"],a:0,e:"The tag question must be negative when the statement is positive, and use the same auxiliary: doesn't she."},
+  {area:"ing",t:45,q:"'The book was written by Márquez.' What grammatical structure is this?",o:["Passive voice","Active voice","Reported speech","Conditional"],a:0,e:"Passive voice: the subject receives the action. Structure: to be + past participle. 'Was written' = past passive."},
+];
+
+// ================================================================
+// BANCO GRADO 11 — 50 preguntas
+// Áreas: Matemáticas (Cálculo/Estadística), Física avanzada, Q. Orgánica,
+//        Lectura Crítica, C. Políticas, Inglés, Filosofía
+// ================================================================
+const BANCO_G11 = [
+  // MATEMÁTICAS - CÁLCULO Y ESTADÍSTICA (8)
+  {area:"mat",t:60,q:"El límite lim(x→2) de (x²−4)/(x−2) es:",o:["4","2","0","No existe"],a:0,e:"Factorizando: (x−2)(x+2)/(x−2) = x+2. Cuando x→2: 2+2 = 4."},
+  {area:"mat",t:55,q:"La derivada de f(x) = 3x² es:",o:["f'(x) = 6x","f'(x) = 3x","f'(x) = 6x²","f'(x) = 3x²"],a:0,e:"Regla de la potencia: d/dx(axⁿ) = n·axⁿ⁻¹. d/dx(3x²) = 2·3x = 6x."},
+  {area:"mat",t:55,q:"¿Qué representa la integral de una función entre dos puntos?",o:["El área bajo la curva entre esos puntos","La pendiente de la curva","El valor máximo de la función","La raíz de la función"],a:0,e:"La integral definida ∫ᵃᵇ f(x)dx calcula el área entre la curva y el eje x en [a,b]."},
+  {area:"mat",t:50,q:"En un conjunto de datos: 3,5,5,7,9 ¿Cuál es la mediana?",o:["5","6","7","5.8"],a:0,e:"Ordenados: 3,5,5,7,9. El valor central (posición 3) es 5."},
+  {area:"mat",t:50,q:"La probabilidad de sacar un 4 al lanzar un dado justo es:",o:["1/6","1/4","1/3","1/2"],a:0,e:"El dado tiene 6 caras iguales. Solo una es el 4. P(4) = 1/6."},
+  {area:"mat",t:55,q:"¿Qué describe el coeficiente de correlación r = 0?",o:["No hay relación lineal entre las variables","Correlación perfecta positiva","Correlación perfecta negativa","Las variables son iguales"],a:0,e:"r=0 indica ausencia de relación lineal (aunque puede haber otro tipo de relación)."},
+  {area:"mat",t:55,q:"Si la distribución de notas es: Media=70, σ=10, ¿qué porcentaje queda entre 60 y 80?",o:["68% (regla empírica, 1 σ)","95%","99.7%","50%"],a:0,e:"En una distribución normal, aproximadamente el 68% de los datos están dentro de 1 desviación estándar de la media."},
+  {area:"mat",t:60,q:"El número de combinaciones de 5 en 3 (C(5,3)) es:",o:["10","15","20","6"],a:0,e:"C(5,3) = 5!/(3!·2!) = (5×4)/(2×1) = 10."},
+  // FÍSICA AVANZADA (7)
+  {area:"fis",t:60,q:"Las ondas electromagnéticas se propagan:",o:["Sin necesidad de medio material (en el vacío)","Solo en el agua","Solo en metales","Solo en el aire"],a:0,e:"A diferencia de las mecánicas, las ondas EM (luz, radio, rayos X) se propagan en el vacío."},
+  {area:"fis",t:55,q:"El principio de Bernoulli establece que en un fluido en movimiento:",o:["Donde la velocidad es mayor, la presión es menor","La presión siempre es constante","La velocidad y presión son proporcionales","La densidad aumenta con la velocidad"],a:0,e:"P + ½ρv² + ρgh = constante. A mayor velocidad, menor presión (explica el vuelo de aviones)."},
+  {area:"fis",t:55,q:"La Ley de Ohm establece que la corriente eléctrica es:",o:["I = V/R (voltaje dividido entre resistencia)","I = V × R","I = R/V","I = V + R"],a:0,e:"La Ley de Ohm: I(amperios) = V(voltios) / R(ohmios)."},
+  {area:"fis",t:60,q:"El calor específico de una sustancia mide:",o:["La energía necesaria para elevar 1 kg en 1°C","La temperatura máxima que alcanza","La velocidad de conducción térmica","La energía liberada en una reacción"],a:0,e:"Q = m·c·ΔT. El calor específico 'c' indica cuánto calor (J) necesita 1 kg para subir 1°C."},
+  {area:"fis",t:55,q:"¿Qué fenómeno explica los colores en una pompa de jabón?",o:["Interferencia de ondas de luz","Refracción del sonido","Reflexión interna total","Difracción por rendija"],a:0,e:"Los colores resultan de la interferencia constructiva y destructiva de la luz en las delgadas capas de jabón."},
+  {area:"fis",t:55,q:"La fisión nuclear consiste en:",o:["La división de un núcleo pesado en núcleos más pequeños con liberación de energía","La unión de dos núcleos ligeros","La emisión de electrones","El movimiento de protones"],a:0,e:"En la fisión (reactores nucleares, bombas), núcleos como el Uranio-235 se dividen liberando enorme energía."},
+  {area:"fis",t:55,q:"¿Cuál es la velocidad de la luz en el vacío?",o:["3×10⁸ m/s","3×10⁶ m/s","9.8 m/s","340 m/s"],a:0,e:"c ≈ 3×10⁸ m/s ≈ 300.000 km/s. Es la máxima velocidad posible según la Relatividad."},
+  // QUÍMICA ORGÁNICA (7)
+  {area:"qui",t:55,q:"¿Qué elemento es la base de la Química Orgánica?",o:["El carbono","El hidrógeno","El oxígeno","El nitrógeno"],a:0,e:"El carbono puede formar largas cadenas y 4 enlaces, siendo el esqueleto de todos los compuestos orgánicos."},
+  {area:"qui",t:55,q:"Los alcanos son hidrocarburos con:",o:["Solo enlaces simples (C−C)","Un doble enlace","Un triple enlace","Anillo aromático"],a:0,e:"Los alcanos son saturados: solo contienen enlaces simples. Fórmula general CₙH₂ₙ₊₂."},
+  {area:"qui",t:55,q:"El grupo funcional −OH en un compuesto orgánico indica que es:",o:["Un alcohol","Un ácido carboxílico","Un éster","Una amina"],a:0,e:"El grupo hidroxilo (−OH) unido a carbono es la marca de los alcoholes (ej: etanol CH₃CH₂OH)."},
+  {area:"qui",t:55,q:"La reacción de saponificación produce:",o:["Jabón (sales de ácidos grasos) y glicerina","Plástico","Combustible","Ácido clorhídrico"],a:0,e:"La saponificación es la hidrólisis de grasas con base fuerte: produce jabón + glicerol."},
+  {area:"qui",t:60,q:"¿Cuál es el monómero que forma el polietileno (plástico)?",o:["Etileno (CH₂=CH₂)","Propileno","Acetileno","Benceno"],a:0,e:"El etileno (eteno) se polimeriza para formar el polietileno, uno de los plásticos más comunes."},
+  {area:"qui",t:55,q:"Las proteínas están formadas por unidades de:",o:["Aminoácidos","Nucleótidos","Glucosa","Ácidos grasos"],a:0,e:"Las proteínas son polímeros de aminoácidos unidos por enlaces peptídicos (−CO−NH−)."},
+  {area:"qui",t:55,q:"El benceno (C₆H₆) es el compuesto aromático más simple porque tiene:",o:["Un anillo de 6 carbonos con electrones deslocalizado","6 carbonos en cadena recta","Solo enlaces simples","3 carbonos en triángulo"],a:0,e:"El benceno tiene un anillo hexagonal con electrones π deslocalizados que le dan estabilidad especial."},
+  // LECTURA CRÍTICA (7)
+  {area:"lec",t:55,q:"La 'validez' de un argumento depende de:",o:["Si la conclusión se sigue lógicamente de las premisas","Si el argumento es largo","Si quien lo dice tiene autoridad","Si es apoyado por cifras"],a:0,e:"Un argumento válido tiene una estructura lógica correcta, independientemente de si las premisas son verdaderas."},
+  {area:"lec",t:55,q:"Identifica la falacia: 'Todos los jóvenes de Tumaco son violentos' (generalización).",o:["Generalización apresurada","Argumento de autoridad","Falacia ad hominem","Petición de principio"],a:0,e:"Concluir sobre 'todos' a partir de pocos casos es una generalización apresurada, una falacia informal."},
+  {area:"lec",t:55,q:"Una infografía es un ejemplo de texto:",o:["Discontinuo e icónico","Continuo y argumentativo","Narrativo y oral","Descriptivo y lírico"],a:0,e:"Los textos discontinuos combinan imágenes, gráficos y texto no secuencial: tablas, mapas, infografías."},
+  {area:"lec",t:55,q:"La 'ironía' en un texto crítico sirve para:",o:["Criticar o cuestionar algo diciendo lo contrario","Informar objetivamente","Narrar una historia trágica","Describir un objeto"],a:0,e:"La ironía expresa crítica o burla mediante la contradicción entre lo dicho y lo querido decir."},
+  {area:"lec",t:55,q:"Cuando un autor usa datos estadísticos en su argumento, busca:",o:["Dar evidencia cuantitativa para apoyar su tesis","Confundir al lector","Adornar el texto","Introducir hechos históricos"],a:0,e:"Las estadísticas son evidencia empírica que refuerza la credibilidad y objetividad de un argumento."},
+  {area:"lec",t:55,q:"¿Qué es el contexto de enunciación de un texto?",o:["Las circunstancias (quién, cuándo, dónde) en que se produce el texto","El vocabulario utilizado","La extensión del texto","El tema central"],a:0,e:"El contexto de enunciación considera el emisor, receptor, momento y propósito de la comunicación."},
+  {area:"lec",t:55,q:"En una caricatura política, el mensaje se transmite principalmente mediante:",o:["Exageración de rasgos e ironía visual","Texto extenso y académico","Datos estadísticos precisos","Narración cronológica"],a:0,e:"La caricatura usa deformación intencional y símbolos visuales para criticar o comentar la realidad."},
+  // C. POLÍTICAS Y ECONÓMICAS (7)
+  {area:"pol",t:55,q:"¿Qué es el Estado de Bienestar?",o:["Modelo donde el Estado garantiza servicios sociales como salud y educación","Sistema puramente capitalista","Gobierno sin gasto público","Estado mínimo sin intervención"],a:0,e:"El Estado de Bienestar combina mercado con protección social: pensiones, salud, educación pública."},
+  {area:"pol",t:55,q:"Los ODS (Objetivos de Desarrollo Sostenible) fueron adoptados por:",o:["La ONU en 2015 para 2030","La OTAN en 2000","El FMI en 2010","La Unión Europea en 2020"],a:0,e:"Los 17 ODS de la Agenda 2030 guían el desarrollo sostenible mundial: pobreza, clima, salud, etc."},
+  {area:"pol",t:55,q:"La Corte Interamericana de Derechos Humanos tiene competencia sobre:",o:["Estados miembros de la OEA que aceptaron su jurisdicción","Todos los países del mundo","Solo Colombia y Venezuela","Solo delitos de guerra"],a:0,e:"La CIDH juzga violaciones a la Convención Americana sobre DDHH en los países que la ratificaron."},
+  {area:"pol",t:55,q:"¿Qué es el populismo político?",o:["Discurso que enfrenta al 'pueblo virtuoso' contra una 'élite corrupta'","Un sistema de gobierno formal","La democracia participativa","El socialismo marxista"],a:0,e:"El populismo construye una narrativa nosotros (el pueblo) vs. ellos (la élite), apelando a las emociones."},
+  {area:"pol",t:55,q:"El desplazamiento forzado viola principalmente el derecho a:",o:["La libre circulación y la vivienda digna","Voto libre","Educación superior","Trabajo formal"],a:0,e:"El desplazamiento viola derechos fundamentales: vivienda, propiedad, familia, libre circulación."},
+  {area:"pol",t:55,q:"¿Qué medida utiliza el Banco de la República para controlar la inflación?",o:["Aumentar la tasa de interés de referencia","Imprimir más dinero","Reducir impuestos","Privatizar empresas"],a:0,e:"Al subir tasas de interés, el crédito se encarece, se consume menos y los precios bajan."},
+  {area:"pol",t:55,q:"La economía informal en Colombia se caracteriza por:",o:["Trabajadores sin contrato, sin seguridad social y sin impuestos","Empresas exportadoras","El sector financiero regulado","Las cooperativas formales"],a:0,e:"La informalidad laboral implica falta de prestaciones sociales, inestabilidad y baja productividad."},
+  // INGLÉS (7)
+  {area:"ing",t:50,q:"Choose the correct option: 'By the time she arrived, they ___ the meeting.'",o:["had finished","finished","have finished","will finish"],a:0,e:"Past Perfect is used for an action completed BEFORE another past action. 'Had finished' is correct."},
+  {area:"ing",t:45,q:"The sentence 'She suggested that he study harder' uses:",o:["Reported speech with subjunctive","Passive voice","Future conditional","Present perfect"],a:0,e:"After 'suggest', 'recommend', 'insist', the subjunctive (base form) is used: 'that he study'."},
+  {area:"ing",t:45,q:"'The more you practice, ___ you become.' Complete:",o:["the better","the good","the best","better"],a:0,e:"Double comparative structure: 'The more... the better.' Both parts use comparative forms."},
+  {area:"ing",t:45,q:"What is the function of 'nevertheless' in a text?",o:["To introduce a contrast despite a previous statement","To add information","To indicate cause","To indicate time"],a:0,e:"'Nevertheless' (= nonetheless, however) introduces a contrast: 'It was expensive; nevertheless, she bought it.'"},
+  {area:"ing",t:45,q:"'I wish I had studied more.' This expresses:",o:["Regret about the past","A future plan","A present possibility","A condition for the future"],a:0,e:"'I wish + past perfect' expresses regret about something that happened (or didn't happen) in the past."},
+  {area:"ing",t:45,q:"Choose the correct relative pronoun: 'The student ___ won the prize is from Tumaco.'",o:["who","which","what","whose"],a:0,e:"'Who' is the relative pronoun for people. 'Which' is for things. 'Whose' shows possession."},
+  {area:"ing",t:45,q:"What does 'to be on the fence' mean?",o:["To be undecided or neutral about something","To be very sure about a decision","To disagree strongly","To be in danger"],a:0,e:"Idiomatic expression: sitting on the fence = being neutral, unable or unwilling to decide."},
+];
+
+// ================================================================
+// SELECCIÓN DE PREGUNTAS SEGÚN GRADO (50 preguntas adaptadas)
+// ================================================================
+function construirPreguntas(grado) {
+    let banco;
+    if (grado === '8')         banco = BANCO_G8;
+    else if (grado === '9')    banco = BANCO_G9;
+    else if (grado === '10')   banco = BANCO_G10;
+    else if (grado === '11' || grado === 'Egresado') banco = BANCO_G11;
+    else banco = BANCO_G8;  // fallback
+
+    // Mezcla aleatoria y toma hasta 50 preguntas
+    const mezclado = [...banco].sort(() => Math.random() - 0.5).slice(0, 50);
+    return mezclado.map((p, idx) => ({
+        ...p,
+        tiempoCad: p.t || p.tiempoCad || 45,
+        explicacion: p.e || p.explicacion || '',
+        area: AREA_META[p.area] ? AREA_META[p.area].nombre : p.area,
+        areaKey: p.area,
+        color: AREA_META[p.area] ? AREA_META[p.area].color : 'var(--teal)',
+        numero: idx + 1
+    }));
+}
+
+let PREGUNTAS = construirPreguntas('8'); // se actualiza con el grado real al iniciar
+
+
+
+// ================================================================
+// ESTADO DEL TEST
+// ================================================================
+let indice = 0;
+let respuestas = [];
+let timerInterval = null;
+let tiempoRestante = 0;
+let datosAspirante = {};
+
+const sesion = localStorage.getItem('usuario_sesion_activa');
+const usuario = sesion ? JSON.parse(sesion) : null;
+
+// ── INICIO (Mantenemos el Event Listener original cruzado por seguridad) ──
+const btnIniciar = document.getElementById('btn-iniciar');
+if (btnIniciar) {
+    btnIniciar.addEventListener('click', () => {
+        // Ejecuta la validación unificada y robusta para asegurar que no falle
+        window.validarEIniciarTest();
+    });
+}
+
+// ── CARGAR PREGUNTA ──────────────────────────────────────────────
+function cargarPregunta() {
+    if (indice >= PREGUNTAS.length) { mostrarResultados(); return; }
+
+    const p = PREGUNTAS[indice];
+    const total = PREGUNTAS.length;
+
+    // Progreso
+    document.getElementById('barra-progreso').style.width = (indice / total * 100) + '%';
+    document.getElementById('txt-progreso').textContent = `${indice + 1} / ${total}`;
+    document.getElementById('question-num').textContent = `Pregunta ${indice + 1} de ${total}`;
+
+    // Área
+    const areaTag = document.getElementById('quiz-area');
+    areaTag.textContent = p.area;
+    areaTag.className = `quiz-area-tag area-${p.areaKey}`;
+
+    // Enunciado
+    document.getElementById('quiz-enunciado').textContent = p.q;
+
+    // Limpiar
+    document.getElementById('feedback-bar').style.display = 'none';
+    document.getElementById('btn-siguiente').classList.add('hidden');
+
+    // Opciones
+    const cont = document.getElementById('quiz-opciones');
+    cont.innerHTML = '';
+    const letras = ['A', 'B', 'C', 'D'];
+    p.o.forEach((op, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-letter">${letras[i]}</span><span>${op}</span>`;
+        btn.onclick = () => seleccionarOpcion(i, btn);
+        cont.appendChild(btn);
     });
 
-    // 2. Menú Móvil
-    const mobileMenu = document.getElementById('mobile-menu');
-    const navLinks = document.querySelector('.nav-links');
-    if(mobileMenu && navLinks) {
-        // Clonamos el botón para evitar que se dupliquen eventos viejos
-        const newMobileMenu = mobileMenu.cloneNode(true);
-        mobileMenu.parentNode.replaceChild(newMobileMenu, mobileMenu);
-        newMobileMenu.addEventListener('click', () => {
-            newMobileMenu.classList.toggle('is-active');
-            navLinks.classList.toggle('active');
-        });
+    // Timer
+    iniciarTimer(p.tiempoCad);
+}
+
+// ── TIMER ────────────────────────────────────────────────────────
+function iniciarTimer(segundos) {
+    clearInterval(timerInterval);
+    tiempoRestante = segundos;
+    actualizarTimerDisplay();
+    timerInterval = setInterval(() => {
+        tiempoRestante--;
+        actualizarTimerDisplay();
+        if (tiempoRestante <= 0) {
+            clearInterval(timerInterval);
+            tiempoAgotado();
+        }
+    }, 1000);
+}
+
+function actualizarTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    el.textContent = `⏱ ${tiempoRestante}s`;
+    el.className = 'timer';
+    if (tiempoRestante <= 10) el.classList.add('danger');
+    else if (tiempoRestante <= 20) el.classList.add('warning');
+}
+
+function tiempoAgotado() {
+    // No bloquear las opciones — el estudiante DEBE seleccionar una para continuar
+    const fb = document.getElementById('feedback-bar');
+    fb.style.display = 'flex';
+    fb.className = 'feedback-bar wrong';
+    fb.textContent = '⏰ ¡Tiempo agotado! Selecciona una opción para continuar.';
+    // Reiniciar el timer con unos segundos extra para que el usuario pueda seleccionar
+    timerInterval = setInterval(() => {}, 99999); // detener tick
+}
+
+// ── SELECCIONAR OPCIÓN ───────────────────────────────────────────
+function seleccionarOpcion(opcionIdx, btnSeleccionado) {
+    clearInterval(timerInterval);
+    const p = PREGUNTAS[indice];
+    const esCorrecta = opcionIdx === p.a;
+
+    document.querySelectorAll('.option-btn').forEach((b, i) => {
+        b.disabled = true;
+        if (i === p.a) b.classList.add('correct');
+        if (i === opcionIdx && !esCorrecta) b.classList.add('wrong');
+    });
+
+    respuestas.push({
+        pregunta: indice,
+        respondida: true,
+        correcta: esCorrecta,
+        area: p.areaKey,
+        tiempoUsado: p.tiempoCad - tiempoRestante
+    });
+
+    mostrarFeedback(esCorrecta, (esCorrecta ? '✅ ¡Correcto! ' : '❌ Incorrecto. ') + p.explicacion, esCorrecta);
+    document.getElementById('btn-siguiente').classList.remove('hidden');
+}
+
+function mostrarFeedback(esCorrecta, msg, _) {
+    const fb = document.getElementById('feedback-bar');
+    fb.style.display = 'flex';
+    fb.className = `feedback-bar ${esCorrecta ? 'correct' : 'wrong'}`;
+    fb.textContent = msg;
+}
+
+// ── SIGUIENTE ────────────────────────────────────────────────────
+window.siguientePregunta = function() {
+    indice++;
+    cargarPregunta();
+};
+
+// ── RESULTADOS ───────────────────────────────────────────────────
+async function mostrarResultados() {
+    clearInterval(timerInterval);
+    document.getElementById('pantalla-quiz').classList.add('hidden');
+    document.getElementById('pantalla-resultados').classList.remove('hidden');
+
+    const areas = {};
+    let totalOk = 0;
+    respuestas.forEach(r => {
+        if (!areas[r.area]) areas[r.area] = { ok: 0, total: 0 };
+        areas[r.area].total++;
+        if (r.correcta) { areas[r.area].ok++; totalOk++; }
+    });
+
+    const porcentaje = Math.round(totalOk / PREGUNTAS.length * 100);
+    const puntos = totalOk * 10;
+
+    const circle = document.getElementById('score-circle');
+    document.getElementById('res-puntos').textContent = `${totalOk}/${PREGUNTAS.length}`;
+    if (porcentaje >= 80) { circle.className = 'score-circle excelente'; }
+    else if (porcentaje >= 60) { circle.className = 'score-circle bien'; }
+    else if (porcentaje >= 40) { circle.className = 'score-circle regular'; }
+    else { circle.className = 'score-circle reforzar'; }
+
+    const messages = {
+        excelente: ['¡Desempeño Sobresaliente!', 'Tu nivel supera el promedio diagnóstico. Estás listo para el módulo avanzado.'],
+        bien: ['¡Buen Desempeño!', 'Tienes una base sólida. Con práctica adicional llegarás al nivel universitario.'],
+        regular: ['Vas por buen camino', 'Tienes fundamentos. El programa PRI te ayudará a fortalecer las áreas críticas.'],
+        reforzar: ['Detectamos áreas de refuerzo', 'No te preocupes — eso es exactamente para lo que existe el Programa PRI.']
+    };
+    const nivel = porcentaje >= 80 ? 'excelente' : porcentaje >= 60 ? 'bien' : porcentaje >= 40 ? 'regular' : 'reforzar';
+    document.getElementById('results-title').textContent = messages[nivel][0];
+    document.getElementById('results-msg').textContent = messages[nivel][1];
+
+    // Desglose dinámico por área
+    const cont = document.getElementById('area-breakdown-container');
+    cont.innerHTML = '';
+    const resumenAreas = []; // para fortalezas/falencias y para guardar en BD
+    Object.keys(areas).forEach(key => {
+        const a = areas[key];
+        const meta = AREA_META[key] || { nombre: key, icono: '📌', color: 'var(--teal)' };
+        const pct = Math.round(a.ok / a.total * 100);
+        resumenAreas.push({ key, nombre: meta.nombre, ok: a.ok, total: a.total, pct });
+        cont.insertAdjacentHTML('beforeend', `
+            <div class="area-row">
+                <div class="area-row-header">
+                    <span class="area-row-name">${meta.icono} ${meta.nombre}</span>
+                    <span class="area-row-score" style="color:${meta.color}">${a.ok}/${a.total}</span>
+                </div>
+                <div class="area-bar-bg"><div class="area-bar-fill" style="width:0%;background:${meta.color}" data-pct="${pct}"></div></div>
+            </div>`);
+    });
+    setTimeout(() => {
+        document.querySelectorAll('.area-bar-fill').forEach(el => { el.style.width = el.dataset.pct + '%'; });
+    }, 200);
+
+    // Fortalezas y falencias (basado en datos reales del intento)
+    resumenAreas.sort((x, y) => y.pct - x.pct);
+    const fortalezas = resumenAreas.filter(a => a.pct >= 70);
+    const falencias = resumenAreas.filter(a => a.pct < 70);
+    const fyf = document.getElementById('fyf-container');
+    fyf.innerHTML = '';
+    if (fortalezas.length) {
+        fyf.insertAdjacentHTML('beforeend', `<div class="fyf-box fuerte"><b>💪 Tu fortaleza:</b> ${fortalezas.map(a => a.nombre).join(', ')}. ¡Sigue así!</div>`);
+    }
+    if (falencias.length) {
+        fyf.insertAdjacentHTML('beforeend', `<div class="fyf-box falencia"><b>🎯 Temas centrales por mejorar:</b> ${falencias.map(a => a.nombre).join(', ')}. El Programa PRI tiene módulos específicos para fortalecer estas áreas.</div>`);
+    } else {
+        fyf.insertAdjacentHTML('beforeend', `<div class="fyf-box fuerte"><b>🏆 Excelente base general.</b> Te invitamos a profundizar en el Programa PRI para llegar al nivel universitario.</div>`);
     }
 
-    // 3. Cursor Personalizado
-    const dot = document.querySelector('.cursor-dot');
-    const ring = document.querySelector('.cursor-ring');
-    if(dot && ring) {
-        document.addEventListener('mousemove', (e) => {
-            dot.style.left = e.clientX + 'px';
-            dot.style.top = e.clientY + 'px';
-            ring.style.left = e.clientX + 'px';
-            ring.style.top = e.clientY + 'px';
-        });
+    document.getElementById('puntos-ganados-val').textContent = `+${puntos} PTS`;
 
-        // 4. Hacer que el cursor crezca al tocar botones, enlaces y tarjetas
-        const clickables = document.querySelectorAll('a, button, .menu-toggle, .fase-card, .mini-prod-card, .docente-card, .prod-card, input');
-        clickables.forEach(item => {
-            item.addEventListener('mouseenter', () => { ring.style.transform = 'translate(-50%, -50%) scale(1.6)'; });
-            item.addEventListener('mouseleave', () => { ring.style.transform = 'translate(-50%, -50%) scale(1)'; });
-        });
+    // Guardar en Firebase
+    try {
+        const payload = {
+            ...datosAspirante,
+            registrado: !!usuario,
+            uid: usuario ? usuario.uid : null,
+            aciertos: totalOk,
+            total: PREGUNTAS.length,
+            porcentaje: porcentaje + '%',
+            puntos,
+            desglosePorArea: areas,
+            resumenAreas,
+            fortalezas: fortalezas.map(a => a.nombre),
+            falencias: falencias.map(a => a.nombre),
+            fechaMuestra: serverTimestamp()
+        };
+        await addDoc(collection(db, "muestras_pretest"), payload);
+
+        // También guardar en sondeo_piloto para estadísticas generales
+        try {
+            await addDoc(collection(db, "sondeo_piloto"), {
+                nombre: datosAspirante.nombre || '',
+                correo: datosAspirante.correo || '',
+                tel: datosAspirante.tel || '',
+                ciudad: datosAspirante.ciudad || 'Tumaco, Nariño',
+                doc_tipo: datosAspirante.docTipo || '',
+                doc_num: datosAspirante.docNum || '',
+                rol: datosAspirante.rol || 'ESTUDIANTE',
+                nivel: datosAspirante.nivel || (datosAspirante.grado + '° grado'),
+                institucion: datosAspirante.colegio || 'No especificada',
+                areas_interes: datosAspirante.areas_interes || fortalezas.map(a=>a.nombre),
+                puntuacion: totalOk,
+                puntaje_max: PREGUNTAS.length,
+                fecha_registro: new Date().toLocaleDateString('es-CO'),
+                fuente: 'pretest_web',
+                timestamp: serverTimestamp()
+            });
+        } catch(e2) { /* no bloquea si falla */ }
+
+        if (usuario) {
+            await updateDoc(doc(db, "usuarios", usuario.uid), {
+                puntos: increment(puntos),
+                ultimoTest: new Date(),
+                caracterizacion_completa: true
+            });
+            const updated = { ...usuario, puntos: (usuario.puntos || 0) + puntos, caracterizacion_completa: true };
+            localStorage.setItem('usuario_sesion_activa', JSON.stringify(updated));
+        }
+    } catch (err) {
+        console.warn('Error al guardar:', err.message);
     }
+
+    // DISPARADOR DEL CTA FINAL AUTOMÁTICO AL TERMINAR TU PRUEBA NATAL
+    if (typeof mostrarCTAFinal === "function") {
+        mostrarCTAFinal();
+    }
+}
+
+// ── REINICIAR ────────────────────────────────────────────────────
+window.reiniciarTest = function() {
+    indice = 0; respuestas = [];
+    clearInterval(timerInterval);
+    document.getElementById('pantalla-resultados').classList.add('hidden');
+    document.getElementById('pantalla-inicio').classList.remove('hidden');
+};
+
+// =======================================================
+// 3. GUARDADO EN FIREBASE Y DESPLIEGUE DE INVITACIÓN (CTA)
+// =======================================================
+window.finalizarYGuardar = async function(totalOk, totalPreguntas, porcentaje, puntos, areas) {
+      const btnResultados = document.getElementById('btn-siguiente');
+      if(btnResultados) {
+          btnResultados.innerText = "Guardando resultados...";
+          btnResultados.disabled = true;
+      }
+
+      try {
+          await addDoc(collection(db, "muestras_pretest"), {
+              ...datosAspirante,
+              aciertos: totalOk,
+              total: totalPreguntas,
+              porcentaje: porcentaje + '%',
+              puntosObtenidos: puntos,
+              desglosePorArea: areas || {},
+              fechaMuestra: serverTimestamp()
+          });
+          console.log("✅ Resultados guardados exitosamente en Firebase.");
+      } catch (err) {
+          console.error("❌ Error de Firebase:", err.message);
+      } finally {
+          mostrarCTAFinal();
+      }
+  };
+
+  function mostrarCTAFinal() {
+      const pantallaResultados = document.getElementById('pantalla-resultados');
+      if (!pantallaResultados) return;
+
+      if (document.getElementById('cta-registro-programa')) return;
+
+      const ctaDiv = document.createElement('div');
+      ctaDiv.id = 'cta-registro-programa';
+      ctaDiv.className = 'cta-final'; 
+      
+      const primerNombre = (datosAspirante.nombre || window.datosAspiranteGlobal.nombre) 
+          ? (datosAspirante.nombre || window.datosAspiranteGlobal.nombre).split(' ')[0] 
+          : 'Futuro Ingeniero';
+
+      ctaDiv.innerHTML = `
+          <div style="margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(6,32,64,0.9), rgba(4,24,48,0.9)); border: 2px dashed var(--naranja); border-radius: 12px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+              <span class="brand-eyebrow" style="color: var(--teal); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: block; margin-bottom: 0.5rem;">¡Este es solo el comienzo!</span>
+              <h3 style="font-family: 'Montserrat', sans-serif; color: var(--oro); font-size: 1.4rem; margin-bottom: 0.75rem;">¿Quieres superar este puntaje, ${primerNombre}?</h3>
+              <p style="color: var(--blanco); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; opacity: 0.9;">
+                No dejes que las pruebas de estado definen tu límite. Regístrate oficialmente en <b>PROGRAMA-PRI</b> y accede gratis a nuestras clases, simuladores completos y gana recompensas por estudiar.
+              </p>
+              <button class="btn-primary" style="background: var(--naranja); color: var(--blanco); font-weight: 900; padding: 0.8rem 2rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; width: 100%; max-width: 320px; box-shadow: 0 4px 15px rgba(255,94,0,0.3);" onclick="window.location.href='login.html'">
+                Crear mi Perfil Oficial Ahora 🚀
+              </button>
+          </div>
+      `;
+      
+      pantallaResultados.appendChild(ctaDiv);
+  }
 </script>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA<span class="outline-text-footer">-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="login.html">Ingresar</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Tumaco, Nariño</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">programapri_bog@unal.edu.co</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+    </div>
+</footer>
 </body>
 </html>

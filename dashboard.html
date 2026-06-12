@@ -3,112 +3,2293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Métricas de Impacto | PROGRAMA-PRI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <title>Panel de Control | PROGRAMA-PRI</title>
     <link rel="stylesheet" href="style.css">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --azul-deep:#021a36;--azul-medio:#031f42;--azul-panel:#062040;--azul-card:#041830;
+            --naranja:#ff5e00;--naranja-dim:rgba(255,94,0,0.12);--oro:#ffd700;
+            --blanco:#f0f4f8;--teal:#38bdf8;--verde:#22c55e;--rojo:#ef4444;
+            --fuente-t:'Montserrat',sans-serif;--fuente-b:'Lora',serif;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html{scroll-behavior:smooth;}
+        body{font-family:var(--fuente-b);background:var(--azul-deep);color:var(--blanco);min-height:100vh;display:flex;flex-direction:column;}
+        body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,94,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,94,0,0.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+        .cursor-dot{width:8px;height:8px;background:var(--naranja);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+        .cursor-ring{width:32px;height:32px;border:2px solid rgba(255,94,0,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.18s ease;}
+        #reading-bar{position:fixed;top:0;left:0;height:3px;z-index:9000;background:linear-gradient(90deg,var(--naranja),var(--oro));width:0%;transition:width 0.1s linear;}
+        #notif-container{position:fixed;top:1.5rem;right:1.5rem;z-index:9500;display:flex;flex-direction:column;gap:0.75rem;max-width:360px;width:100%;}
+        .notif-pri{background:var(--azul-panel);border-left:4px solid;padding:1.1rem 1.4rem;font-family:var(--fuente-t);font-size:0.72rem;font-weight:700;box-shadow:6px 6px 0 rgba(0,0,0,0.4);transition:all 0.3s ease;transform:translateX(30px);opacity:0;position:relative;}
+        .notif-pri.visible{transform:translateX(0);opacity:1;}
+        .notif-pri.success{border-color:#22c55e;color:#86efac;}
+        .notif-pri.error{border-color:#ef4444;color:#fca5a5;}
+        .notif-pri.info{border-color:var(--teal);color:var(--teal);}
+        .notif-pri.warn{border-color:var(--oro);color:var(--oro);}
+        .notif-icono{font-size:1.3rem;display:block;margin-bottom:0.25rem;}
+        .notif-titulo{font-size:0.8rem;color:var(--blanco);margin-bottom:0.2rem;}
+        .notif-cerrar{position:absolute;top:0.5rem;right:0.75rem;background:none;border:none;color:rgba(240,244,248,0.3);font-size:1rem;cursor:pointer;transition:color 0.2s;}
+        .notif-cerrar:hover{color:var(--blanco);}
+        .site-header{position:sticky;top:0;z-index:500;background:rgba(2,26,54,0.95);border-bottom:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(16px);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+        .header-brand{display:flex;align-items:center;gap:1rem;text-decoration:none;}
+        .header-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-weight:900;font-size:1rem;color:var(--azul-deep);border:2px solid var(--azul-deep);box-shadow:3px 3px 0 var(--naranja);flex-shrink:0;overflow:hidden;border-radius:50%;}
+        .header-icon img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+        .header-brand-text h1{font-family:var(--fuente-t);font-size:1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--blanco);}
+        .header-brand-text p{font-family:var(--fuente-t);font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--teal);}
+        .header-right{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+        .header-user{text-align:right;}
+        .header-user .user-role{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);}
+        .header-user .user-name{font-family:var(--fuente-t);font-size:0.9rem;font-weight:900;color:var(--blanco);letter-spacing:1px;}
+        .header-points{font-family:var(--fuente-t);font-size:0.75rem;font-weight:900;color:var(--oro);background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);padding:0.35rem 0.85rem;}
+        .btn-logout{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fca5a5;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);padding:0.5rem 1rem;cursor:pointer;transition:all 0.2s;}
+        .btn-logout:hover{background:rgba(239,68,68,0.25);color:white;}
+        .banner-caract{background:linear-gradient(90deg,rgba(255,94,0,0.12),rgba(255,215,0,0.07));border:1px solid rgba(255,94,0,0.3);border-left:4px solid var(--naranja);padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+        .banner-caract-text{font-family:var(--fuente-t);font-size:0.75rem;}
+        .banner-caract-text strong{display:block;color:var(--blanco);margin-bottom:0.2rem;}
+        .banner-caract-text span{color:rgba(240,244,248,0.55);}
+        .btn-banner{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;padding:0.6rem 1.2rem;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+        .btn-banner:hover{background:#e05200;}
+        .main-layout{flex:1;display:flex;gap:1.5rem;max-width:1600px;width:100%;margin:0 auto;padding:2rem;position:relative;z-index:1;}
+        .sidebar{width:240px;flex-shrink:0;position:relative;height:auto;background:none;border-right:none;padding:0;}
+        .sidebar-inner{position:sticky;top:80px;background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:1.5rem 1rem;}
+        .sidebar-label{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.25);padding:0 0.5rem;margin-bottom:0.75rem;}
+        .nav-btn{display:flex;align-items:center;gap:0.75rem;width:100%;padding:0.75rem;background:none;border:none;border-left:3px solid transparent;color:rgba(240,244,248,0.45);font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;text-align:left;}
+        .nav-btn:hover{color:var(--blanco);background:rgba(255,94,0,0.06);}
+        .nav-btn.active{color:var(--blanco);border-left-color:var(--naranja);background:rgba(255,94,0,0.08);}
+        .main-content{flex:1;min-width:0;}
+        .panel{display:none;animation:fadePanel 0.25s ease;}
+        .panel.active{display:block;}
+        @keyframes fadePanel{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .panel-title{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--naranja);margin-bottom:0.4rem;}
+        .panel-heading{font-family:var(--fuente-t);font-size:clamp(1.4rem,3vw,2rem);font-weight:900;color:var(--blanco);margin-bottom:0.5rem;}
+        .panel-heading em{font-style:normal;color:var(--naranja);}
+        .panel-desc{font-size:0.9rem;color:rgba(240,244,248,0.5);line-height:1.6;margin-bottom:2rem;}
+        .panel-divider{height:1px;background:rgba(255,255,255,0.07);margin:2rem 0;}
+        .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem;}
+        .kpi-card{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:1.5rem 1.25rem;position:relative;transition:border-color 0.2s,transform 0.2s;overflow:hidden;}
+        .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--naranja);transform:scaleX(0);transition:transform 0.3s;}
+        .kpi-card:hover{border-color:rgba(255,94,0,0.3);transform:translateY(-3px);}
+        .kpi-card:hover::before{transform:scaleX(1);}
+        .kpi-label{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin-bottom:0.75rem;}
+        .kpi-value{font-family:var(--fuente-t);font-size:2.2rem;font-weight:900;line-height:1;color:var(--naranja);}
+        .kpi-value.cyan{color:var(--teal);}
+        .kpi-value.green{color:var(--verde);}
+        .kpi-value.white{color:var(--blanco);}
+        .kpi-sub{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);letter-spacing:1px;margin-top:0.4rem;}
+        .section-box{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:1.75rem;margin-bottom:1.5rem;overflow:hidden;}
+        .section-box-title{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .chart-container{height:280px;position:relative;}
+        .alert-box{display:flex;gap:1rem;padding:1rem 1.25rem;border-left:4px solid;margin-bottom:1.5rem;}
+        .alert-box.warning{background:rgba(245,158,11,0.07);border-color:#f59e0b;color:#fcd34d;}
+        .alert-box.info{background:rgba(56,189,248,0.07);border-color:var(--teal);color:var(--teal);}
+        .alert-box-icon{font-size:1.2rem;flex-shrink:0;}
+        .alert-box-text{font-family:var(--fuente-t);font-size:0.7rem;line-height:1.6;}
+        .alert-box-text strong{font-size:0.75rem;letter-spacing:1px;display:block;margin-bottom:0.2rem;}
+        .module-item{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.1rem 1.25rem;background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);margin-bottom:0.75rem;transition:border-color 0.2s;flex-wrap:wrap;}
+        .module-item:hover{border-color:rgba(255,94,0,0.2);}
+        .module-item-info{flex:1;min-width:0;}
+        .module-item-name{font-family:var(--fuente-t);font-size:0.8rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;word-break:break-word;}
+        .module-item-meta{font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:1px;color:rgba(240,244,248,0.3);text-transform:uppercase;}
+        .btn-module{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.5rem 1.1rem;background:var(--naranja);color:var(--azul-deep);border:2px solid var(--azul-deep);box-shadow:3px 3px 0 rgba(0,0,0,0.4);cursor:pointer;transition:all 0.2s;flex-shrink:0;}
+        .btn-module:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(0,0,0,0.4);}
+        .taller-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1.5rem;transition:all 0.25s;}
+        .taller-card:hover{border-color:rgba(56,189,248,0.25);transform:translateY(-2px);}
+        .taller-tag{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:0.5rem;}
+        .taller-title{font-family:var(--fuente-t);font-size:0.85rem;font-weight:900;color:var(--blanco);margin-bottom:0.5rem;word-break:break-word;}
+        .taller-desc{font-size:0.8rem;color:rgba(240,244,248,0.4);line-height:1.5;margin-bottom:1rem;}
+        .btn-taller{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.55rem 1rem;background:var(--teal);color:var(--azul-deep);border:none;cursor:pointer;transition:background 0.2s;display:inline-block;text-decoration:none;}
+        .btn-taller:hover{background:white;}
+        .tutores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+        .tutor-item{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1.1rem;display:flex;align-items:center;gap:0.75rem;transition:border-color 0.2s;}
+        .tutor-item:hover{border-color:rgba(255,94,0,0.2);}
+        .tutor-avatar{width:42px;height:42px;background:var(--naranja-dim);border:2px solid var(--naranja);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.95rem;font-weight:900;color:var(--naranja);flex-shrink:0;overflow:hidden;}
+        .tutor-avatar img{width:100%;height:100%;object-fit:cover;}
+        .tutor-name{font-family:var(--fuente-t);font-size:0.72rem;font-weight:700;color:var(--blanco);line-height:1.3;word-break:break-word;}
+        .tutor-area{font-family:var(--fuente-t);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:rgba(240,244,248,0.3);}
+        .btn-rate{margin-left:auto;font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;color:var(--oro);background:none;border:none;cursor:pointer;flex-shrink:0;transition:color 0.2s;}
+        .btn-rate:hover{color:white;}
+        /* FORO */
+        .foro-messages{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:0.6rem;padding:1rem;background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);margin-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--naranja) transparent;}
+        .foro-messages::-webkit-scrollbar{width:4px;}
+        .foro-messages::-webkit-scrollbar-thumb{background:var(--naranja);}
+        .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(255,255,255,0.1);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;}
+        .msg-item.mine{border-left-color:var(--naranja);}
+        .msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;color:var(--azul-deep);overflow:hidden;}
+        .msg-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+        .msg-item-body{flex:1;min-width:0;}
+        .msg-author{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;color:var(--teal);margin-bottom:0.2rem;}
+        .msg-author .msg-time{float:right;color:rgba(240,244,248,0.25);font-weight:400;}
+        .msg-text{font-size:0.82rem;color:rgba(240,244,248,0.7);line-height:1.4;word-break:break-word;}
+        .btn-reply-priv{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(240,244,248,0.3);padding:0.2rem 0.5rem;cursor:pointer;margin-top:0.4rem;transition:all 0.2s;}
+        .btn-reply-priv:hover{border-color:var(--teal);color:var(--teal);}
+        .foro-input-row{display:flex;gap:0.75rem;}
+        .foro-input{flex:1;background:var(--azul-card);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:var(--fuente-b);font-size:0.85rem;padding:0.75rem 1rem;outline:none;}
+        .foro-input:focus{border-color:var(--verde);}
+        .btn-send{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.75rem 1.25rem;background:var(--verde);color:var(--azul-deep);border:none;cursor:pointer;transition:background 0.2s;}
+        .btn-send:hover{background:white;}
+        /* CHAT PRIVADO */
+        .chat-priv-header{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);padding:0.75rem 1rem;background:rgba(56,189,248,0.07);border-bottom:1px solid rgba(56,189,248,0.15);display:flex;align-items:center;justify-content:space-between;}
+        .btn-cerrar-chat{background:none;border:none;color:rgba(240,244,248,0.4);cursor:pointer;font-size:1rem;transition:color 0.2s;}
+        .btn-cerrar-chat:hover{color:var(--blanco);}
+        /* ADMIN TABLE */
+        .admin-table-wrap{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;font-size:0.78rem;}
+        thead tr{background:rgba(255,255,255,0.03);}
+        thead th{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35);padding:0.85rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07);white-space:nowrap;}
+        tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;}
+        tbody tr:hover{background:rgba(255,255,255,0.02);}
+        tbody td{padding:0.9rem 1rem;color:rgba(240,244,248,0.6);max-width:200px;overflow:hidden;text-overflow:ellipsis;}
+        .name-cell{font-family:var(--fuente-t);font-size:0.75rem;font-weight:700;color:var(--blanco);}
+        .pts-cell{font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--naranja);}
+        .badge{font-family:var(--fuente-t);font-size:0.55rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.2rem 0.6rem;display:inline-block;}
+        .badge.verde{background:rgba(34,197,94,0.1);color:#86efac;}
+        .badge.amarillo{background:rgba(234,179,8,0.1);color:#fde68a;}
+        .badge.rojo{background:rgba(239,68,68,0.1);color:#fca5a5;}
+        .btn-table{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(240,244,248,0.5);cursor:pointer;transition:all 0.2s;}
+        .btn-table:hover{background:rgba(255,94,0,0.1);border-color:rgba(255,94,0,0.3);color:var(--blanco);}
+        /* FORM */
+        .form-add{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
+        .form-add.full{grid-template-columns:1fr;}
+        .fa-group{display:flex;flex-direction:column;gap:0.35rem;}
+        .fa-group label{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);}
+        .fa-group input,.fa-group select,.fa-group textarea{background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:var(--fuente-b);font-size:0.85rem;padding:0.65rem 0.9rem;outline:none;transition:border-color 0.2s;width:100%;}
+        .fa-group input:focus,.fa-group select:focus,.fa-group textarea:focus{border-color:var(--naranja);}
+        .fa-group textarea{resize:vertical;min-height:80px;}
+        .fa-group select option{background:var(--azul-deep);}
+        .btn-add{font-family:var(--fuente-t);font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;border:3px solid var(--azul-deep);box-shadow:4px 4px 0 rgba(0,0,0,0.4);padding:0.7rem 1.5rem;cursor:pointer;transition:all 0.2s;margin-top:0.5rem;}
+        .btn-add:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(0,0,0,0.4);}
+        .btn-add.secondary{background:var(--teal);color:var(--azul-deep);}
+        .btn-add.danger{background:var(--rojo);}
+        /* PRODUCTOS */
+        .productos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
+        .producto-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);padding:1.5rem;text-align:center;transition:all 0.25s;position:relative;}
+        .producto-card:hover{border-color:rgba(255,215,0,0.3);transform:translateY(-3px);}
+        .producto-emoji{font-size:2.5rem;margin-bottom:0.75rem;display:block;}
+        .producto-nombre{font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--blanco);margin-bottom:0.4rem;word-break:break-word;}
+        .producto-pts{font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;color:var(--oro);margin-bottom:1rem;}
+        .btn-canjear{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:linear-gradient(135deg,var(--naranja),#cc4400);color:#fff;border:2px solid var(--azul-deep);box-shadow:3px 3px 0 rgba(0,0,0,0.4);padding:0.5rem 1rem;cursor:pointer;transition:all 0.2s;width:100%;}
+        .btn-canjear:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(0,0,0,0.4);}
+        .btn-canjear:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+        .mes-limit-note{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);text-align:center;margin-top:0.5rem;}
+        /* PERFIL */
+        .foto-preview-small{width:80px;height:80px;object-fit:cover;border:2px solid rgba(255,94,0,0.4);display:block;margin:0.5rem 0;}
+        .upload-section{background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);padding:1.25rem;text-align:center;margin-bottom:1rem;}
+        .progress-mini{height:5px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-top:4px;}
+        .progress-mini-fill{height:100%;background:linear-gradient(90deg,var(--naranja),var(--oro));}
+        .calificacion-item{padding:0.85rem 1rem;border-bottom:1px solid rgba(255,255,255,0.05);}
+        .cal-stars{color:var(--oro);font-size:0.9rem;}
+        .cal-comentario{font-size:0.8rem;color:rgba(240,244,248,0.55);margin-top:0.3rem;}
+        /* CAPACITACIONES */
+        .capacitacion-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);padding:1.25rem;margin-bottom:0.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+        .cap-info .cap-nombre{font-family:var(--fuente-t);font-size:0.8rem;font-weight:700;color:var(--blanco);}
+        .cap-info .cap-meta{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);text-transform:uppercase;letter-spacing:1px;}
+        .btn-aceptar{font-family:var(--fuente-t);font-size:0.6rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--verde);color:var(--azul-deep);border:none;padding:0.5rem 1rem;cursor:pointer;transition:background 0.2s;}
+        .btn-aceptar:hover{background:white;}
+        /* MODAL RATING */
+        .modal-overlay{position:fixed;inset:0;background:rgba(2,26,54,0.94);display:flex;align-items:center;justify-content:center;z-index:2000;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity 0.25s;}
+        .modal-overlay.open{opacity:1;pointer-events:all;}
+        .modal-box{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.1);max-width:500px;width:100%;padding:2rem;position:relative;box-shadow:12px 12px 0 rgba(0,0,0,0.5);transform:translateY(20px);transition:transform 0.25s;max-height:90vh;overflow-y:auto;}
+        .modal-overlay.open .modal-box{transform:translateY(0);}
+        .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--naranja),var(--oro));}
+        .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(240,244,248,0.4);font-size:1.2rem;cursor:pointer;transition:color 0.2s;}
+        .modal-close:hover{color:var(--blanco);}
+        .modal-title{font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:0.4rem;}
+        .modal-mentor-name{font-family:var(--fuente-t);font-size:1.2rem;font-weight:900;color:var(--blanco);margin-bottom:1.5rem;}
+        .star-picker{display:flex;gap:0.4rem;margin-bottom:1.2rem;}
+        .star-btn{font-size:1.8rem;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.15);transition:color 0.15s,transform 0.15s;line-height:1;}
+        .star-btn.active,.star-btn:hover{color:var(--oro);transform:scale(1.15);}
+        .modal-textarea{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:var(--fuente-b);font-size:0.85rem;padding:0.85rem;resize:none;height:90px;margin-bottom:1.2rem;outline:none;transition:border-color 0.2s;}
+        .modal-textarea:focus{border-color:rgba(255,94,0,0.5);}
+        .btn-submit-rating{width:100%;padding:0.85rem;font-family:var(--fuente-t);font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;cursor:pointer;transition:background 0.2s;}
+        .btn-submit-rating:hover{background:#e05200;}
+        /* ADMIN KPIs */
+        .pretest-resumen{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+        .pretest-mini{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);padding:1.25rem;text-align:center;}
+        .pretest-mini .pm-val{font-family:var(--fuente-t);font-size:1.8rem;font-weight:900;color:var(--teal);}
+        .pretest-mini .pm-label{font-family:var(--fuente-t);font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.3);margin-top:0.4rem;}
+        .export-btn{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);color:var(--teal);padding:0.6rem 1.2rem;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;margin-right:0.5rem;margin-bottom:0.5rem;}
+        .export-btn:hover{background:rgba(56,189,248,0.2);color:var(--blanco);}
+        /* TEST FORMULARIO DOCENTE */
+        .pregunta-builder{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);padding:1.25rem;margin-bottom:1rem;position:relative;}
+        .pregunta-builder .pb-num{font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--naranja);margin-bottom:0.75rem;}
+        .pb-remove{position:absolute;top:0.75rem;right:0.75rem;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;font-size:0.7rem;padding:0.2rem 0.6rem;cursor:pointer;font-family:var(--fuente-t);font-weight:700;}
+        /* CANJES HISTORIAL */
+        .canje-item{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem;background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);margin-bottom:0.75rem;flex-wrap:wrap;}
+        .canje-nombre{font-family:var(--fuente-t);font-size:0.8rem;font-weight:700;color:var(--blanco);}
+        .canje-estado{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:0.25rem 0.75rem;}
+        .estado-pendiente{background:rgba(245,158,11,0.1);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
+        .estado-entregado{background:rgba(34,197,94,0.1);color:#86efac;border:1px solid rgba(34,197,94,0.3);}
+        @media(max-width:900px){.sidebar{display:none;}.main-layout{padding:1rem;}}
+        .footer-minimal{background:rgba(2,26,54,0.95);border-top:1px solid rgba(255,255,255,0.07);padding:1.5rem 2rem;text-align:center;font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.2);position:relative;z-index:1;flex-shrink:0;}
+        /* Overflow fix */
+        tbody td{overflow-wrap:break-word;word-break:break-word;}
+        .module-item-name,.taller-title,.canje-nombre{overflow-wrap:break-word;word-break:break-word;}
+        /* Inbox */
+        .inbox-thread{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1rem;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:1rem;}
+        .inbox-thread:hover{border-color:rgba(56,189,248,0.3);}
+        .inbox-avatar{width:36px;height:36px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--teal);flex-shrink:0;}
+        .inbox-info{flex:1;min-width:0;}
+        .inbox-name{font-family:var(--fuente-t);font-size:0.75rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;}
+        .inbox-preview{font-size:0.72rem;color:rgba(240,244,248,0.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        /* Quick access */
+        .qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;}
+        .qa-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.2s;}
+        .qa-card:hover{border-color:rgba(255,94,0,0.3);transform:translateY(-2px);}
+        .qa-icon{font-size:2rem;margin-bottom:0.5rem;}
+        .qa-label{font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;color:var(--blanco);}
+        /* Edit modal */
+        .modal-edit-section{background:var(--azul-panel);border:1px solid rgba(255,94,0,0.3);padding:1.5rem;margin-top:1rem;}
+    </style>
 </head>
-<body class="page-dashboard">
+<body>
+<div id="reading-bar"></div>
+<div class="cursor-dot" id="cdot"></div>
+<div class="cursor-ring" id="cring"></div>
+<div id="notif-container"></div>
 
+<header class="site-header">
+    <a href="index.html" class="header-brand">
+        <div class="header-icon"><img src="logo.png" alt="PRI" onerror="this.outerHTML='PRI'"></div>
+        <div class="header-brand-text"><h1>PROGRAMA-PRI</h1><p>El Pacífico Renaciendo con Ingeniería</p></div>
+    </a>
+    <div class="header-right">
+        <span class="header-points" id="header-pts" style="display:none">⭐ 0 PTS</span>
+        <div class="header-user">
+            <p class="user-role" id="welcome-role">Cargando...</p>
+            <p class="user-name" id="welcome-user">—</p>
+        </div>
+        <button class="btn-logout" onclick="logoutSession()">Cerrar Sesión</button>
+    </div>
+</header>
+
+<div class="main-layout">
     <aside class="sidebar">
-        <div class="sidebar-logo">
-            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-            <h2>PRI Admin</h2>
+        <div class="sidebar-inner">
+            <p class="sidebar-label">Navegación</p>
+            <nav id="dynamic-menu"></nav>
         </div>
-        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-        <ul class="sidebar-menu">
-            <li><a href="index.html">← Volver al Sitio</a></li>
-            <li><a href="#" class="active">📊 Panel de Impacto</a></li>
-            <li><a href="#">👥 Gestión de Estudiantes</a></li>
-            <li><a href="#">📚 Material Educativo</a></li>
-        </ul>
     </aside>
+    <main class="main-content">
+        <!-- BANNER RESEÑAS (docente/voluntario) -->
+        <div class="banner-caract" id="banner-resena-docente" style="display:none;background:linear-gradient(90deg,rgba(56,189,248,0.1),rgba(255,215,0,0.06));border-left-color:var(--teal);">
+            <div>✍️ <span class="banner-caract-text"><strong>Recuerda evaluar a tus estudiantes</strong><span>Deja una reseña anónima a tus estudiantes asignados y gana +40 PTS por cada una.</span></span></div>
+            <button class="btn-banner" style="background:var(--teal);color:var(--azul-deep);" onclick="activarPanel('panel-mis-estudiantes');document.getElementById('banner-resena-docente').style.display='none'">Ver Estudiantes →</button>
+        </div>
 
-    <main class="dashboard-content">
-        <header class="dashboard-header">
-            <div>
-                <h1>Métricas de Tránsito Universitario</h1>
-                <p>Progreso hacia la meta del 50% (Generación 2026-2028)</p>
-            </div>
-            <div class="user-profile">
-                <span>Hola, <strong>José Luis</strong></span>
-            </div>
-        </header>
+        <!-- BANNER CARACTERIZACIÓN -->
+        <div class="banner-caract" id="banner-caracterizacion" style="display:none;">
+            <div>🎯 <span class="banner-caract-text"><strong>Completa tu Ficha de Caracterización</strong><span>Gana +250 PTS y ayúdanos a conocerte mejor. ¡Solo toma 5 minutos!</span></span></div>
+            <button class="btn-banner" onclick="window.location.href='caracterizacion.html'">Completar Ahora →</button>
+        </div>
 
-        <section class="kpi-grid">
-            <div class="kpi-card">
-                <h3>Estudiantes Activos</h3>
-                <span class="kpi-number">90</span>
-                <span class="kpi-trend positive">+12% este mes</span>
+        <!-- PANEL: PROGRESO ESTUDIANTE -->
+        <div class="panel" id="panel-progreso">
+            <p class="panel-title">Panel Principal</p>
+            <h2 class="panel-heading">Tu <em>Progreso</em> Académico</h2>
+            <p class="panel-desc">Visualiza tus puntos, módulos completados y competencias en el programa.</p>
+            <div class="kpi-grid">
+                <div class="kpi-card"><p class="kpi-label">Puntos Acumulados</p><p class="kpi-value" id="user-points">0</p><p class="kpi-sub">PTS en la red PRI</p></div>
+                <div class="kpi-card"><p class="kpi-label">Módulos Completados</p><p class="kpi-value white" id="user-forms-count">0</p><p class="kpi-sub">de los disponibles</p></div>
+                <div class="kpi-card"><p class="kpi-label">Nivel</p><p class="kpi-value cyan" id="user-nivel">BASE</p><p class="kpi-sub">sigue subiendo</p></div>
+                <div class="kpi-card"><p class="kpi-label">Premios este mes</p><p class="kpi-value" id="user-premios" style="color:var(--oro)">0/2</p><p class="kpi-sub">máx. 2 por mes</p></div>
             </div>
-            <div class="kpi-card">
-                <h3>Promedio PRE-TEST</h3>
-                <span class="kpi-number">315 <small>pts</small></span>
-                <span class="kpi-trend positive">+25% mejora</span>
+            <div class="section-box">
+                <p class="section-box-title">📊 Mapa de Competencias</p>
+                <div class="chart-container"><canvas id="chartProgresoEstudiante"></canvas></div>
             </div>
-            <div class="kpi-card">
-                <h3>Tasa de Retención</h3>
-                <span class="kpi-number">94%</span>
-                <span class="kpi-trend neutral">Estable</span>
+            <div class="section-box">
+                <p class="section-box-title">🗺️ Accesos Rápidos</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;">
+                    <a href="caracterizacion.html" style="text-decoration:none;"><div class="taller-card"><p class="taller-tag">Ficha de datos</p><p class="taller-title">Caracterización</p><p class="taller-desc">Completa tu ficha socioeconómica y gana 250 PTS.</p></div></a>
+                    <div class="taller-card" onclick="activarPanel('panel-retos')" style="cursor:pointer;"><p class="taller-tag">Evaluación</p><p class="taller-title">Mis Retos</p><p class="taller-desc">Responde cuestionarios y sube tus evidencias.</p></div>
+                    <div class="taller-card" onclick="activarPanel('panel-capacitaciones-sol')" style="cursor:pointer;"><p class="taller-tag">Capacitaciones</p><p class="taller-title">Solicitar Capacitación</p><p class="taller-desc">Pide una sesión con un voluntario del programa.</p></div>
+                    <a href="productos.html" style="text-decoration:none;"><div class="taller-card"><p class="taller-tag">Recompensas</p><p class="taller-title">Ver Productos</p><p class="taller-desc">Explora los premios disponibles para canjear.</p></div></a>
+                </div>
             </div>
-        </section>
+            <div class="section-box" id="box-resenas-recibidas">
+                <p class="section-box-title">🌟 Reseñas Recibidas de Mentores</p>
+                <div id="resenas-recibidas-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando reseñas...</p></div>
+            </div>
+        </div>
 
-        <section class="charts-section">
-            <div class="chart-container">
-                <h3>Evolución de Puntajes por Área (Tumaco)</h3>
-                <canvas id="impactChart"></canvas>
+        <!-- PANEL: RETOS ESTUDIANTE -->
+        <div class="panel" id="panel-retos">
+            <p class="panel-title">Evaluación</p>
+            <h2 class="panel-heading">Retos y <em>Entregables</em></h2>
+            <p class="panel-desc">Completa los módulos. Cada reto respondido suma puntos a tu perfil.</p>
+            <div class="alert-box warning"><span class="alert-box-icon">🛡️</span><div class="alert-box-text"><strong>Entorno de Evaluación Auténtica</strong>Prepara tu material antes de comenzar. No puedes avanzar sin responder.</div></div>
+            <div class="section-box"><p class="section-box-title">Módulos Disponibles</p><div id="lista-retos-db"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div></div>
+        </div>
+
+        <!-- PANEL: TALLERES ESTUDIANTE -->
+        <div class="panel" id="panel-material">
+            <p class="panel-title">Recursos</p>
+            <h2 class="panel-heading">Talleres y <em>Mentores</em></h2>
+            <p class="panel-desc">Explora los talleres y evalúa a tus mentores del programa.</p>
+            <div id="talleres-grid-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando talleres...</p></div>
+            <div class="section-box"><p class="section-box-title">⭐ Evalúa a tus Mentores</p><div class="tutores-grid" id="lista-docentes-calificar"><p style="font-family:var(--fuente-t);font-size:0.7rem;color:rgba(240,244,248,0.3);">Cargando mentores...</p></div></div>
+        </div>
+
+        <!-- PANEL: SOLICITAR CAPACITACION (ESTUDIANTE) -->
+        <div class="panel" id="panel-capacitaciones-sol">
+            <p class="panel-title">Capacitación</p>
+            <h2 class="panel-heading">Solicitar <em>Capacitación</em></h2>
+            <p class="panel-desc">Solicita una sesión de capacitación con un voluntario del programa. <a href="capacitacion.html" style="color:var(--teal);font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;">Ver página completa →</a></p>
+            <div class="section-box">
+                <p class="section-box-title">📋 Nueva Solicitud</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Tema de la Capacitación</label><input type="text" id="cap-tema" placeholder="Ej: Trigonometría, Química orgánica..."></div>
+                    <div class="fa-group"><label>Disponibilidad Horaria</label><input type="text" id="cap-horario" placeholder="Ej: Sábados en la tarde"></div>
+                    <div class="fa-group"><label>Tu WhatsApp</label><input type="tel" id="cap-tel" placeholder="300 123 4567"></div>
+                    <div class="fa-group"><label>Comentario (opcional)</label><textarea id="cap-comentario" rows="2" placeholder="¿Algo específico que quieras aprender?"></textarea></div>
+                </div>
+                <button class="btn-add" onclick="solicitarCapacitacion()">📤 Enviar Solicitud</button>
             </div>
-            <div class="chart-container">
-                <h3>Temas a Fortalecer</h3>
-                <ul class="weakness-list">
-                    <li><span class="dot red"></span> Física Dinámica (Requiere atención urgente)</li>
-                    <li><span class="dot orange"></span> Lectura Crítica (En progreso)</li>
-                    <li><span class="dot yellow"></span> Matemáticas Básicas (Mejorando)</li>
-                </ul>
+        </div>
+
+        <!-- PANEL: FORO -->
+        <div class="panel" id="panel-foro">
+            <p class="panel-title">Comunidad</p>
+            <h2 class="panel-heading">Ágora <em>Digital</em></h2>
+            <p class="panel-desc">Intercambia ideas y dudas con tus compañeros y mentores.</p>
+            <div class="section-box" style="padding:0;overflow:hidden;">
+                <div id="chat-priv-banner" style="display:none;" class="chat-priv-header">
+                    <span>💬 Chat privado con: <strong id="chat-priv-con">—</strong></span>
+                    <button class="btn-cerrar-chat" onclick="cerrarChatPrivado()">✕ Volver al foro</button>
+                </div>
+                <div class="foro-messages" id="forum-messages"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
+                <div style="padding:1rem;" id="foro-inputs">
+                    <div class="foro-input-row">
+                        <input class="foro-input" type="text" id="forum-input" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')enviarMensajeForo()">
+                        <button class="btn-send" onclick="enviarMensajeForo()">Enviar</button>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
+
+        <!-- PANEL: PRODUCTOS ESTUDIANTE -->
+        <div class="panel" id="panel-productos">
+            <p class="panel-title">Recompensas</p>
+            <h2 class="panel-heading">Tienda de <em>Premios</em></h2>
+            <p class="panel-desc">Canjea tus puntos por premios del programa. Máximo 2 por mes.</p>
+            <div class="alert-box info" id="saldo-alert"><span class="alert-box-icon">💰</span><div class="alert-box-text"><strong id="saldo-text">Tu saldo: 0 PTS</strong><span id="premios-mes-text">Has reclamado 0 de 2 premios este mes.</span></div></div>
+            <div class="productos-grid" id="productos-grid-est"></div>
+            <p class="mes-limit-note">⚠️ Los premios reclamados quedan registrados y serán entregados por el equipo PRI.</p>
+            <div style="text-align:center;margin-top:1.5rem;">
+                <a href="productos.html" class="btn-add secondary" style="text-decoration:none;display:inline-block;">🛍️ Ver Catálogo Completo →</a>
+            </div>
+            <div class="section-box" id="historial-canjes-sec" style="display:none;">
+                <p class="section-box-title">📋 Mis Premios Solicitados</p>
+                <div id="historial-canjes-list"></div>
+            </div>
+        </div>
+
+        <!-- PANEL: PERFIL (todos los roles) -->
+        <div class="panel" id="panel-mi-perfil">
+            <p class="panel-title" id="perfil-panel-title">Mi Cuenta</p>
+            <h2 class="panel-heading" id="perfil-panel-heading">Mi <em>Perfil</em></h2>
+            <p class="panel-desc" id="perfil-panel-desc">Actualiza tu foto y datos de perfil.</p>
+            <div class="section-box">
+                <p class="section-box-title">📸 Foto de Perfil</p>
+                <div class="upload-section" style="text-align:center;">
+                    <img id="foto-perfil-preview" class="foto-preview-small" style="display:none;margin:0 auto 0.75rem;border-radius:50%;width:80px;height:80px;object-fit:cover;">
+                    <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.35);margin-bottom:0.75rem;">Sube tu foto (PNG, JPG, WebP)</p>
+                    <input type="file" id="input-foto-file" accept="image/png,image/jpeg,image/jpg,image/webp" style="background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-size:0.75rem;padding:0.5rem;width:100%;margin-bottom:0.75rem;" onchange="previewFotoFile(this)">
+                    <button class="btn-add" onclick="guardarFotoPerfil()">💾 Guardar Foto</button>
+                </div>
+                <div class="form-add" style="margin-top:1rem;">
+                    <div class="fa-group"><label>Descripción corta</label><textarea id="input-bio" placeholder="Cuéntale a los estudiantes sobre ti..." rows="3"></textarea></div>
+                    <div class="fa-group"><label>Materias / Áreas</label><input type="text" id="input-materias" placeholder="Ej: Matemáticas, Física, Química"></div>
+                    <div class="fa-group"><label>Especialidad / Carrera</label><input type="text" id="input-carrera" placeholder="Ej: Ingeniería Mecatrónica"></div>
+                    <div class="fa-group"><label>Link Material de Apoyo (opcional)</label><input type="url" id="input-material-url" placeholder="https://drive.google.com/..."></div>
+                </div>
+                <button class="btn-add secondary" onclick="actualizarPerfil()">✅ Actualizar Perfil</button>
+            </div>
+            <div class="section-box">
+                <p class="section-box-title">⭐ Mis Calificaciones Anónimas</p>
+                <div id="mis-calificaciones-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando calificaciones...</p></div>
+            </div>
+        </div>
+
+        <!-- PANEL: ESTUDIANTES DOCENTE/VOLUNTARIO -->
+        <div class="panel" id="panel-mis-estudiantes">
+            <p class="panel-title">Seguimiento</p>
+            <h2 class="panel-heading">Progreso de <em>Estudiantes</em></h2>
+            <p class="panel-desc">Monitorea el avance de cada estudiante del programa.</p>
+            <div class="section-box" style="padding:0;overflow:hidden;">
+                <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;gap:0.75rem;align-items:center;">
+                    <p class="section-box-title" style="margin:0;padding:0;border:0;flex:1;">Directorio de Estudiantes</p>
+                    <span id="sin-actividad-count" style="font-family:var(--fuente-t);font-size:0.6rem;color:var(--rojo);">⚠️ Sin actividad: 0</span>
+                </div>
+                <div class="admin-table-wrap">
+                    <table>
+                        <thead><tr><th>Estudiante</th><th>Grado</th><th>Puntos</th><th>Ficha</th><th>Pre-Test</th><th>Progreso</th><th>Reseña</th></tr></thead>
+                        <tbody id="docente-est-tbody"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Conectando...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: CAPACITACIONES (VOLUNTARIO) -->
+        <div class="panel" id="panel-capacitaciones">
+            <p class="panel-title">Agenda</p>
+            <h2 class="panel-heading">Solicitudes de <em>Capacitación</em></h2>
+            <p class="panel-desc">Revisa y acepta solicitudes de capacitación. Se notificará al estudiante por WhatsApp.</p>
+            <div class="section-box"><p class="section-box-title">Solicitudes Pendientes</p><div id="lista-capacitaciones"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando solicitudes...</p></div></div>
+        </div>
+
+        <!-- PANEL: PLANEACIÓN DOCENTE (talleres + formularios) -->
+        <div class="panel" id="panel-planeacion">
+            <p class="panel-title">Pre-ICFES</p>
+            <h2 class="panel-heading">Planeación de <em>Clases y Formularios</em></h2>
+            <p class="panel-desc">Crea talleres y formularios tipo test para los estudiantes. Puedes asignar puntos por pregunta.</p>
+            <div class="section-box">
+                <p class="section-box-title">📚 Agregar Taller / Recurso</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Nombre del Taller</label><input type="text" id="taller-nombre" placeholder="Ej: Razonamiento Cuantitativo I"></div>
+                    <div class="fa-group"><label>Área / Asignatura</label><input type="text" id="taller-area" placeholder="Ej: Matemáticas"></div>
+                    <div class="fa-group"><label>Descripción</label><textarea id="taller-desc" placeholder="¿Qué aprenderán los estudiantes?" rows="2"></textarea></div>
+                    <div class="fa-group"><label>Link (PDF, Drive, etc.)</label><input type="url" id="taller-link" placeholder="https://..."></div>
+                </div>
+                <button class="btn-add" onclick="agregarTaller()">📤 Publicar Taller</button>
+            </div>
+            <div class="section-box">
+                <p class="section-box-title">📝 Crear Formulario / Test</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Nombre del Formulario</label><input type="text" id="form-nombre" placeholder="Ej: Quiz Álgebra Básica"></div>
+                    <div class="fa-group"><label>Área</label><input type="text" id="form-area" placeholder="Ej: Matemáticas"></div>
+                    <div class="fa-group"><label>Descripción</label><textarea id="form-desc" placeholder="Objetivo del formulario..." rows="2"></textarea></div>
+                    <div class="fa-group"><label>Puntos por pregunta correcta</label><input type="number" id="form-pts-preg" value="10" min="1" max="100"></div>
+                </div>
+                <div id="preguntas-builder"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p></div>
+                <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;">
+                    <button class="btn-add secondary" onclick="agregarPreguntaBuilder()">➕ Agregar Pregunta</button>
+                    <button class="btn-add" onclick="publicarFormulario()">📤 Publicar Formulario</button>
+                </div>
+            </div>
+            <div class="section-box"><p class="section-box-title">📅 Talleres y Formularios Publicados</p><div id="talleres-publicados-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div></div>
+        </div>
+
+        <!-- PANEL: ADMIN BASE GLOBAL -->
+        <div class="panel" id="panel-admin-global">
+            <p class="panel-title">Consola Central</p>
+            <h2 class="panel-heading">Base de Datos <em>Global</em></h2>
+            <p class="panel-desc">Visión en tiempo real de toda la población registrada.</p>
+            <div class="kpi-grid">
+                <div class="kpi-card"><p class="kpi-label">Población Activa</p><p class="kpi-value white" id="kpi-total-estudiantes">0</p><p class="kpi-sub">estudiantes registrados</p></div>
+                <div class="kpi-card"><p class="kpi-label">Fichas Completadas</p><p class="kpi-value cyan" id="kpi-fichas-ok">0</p><p class="kpi-sub">caracterizaciones</p></div>
+                <div class="kpi-card"><p class="kpi-label">Puntos en la Red</p><p class="kpi-value" id="kpi-puntos-red">0</p><p class="kpi-sub">PTS generados</p></div>
+                <div class="kpi-card"><p class="kpi-label">Pre-Tests Externos</p><p class="kpi-value" id="kpi-pretests" style="color:var(--teal)">0</p><p class="kpi-sub">muestras poblacionales</p></div>
+            </div>
+            <div style="display:flex;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+                <button class="export-btn" onclick="exportarCSV()">📊 Exportar CSV</button>
+                <button class="export-btn" onclick="activarPanel('panel-pretest-data');cargarPretestData()">🔍 Ver Pre-Tests Externos</button>
+                <button class="export-btn" onclick="activarPanel('panel-premios-admin');cargarPremiosAdmin()">🎁 Premios Reclamados</button>
+                <button class="export-btn" onclick="activarPanel('panel-admin-add')">➕ Agregar Contenido</button>
+            </div>
+            <div class="section-box" style="padding:0;overflow:hidden;">
+                <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);"><p class="section-box-title" style="margin:0;padding:0;border:0;">Directorio de Usuarios — Tiempo Real</p></div>
+                <div class="admin-table-wrap">
+                    <table>
+                        <thead><tr><th>Nombre</th><th>Rol</th><th>Institución</th><th>Municipio</th><th>Puntos</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody id="admin-table-body"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Conectando con Firebase...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: PRE-TEST DATA ADMIN -->
+        <div class="panel" id="panel-pretest-data">
+            <p class="panel-title">Análisis Poblacional</p>
+            <h2 class="panel-heading">Resultados <em>Pre-Test</em> Externos</h2>
+            <p class="panel-desc">Datos de aspirantes que completaron el diagnóstico sin estar registrados.</p>
+            <div class="pretest-resumen">
+                <div class="pretest-mini"><p class="pm-val" id="pt-total">0</p><p class="pm-label">Total Muestras</p></div>
+                <div class="pretest-mini"><p class="pm-val" id="pt-prom">0%</p><p class="pm-label">Promedio General</p></div>
+                <div class="pretest-mini"><p class="pm-val" id="pt-colegios">0</p><p class="pm-label">Colegios</p></div>
+                <div class="pretest-mini"><p class="pm-val" id="pt-registrados">0</p><p class="pm-label">Se Registraron</p></div>
+            </div>
+            <button class="export-btn" onclick="exportarPreTestCSV()">📊 Exportar Pre-Tests CSV</button>
+            <div class="section-box" style="padding:0;overflow:hidden;margin-top:1rem;">
+                <div class="admin-table-wrap">
+                    <table>
+                        <thead><tr><th>Nombre</th><th>Colegio</th><th>Grado</th><th>Municipio</th><th>Puntaje</th><th>Fortalezas</th><th>Falencias</th><th>Registrado</th><th>Fecha</th></tr></thead>
+                        <tbody id="pretest-tbody"><tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando datos...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: PREMIOS ADMIN -->
+        <div class="panel" id="panel-premios-admin">
+            <p class="panel-title">Logística</p>
+            <h2 class="panel-heading">Premios <em>Reclamados</em></h2>
+            <p class="panel-desc">Gestiona la entrega de premios. Cambia el estado para notificar al estudiante.</p>
+            <div class="section-box" style="padding:0;overflow:hidden;">
+                <div class="admin-table-wrap">
+                    <table>
+                        <thead><tr><th>Estudiante</th><th>Premio</th><th>Puntos</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
+                        <tbody id="premios-tbody"><tr><td colspan="6" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: ADMIN AGREGAR CONTENIDO -->
+        <div class="panel" id="panel-admin-add">
+            <p class="panel-title">Gestión de Contenido</p>
+            <h2 class="panel-heading">Agregar <em>Talleres y Preguntas</em></h2>
+            <div class="section-box">
+                <p class="section-box-title">📚 Nuevo Taller</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Nombre del Taller</label><input type="text" id="admin-taller-nombre" placeholder="Ej: Estrategia ICFES — Lectura Crítica"></div>
+                    <div class="fa-group"><label>Área</label><input type="text" id="admin-taller-area" placeholder="Ej: Matemáticas, Química..."></div>
+                    <div class="fa-group"><label>Descripción</label><textarea id="admin-taller-desc" rows="2" placeholder="Objetivo del taller..."></textarea></div>
+                    <div class="fa-group"><label>Link (PDF, Drive, etc.)</label><input type="url" id="admin-taller-link" placeholder="https://..."></div>
+                </div>
+                <button class="btn-add" onclick="adminAgregarTaller()">📤 Publicar Taller</button>
+            </div>
+            <div class="section-box">
+                <p class="section-box-title">❓ Nueva Pregunta de Pre-Test</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Enunciado</label><textarea id="admin-preg-enunciado" rows="3" placeholder="Escribe la pregunta aquí..."></textarea></div>
+                    <div class="fa-group"><label>Área</label><select id="admin-preg-area"><option value="mat">Matemáticas</option><option value="cien">Ciencias Naturales</option><option value="lec">Lectura Crítica</option><option value="soc">Ciencias Sociales</option><option value="inf">Informática</option><option value="qui">Química</option></select></div>
+                    <div class="fa-group"><label>Opción A</label><input type="text" id="admin-preg-a" placeholder="Opción A"></div>
+                    <div class="fa-group"><label>Opción B</label><input type="text" id="admin-preg-b"></div>
+                    <div class="fa-group"><label>Opción C</label><input type="text" id="admin-preg-c"></div>
+                    <div class="fa-group"><label>Opción D</label><input type="text" id="admin-preg-d"></div>
+                    <div class="fa-group"><label>Respuesta Correcta</label><select id="admin-preg-correcta"><option value="0">Opción A</option><option value="1">Opción B</option><option value="2">Opción C</option><option value="3">Opción D</option></select></div>
+                    <div class="fa-group"><label>Explicación</label><input type="text" id="admin-preg-exp" placeholder="¿Por qué es correcta?"></div>
+                    <div class="fa-group"><label>Para grados</label><select id="admin-preg-nivel"><option value="todos">Todos (8°-11°)</option><option value="8">Solo 8°</option><option value="9">Solo 9°</option><option value="10">Solo 10°</option><option value="11">Solo 11°</option><option value="avanzado">10° y 11°</option></select></div>
+                </div>
+                <button class="btn-add" onclick="adminAgregarPregunta()">💾 Guardar Pregunta</button>
+            </div>
+        </div>
+
+        <!-- PANEL: FORO ADMIN/DOCENTE/VOLUNTARIO -->
+        <div class="panel" id="panel-foro-admin">
+            <p class="panel-title">Supervisión</p>
+            <h2 class="panel-heading">Foro <em>Global</em></h2>
+            <p class="panel-desc">Vista completa del foro comunitario. Puedes responder públicamente y en privado.</p>
+            <div class="section-box" style="padding:0;overflow:hidden;">
+                <div class="foro-messages" id="forum-messages-admin"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
+                <div style="padding:1rem;" id="foro-admin-reply-banner" style="display:none;"></div>
+                <div style="padding:1rem;">
+                    <div class="foro-input-row">
+                        <input class="foro-input" type="text" id="forum-input-admin" placeholder="Responder como equipo PRI..." onkeydown="if(event.key==='Enter')enviarMensajeAdmin()">
+                        <button class="btn-send" onclick="enviarMensajeAdmin()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: VER PERFIL ADMIN -->
+        <div class="panel" id="panel-admin-perfil">
+            <p class="panel-title">Detalle</p>
+            <h2 class="panel-heading">Perfil del <em>Usuario</em></h2>
+            <div id="admin-perfil-contenido"><p style="font-family:var(--fuente-t);font-size:0.7rem;color:rgba(240,244,248,0.3);">Selecciona un usuario para ver su perfil.</p></div>
+        </div>
+
+        <!-- PANEL: INICIO DOCENTE/VOLUNTARIO -->
+        <div class="panel" id="panel-mentor-home">
+            <p class="panel-title">Panel Principal</p>
+            <h2 class="panel-heading">Tu <em>Centro</em> de Trabajo</h2>
+            <p class="panel-desc">Accesos rápidos a tus tareas y herramientas.</p>
+            <div class="kpi-grid">
+                <div class="kpi-card"><p class="kpi-label">Mis Puntos</p><p class="kpi-value" id="mentor-puntos">0</p><p class="kpi-sub">PTS acumulados</p></div>
+                <div class="kpi-card"><p class="kpi-label">Talleres Publicados</p><p class="kpi-value white" id="mentor-talleres">0</p><p class="kpi-sub">creados por ti</p></div>
+                <div class="kpi-card"><p class="kpi-label">Reseñas Recibidas</p><p class="kpi-value cyan" id="mentor-resenas">0</p><p class="kpi-sub">de estudiantes</p></div>
+            </div>
+            <div class="section-box">
+                <p class="section-box-title">🗺️ Accesos Rápidos</p>
+                <div class="qa-grid">
+                    <div class="qa-card" onclick="activarPanelMenu('panel-planeacion',()=>cargarTalleresPublicados())"><div class="qa-icon">📚</div><p class="qa-label">Crear Taller</p></div>
+                    <div class="qa-card" onclick="activarPanelMenu('panel-planeacion',()=>{cargarTalleresPublicados();setTimeout(()=>document.getElementById('form-nombre')?.focus(),400);})"><div class="qa-icon">📝</div><p class="qa-label">Crear Formulario</p></div>
+                    <div class="qa-card" onclick="activarPanelMenu('panel-retos-docente',()=>cargarRetosDocente())"><div class="qa-icon">🛡️</div><p class="qa-label">Mis Retos</p></div>
+                    <div class="qa-card" onclick="activarPanelMenu('panel-mis-estudiantes',()=>cargarEstudiantesDocente())"><div class="qa-icon">👥</div><p class="qa-label">Estudiantes</p></div>
+                    <div class="qa-card" onclick="activarPanelMenu('panel-inbox',()=>cargarInbox())"><div class="qa-icon">💬</div><p class="qa-label">Mensajes</p></div>
+                    <div class="qa-card" onclick="activarPanelMenu('panel-mi-perfil',()=>cargarPerfilDocente())"><div class="qa-icon">👤</div><p class="qa-label">Mi Perfil</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: RETOS DOCENTE/VOLUNTARIO -->
+        <div class="panel" id="panel-retos-docente">
+            <p class="panel-title">Mis Retos</p>
+            <h2 class="panel-heading">Retos y <em>Formularios</em> Publicados</h2>
+            <p class="panel-desc">Solo los creados por ti. Ve cuántos estudiantes respondieron.</p>
+            <div class="section-box">
+                <p class="section-box-title">📊 Mis Publicaciones</p>
+                <div id="retos-docente-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div>
+            </div>
+        </div>
+
+        <!-- PANEL: PREMIOS DOCENTE/VOLUNTARIO -->
+        <div class="panel" id="panel-premios-mentor">
+            <p class="panel-title">Recompensas</p>
+            <h2 class="panel-heading">Canjea tus <em>Puntos</em></h2>
+            <p class="panel-desc">Ganas 30 PTS por cada taller o actividad que publiques.</p>
+            <div class="alert-box info" id="saldo-mentor-alert"><span class="alert-box-icon">💰</span><div class="alert-box-text"><strong id="saldo-mentor-text">Tu saldo: 0 PTS</strong><span>Puntos ganados creando contenido para el programa.</span></div></div>
+            <div class="productos-grid" id="productos-grid-mentor"></div>
+            <p class="mes-limit-note">⚠️ Máximo 2 premios por mes.</p>
+            <div class="section-box" id="historial-canjes-mentor-sec" style="display:none;">
+                <p class="section-box-title">📋 Premios Solicitados</p>
+                <div id="historial-canjes-mentor-list"></div>
+            </div>
+        </div>
+
+        <!-- PANEL: BANDEJA DE ENTRADA (TODOS) -->
+        <div class="panel" id="panel-inbox">
+            <p class="panel-title">Mensajes Privados</p>
+            <h2 class="panel-heading">Bandeja de <em>Entrada</em></h2>
+            <p class="panel-desc">Conversaciones privadas con miembros del programa.</p>
+            <div class="section-box" id="inbox-lista-sec">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem;">
+                    <p class="section-box-title" style="margin:0;padding:0;border:0;">Conversaciones</p>
+                    <button onclick="mostrarBuscadorChat()" style="padding:0.5rem 1rem;font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,94,0,0.12);color:var(--naranja);border:1px solid rgba(255,94,0,0.3);cursor:pointer;">✉️ Nueva Conversación</button>
+                </div>
+                <!-- Buscador de usuario -->
+                <div id="inbox-buscador" style="display:none;margin-bottom:1rem;">
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        <input type="text" id="inbox-buscar-input" placeholder="Nombre del usuario..." style="flex:1;min-width:180px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:var(--blanco);padding:0.6rem 0.85rem;font-family:'Montserrat',sans-serif;font-size:0.72rem;" onkeydown="if(event.key==='Enter')buscarUsuarioChat()">
+                        <button onclick="buscarUsuarioChat()" style="padding:0.6rem 1rem;font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:var(--naranja);color:#fff;border:none;cursor:pointer;">Buscar</button>
+                        <button onclick="document.getElementById('inbox-buscador').style.display='none'" style="padding:0.6rem 0.9rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;background:rgba(255,255,255,0.05);color:rgba(240,244,248,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">✕</button>
+                    </div>
+                    <div id="inbox-buscar-resultados" style="margin-top:0.75rem;"></div>
+                </div>
+                <div id="inbox-threads-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div>
+            </div>
+            <div id="inbox-chat-box" style="display:none;">
+                <div class="section-box" style="padding:0;overflow:hidden;">
+                    <div class="chat-priv-header">
+                        <span>💬 Chat con: <strong id="inbox-chat-nombre">—</strong></span>
+                        <button class="btn-cerrar-chat" onclick="cerrarInboxChat()">✕ Volver</button>
+                    </div>
+                    <div class="foro-messages" id="inbox-chat-mensajes"></div>
+                    <div style="padding:1rem;">
+                        <div class="foro-input-row">
+                            <input class="foro-input" type="text" id="inbox-chat-input" placeholder="Escribe..." onkeydown="if(event.key==='Enter')enviarMensajeInbox()">
+                            <button class="btn-send" onclick="enviarMensajeInbox()">Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
+</div>
 
-    <script>
-        const ctx = document.getElementById('impactChart').getContext('2d');
-        const impactChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Fase 1 (Inicio)', 'Ciclo 1', 'Ciclo 2', 'Simulacro Final'],
-                datasets: [{
-                    label: 'Promedio Global PRI',
-                    data: [202, 245, 280, 315],
-                    borderColor: '#FF5E00', /* Naranja Atardecer */
-                    backgroundColor: 'rgba(255, 94, 0, 0.2)',
-                    borderWidth: 3,
-                    tension: 0.4, /* Hace que la línea sea curva y suave */
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                color: '#fafafa',
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        min: 150,
-                        max: 500,
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                    },
-                    x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.1)' }
+<!-- MODAL RATING MENTORES -->
+<div class="modal-overlay" id="modal-rating">
+    <div class="modal-box">
+        <button class="modal-close" onclick="cerrarModalRating()">✕</button>
+        <p class="modal-title">Evaluación Docente</p>
+        <h3 class="modal-mentor-name" id="rating-mentor-name">Mentor</h3>
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-bottom:0.5rem;">Tu calificación (anónima)</p>
+        <div class="star-picker">
+            <button class="star-btn" data-val="1" onclick="selectStar(1)">★</button>
+            <button class="star-btn" data-val="2" onclick="selectStar(2)">★</button>
+            <button class="star-btn" data-val="3" onclick="selectStar(3)">★</button>
+            <button class="star-btn" data-val="4" onclick="selectStar(4)">★</button>
+            <button class="star-btn" data-val="5" onclick="selectStar(5)">★</button>
+        </div>
+        <textarea class="modal-textarea" id="rating-comment" placeholder="¿Qué aprendiste con este mentor? Tu identidad no se revelará."></textarea>
+        <button class="btn-submit-rating" id="btn-enviar-rating" onclick="enviarRatingDesdePanel()">Enviar Calificación Anónima 🔒</button>
+    </div>
+</div>
+
+<!-- MODAL RESEÑA DOCENTE → ESTUDIANTE -->
+<div class="modal-overlay" id="modal-resena-estudiante">
+    <div class="modal-box">
+        <button class="modal-close" onclick="document.getElementById('modal-resena-estudiante').classList.remove('open')">✕</button>
+        <p class="modal-title">Dejar Reseña</p>
+        <h3 class="modal-mentor-name" id="resena-est-nombre">Estudiante</h3>
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-bottom:0.75rem;">Tu reseña es anónima · Ganas +40 PTS</p>
+        <div class="star-picker" id="resena-star-picker">
+            <button class="star-btn" data-val="1" onclick="selectResena(1)">★</button>
+            <button class="star-btn" data-val="2" onclick="selectResena(2)">★</button>
+            <button class="star-btn" data-val="3" onclick="selectResena(3)">★</button>
+            <button class="star-btn" data-val="4" onclick="selectResena(4)">★</button>
+            <button class="star-btn" data-val="5" onclick="selectResena(5)">★</button>
+        </div>
+        <textarea class="modal-textarea" id="resena-est-comentario" placeholder="¿Cómo es el desempeño de este estudiante? Tu identidad no se revelará al estudiante."></textarea>
+        <button class="btn-submit-rating" id="btn-enviar-resena" onclick="enviarResenaEstudiante()">Enviar Reseña Anónima 🔒</button>
+    </div>
+</div>
+
+<!-- MODAL EDITAR TALLER -->
+<div class="modal-overlay" id="modal-edit-taller">
+    <div class="modal-box">
+        <button class="modal-close" onclick="document.getElementById('modal-edit-taller').classList.remove('open')">✕</button>
+        <p class="modal-title">Editar Recurso</p>
+        <h3 class="modal-mentor-name" style="font-size:1rem;margin-bottom:1.5rem;">Modificar Taller / Formulario</h3>
+        <div class="form-add full">
+            <div class="fa-group"><label>Nombre</label><input type="text" id="edit-taller-nombre"></div>
+            <div class="fa-group"><label>Área</label><input type="text" id="edit-taller-area"></div>
+            <div class="fa-group"><label>Descripción</label><textarea id="edit-taller-desc" rows="3"></textarea></div>
+            <div class="fa-group"><label>Link (PDF, Drive, etc.)</label><input type="url" id="edit-taller-link" placeholder="https://..."></div>
+        </div>
+        <button class="btn-submit-rating" style="margin-top:1rem;" onclick="guardarEdicionTaller()">💾 Guardar Cambios</button>
+    </div>
+</div>
+
+<!-- MODAL CONFIRMACION CANJE -->
+<div class="modal-overlay" id="modal-canje">
+    <div class="modal-box">
+        <button class="modal-close" onclick="document.getElementById('modal-canje').classList.remove('open')">✕</button>
+        <p class="modal-title">Confirmar Premio</p>
+        <h3 class="modal-mentor-name" id="canje-prod-nombre">—</h3>
+        <p id="canje-prod-desc" style="font-size:0.85rem;color:rgba(240,244,248,0.5);margin-bottom:1.5rem;"></p>
+        <div style="display:flex;gap:0.75rem;">
+            <button style="flex:1;padding:0.85rem;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.05);color:rgba(240,244,248,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;" onclick="document.getElementById('modal-canje').classList.remove('open')">Cancelar</button>
+            <button style="flex:1;padding:0.85rem;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;cursor:pointer;" id="btn-confirmar-canje" onclick="ejecutarCanje()">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA<span class="outline-text-footer">-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="ppri.html">Sobre PRI</a></li>
+                <li><a href="pre-test.html">Pre-Test</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+                <li><a href="capacitacion.html">Capacitación</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Tumaco, Nariño</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">programapri_bog@unal.edu.co</a></p>
+                <p><span>🏫</span> Universidad Nacional de Colombia</p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+    getFirestore, collection, onSnapshot, addDoc, getDocs, setDoc, deleteDoc,
+    query, orderBy, serverTimestamp, doc, getDoc, updateDoc, increment, where, limit, writeBatch
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// ── Cloudinary (modo Unsigned – NO enviar public_id) ──────────────
+async function subirImagenCloudinary(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', 'fotos_perfil');
+    const res = await fetch('https://api.cloudinary.com/v1_1/dmh5xpxcg/image/upload', { method:'POST', body:fd });
+    if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        console.error('Cloudinary error:', res.status, errData);
+        throw new Error(errData.error?.message || 'Cloudinary HTTP ' + res.status);
+    }
+    return (await res.json()).secure_url;
+}
+
+const firebaseConfig = {
+    apiKey:"AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+    authDomain:"proyecto-pri-81fd5.firebaseapp.com",
+    projectId:"proyecto-pri-81fd5",
+    storageBucket:"proyecto-pri-81fd5.firebasestorage.app",
+    messagingSenderId:"876748063075",
+    appId:"1:876748063075:web:6e075f73a385bb804e5356"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let currentUser = null;
+let ratingDocId = null, ratingSeleccionado = 0;
+
+// ── confirmarPRI inline (por si no está cargado pri-modal.js) ──
+if (typeof window.confirmarPRI !== 'function') {
+    window.confirmarPRI = function(titulo, msg, icono='⚠️') {
+        return new Promise(resolve => {
+            let overlay = document.getElementById('_confirm_overlay_pri');
+            if (overlay) overlay.remove();
+            overlay = document.createElement('div');
+            overlay.id = '_confirm_overlay_pri';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(2,26,54,0.88);z-index:9900;display:flex;align-items:center;justify-content:center;';
+            overlay.innerHTML = `<div style="background:#062040;border:1px solid rgba(255,255,255,0.1);padding:2rem;max-width:380px;width:90%;text-align:center;font-family:'Montserrat',sans-serif;">
+                <p style="font-size:2rem;margin-bottom:0.75rem;">${icono}</p>
+                <p style="font-weight:900;font-size:1rem;color:#f0f4f8;margin-bottom:0.5rem;">${titulo}</p>
+                <p style="font-size:0.8rem;color:rgba(240,244,248,0.5);margin-bottom:1.5rem;">${msg}</p>
+                <div style="display:flex;gap:0.75rem;justify-content:center;">
+                    <button id="_cpri_no" style="padding:0.65rem 1.5rem;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(240,244,248,0.5);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">Cancelar</button>
+                    <button id="_cpri_yes" style="padding:0.65rem 1.5rem;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;background:#ff5e00;color:#fff;border:none;cursor:pointer;">Confirmar</button>
+                </div>
+            </div>`;
+            document.body.appendChild(overlay);
+            overlay.querySelector('#_cpri_yes').onclick = () => { overlay.remove(); resolve(true); };
+            overlay.querySelector('#_cpri_no').onclick  = () => { overlay.remove(); resolve(false); };
+        });
+    };
+}
+let canjeActual = {nombre:'',costo:0,id:''};
+let chatPrivadoCon = null; // {uid, nombre}
+let preguntasBuilder = []; // para formulario docente
+let fotoPendienteB64 = null;
+let foroUnsubscribe = null;
+
+// ===================== NOTIF =====================
+function notif(titulo, msg, icono='✅', tipo='success') {
+    const cont = document.getElementById('notif-container');
+    const el = document.createElement('div');
+    el.className = `notif-pri ${tipo}`;
+    el.innerHTML = `<button class="notif-cerrar" onclick="this.parentElement.remove()">✕</button><span class="notif-icono">${icono}</span><div class="notif-titulo">${titulo}</div><div>${msg}</div>`;
+    cont.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), 10);
+    setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 300); }, 5000);
+}
+window.mostrarAvisoPRI = notif;
+
+// ===================== INIT =====================
+document.addEventListener("DOMContentLoaded", async () => {
+    const sesion = localStorage.getItem('usuario_sesion_activa');
+    if (!sesion) { window.location.href = "login.html"; return; }
+    currentUser = JSON.parse(sesion);
+
+    // Refrescar datos desde Firestore
+    if (currentUser.uid && currentUser.uid !== 'admin-jcastrogo') {
+        try {
+            const snap = await getDoc(doc(db, "usuarios", currentUser.uid));
+            if (snap.exists()) {
+                currentUser = { ...currentUser, ...snap.data() };
+                localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+            }
+        } catch(e) {}
+    }
+
+    if (!currentUser.rol || currentUser.rol === '') currentUser.rol = 'estudiante';
+    const rol = currentUser.rol;
+
+    document.getElementById('welcome-user').textContent = (currentUser.nombre || 'Usuario').toUpperCase();
+    const rolesLabel = {admin:'ADMINISTRADOR',docente:'DOCENTE PRE-ICFES',voluntario:'VOLUNTARIO',estudiante:'ESTUDIANTE'};
+    document.getElementById('welcome-role').textContent = rolesLabel[rol] || rol.toUpperCase();
+
+    if (rol === 'estudiante') {
+        const ptsEl = document.getElementById('header-pts');
+        ptsEl.style.display = 'block';
+        ptsEl.textContent = `⭐ ${currentUser.puntos || 0} PTS`;
+        if (!currentUser.fichaCompleta) {
+            document.getElementById('banner-caracterizacion').style.display = 'flex';
+        }
+        // Cargar reseñas recibidas
+        cargarResenasRecibidas();
+    }
+
+    if (rol === 'docente' || rol === 'voluntario') {
+        // Mostrar banner si no ha dejado reseñas en los últimos 7 días
+        try {
+            const hace7dias = new Date(); hace7dias.setDate(hace7dias.getDate() - 7);
+            const q = query(
+                collection(db, "usuarios"),
+                where("tipo", "==", "placeholder") // no se puede hacer colgroup query fácil
+            );
+            // Estrategia: buscar en resenas_recibidas de todos los usuarios si hay alguna del docente actual en 7 días
+            // Alternativa más simple: guardar un campo en el usuario docente
+            const docSnap = await getDoc(doc(db,"usuarios",currentUser.uid));
+            const ultimaResena = docSnap.exists() ? docSnap.data().ultimaResenaEnviada : null;
+            const mostrarBanner = !ultimaResena || ultimaResena.toDate() < hace7dias;
+            if (mostrarBanner) {
+                document.getElementById('banner-resena-docente').style.display = 'flex';
+            }
+        } catch(e) {
+            document.getElementById('banner-resena-docente').style.display = 'flex';
+        }
+    }
+
+    construirMenu(rol);
+    iniciarBadgeInbox();
+});
+
+// ===================== MENU =====================
+window.activarPanel = function(id) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    const p = document.getElementById(id);
+    if (p) p.classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+};
+// Activar panel y marcar botón activo del menú (para uso desde qa-grid)
+window.activarPanelMenu = function(id, cb) {
+    activarPanel(id);
+    if (cb) cb();
+};
+
+function construirMenu(rol) {
+    const menu = document.getElementById('dynamic-menu');
+    menu.innerHTML = '';
+    const configs = {
+        admin: [
+            {label:'📊 Base Global', fn:()=>{activarPanel('panel-admin-global');cargarAdmin();}},
+            {label:'🔬 Pre-Tests', fn:()=>{activarPanel('panel-pretest-data');cargarPretestData();}},
+            {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-admin');cargarPremiosAdmin();}},
+            {label:'➕ Contenido', fn:()=>activarPanel('panel-admin-add')},
+            {label:'💬 Foro Global', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
+            {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
+            {label:'📷 Mi Foto', fn:()=>{activarPanel('panel-mi-perfil');adaptarPanelFoto();}},
+        ],
+        docente: [
+            {label:'🏠 Inicio', fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
+            {label:'👤 Mi Perfil', fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
+            {label:'👥 Estudiantes', fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
+            {label:'📝 Planeación', fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
+            {label:'🛡️ Mis Retos', fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
+            {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
+            {label:'💬 Foro', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
+            {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
+        ],
+        voluntario: [
+            {label:'🏠 Inicio', fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
+            {label:'👤 Mi Perfil', fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
+            {label:'📅 Capacitaciones', fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
+            {label:'👥 Estudiantes', fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
+            {label:'📝 Talleres', fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
+            {label:'🛡️ Mis Retos', fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
+            {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
+            {label:'💬 Foro', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
+            {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
+        ],
+        estudiante: [
+            {label:'📈 Mi Progreso', fn:()=>{activarPanel('panel-progreso');cargarProgreso();}},
+            {label:'📷 Mi Foto', fn:()=>{activarPanel('panel-mi-perfil');adaptarPanelFoto();}},
+            {label:'📋 Caracterización', fn:()=>window.location.href='caracterizacion.html'},
+            {label:'🛡️ Retos', fn:()=>{activarPanel('panel-retos');cargarRetos();}},
+            {label:'📚 Talleres', fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();cargarTutores();}},
+            {label:'📣 Capacitación', fn:()=>activarPanel('panel-capacitaciones-sol')},
+            {label:'🎁 Productos', fn:()=>{activarPanel('panel-productos');initProductos();}},
+            {label:'💬 Foro', fn:()=>{activarPanel('panel-foro');cargarForo();}},
+            {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
+        ]
+    };
+    (configs[rol] || configs.estudiante).forEach((op, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-btn';
+        btn.textContent = op.label;
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            op.fn();
+        });
+        menu.appendChild(btn);
+        if (i === 0) btn.click();
+    });
+    if (currentUser.rol === 'docente' || currentUser.rol === 'voluntario') cargarPerfilDocente();
+}
+
+// ===================== PROGRESO ESTUDIANTE =====================
+let chartCreated = false;
+function cargarProgreso() {
+    const pts = currentUser.puntos || 0;
+    document.getElementById('user-points').textContent = pts;
+    document.getElementById('header-pts').textContent = `⭐ ${pts} PTS`;
+    document.getElementById('user-forms-count').textContent = currentUser.fichaCompleta ? '1' : '0';
+    document.getElementById('user-nivel').textContent = pts >= 500 ? 'AVANZADO' : pts >= 200 ? 'INTERMEDIO' : 'BASE';
+    document.getElementById('user-premios').textContent = `${currentUser.premiosMes || 0}/2`;
+    if (chartCreated) return;
+    chartCreated = true;
+    const ctx = document.getElementById('chartProgresoEstudiante');
+    if (!ctx) return;
+    const areas = currentUser.ultimoDesglose || {};
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Matemáticas','Ciencias','Lectura Crítica','Sociales','Informática'],
+            datasets: [{label:'Desempeño',data:[areas.mat||0,areas.cien||0,areas.lec||0,areas.soc||0,areas.inf||0],backgroundColor:'rgba(255,94,0,0.1)',borderColor:'rgba(255,94,0,0.8)',pointBackgroundColor:'#ff5e00',borderWidth:2}]
+        },
+        options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100,ticks:{display:false},grid:{color:'rgba(255,255,255,0.07)'},pointLabels:{color:'rgba(240,244,248,0.55)',font:{family:'Montserrat',size:11,weight:'700'}}}},plugins:{legend:{display:false}}}
+    });
+}
+
+// ===================== RETOS =====================
+function cargarRetos() {
+    const cont = document.getElementById('lista-retos-db');
+    onSnapshot(collection(db,"talleres"), snap => {
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay retos publicados aún.</p>'; return; }
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const t = d.data();
+            const esFormulario = t.tipo === 'formulario';
+            cont.insertAdjacentHTML('beforeend', `
+                <div class="module-item">
+                    <div class="module-item-info">
+                        <p class="module-item-name">${t.nombre || 'Taller sin nombre'}</p>
+                        <p class="module-item-meta">${t.area || 'General'} · ${t.descripcion || ''}</p>
+                    </div>
+                    ${esFormulario
+                        ? `<button class="btn-module" onclick="abrirFormulario('${d.id}')">Responder →</button>`
+                        : t.link ? `<a href="${t.link}" target="_blank" class="btn-module">Abrir →</a>` : '<span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);">Sin link</span>'
                     }
+                </div>`);
+        });
+    });
+}
+
+// ===================== FORMULARIO INLINE =====================
+window.abrirFormulario = async function(tallerId) {
+    try {
+        const tallerSnap = await getDoc(doc(db,"talleres",tallerId));
+        if (!tallerSnap.exists()) { notif('Error','Formulario no encontrado.','❌','error'); return; }
+        const t = tallerSnap.data();
+        const preguntas = t.preguntas || [];
+        if (!preguntas.length) { notif('Sin preguntas','Este formulario no tiene preguntas cargadas aún.','📝','info'); return; }
+
+        // Verificar si ya respondió
+        const respRef = doc(db,"usuarios",currentUser.uid,"respuestas_formularios",tallerId);
+        const respSnap = await getDoc(respRef);
+        if (respSnap.exists()) { notif('Ya respondido','Ya completaste este formulario. ¡Bien hecho!','✅','success'); return; }
+
+        // Crear panel modal formulario
+        let panelExistente = document.getElementById('modal-formulario-inline');
+        if (panelExistente) panelExistente.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'modal-formulario-inline';
+        modal.style.cssText = 'position:fixed;inset:0;background:rgba(2,26,54,0.96);z-index:8000;overflow-y:auto;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem;';
+
+        let indice = 0;
+        let respuestas = [];
+
+        const renderPregunta = () => {
+            const p = preguntas[indice];
+            const opciones = (p.opciones || []).map((op, i) => `
+                <button class="form-opcion-btn" data-idx="${i}" onclick="seleccionarOpcionForm(${i})" style="display:block;width:100%;text-align:left;padding:0.75rem 1rem;margin-bottom:0.5rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:'Lora',serif;font-size:0.9rem;cursor:pointer;transition:all 0.2s;">
+                    ${op}
+                </button>`).join('');
+            modal.innerHTML = `
+                <div style="width:100%;max-width:620px;">
+                    <div style="background:var(--azul-panel);border:1px solid rgba(255,255,255,0.08);padding:2rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
+                            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--naranja);">${t.nombre||'Formulario'}</p>
+                            <p style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.4);">Pregunta ${indice+1} de ${preguntas.length}</p>
+                        </div>
+                        <div style="background:rgba(255,94,0,0.08);height:4px;margin-bottom:1.5rem;"><div style="background:var(--naranja);height:100%;width:${((indice+1)/preguntas.length)*100}%;transition:width 0.3s;"></div></div>
+                        <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:900;color:var(--blanco);margin-bottom:1.5rem;">${p.pregunta||p.texto||'Pregunta '+( indice+1)}</h3>
+                        <div id="opciones-form-container">${opciones}</div>
+                        <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;gap:0.75rem;">
+                            <button onclick="document.getElementById('modal-formulario-inline').remove()" style="padding:0.6rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.05);color:rgba(240,244,248,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">Salir</button>
+                            <button id="btn-sig-form" disabled onclick="siguientePreguntaForm()" style="padding:0.6rem 1.5rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;cursor:pointer;opacity:0.4;transition:opacity 0.2s;">${indice<preguntas.length-1?'Siguiente →':'Enviar ✓'}</button>
+                        </div>
+                    </div>
+                </div>`;
+        };
+
+        window.seleccionarOpcionForm = function(idx) {
+            document.querySelectorAll('.form-opcion-btn').forEach((b,i) => {
+                b.style.background = i===idx ? 'rgba(255,94,0,0.2)' : 'rgba(255,255,255,0.04)';
+                b.style.borderColor = i===idx ? 'var(--naranja)' : 'rgba(255,255,255,0.1)';
+                b.style.color = i===idx ? 'var(--blanco)' : 'var(--blanco)';
+            });
+            respuestas[indice] = idx;
+            const btn = document.getElementById('btn-sig-form');
+            if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+        };
+
+        window.siguientePreguntaForm = async function() {
+            if (respuestas[indice] === undefined) return;
+            if (indice < preguntas.length - 1) {
+                indice++;
+                renderPregunta();
+            } else {
+                // Calcular puntaje
+                let correctas = 0;
+                preguntas.forEach((p, i) => {
+                    if (p.respuesta_correcta !== undefined && respuestas[i] === p.respuesta_correcta) correctas++;
+                });
+                const puntaje = Math.round((correctas / preguntas.length) * 100);
+                // Guardar
+                try {
+                    await setDoc(respRef, {
+                        tallerId, tallerNombre: t.nombre||'Formulario',
+                        respuestas, puntaje, correctas, total: preguntas.length,
+                        nombre: currentUser.nombre, uid: currentUser.uid,
+                        timestamp: serverTimestamp()
+                    });
+                    // +50 pts por completar
+                    await setDoc(doc(db,"usuarios",currentUser.uid), {puntos: increment(50)}, {merge:true});
+                    modal.remove();
+                    notif('¡Formulario completado!',`Obtuviste ${puntaje}% (${correctas}/${preguntas.length} correctas). +50 PTS ✨`,'🎉','success');
+                } catch(err) { notif('Error',err.message,'❌','error'); }
+            }
+        };
+
+        document.body.appendChild(modal);
+        renderPregunta();
+    } catch(err) { notif('Error',err.message,'❌','error'); }
+};
+
+// ===================== TALLERES ESTUDIANTE =====================
+function cargarTalleresEstudiante() {
+    const cont = document.getElementById('talleres-grid-container');
+    onSnapshot(collection(db,"talleres"), snap => {
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin talleres publicados.</p>'; return; }
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const t = d.data();
+            cont.insertAdjacentHTML('beforeend',`
+                <div class="taller-card">
+                    <p class="taller-tag">${t.area||'General'}</p>
+                    <p class="taller-title">${t.nombre||'Taller'}</p>
+                    <p class="taller-desc">${t.descripcion||''}</p>
+                    ${t.link?`<a href="${t.link}" target="_blank" class="btn-taller">Abrir Taller</a>`:''}
+                    ${t.tipo==='formulario'?`<button class="btn-taller" onclick="abrirFormulario('${d.id}')">Responder Test</button>`:''}
+                </div>`);
+        });
+    });
+}
+
+// ===================== TUTORES =====================
+function cargarTutores() {
+    const container = document.getElementById('lista-docentes-calificar');
+    onSnapshot(collection(db,"docentes"), snap => {
+        if (snap.empty) { container.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay mentores registrados.</p>'; return; }
+        container.innerHTML = '';
+        snap.forEach(d => {
+            const t = d.data(); if (!t.nombre) return;
+            const avatar = t.fotoUrl ? `<img src="${t.fotoUrl}" onerror="this.style.display='none'">` : t.nombre[0];
+            container.insertAdjacentHTML('beforeend',`
+                <div class="tutor-item">
+                    <div class="tutor-avatar">${avatar}</div>
+                    <div><p class="tutor-name">${t.nombre}</p><p class="tutor-area">${t.carrera||t.rol||'Mentor PRI'}</p></div>
+                    <button class="btn-rate" onclick="abrirModalRatingPanel('${d.id}','${t.nombre.replace(/'/g,"\\'")}')">⭐ Calificar</button>
+                </div>`);
+        });
+    });
+}
+
+// ===================== RATING =====================
+window.abrirModalRatingPanel = function(docId, nombre) {
+    if (currentUser.rol !== 'estudiante') { notif('Solo estudiantes','Debes ser estudiante activo para calificar.','🔒','info'); return; }
+    ratingDocId = docId; ratingSeleccionado = 0;
+    document.getElementById('rating-mentor-name').textContent = nombre;
+    document.getElementById('rating-comment').value = '';
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('modal-rating').classList.add('open');
+};
+window.cerrarModalRating = function() { document.getElementById('modal-rating').classList.remove('open'); };
+window.selectStar = function(val) {
+    ratingSeleccionado = val;
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val) <= val));
+};
+window.enviarRatingDesdePanel = async function() {
+    if (!ratingSeleccionado) { notif('Selecciona estrellas','Elige de 1 a 5 estrellas.','⭐','info'); return; }
+    const btn = document.getElementById('btn-enviar-rating');
+    btn.textContent = 'Enviando...'; btn.disabled = true;
+    try {
+        await addDoc(collection(db,"docentes",ratingDocId,"calificaciones"), {
+            estrellas: ratingSeleccionado,
+            comentario: document.getElementById('rating-comment').value.trim(),
+            autor: 'Anónimo', timestamp: serverTimestamp()
+        });
+        cerrarModalRating();
+        notif('¡Gracias!','Tu evaluación anónima fue enviada.','🙌','success');
+    } catch(err) { notif('Error',err.message,'❌','error'); }
+    btn.textContent = 'Enviar Calificación Anónima 🔒'; btn.disabled = false;
+};
+
+// ===================== FORO PÚBLICO =====================
+function cargarForo() {
+    if (foroUnsubscribe) foroUnsubscribe();
+    chatPrivadoCon = null;
+    document.getElementById('chat-priv-banner').style.display = 'none';
+    document.getElementById('forum-input').placeholder = 'Escribe un mensaje...';
+    const q = query(collection(db,"foro_comunitario"), orderBy("timestamp","asc"), limit(60));
+    foroUnsubscribe = onSnapshot(q, snap => {
+        const cont = document.getElementById('forum-messages');
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;">Sé el primero en escribir.</p>'; return; }
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const m = d.data();
+            if (m.privado) return; // no mostrar mensajes privados en el foro público
+            const esMio = m.autorUid === currentUser.uid;
+            const div = crearMsgItem(m, esMio);
+            const puedeResponder = !esMio && m.autorUid && m.autorUid !== 'undefined' && m.autorUid !== currentUser.uid;
+            if (puedeResponder) {
+                const btn = document.createElement('button');
+                btn.className = 'btn-reply-priv';
+                btn.textContent = '💬 Responder privado';
+                btn.onclick = () => iniciarChatPrivado(m.autorUid, m.autor||'');
+                div.querySelector('.msg-item-body').appendChild(btn);
+            }
+            cont.appendChild(div);
+        });
+        cont.scrollTop = cont.scrollHeight;
+    });
+}
+
+window.iniciarChatPrivado = function(uid, nombre) {
+    if (!uid || uid === 'undefined') { notif('Sin UID','Este usuario no tiene identificador. No se puede chatear.','⚠️','warn'); return; }
+    chatPrivadoCon = {uid, nombre};
+    document.getElementById('chat-priv-banner').style.display = 'flex';
+    document.getElementById('chat-priv-con').textContent = nombre;
+    document.getElementById('forum-input').placeholder = `Mensaje privado para ${nombre}...`;
+    // Cargar mensajes privados
+    if (foroUnsubscribe) foroUnsubscribe();
+    const chatId = [currentUser.uid, uid].sort().join('_');
+    const q = query(collection(db,"chats_privados",chatId,"mensajes"), orderBy("timestamp","asc"), limit(60));
+    foroUnsubscribe = onSnapshot(q, snap => {
+        const cont = document.getElementById('forum-messages');
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const m = d.data();
+            const esMio = m.autorUid === currentUser.uid;
+            cont.appendChild(crearMsgItem(m, esMio));
+        });
+        cont.scrollTop = cont.scrollHeight;
+    });
+};
+
+window.cerrarChatPrivado = function() {
+    chatPrivadoCon = null;
+    document.getElementById('chat-priv-banner').style.display = 'none';
+    cargarForo();
+};
+
+function crearMsgItem(m, esMio) {
+    const hora = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+    const iniciales = (m.autor||'?')[0].toUpperCase();
+    const avatarInner = m.autorFoto
+        ? `<img src="${m.autorFoto}" onerror="this.parentElement.textContent='${iniciales}'">`
+        : iniciales;
+    const div = document.createElement('div');
+    div.className = `msg-item${esMio?' mine':''}`;
+    div.innerHTML = `
+        <div class="msg-avatar">${avatarInner}</div>
+        <div class="msg-item-body">
+            <p class="msg-author">${m.autor||'Anónimo'} <span class="msg-time">${hora}</span></p>
+            <p class="msg-text">${m.mensaje}</p>
+        </div>`;
+    return div;
+}
+
+window.enviarMensajeForo = async function() {
+    const inp = document.getElementById('forum-input');
+    const msg = inp.value.trim(); if (!msg) return;
+    inp.value = '';
+    if (chatPrivadoCon) {
+        const chatId = [currentUser.uid, chatPrivadoCon.uid].sort().join('_');
+        await setDoc(doc(db,"chats_privados",chatId), {participantes:[currentUser.uid, chatPrivadoCon.uid]}, {merge:true});
+        await addDoc(collection(db,"chats_privados",chatId,"mensajes"), {
+            autor: currentUser.nombre||'Anónimo', autorUid: currentUser.uid,
+            autorFoto: currentUser.fotoUrl||'',
+            mensaje: msg, timestamp: serverTimestamp()
+        });
+    } else {
+        await addDoc(collection(db,"foro_comunitario"), {
+            autor: currentUser.nombre||'Anónimo', autorUid: currentUser.uid,
+            autorFoto: currentUser.fotoUrl||'',
+            mensaje: msg, timestamp: serverTimestamp()
+        });
+    }
+};
+
+// ===================== FORO ADMIN/DOCENTE =====================
+function cargarForoAdmin() {
+    const q = query(collection(db,"foro_comunitario"), orderBy("timestamp","asc"), limit(80));
+    let replyTarget = null;
+    onSnapshot(q, snap => {
+        const cont = document.getElementById('forum-messages-admin');
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const m = d.data();
+            if (m.privado) return;
+            const esMioAdm = m.autorUid === currentUser.uid;
+            const divAdm = crearMsgItem(m, esMioAdm);
+            const puedeResp = m.autorUid && m.autorUid !== 'undefined' && m.autorUid !== currentUser.uid;
+            if (puedeResp) {
+                const btn = document.createElement('button');
+                btn.className = 'btn-reply-priv';
+                btn.textContent = '💬 Responder privado';
+                btn.onclick = () => iniciarChatPrivadoAdmin(m.autorUid, m.autor||'');
+                divAdm.querySelector('.msg-item-body').appendChild(btn);
+            }
+            cont.appendChild(divAdm);
+        });
+        cont.scrollTop = cont.scrollHeight;
+    });
+}
+
+window.iniciarChatPrivadoAdmin = function(uid, nombre) {
+    if (!uid || uid === 'undefined') { notif('Sin UID','Este mensaje no tiene usuario identificado.','⚠️','warn'); return; }
+    const inp = document.getElementById('forum-input-admin');
+    inp.placeholder = `Mensaje privado para ${nombre}...`;
+    inp.dataset.privUid = uid;
+    inp.dataset.privNombre = nombre;
+    const banner = document.getElementById('foro-admin-reply-banner');
+    banner.style.display = 'block';
+    banner.innerHTML = `<span style="font-family:var(--fuente-t);font-size:0.65rem;color:var(--teal);">💬 Respondiendo en privado a: <strong>${nombre}</strong></span> <button onclick="cancelarReplyAdmin()" style="background:none;border:none;color:rgba(240,244,248,0.4);cursor:pointer;margin-left:1rem;">✕ Cancelar</button>`;
+    inp.focus();
+};
+window.cancelarReplyAdmin = function() {
+    const inp = document.getElementById('forum-input-admin');
+    inp.placeholder = 'Responder como equipo PRI...';
+    delete inp.dataset.privUid;
+    delete inp.dataset.privNombre;
+    document.getElementById('foro-admin-reply-banner').style.display = 'none';
+};
+
+window.enviarMensajeAdmin = async function() {
+    const inp = document.getElementById('forum-input-admin');
+    const msg = inp.value.trim(); if (!msg) return;
+    inp.value = '';
+    const privUid = inp.dataset.privUid;
+    if (privUid) {
+        const chatId = [currentUser.uid, privUid].sort().join('_');
+        await setDoc(doc(db,"chats_privados",chatId),{participantes:[currentUser.uid,privUid]},{merge:true});
+        await addDoc(collection(db,"chats_privados",chatId,"mensajes"),{
+            autor:currentUser.nombre||'🛡️ Admin PRI', autorUid:currentUser.uid,
+            mensaje:msg, timestamp:serverTimestamp()
+        });
+        notif('Mensaje privado enviado','','💬','info');
+        window.cancelarReplyAdmin();
+    } else {
+        await addDoc(collection(db,"foro_comunitario"),{
+            autor:`🛡️ ${currentUser.nombre||'Admin PRI'}`, autorUid:currentUser.uid,
+            autorFoto: currentUser.fotoUrl||'',
+            mensaje:msg, timestamp:serverTimestamp()
+        });
+    }
+};
+
+// ===================== SOLICITAR CAPACITACIÓN (ESTUDIANTE) =====================
+window.solicitarCapacitacion = async function() {
+    const tema = document.getElementById('cap-tema').value.trim();
+    const horario = document.getElementById('cap-horario').value.trim();
+    const tel = document.getElementById('cap-tel').value.trim();
+    const comentario = document.getElementById('cap-comentario').value.trim();
+    if (!tema) { notif('Falta el tema','Escribe el tema de la capacitación.','⚠️','warn'); return; }
+    await addDoc(collection(db,"solicitudes_capacitacion"),{
+        uid:currentUser.uid, nombre:currentUser.nombre||'—', colegio:currentUser.colegio||'—',
+        contacto:tel||currentUser.contacto||'', tema, horario, comentario,
+        estado:'Pendiente', timestamp:serverTimestamp()
+    });
+    notif('Solicitud enviada','Un voluntario revisará tu solicitud y te contactará.','✅','success');
+    ['cap-tema','cap-horario','cap-tel','cap-comentario'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+};
+
+// ===================== PRODUCTOS ESTUDIANTE =====================
+const CATALOGO = [
+    {id:'kit-escolar',emoji:'📚',nombre:'Kit Escolar',pts:500},
+    {id:'tiempo-pc',emoji:'💻',nombre:'Tiempo de PC',pts:300},
+    {id:'tutoria',emoji:'🎓',nombre:'Tutoría Personalizada',pts:400},
+    {id:'certificado',emoji:'🏅',nombre:'Certificado PRI',pts:600},
+    {id:'morral',emoji:'🎒',nombre:'Morral Universitario',pts:800},
+    {id:'datos',emoji:'📱',nombre:'Datos Móviles',pts:350},
+];
+
+function initProductos() {
+    const pts = currentUser.puntos || 0;
+    const premiosMes = currentUser.premiosMes || 0;
+    document.getElementById('saldo-text').textContent = `Tu saldo: ${pts} PTS`;
+    document.getElementById('premios-mes-text').textContent = `Has reclamado ${premiosMes} de 2 premios este mes.`;
+    const grid = document.getElementById('productos-grid-est');
+    grid.innerHTML = '';
+    CATALOGO.forEach(prod => {
+        const puedeComprar = pts >= prod.pts && premiosMes < 2;
+        grid.insertAdjacentHTML('beforeend',`
+            <div class="producto-card">
+                <span class="producto-emoji">${prod.emoji}</span>
+                <p class="producto-nombre">${prod.nombre}</p>
+                <p class="producto-pts">${prod.pts} PTS</p>
+                <button class="btn-canjear" ${!puedeComprar?'disabled':''} onclick="abrirModalCanje('${prod.id}','${prod.nombre}',${prod.pts})">
+                    ${premiosMes>=2?'Límite alcanzado':pts<prod.pts?'Puntos insuficientes':'Canjear'}
+                </button>
+            </div>`);
+    });
+    cargarHistorialCanjes();
+}
+
+function cargarHistorialCanjes() {
+    if (!currentUser.uid) return;
+    getDocs(query(collection(db,"premios_reclamados"), where("uid","==",currentUser.uid), orderBy("timestamp","desc"))).then(snap => {
+        if (snap.empty) return;
+        const sec = document.getElementById('historial-canjes-sec');
+        const list = document.getElementById('historial-canjes-list');
+        sec.style.display = 'block';
+        list.innerHTML = '';
+        snap.forEach(d => {
+            const r = d.data();
+            const fecha = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString('es-CO') : '—';
+            const estadoClass = r.estado === 'Entregado' ? 'estado-entregado' : 'estado-pendiente';
+            list.insertAdjacentHTML('beforeend',`
+                <div class="canje-item">
+                    <div><p class="canje-nombre">${r.premio||'—'}</p><p style="font-size:0.7rem;color:rgba(240,244,248,0.3);">${fecha} · ${r.costo||0} PTS</p></div>
+                    <span class="canje-estado ${estadoClass}">${r.estado||'Pendiente'}</span>
+                </div>`);
+        });
+    }).catch(()=>{});
+}
+
+window.abrirModalCanje = function(id, nombre, costo) {
+    canjeActual = {id, nombre, costo};
+    document.getElementById('canje-prod-nombre').textContent = nombre;
+    document.getElementById('canje-prod-desc').textContent = `Usarás ${costo} PTS de tu saldo (${currentUser.puntos||0} PTS). ¿Confirmas?`;
+    document.getElementById('modal-canje').classList.add('open');
+};
+
+window.ejecutarCanje = async function() {
+    const {nombre, costo} = canjeActual;
+    const btn = document.getElementById('btn-confirmar-canje');
+    btn.textContent = 'Procesando...'; btn.disabled = true;
+    try {
+        await addDoc(collection(db,"premios_reclamados"),{
+            uid:currentUser.uid, nombre:currentUser.nombre||'—', premio:nombre,
+            costo, estado:'Pendiente', timestamp:serverTimestamp()
+        });
+        await updateDoc(doc(db,"usuarios",currentUser.uid),{puntos:increment(-costo),premiosMes:increment(1)});
+        currentUser.puntos -= costo;
+        currentUser.premiosMes = (currentUser.premiosMes||0)+1;
+        localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        document.getElementById('modal-canje').classList.remove('open');
+        document.getElementById('header-pts').textContent = `⭐ ${currentUser.puntos} PTS`;
+        notif('¡Premio reclamado!',`"${nombre}" fue solicitado. El equipo PRI te contactará.`,'🎁','success');
+        initProductos();
+    } catch(err) { notif('Error',err.message,'❌','error'); }
+    btn.textContent = 'Confirmar'; btn.disabled = false;
+};
+
+// ===================== ADMIN =====================
+function cargarAdmin() {
+    onSnapshot(query(collection(db,"usuarios")), snap => {
+        const tbody = document.getElementById('admin-table-body');
+        tbody.innerHTML = '';
+        let total=0, fichas=0, pts=0;
+        snap.forEach(docSnap => {
+            const e = docSnap.data();
+            total++;
+            if (e.fichaCompleta) fichas++;
+            if (e.puntos) pts += parseInt(e.puntos)||0;
+            const rolesBadge = {admin:'<span class="badge amarillo">Admin</span>',docente:'<span class="badge cyan" style="background:rgba(56,189,248,0.1);color:var(--teal)">Docente</span>',voluntario:'<span class="badge cyan" style="background:rgba(56,189,248,0.08);color:#a5f3fc">Voluntario</span>',estudiante:'<span class="badge verde">Estudiante</span>'};
+            const roleBadge = rolesBadge[e.rol] || `<span class="badge amarillo">${e.rol||'?'}</span>`;
+            let vulnBadge = '<span class="badge verde">Estable</span>';
+            if (e.estrato=='1'||e.estrato=='0') vulnBadge='<span class="badge rojo">Vulnerable</span>';
+            else if (e.estrato=='2') vulnBadge='<span class="badge amarillo">Atención</span>';
+            tbody.insertAdjacentHTML('beforeend',`<tr>
+                <td><span class="name-cell">${e.nombre||'—'}</span></td>
+                <td>${roleBadge}</td>
+                <td>${e.colegio||'—'}</td>
+                <td>${e.municipio||'—'}</td>
+                <td><span class="pts-cell">${e.puntos||0}</span></td>
+                <td>${vulnBadge}</td>
+                <td><button class="btn-table" onclick="verDetalleEstudiante('${docSnap.id}')">Ver Perfil</button></td>
+            </tr>`);
+        });
+        if (!total) tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin usuarios registrados.</td></tr>';
+        document.getElementById('kpi-total-estudiantes').textContent = total+32;
+        document.getElementById('kpi-fichas-ok').textContent = fichas;
+        document.getElementById('kpi-puntos-red').textContent = pts;
+    });
+    getDocs(collection(db,"muestras_pretest")).then(snap => {
+        document.getElementById('kpi-pretests').textContent = snap.size;
+    }).catch(()=>{});
+}
+
+window.verDetalleEstudiante = async function(uid) {
+    activarPanel('panel-admin-perfil');
+    document.getElementById('admin-perfil-contenido').innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando perfil...</p>';
+    try {
+        const snap = await getDoc(doc(db,"usuarios",uid));
+        if (!snap.exists()) { document.getElementById('admin-perfil-contenido').innerHTML='<p>Usuario no encontrado.</p>'; return; }
+        const e = snap.data();
+        const canjesSnap = await getDocs(query(collection(db,"premios_reclamados"), where("uid","==",uid))).catch(()=>({forEach:()=>{},empty:true}));
+        let canjesHTML = '';
+        canjesSnap.forEach && canjesSnap.forEach(d => {
+            const c = d.data();
+            canjesHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(240,244,248,0.6);">${c.premio||'—'} · <span style="color:var(--oro)">${c.costo||0} PTS</span> · <span style="color:rgba(240,244,248,0.3)">${c.estado||'Pendiente'}</span></div>`;
+        });
+        const r = e.caracterizacion_respuestas || {};
+        const pct = Math.min(100, ((e.puntos||0)/1000)*100);
+        // Cargar talleres respondidos
+        let talleresHTML = '';
+        try {
+            const tSnap = await getDocs(query(collection(db,"usuarios",uid,"respuestas_formularios")));
+            if (!tSnap.empty) {
+                talleresHTML = '<div class="section-box"><p class="section-box-title">📝 Formularios Respondidos</p>';
+                tSnap.forEach(d => {
+                    const tr = d.data();
+                    talleresHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(240,244,248,0.6);">${tr.formNombre||d.id} · <span style="color:var(--teal)">${tr.puntaje||0} PTS</span> · ${tr.correcto||0}/${tr.total||0} correctas</div>`;
+                });
+                talleresHTML += '</div>';
+            }
+        } catch(e2){}
+        document.getElementById('admin-perfil-contenido').innerHTML = `
+            <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+                <button class="btn-table" onclick="window.history.back();activarPanel('panel-admin-global');">← Volver</button>
+            </div>
+            <div class="section-box">
+                <p class="section-box-title">👤 Datos del Usuario</p>
+                ${e.fotoUrl?`<img src="${e.fotoUrl}" style="width:80px;height:80px;object-fit:cover;border:2px solid rgba(255,94,0,0.4);margin-bottom:1rem;">`:'' }
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:1rem;">
+                    ${[['Nombre',e.nombre],['Correo',e.correo],['Rol',e.rol],['Colegio',e.colegio],['Grado',e.grado],['Municipio',e.municipio],['Estrato',e.estrato],['Puntos',e.puntos||0],['Premios/Mes',e.premiosMes||0],['Ficha',e.fichaCompleta?'✅ Sí':'❌ No'],['WhatsApp',e.contacto||'—'],['Acudiente',e.acudiente||'—']].map(([k,v])=>`<div><p style="font-family:var(--fuente-t);font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35);">${k}</p><p style="font-size:0.82rem;color:var(--blanco);word-break:break-word;">${v??'—'}</p></div>`).join('')}
+                </div>
+                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.35);margin-bottom:0.3rem;">Progreso global</p>
+                <div class="progress-mini" style="height:8px;"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
+                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);margin-top:0.25rem;">${e.puntos||0} / 1000 PTS</p>
+            </div>
+            ${e.fichaCompleta && r.p1?`<div class="section-box"><p class="section-box-title">📋 Datos de Caracterización</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;font-size:0.78rem;color:rgba(240,244,248,0.6);">
+                    ${Object.entries({p1:'Nombre',p2:'Municipio',p3:'Barrio',p4:'Estrato',p5:'Vivienda',p9:'Personas hogar',p19:'Internet',p20:'Equipo',p22:'Institución',p23:'Grado',p24:'Dificultad',p25:'Interés U',p26:'Primer prof.'}).map(([k,label])=>r[k]?`<div><p style="font-family:var(--fuente-t);font-size:0.5rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,244,248,0.3);">${label}</p><p style="color:var(--blanco);">${r[k]}</p></div>`:''    ).join('')}
+                </div>
+            </div>`:''}
+            ${talleresHTML}
+            ${canjesHTML?`<div class="section-box"><p class="section-box-title">🎁 Premios Reclamados</p>${canjesHTML}</div>`:''}
+        `;
+    } catch(err) {
+        document.getElementById('admin-perfil-contenido').innerHTML = `<p style="color:var(--rojo);">Error: ${err.message}</p>`;
+    }
+};
+
+// PRETEST DATA
+function cargarPretestData() {
+    getDocs(query(collection(db,"muestras_pretest"), orderBy("fechaMuestra","desc"))).then(snap => {
+        const tbody = document.getElementById('pretest-tbody');
+        tbody.innerHTML = '';
+        let total=0, sumPct=0, colegios=new Set(), registrados=0;
+        snap.forEach(d => {
+            const r = d.data(); total++;
+            const pct = parseInt(r.porcentaje)||0; sumPct += pct;
+            if (r.colegio) colegios.add(r.colegio);
+            if (r.registrado) registrados++;
+            const fecha = r.fechaMuestra ? new Date(r.fechaMuestra.toDate()).toLocaleDateString() : '—';
+            tbody.insertAdjacentHTML('beforeend',`<tr>
+                <td><span class="name-cell">${r.nombre||'—'}</span></td>
+                <td>${r.colegio||'—'}</td><td>${r.grado||'—'}</td><td>${r.municipio||'—'}</td>
+                <td style="font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--teal)">${r.porcentaje||'—'}</td>
+                <td style="font-size:0.75rem;color:#86efac">${(r.fortalezas||[]).join(', ')||'—'}</td>
+                <td style="font-size:0.75rem;color:#fca5a5">${(r.falencias||[]).join(', ')||'—'}</td>
+                <td><span class="badge ${r.registrado?'verde':'amarillo'}">${r.registrado?'Sí':'No'}</span></td>
+                <td style="font-size:0.7rem;color:rgba(240,244,248,0.4)">${fecha}</td>
+            </tr>`);
+        });
+        if (!total) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin datos aún.</td></tr>';
+        document.getElementById('pt-total').textContent = total;
+        document.getElementById('pt-prom').textContent = total ? Math.round(sumPct/total)+'%' : '0%';
+        document.getElementById('pt-colegios').textContent = colegios.size;
+        document.getElementById('pt-registrados').textContent = registrados;
+    }).catch(err => console.error(err));
+}
+
+window.exportarPreTestCSV = function() {
+    getDocs(collection(db,"muestras_pretest")).then(snap => {
+        let csv = 'Nombre,Correo,Colegio,Grado,Municipio,Puntaje,Fortalezas,Falencias,Registrado,Fecha\n';
+        snap.forEach(d => {
+            const r = d.data();
+            const fecha = r.fechaMuestra ? new Date(r.fechaMuestra.toDate()).toLocaleDateString() : '';
+            csv += `"${r.nombre||''}","${r.correo||''}","${r.colegio||''}","${r.grado||''}","${r.municipio||''}","${r.porcentaje||''}","${(r.fortalezas||[]).join(';')}","${(r.falencias||[]).join(';')}","${r.registrado?'Sí':'No'}","${fecha}"\n`;
+        });
+        descargarCSV(csv,'pretest_externos.csv');
+    });
+};
+window.exportarCSV = function() {
+    getDocs(collection(db,"usuarios")).then(snap => {
+        let csv = 'Nombre,Correo,Colegio,Municipio,Estrato,Puntos,Ficha,Rol\n';
+        snap.forEach(d => {
+            const e = d.data();
+            csv += `"${e.nombre||''}","${e.correo||''}","${e.colegio||''}","${e.municipio||''}","${e.estrato||''}","${e.puntos||0}","${e.fichaCompleta?'Sí':'No'}","${e.rol||''}"\n`;
+        });
+        descargarCSV(csv,'usuarios_pri.csv');
+    });
+};
+function descargarCSV(csv, nombre) {
+    const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=nombre; a.click();
+    URL.revokeObjectURL(url);
+}
+
+// PREMIOS ADMIN
+function cargarPremiosAdmin() {
+    getDocs(query(collection(db,"premios_reclamados"), orderBy("timestamp","desc"))).then(snap => {
+        const tbody = document.getElementById('premios-tbody'); tbody.innerHTML = '';
+        if (snap.empty) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin premios reclamados.</td></tr>'; return; }
+        snap.forEach(d => {
+            const r = d.data();
+            const fecha = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString() : '—';
+            const estadoClass = r.estado==='Entregado' ? 'badge verde' : 'badge amarillo';
+            tbody.insertAdjacentHTML('beforeend',`<tr>
+                <td><span class="name-cell">${r.nombre||'—'}</span></td>
+                <td>${r.premio||'—'}</td>
+                <td><span class="pts-cell">${r.costo||0} PTS</span></td>
+                <td style="font-size:0.7rem;color:rgba(240,244,248,0.4)">${fecha}</td>
+                <td><span class="${estadoClass}">${r.estado||'Pendiente'}</span></td>
+                <td><button class="btn-table" onclick="cambiarEstadoPremio('${d.id}','${r.uid||''}','${r.nombre||''}','${r.premio||''}')">Marcar Entregado</button></td>
+            </tr>`);
+        });
+    });
+}
+
+window.cambiarEstadoPremio = async function(premioId, uid, estudianteNombre, premiNombre) {
+    try {
+        await updateDoc(doc(db,"premios_reclamados",premioId), {estado:'Entregado'});
+        // Notificar al estudiante en el foro privado si tiene uid
+        if (uid) {
+            const chatId = [currentUser.uid, uid].sort().join('_');
+            await setDoc(doc(db,"chats_privados",chatId),{participantes:[currentUser.uid,uid]},{merge:true});
+            await addDoc(collection(db,"chats_privados",chatId,"mensajes"),{
+                autor:'🛡️ Admin PRI', autorUid:currentUser.uid,
+                mensaje:`¡Hola ${estudianteNombre}! Tu premio "${premiNombre}" ha sido marcado como ENTREGADO. Por favor acércate a la sede del programa para recibirlo. ¡Felicidades! 🎉`,
+                timestamp:serverTimestamp()
+            });
+        }
+        notif('Estado actualizado',`Premio marcado como entregado. Se notificó a ${estudianteNombre}.`,'✅','success');
+        cargarPremiosAdmin();
+    } catch(err) { notif('Error',err.message,'❌','error'); }
+};
+
+// ADMIN ADD CONTENT
+window.adminAgregarTaller = async function() {
+    const nombre = document.getElementById('admin-taller-nombre').value.trim();
+    const area = document.getElementById('admin-taller-area').value.trim();
+    const descripcion = document.getElementById('admin-taller-desc').value.trim();
+    const link = document.getElementById('admin-taller-link').value.trim();
+    if (!nombre) { notif('Falta nombre','Escribe el nombre del taller.','⚠️','warn'); return; }
+    await addDoc(collection(db,"talleres"),{nombre,area,descripcion,link,tipo:'taller',creadoPor:currentUser.nombre,creadoEn:serverTimestamp()});
+    notif('Taller publicado',`"${nombre}" ya está visible.`,'✅','success');
+    ['admin-taller-nombre','admin-taller-area','admin-taller-desc','admin-taller-link'].forEach(id => document.getElementById(id).value='');
+};
+
+window.adminAgregarPregunta = async function() {
+    const enunciado = document.getElementById('admin-preg-enunciado').value.trim();
+    const area = document.getElementById('admin-preg-area').value;
+    const a = document.getElementById('admin-preg-a').value.trim();
+    const b = document.getElementById('admin-preg-b').value.trim();
+    const c = document.getElementById('admin-preg-c').value.trim();
+    const d2 = document.getElementById('admin-preg-d').value.trim();
+    const correcta = parseInt(document.getElementById('admin-preg-correcta').value);
+    const exp = document.getElementById('admin-preg-exp').value.trim();
+    const nivel = document.getElementById('admin-preg-nivel').value;
+    if (!enunciado||!a||!b) { notif('Faltan datos','Completa enunciado y al menos opciones A y B.','⚠️','warn'); return; }
+    await addDoc(collection(db,"banco_preguntas"),{q:enunciado,area,o:[a,b,c,d2].filter(Boolean),a:correcta,explicacion:exp,nivel,creadoPor:currentUser.nombre,creadoEn:serverTimestamp()});
+    notif('Pregunta guardada','Añadida al banco de preguntas.','✅','success');
+};
+
+// DOCENTE: TALLERES Y FORMULARIOS
+let contadorPreguntas = 0;
+window.agregarPreguntaBuilder = function() {
+    contadorPreguntas++;
+    const n = contadorPreguntas;
+    const cont = document.getElementById('preguntas-builder');
+    const div = document.createElement('div');
+    div.className = 'pregunta-builder';
+    div.id = `pb-${n}`;
+    div.innerHTML = `
+        <p class="pb-num">Pregunta ${n}</p>
+        <button class="pb-remove" onclick="document.getElementById('pb-${n}').remove()">✕</button>
+        <div class="form-add">
+            <div class="fa-group"><label>Enunciado</label><textarea id="pb${n}-q" rows="2" placeholder="Escribe la pregunta..."></textarea></div>
+            <div class="fa-group" style="grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+                <div class="fa-group"><label>Opción A</label><input type="text" id="pb${n}-a" placeholder="Opción A"></div>
+                <div class="fa-group"><label>Opción B</label><input type="text" id="pb${n}-b" placeholder="Opción B"></div>
+                <div class="fa-group"><label>Opción C (opcional)</label><input type="text" id="pb${n}-c" placeholder="Opción C"></div>
+                <div class="fa-group"><label>Opción D (opcional)</label><input type="text" id="pb${n}-d" placeholder="Opción D"></div>
+            </div>
+            <div class="fa-group"><label>Respuesta Correcta</label><select id="pb${n}-cor"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></div>
+            <div class="fa-group"><label>Retroalimentación</label><input type="text" id="pb${n}-exp" placeholder="¿Por qué es correcta?"></div>
+        </div>`;
+    cont.appendChild(div);
+};
+
+window.publicarFormulario = async function() {
+    const nombre = document.getElementById('form-nombre').value.trim();
+    const area = document.getElementById('form-area').value.trim();
+    const desc = document.getElementById('form-desc').value.trim();
+    const ptsPrg = parseInt(document.getElementById('form-pts-preg').value)||10;
+    if (!nombre) { notif('Falta nombre','Escribe el nombre del formulario.','⚠️','warn'); return; }
+    const preguntas = [];
+    let n = 1;
+    while(document.getElementById(`pb-${n}`)) {
+        const q = document.getElementById(`pb${n}-q`)?.value.trim();
+        const a = document.getElementById(`pb${n}-a`)?.value.trim();
+        const b = document.getElementById(`pb${n}-b`)?.value.trim();
+        const c = document.getElementById(`pb${n}-c`)?.value.trim();
+        const d = document.getElementById(`pb${n}-d`)?.value.trim();
+        const cor = parseInt(document.getElementById(`pb${n}-cor`)?.value||0);
+        const exp = document.getElementById(`pb${n}-exp`)?.value.trim();
+        if (q && a && b) preguntas.push({q,o:[a,b,c,d].filter(Boolean),a:cor,explicacion:exp,puntaje:ptsPrg});
+        n++;
+    }
+    if (!preguntas.length) { notif('Sin preguntas','Agrega al menos una pregunta.','⚠️','warn'); return; }
+    await addDoc(collection(db,"talleres"),{
+        nombre, area, descripcion:desc, tipo:'formulario',
+        preguntas, puntajePorPregunta:ptsPrg,
+        creadoPor:currentUser.nombre, autorUid:currentUser.uid,
+        creadoEn:serverTimestamp()
+    });
+    notif('Formulario publicado',`"${nombre}" con ${preguntas.length} preguntas ya está disponible.`,'✅','success');
+    ['form-nombre','form-area','form-desc'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('form-pts-preg').value='10';
+    document.getElementById('preguntas-builder').innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p>';
+    contadorPreguntas = 0;
+    cargarTalleresPublicados();
+};
+
+window.agregarTaller = async function() {
+    const nombre = document.getElementById('taller-nombre').value.trim();
+    const area = document.getElementById('taller-area').value.trim();
+    const descripcion = document.getElementById('taller-desc').value.trim();
+    const link = document.getElementById('taller-link').value.trim();
+    if (!nombre) { notif('Falta nombre','Escribe el nombre del taller.','⚠️','warn'); return; }
+    await addDoc(collection(db,"talleres"),{nombre,area,descripcion,link,tipo:'taller',creadoPor:currentUser.nombre,autorUid:currentUser.uid,creadoEn:serverTimestamp()});
+    // Puntos para docente/voluntario
+    if (currentUser.uid && (currentUser.rol==='docente'||currentUser.rol==='voluntario')) {
+        await updateDoc(doc(db,"usuarios",currentUser.uid),{puntos:increment(30)});
+        currentUser.puntos = (currentUser.puntos||0)+30;
+        localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        notif('Taller publicado',`"${nombre}" publicado. Ganaste +30 PTS 🎉`,'✅','success');
+    } else {
+        notif('Taller publicado',`"${nombre}" ya está visible.`,'✅','success');
+    }
+    ['taller-nombre','taller-area','taller-desc','taller-link'].forEach(id => document.getElementById(id).value='');
+    cargarTalleresPublicados();
+};
+
+function cargarTalleresPublicados() {
+    onSnapshot(collection(db,"talleres"), snap => {
+        const cont = document.getElementById('talleres-publicados-list'); cont.innerHTML='';
+        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin talleres publicados aún.</p>'; return; }
+        snap.forEach(d => {
+            const t = d.data();
+            const esMio = t.autorUid === currentUser.uid || currentUser.rol==='admin';
+            cont.insertAdjacentHTML('beforeend',`
+                <div class="module-item">
+                    <div class="module-item-info">
+                        <p class="module-item-name">${t.nombre||'—'}</p>
+                        <p class="module-item-meta">${t.area||'General'} · ${t.tipo||'taller'} · Por: ${t.creadoPor||'—'}</p>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        ${t.link?`<a href="${t.link}" target="_blank" class="btn-module">Ver →</a>`:''}
+                        ${esMio?`<button class="btn-module secondary" onclick="editarTaller('${d.id}','${(t.nombre||'').replace(/'/g,"\\'")}','${(t.area||'').replace(/'/g,"\\'")}','${(t.descripcion||'').replace(/'/g,"\\'").replace(/\n/g,' ')}','${(t.link||'').replace(/'/g,"\\'")}')">✏️</button>`:''}
+                        ${esMio?`<button class="btn-module" style="background:rgba(239,68,68,0.15);color:#fca5a5;border-color:rgba(239,68,68,0.3);" onclick="eliminarTaller('${d.id}')">✕</button>`:''}
+                    </div>
+                </div>`);
+        });
+    });
+}
+
+window.eliminarTaller = async function(id) {
+    const ok = await confirmarPRI('Eliminar taller','¿Seguro? Esta acción no se puede deshacer.','🗑️');
+    if (!ok) return;
+    await deleteDoc(doc(db,"talleres",id));
+    notif('Eliminado','El taller fue eliminado.','🗑️','info');
+};
+
+// DOCENTE ESTUDIANTES
+function cargarEstudiantesDocente() {
+    onSnapshot(query(collection(db,"usuarios")), snap => {
+        const tbody = document.getElementById('docente-est-tbody');
+        tbody.innerHTML = ''; let sinActividad=0;
+        snap.forEach(d => {
+            const e = d.data(); if (e.rol!=='estudiante') return;
+            const sinAct = !e.fichaCompleta && (!e.puntos||e.puntos<10);
+            if (sinAct) sinActividad++;
+            const pct = Math.min(100, ((e.puntos||0)/1000)*100);
+            const esDocente = currentUser.rol==='docente'||currentUser.rol==='voluntario'||currentUser.rol==='admin';
+            const esc = s => (s||'').replace(/'/g,"\\'");
+            tbody.insertAdjacentHTML('beforeend',`<tr>
+                <td><span class="name-cell">${e.nombre||'—'}</span></td>
+                <td>${e.grado||'—'}</td>
+                <td><span class="pts-cell">${e.puntos||0}</span></td>
+                <td><span class="badge ${e.fichaCompleta?'verde':'rojo'}">${e.fichaCompleta?'Sí':'No'}</span></td>
+                <td><span class="badge ${e.caracterizacion_completa?'verde':'amarillo'}">${e.caracterizacion_completa?'Sí':'No'}</span></td>
+                <td><div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%"></div></div></td>
+                <td>${esDocente?`<button onclick="abrirModalResenaEstudiante('${d.id}','${esc(e.nombre)}')" style="padding:0.3rem 0.65rem;font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:rgba(255,94,0,0.12);color:var(--naranja);border:1px solid rgba(255,94,0,0.25);cursor:pointer;white-space:nowrap;">✍️ Reseña</button>`:'—'}</td>
+            </tr>`);
+        });
+        document.getElementById('sin-actividad-count').textContent = `⚠️ Sin actividad: ${sinActividad}`;
+    });
+}
+
+// ===================== RESEÑAS DOCENTE → ESTUDIANTE =====================
+let resenaEstUid = null, resenaEstrellas = 0;
+
+window.abrirModalResenaEstudiante = function(uid, nombre) {
+    resenaEstUid = uid; resenaEstrellas = 0;
+    document.getElementById('resena-est-nombre').textContent = nombre;
+    document.getElementById('resena-est-comentario').value = '';
+    document.querySelectorAll('#resena-star-picker .star-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('modal-resena-estudiante').classList.add('open');
+};
+
+window.selectResena = function(val) {
+    resenaEstrellas = val;
+    document.querySelectorAll('#resena-star-picker .star-btn').forEach(b =>
+        b.classList.toggle('active', parseInt(b.dataset.val) <= val));
+};
+
+window.enviarResenaEstudiante = async function() {
+    if (!resenaEstrellas) { notif('Selecciona estrellas','Elige de 1 a 5 estrellas.','⭐','info'); return; }
+    const comentario = document.getElementById('resena-est-comentario').value.trim();
+    const btn = document.getElementById('btn-enviar-resena');
+    btn.textContent='Enviando...'; btn.disabled=true;
+    try {
+        // Guardar reseña en subcol del estudiante
+        await addDoc(collection(db,"usuarios",resenaEstUid,"resenas_recibidas"), {
+            estrellas: resenaEstrellas,
+            comentario,
+            autorRol: currentUser.rol||'mentor',
+            timestamp: serverTimestamp()
+        });
+        // +40 PTS para el docente/voluntario que dejó la reseña + registrar timestamp
+        await setDoc(doc(db,"usuarios",currentUser.uid), {puntos: increment(40), ultimaResenaEnviada: serverTimestamp()}, {merge:true});
+        document.getElementById('banner-resena-docente').style.display = 'none';
+        currentUser.puntos = (currentUser.puntos||0) + 40;
+        localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        document.getElementById('modal-resena-estudiante').classList.remove('open');
+        notif('Reseña enviada','Tu reseña anónima fue registrada. +40 PTS para ti 🎉','🙌','success');
+        // Actualizar KPI
+        if (document.getElementById('mentor-puntos')) document.getElementById('mentor-puntos').textContent = currentUser.puntos;
+    } catch(err) { notif('Error',err.message,'❌','error'); }
+    btn.textContent='Enviar Reseña Anónima 🔒'; btn.disabled=false;
+};
+
+// CAPACITACIONES VOLUNTARIO
+function cargarCapacitaciones() {
+    const cont = document.getElementById('lista-capacitaciones');
+    getDocs(collection(db,"solicitudes_capacitacion")).then(snap => {
+        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay solicitudes pendientes.</p>'; return; }
+        cont.innerHTML='';
+        snap.forEach(d => {
+            const s = d.data();
+            cont.insertAdjacentHTML('beforeend',`
+                <div class="capacitacion-card">
+                    <div class="cap-info">
+                        <p class="cap-nombre">📋 ${s.tema||'Capacitación General'}</p>
+                        <p class="cap-meta">Solicitó: ${s.nombre||'—'} · ${s.colegio||'—'} · ${s.horario||'—'}</p>
+                        ${s.comentario?`<p style="font-size:0.78rem;color:rgba(240,244,248,0.45);margin-top:0.3rem;">${s.comentario}</p>`:''}
+                    </div>
+                    <button class="btn-aceptar" onclick="aceptarCapacitacion('${s.nombre}','${s.contacto||''}','${s.tema||''}')">✅ Aceptar y Notificar</button>
+                </div>`);
+        });
+    }).catch(()=>{ cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin solicitudes.</p>'; });
+}
+
+window.aceptarCapacitacion = function(nombre, tel, tema) {
+    const msg = `¡Hola ${nombre}! Soy voluntario del Programa PRI. Acepté tu solicitud de capacitación sobre "${tema}". ¿Qué horario te queda bien? 😊`;
+    const url = `https://wa.me/57${tel.replace(/\s/g,'')}?text=${encodeURIComponent(msg)}`;
+    window.open(url,'_blank');
+    // Puntos para el voluntario
+    if (currentUser.uid && currentUser.rol==='voluntario') {
+        updateDoc(doc(db,"usuarios",currentUser.uid),{puntos:increment(30)}).then(()=>{
+            currentUser.puntos=(currentUser.puntos||0)+30;
+            localStorage.setItem('usuario_sesion_activa',JSON.stringify(currentUser));
+        }).catch(()=>{});
+    }
+    notif('Notificación enviada',`Se abrió WhatsApp para contactar a ${nombre}.`,'📱','success');
+};
+
+// PERFIL DOCENTE
+// Adapta el panel de foto/perfil según el rol (para estudiante y admin, oculta campos de mentor)
+window.adaptarPanelFoto = function() {
+    const rol = currentUser.rol || 'estudiante';
+    const esMentor = rol === 'docente' || rol === 'voluntario';
+    const heading = document.getElementById('perfil-panel-heading');
+    const desc = document.getElementById('perfil-panel-desc');
+    const camposMentor = document.querySelector('#panel-mi-perfil .form-add');
+    const btnActualizar = document.querySelector('#panel-mi-perfil .btn-add.secondary');
+    if (heading) heading.innerHTML = esMentor ? 'Mi <em>Perfil</em> de Mentor' : 'Mi <em>Foto</em> de Perfil';
+    if (desc) desc.textContent = esMentor ? 'Actualiza tu foto, descripción y materias. Visible en la página de Docentes.' : 'Sube tu foto de perfil para que aparezca en el foro y el chat.';
+    if (camposMentor) camposMentor.style.display = esMentor ? '' : 'none';
+    if (btnActualizar) btnActualizar.style.display = esMentor ? '' : 'none';
+    // Cargar foto actual desde Firestore
+    getDoc(doc(db,'usuarios',currentUser.uid)).then(snap => {
+        if (!snap.exists()) return;
+        const fotoUrl = snap.data().fotoUrl;
+        if (fotoUrl) {
+            const prev = document.getElementById('foto-perfil-preview');
+            prev.src = fotoUrl; prev.style.display = 'block';
+        }
+    }).catch(()=>{});
+};
+
+function cargarPerfilDocente() {
+    if (!currentUser.uid) return;
+    adaptarPanelFoto();
+    getDoc(doc(db,"docentes",currentUser.uid)).then(snap => {
+        if (!snap.exists()) return;
+        const d = snap.data();
+        if (d.fotoUrl) { document.getElementById('foto-perfil-preview').src=d.fotoUrl; document.getElementById('foto-perfil-preview').style.display='block'; }
+        if (d.bio) document.getElementById('input-bio').value=d.bio;
+        if (d.materias) document.getElementById('input-materias').value=d.materias;
+        if (d.materialUrl) document.getElementById('input-material-url').value=d.materialUrl;
+        if (d.carrera) document.getElementById('input-carrera').value=d.carrera;
+    }).catch(()=>{});
+    getDocs(collection(db,"docentes",currentUser.uid,"calificaciones")).then(snap => {
+        const cont = document.getElementById('mis-calificaciones-list');
+        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Aún no tienes calificaciones.</p>'; return; }
+        cont.innerHTML=''; let total=0, sum=0;
+        snap.forEach(d => {
+            const r=d.data(); sum+=(r.estrellas||0); total++;
+            cont.insertAdjacentHTML('beforeend',`<div class="calificacion-item"><div class="cal-stars">${'★'.repeat(r.estrellas||0)+'☆'.repeat(5-(r.estrellas||0))}</div>${r.comentario?`<p class="cal-comentario">"${r.comentario}"</p>`:''}</div>`);
+        });
+        cont.insertAdjacentHTML('afterbegin',`<div style="font-family:var(--fuente-t);font-size:0.75rem;color:var(--oro);margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);">Promedio: ${(sum/total).toFixed(1)}/5 · ${total} evaluaciones</div>`);
+    }).catch(()=>{});
+}
+
+window.previewFotoFile = function(input) {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = document.getElementById('foto-perfil-preview');
+        img.src = e.target.result; img.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+};
+
+window.guardarFotoPerfil = async function() {
+    if (!currentUser.uid) return;
+    const fileInput = document.getElementById('input-foto-file');
+    const file = fileInput && fileInput.files[0];
+    if (!file) { notif('Sin imagen','Selecciona una imagen primero.','⚠️','warn'); return; }
+    notif('Subiendo foto','Procesando con Cloudinary...','⏳','info');
+    try {
+        const url = await subirImagenCloudinary(file);
+        // Guardar en usuarios (todos los roles)
+        await setDoc(doc(db,'usuarios',currentUser.uid), { fotoUrl: url }, {merge: true});
+        // Guardar en docentes (docente, voluntario, admin también visible en pág. Docentes)
+        const rol = currentUser.rol || '';
+        if (rol === 'docente' || rol === 'voluntario' || rol === 'admin') {
+            await setDoc(doc(db,'docentes',currentUser.uid), {
+                uid: currentUser.uid, nombre: currentUser.nombre||'', rol, fotoUrl: url
+            }, {merge: true});
+        }
+        // Actualizar sesión local
+        currentUser.fotoUrl = url;
+        localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        const prev = document.getElementById('foto-perfil-preview');
+        if (prev) { prev.src = url; prev.style.display = 'block'; }
+        fileInput.value = '';
+        const msg = (rol === 'docente' || rol === 'voluntario') ? 'Tu foto ya aparece en la página de Docentes.' : 'Tu foto de perfil fue actualizada.';
+        notif('Foto actualizada', msg, '📸','success');
+    } catch(err) {
+        notif('Error al subir','Verifica tu conexión e inténtalo de nuevo.','❌','error');
+        console.error('Cloudinary upload error:', err);
+    }
+};
+
+window.actualizarPerfil = async function() {
+    if (!currentUser.uid) return;
+    const bio = document.getElementById('input-bio').value.trim();
+    const materias = document.getElementById('input-materias').value.trim();
+    const materialUrl = document.getElementById('input-material-url').value.trim();
+    const carrera = document.getElementById('input-carrera').value.trim();
+    await setDoc(doc(db,"docentes",currentUser.uid), {
+        bio, materias, materialUrl, carrera,
+        nombre: currentUser.nombre||'', rol: currentUser.rol||'', uid: currentUser.uid
+    }, {merge: true});
+    notif('Perfil actualizado','Tus datos ya se reflejan en la página de Docentes.','✅','success');
+};
+
+// ===================== EDITAR TALLER =====================
+let editandoTallerId = null;
+window.editarTaller = function(id, nombre, area, desc, link) {
+    editandoTallerId = id;
+    document.getElementById('edit-taller-nombre').value = nombre || '';
+    document.getElementById('edit-taller-area').value = area || '';
+    document.getElementById('edit-taller-desc').value = desc || '';
+    document.getElementById('edit-taller-link').value = link || '';
+    document.getElementById('modal-edit-taller').classList.add('open');
+};
+window.guardarEdicionTaller = async function() {
+    if (!editandoTallerId) return;
+    const nombre = document.getElementById('edit-taller-nombre').value.trim();
+    const area = document.getElementById('edit-taller-area').value.trim();
+    const descripcion = document.getElementById('edit-taller-desc').value.trim();
+    const link = document.getElementById('edit-taller-link').value.trim();
+    if (!nombre) { notif('Falta nombre','Escribe el nombre del taller.','⚠️','warn'); return; }
+    await updateDoc(doc(db,"talleres",editandoTallerId), {nombre, area, descripcion, link});
+    document.getElementById('modal-edit-taller').classList.remove('open');
+    notif('Taller actualizado','Los cambios fueron guardados.','✅','success');
+    editandoTallerId = null;
+};
+
+// ===================== INBOX PRIVADO =====================
+let inboxChatUid = null, inboxChatId = null, inboxUnsubscribe = null;
+
+async function cargarInbox() {
+    const cont = document.getElementById('inbox-threads-list');
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Buscando conversaciones...</p>';
+    try {
+        const snap = await getDocs(query(collection(db,"chats_privados"), where("participantes","array-contains", currentUser.uid)));
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin mensajes privados aún. Usa el foro para iniciar una conversación.</p>'; return; }
+        cont.innerHTML = '';
+        for (const d of snap.docs) {
+            const c = d.data();
+            const participantes = c.participantes || [];
+            const otroUid = participantes.find(u => u !== currentUser.uid) || '';
+            const msgsSnap = await getDocs(query(collection(db,"chats_privados",d.id,"mensajes"), orderBy("timestamp","desc"), limit(1)));
+            let ultimoMsg = '—', ultimoAutor = 'Conversación';
+            if (!msgsSnap.empty) { const m = msgsSnap.docs[0].data(); ultimoMsg = m.mensaje||'—'; ultimoAutor = m.autor||'Usuario'; }
+            const inicial = (ultimoAutor||'?')[0].toUpperCase();
+            const esc = (s) => s.replace(/'/g,"\\'");
+            cont.insertAdjacentHTML('beforeend',`
+                <div class="inbox-thread" onclick="abrirConversacionInbox('${esc(otroUid)}','${esc(ultimoAutor)}','${d.id}')">
+                    <div class="inbox-avatar">${inicial}</div>
+                    <div class="inbox-info">
+                        <p class="inbox-name">${ultimoAutor}</p>
+                        <p class="inbox-preview">${ultimoMsg}</p>
+                    </div>
+                </div>`);
+        }
+    } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
+}
+
+window.abrirConversacionInbox = function(uid, nombre, chatId) {
+    inboxChatUid = uid; inboxChatId = chatId;
+    document.getElementById('inbox-lista-sec').style.display = 'none';
+    document.getElementById('inbox-chat-box').style.display = 'block';
+    document.getElementById('inbox-chat-nombre').textContent = nombre;
+    document.getElementById('inbox-chat-input').value = '';
+    if (inboxUnsubscribe) inboxUnsubscribe();
+    const q = query(collection(db,"chats_privados",chatId,"mensajes"), orderBy("timestamp","asc"), limit(60));
+    inboxUnsubscribe = onSnapshot(q, snap => {
+        const cont = document.getElementById('inbox-chat-mensajes');
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const m = d.data();
+            const esMio = m.autorUid === currentUser.uid;
+            cont.appendChild(crearMsgItem(m, esMio));
+        });
+        cont.scrollTop = cont.scrollHeight;
+    });
+};
+
+window.cerrarInboxChat = function() {
+    if (inboxUnsubscribe) { inboxUnsubscribe(); inboxUnsubscribe = null; }
+    inboxChatUid = null; inboxChatId = null;
+    document.getElementById('inbox-lista-sec').style.display = '';
+    document.getElementById('inbox-chat-box').style.display = 'none';
+};
+
+window.enviarMensajeInbox = async function() {
+    const inp = document.getElementById('inbox-chat-input');
+    const msg = inp.value.trim(); if (!msg || !inboxChatId) return;
+    inp.value = '';
+    if (inboxChatUid) await setDoc(doc(db,"chats_privados",inboxChatId), {participantes:[currentUser.uid, inboxChatUid]}, {merge:true});
+    await addDoc(collection(db,"chats_privados",inboxChatId,"mensajes"), {
+        autor: currentUser.nombre||'Usuario', autorUid: currentUser.uid,
+        autorFoto: currentUser.fotoUrl||'',
+        mensaje: msg, timestamp: serverTimestamp()
+    });
+};
+
+// ===================== NUEVA CONVERSACIÓN (BUSCAR USUARIO) =====================
+window.mostrarBuscadorChat = function() {
+    const buscador = document.getElementById('inbox-buscador');
+    buscador.style.display = buscador.style.display==='none' ? 'block' : 'none';
+    if (buscador.style.display==='block') document.getElementById('inbox-buscar-input').focus();
+};
+
+window.buscarUsuarioChat = async function() {
+    const q = document.getElementById('inbox-buscar-input').value.trim().toLowerCase();
+    const cont = document.getElementById('inbox-buscar-resultados');
+    if (!q) return;
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);">Buscando...</p>';
+    try {
+        const snap = await getDocs(collection(db,"usuarios"));
+        cont.innerHTML = '';
+        let found = 0;
+        snap.forEach(d => {
+            if (d.id === currentUser.uid) return;
+            const u = d.data();
+            if (!(u.nombre||'').toLowerCase().includes(q)) return;
+            found++;
+            const esc = s => (s||'').replace(/'/g,"\\'");
+            cont.insertAdjacentHTML('beforeend',`
+                <div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:0.4rem;cursor:pointer;" onclick="iniciarNuevaConv('${d.id}','${esc(u.nombre)}')">
+                    <div style="width:32px;height:32px;background:rgba(255,94,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;color:var(--naranja);flex-shrink:0;">${(u.nombre||'?')[0].toUpperCase()}</div>
+                    <div>
+                        <p style="font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:700;color:var(--blanco);margin:0;">${u.nombre||'—'}</p>
+                        <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin:0;">${u.rol||'—'}</p>
+                    </div>
+                </div>`);
+        });
+        if (!found) cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin resultados para "'+q+'".</p>';
+    } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
+};
+
+window.iniciarNuevaConv = function(uid, nombre) {
+    document.getElementById('inbox-buscador').style.display = 'none';
+    const chatId = [currentUser.uid, uid].sort().join('_');
+    // Pre-crear documento del chat
+    setDoc(doc(db,"chats_privados",chatId), {participantes:[currentUser.uid,uid]}, {merge:true}).catch(()=>{});
+    // Abrir directamente
+    abrirConversacionInbox(uid, nombre, chatId);
+};
+
+// ===================== BADGE NOTIFICACIONES INBOX =====================
+let inboxBadgeUnsubscribe = null;
+
+function iniciarBadgeInbox() {
+    if (!currentUser?.uid) return;
+    if (inboxBadgeUnsubscribe) inboxBadgeUnsubscribe();
+    // Contar chats donde el último mensaje no es mío
+    const q = query(collection(db,"chats_privados"), where("participantes","array-contains",currentUser.uid));
+    inboxBadgeUnsubscribe = onSnapshot(q, async snap => {
+        let total = 0;
+        for (const d of snap.docs) {
+            try {
+                const msgsSnap = await getDocs(query(collection(db,"chats_privados",d.id,"mensajes"),orderBy("timestamp","desc"),limit(1)));
+                if (!msgsSnap.empty) {
+                    const ultimo = msgsSnap.docs[0].data();
+                    if (ultimo.autorUid !== currentUser.uid) total++;
                 }
+            } catch(e){}
+        }
+        // Actualizar badge en sidebar
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            if (btn.textContent.includes('Mensajes')) {
+                const badge = btn.querySelector('.msg-badge') || (() => {
+                    const b = document.createElement('span');
+                    b.className = 'msg-badge';
+                    b.style.cssText = 'margin-left:auto;background:var(--naranja);color:#fff;font-family:Montserrat,sans-serif;font-size:0.55rem;font-weight:900;padding:0.15rem 0.45rem;border-radius:0;min-width:18px;text-align:center;';
+                    btn.appendChild(b);
+                    return b;
+                })();
+                badge.textContent = total > 0 ? total : '';
+                badge.style.display = total > 0 ? 'inline-block' : 'none';
             }
         });
-    </script>
+    });
+}
+
+// ===================== RESEÑAS RECIBIDAS (ESTUDIANTE) =====================
+async function cargarResenasRecibidas() {
+    const cont = document.getElementById('resenas-recibidas-list');
+    if (!cont || !currentUser.uid) return;
+    try {
+        const snap = await getDocs(query(collection(db,"usuarios",currentUser.uid,"resenas_recibidas"), orderBy("timestamp","desc")));
+        if (snap.empty) {
+            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);text-align:center;padding:1rem;">Aún no tienes reseñas de mentores. ¡Sigue participando!</p>';
+            return;
+        }
+        cont.innerHTML = '';
+        snap.forEach(d => {
+            const r = d.data();
+            const estrellas = '★'.repeat(r.estrellas||0) + '☆'.repeat(5-(r.estrellas||0));
+            const fecha = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) : '';
+            cont.insertAdjacentHTML('beforeend',`
+                <div style="background:rgba(255,255,255,0.03);border-left:3px solid var(--teal);padding:0.9rem 1rem;margin-bottom:0.75rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;flex-wrap:wrap;gap:0.5rem;">
+                        <span style="color:var(--oro);font-size:1.1rem;letter-spacing:2px;">${estrellas}</span>
+                        <span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);">🔒 Anónimo · ${fecha}</span>
+                    </div>
+                    ${r.comentario?`<p style="font-size:0.82rem;color:rgba(240,244,248,0.7);line-height:1.5;">"${r.comentario}"</p>`:''}
+                </div>`);
+        });
+    } catch(e) {
+        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No se pudieron cargar las reseñas.</p>';
+    }
+}
+
+// ===================== MENTOR HOME =====================
+async function cargarMentorHome() {
+    const pts = currentUser.puntos || 0;
+    document.getElementById('mentor-puntos').textContent = pts;
+    try {
+        const tSnap = await getDocs(query(collection(db,"talleres"), where("autorUid","==",currentUser.uid)));
+        document.getElementById('mentor-talleres').textContent = tSnap.size;
+    } catch(e) { document.getElementById('mentor-talleres').textContent = '0'; }
+    try {
+        const rSnap = await getDocs(collection(db,"docentes",currentUser.uid,"calificaciones"));
+        document.getElementById('mentor-resenas').textContent = rSnap.size;
+    } catch(e) { document.getElementById('mentor-resenas').textContent = '0'; }
+}
+
+// ===================== RETOS DOCENTE =====================
+async function cargarRetosDocente() {
+    const cont = document.getElementById('retos-docente-list');
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p>';
+    try {
+        const snap = await getDocs(query(collection(db,"talleres"), where("autorUid","==",currentUser.uid)));
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No has publicado talleres o retos aún.</p>'; return; }
+        cont.innerHTML = '';
+        for (const d of snap.docs) {
+            const t = d.data();
+            let respCount = 0;
+            try { const rs = await getDocs(collection(db,"talleres",d.id,"respuestas")); respCount = rs.size; } catch(e){}
+            const esc = s => (s||'').replace(/'/g,"\\'");
+            cont.insertAdjacentHTML('beforeend',`
+                <div class="module-item">
+                    <div class="module-item-info">
+                        <p class="module-item-name">${t.nombre||'—'}</p>
+                        <p class="module-item-meta">${t.area||'General'} · ${t.tipo||'taller'} · ${respCount} resp.</p>
+                    </div>
+                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                        ${respCount>0?`<button class="btn-module secondary" onclick="verRespuestasTaller('${d.id}','${esc(t.nombre)}')">📊 Resp.</button>`:''}
+                        <button class="btn-module" style="background:rgba(56,189,248,0.1);color:var(--teal);" onclick="editarTaller('${d.id}','${esc(t.nombre)}','${esc(t.area)}','${esc(t.descripcion)}','${esc(t.link)}')">✏️</button>
+                        <button class="btn-module" style="background:rgba(239,68,68,0.15);color:#fca5a5;" onclick="eliminarTaller('${d.id}')">✕</button>
+                    </div>
+                </div>`);
+        }
+    } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
+}
+
+window.verRespuestasTaller = async function(tallerId, tallerNombre) {
+    try {
+        const snap = await getDocs(collection(db,"talleres",tallerId,"respuestas"));
+        if (snap.empty) { notif('Sin respuestas','Ningún estudiante ha respondido aún.','📋','info'); return; }
+        let resumen = `${snap.size} estudiante(s) respondieron:\n`;
+        snap.forEach(d => { const r=d.data(); resumen += `• ${r.nombre||'—'}: ${r.puntaje||0} PTS\n`; });
+        notif('Respuestas',`${snap.size} estudiant(es) respondieron este formulario.`,'📊','info');
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+// ===================== PREMIOS MENTOR =====================
+function initProductosMentor() {
+    const pts = currentUser.puntos || 0;
+    const premiosMes = currentUser.premiosMes || 0;
+    document.getElementById('saldo-mentor-text').textContent = `Tu saldo: ${pts} PTS`;
+    const grid = document.getElementById('productos-grid-mentor');
+    grid.innerHTML = '';
+    CATALOGO.forEach(prod => {
+        const puede = pts >= prod.pts && premiosMes < 2;
+        grid.insertAdjacentHTML('beforeend',`
+            <div class="producto-card">
+                <span class="producto-emoji">${prod.emoji}</span>
+                <p class="producto-nombre">${prod.nombre}</p>
+                <p class="producto-pts">${prod.pts} PTS</p>
+                <button class="btn-canjear" ${!puede?'disabled':''} onclick="abrirModalCanje('${prod.id}','${prod.nombre}',${prod.pts})">
+                    ${premiosMes>=2?'Límite alcanzado':pts<prod.pts?'Insuficientes':'Canjear'}
+                </button>
+            </div>`);
+    });
+    if (!currentUser.uid) return;
+    getDocs(query(collection(db,"premios_reclamados"), where("uid","==",currentUser.uid), orderBy("timestamp","desc"))).then(snap => {
+        if (snap.empty) return;
+        const sec = document.getElementById('historial-canjes-mentor-sec');
+        const list = document.getElementById('historial-canjes-mentor-list');
+        sec.style.display = 'block'; list.innerHTML = '';
+        snap.forEach(d => {
+            const r=d.data();
+            const fecha = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString('es-CO') : '—';
+            const sc = r.estado==='Entregado'?'estado-entregado':'estado-pendiente';
+            list.insertAdjacentHTML('beforeend',`<div class="canje-item"><div><p class="canje-nombre">${r.premio||'—'}</p><p style="font-size:0.7rem;color:rgba(240,244,248,0.3);">${fecha} · ${r.costo||0} PTS</p></div><span class="canje-estado ${sc}">${r.estado||'Pendiente'}</span></div>`);
+        });
+    }).catch(()=>{});
+}
+
+window.logoutSession = function() {
+    localStorage.removeItem('usuario_sesion_activa');
+    window.location.href = "login.html";
+};
+</script>
+<script>
+    const dot=document.getElementById('cdot'), ring=document.getElementById('cring');
+    let rx=0,ry=0,mx=0,my=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function tick(){if(dot){dot.style.left=mx+'px';dot.style.top=my+'px';}rx+=(mx-rx)*0.14;ry+=(my-ry)*0.14;if(ring){ring.style.left=rx+'px';ring.style.top=ry+'px';}requestAnimationFrame(tick);})();
+    document.addEventListener('mouseover',e=>{if(e.target.closest('button,a,input,select,table tr')){ring.style.transform='translate(-50%,-50%) scale(1.6)';}});
+    document.addEventListener('mouseout',e=>{if(e.target.closest('button,a,input,select,table tr')){ring.style.transform='translate(-50%,-50%) scale(1)';}});
+    window.addEventListener('scroll',()=>{const max=document.body.scrollHeight-window.innerHeight;document.getElementById('reading-bar').style.width=(window.scrollY/max*100)+'%';});
+</script>
 </body>
 </html>

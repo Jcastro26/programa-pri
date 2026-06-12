@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sondeo de Participación | PROGRAMA-PRI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --azul-deep:#021a36;--azul-panel:#062040;--azul-card:#041830;
+            --naranja:#ff5e00;--oro:#ffd700;--blanco:#f0f4f8;--teal:#38bdf8;--verde:#22c55e;
+        }
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Lora',serif;background:var(--azul-deep);color:var(--blanco);min-height:100vh;display:flex;flex-direction:column;}
+        body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(255,94,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,94,0,0.025) 1px,transparent 1px);background-size:48px 48px;}
+        #scroll-progress{position:fixed;top:0;left:0;height:3px;z-index:9000;background:linear-gradient(90deg,var(--naranja),var(--oro));width:0%;transition:width 0.1s linear;}
+
+        /* HEADER */
+        .sondeo-header{position:sticky;top:0;z-index:500;background:rgba(2,26,54,0.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+        .header-brand{display:flex;align-items:center;gap:0.75rem;text-decoration:none;}
+        .header-brand img{height:36px;width:auto;object-fit:contain;}
+        .header-brand h2{font-family:'Montserrat',sans-serif;font-size:1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--blanco);margin:0;}
+        .btn-volver{font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,244,248,0.4);background:none;border:1px solid rgba(255,255,255,0.1);padding:0.45rem 0.9rem;cursor:pointer;text-decoration:none;transition:all 0.2s;}
+        .btn-volver:hover{color:var(--blanco);border-color:rgba(255,255,255,0.25);}
+
+        /* HERO */
+        .sondeo-hero{text-align:center;padding:3rem 2rem 2rem;border-bottom:1px solid rgba(255,255,255,0.05);}
+        .sondeo-hero .eyebrow{font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:0.75rem;}
+        .sondeo-hero h1{font-family:'Montserrat',sans-serif;font-size:clamp(1.6rem,4vw,2.5rem);font-weight:900;letter-spacing:1px;text-transform:uppercase;line-height:1.1;margin-bottom:0.75rem;}
+        .sondeo-hero h1 span{color:var(--naranja);}
+        .sondeo-hero p{color:rgba(240,244,248,0.5);font-size:0.9rem;max-width:520px;margin:0 auto;}
+
+        /* FORM CONTAINER */
+        .form-container{max-width:760px;margin:0 auto;padding:3rem 2rem 5rem;position:relative;z-index:1;}
+
+        /* SECCIÓN */
+        .form-section{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:2rem;margin-bottom:1.5rem;}
+        .section-title{font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .section-title span{font-size:1rem;margin-right:0.5rem;}
+
+        /* GRUPO */
+        .fg{margin-bottom:1.25rem;}
+        .fg label{display:block;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,244,248,0.5);margin-bottom:0.5rem;}
+        .fg label .req{color:var(--naranja);}
+        .fg input,.fg select,.fg textarea{width:100%;background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:'Lora',serif;font-size:0.88rem;padding:0.75rem 1rem;outline:none;transition:border-color 0.2s;}
+        .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--naranja);}
+        .fg select option{background:#021a36;}
+        .fg textarea{resize:vertical;min-height:80px;}
+        .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+        @media(max-width:560px){.fg-row{grid-template-columns:1fr;}}
+
+        /* CHECKBOXES */
+        .check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.6rem;}
+        .check-item{display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.6rem 0.75rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);transition:all 0.15s;}
+        .check-item:hover{border-color:rgba(255,94,0,0.25);}
+        .check-item input[type=checkbox]{width:14px;height:14px;accent-color:var(--naranja);flex-shrink:0;}
+        .check-item span{font-family:'Montserrat',sans-serif;font-size:0.68rem;font-weight:700;color:rgba(240,244,248,0.65);}
+
+        /* AVISO DATOS */
+        .aviso-datos{background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.15);border-left:3px solid var(--teal);padding:1.25rem;margin-bottom:1.5rem;font-size:0.78rem;color:rgba(240,244,248,0.55);line-height:1.6;}
+
+        /* BOTÓN */
+        .btn-enviar{width:100%;font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;padding:1.1rem;cursor:pointer;transition:background 0.2s;}
+        .btn-enviar:hover{background:#e05200;}
+        .btn-enviar:disabled{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);cursor:not-allowed;}
+
+        /* ÉXITO */
+        #pantalla-exito{display:none;text-align:center;padding:4rem 2rem;}
+        #pantalla-exito .big-icon{font-size:4rem;margin-bottom:1.5rem;}
+        #pantalla-exito h2{font-family:'Montserrat',sans-serif;font-size:1.5rem;font-weight:900;margin-bottom:1rem;}
+        #pantalla-exito p{color:rgba(240,244,248,0.55);font-size:0.9rem;max-width:400px;margin:0 auto 2rem;}
+
+        /* TOAST */
+        #toast-ct{position:fixed;top:1.5rem;right:1.5rem;z-index:9000;display:flex;flex-direction:column;gap:0.75rem;max-width:360px;width:100%;}
+        .toast{padding:1rem 1.25rem;border-left:4px solid;font-family:'Montserrat',sans-serif;font-size:0.72rem;font-weight:700;box-shadow:6px 6px 0 rgba(0,0,0,0.4);transition:all 0.3s;transform:translateX(30px);opacity:0;background:var(--azul-panel);}
+        .toast.visible{transform:translateX(0);opacity:1;}
+        .toast.error{border-color:#ef4444;color:#fca5a5;}
+        .toast.success{border-color:#22c55e;color:#86efac;}
+    </style>
+</head>
+<body>
+<div id="scroll-progress"></div>
+<div id="toast-ct"></div>
+
+<header class="sondeo-header">
+    <a href="index.html" class="header-brand">
+        <img src="logo.png" alt="PRI" onerror="this.outerHTML='<span style=\'font-family:Montserrat,sans-serif;font-weight:900;font-size:1.3rem;color:#ff5e00;\'>PRI</span>'">
+        <h2>PROGRAMA-PRI</h2>
+    </a>
+    <a href="index.html" class="btn-volver">← Inicio</a>
+</header>
+
+<div class="sondeo-hero">
+    <span class="eyebrow">Sondeo de Participación · Piloto 2025</span>
+    <h1>Únete al <span>Programa PRI</span></h1>
+    <p>Completa este formulario de sondeo para registrarte como participante. Nos ayuda a conocerte y diseñar la mejor ruta de aprendizaje para ti.</p>
+</div>
+
+<div class="form-container">
+    <div class="aviso-datos">
+        🔒 <strong>Tratamiento de datos personales:</strong> En cumplimiento de la Ley de Protección de Datos Personales, los datos proporcionados serán recolectados por ASOESAT–PROGRAMA PRI con la finalidad de gestionar actividades académicas, enviar información del programa y realizar seguimiento de tu progreso. Tu información no será compartida con terceros sin tu consentimiento.
+    </div>
+
+    <form id="form-sondeo" onsubmit="return false;">
+
+        <!-- SECCIÓN 1: DATOS PERSONALES -->
+        <div class="form-section">
+            <p class="section-title"><span>👤</span>Datos Personales</p>
+            <div class="fg-row">
+                <div class="fg"><label>Primer Nombre <span class="req">*</span></label><input type="text" id="f-nombre1" required placeholder="Tu primer nombre"></div>
+                <div class="fg"><label>Segundo Nombre</label><input type="text" id="f-nombre2" placeholder="Opcional"></div>
+            </div>
+            <div class="fg-row">
+                <div class="fg"><label>Primer Apellido <span class="req">*</span></label><input type="text" id="f-ape1" required placeholder="Tu primer apellido"></div>
+                <div class="fg"><label>Segundo Apellido</label><input type="text" id="f-ape2" placeholder="Opcional"></div>
+            </div>
+            <div class="fg-row">
+                <div class="fg"><label>Correo Electrónico <span class="req">*</span></label><input type="email" id="f-correo" required placeholder="correo@ejemplo.com"></div>
+                <div class="fg"><label>WhatsApp <span class="req">*</span></label><input type="tel" id="f-tel" required placeholder="300 123 4567"></div>
+            </div>
+            <div class="fg-row">
+                <div class="fg">
+                    <label>Tipo de Documento <span class="req">*</span></label>
+                    <select id="f-doc-tipo" required>
+                        <option value="">Selecciona...</option>
+                        <option>TARJETA DE IDENTIDAD</option>
+                        <option>CEDULA</option>
+                        <option>CEDULA DE EXTRANJERÍA</option>
+                        <option>PASAPORTE</option>
+                    </select>
+                </div>
+                <div class="fg"><label>Número de Documento <span class="req">*</span></label><input type="text" id="f-doc-num" required placeholder="Número"></div>
+            </div>
+            <div class="fg-row">
+                <div class="fg"><label>Ciudad <span class="req">*</span></label><input type="text" id="f-ciudad" required placeholder="Tumaco, Nariño" value="Tumaco, Nariño"></div>
+                <div class="fg"><label>Dirección de Residencia</label><input type="text" id="f-dir" placeholder="Barrio / Calle"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: ROL -->
+        <div class="form-section">
+            <p class="section-title"><span>🎯</span>Rol y Nivel Educativo</p>
+            <div class="fg">
+                <label>¿En qué rol deseas participar? <span class="req">*</span></label>
+                <select id="f-rol" required onchange="mostrarCamposRol()">
+                    <option value="">Selecciona...</option>
+                    <option value="ESTUDIANTE">Estudiante (quiero aprender)</option>
+                    <option value="VOLUNTARIO">Voluntario universitario (quiero enseñar)</option>
+                    <option value="DOCENTE">Docente / Mentor</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label>Nivel Educativo</label>
+                <select id="f-nivel">
+                    <option value="">Selecciona...</option>
+                    <option value="8° grado">8° grado</option>
+                    <option value="9° grado">9° grado</option>
+                    <option value="10° grado">10° grado</option>
+                    <option value="11 / Proximo a graduarse">11° / Próximo a graduarse</option>
+                    <option value="Egresado/Graduado">Egresado / Graduado</option>
+                    <option value="Universitario (1er sem)">Universitario – 1er semestre</option>
+                    <option value="Universitario (2do sem)">Universitario – 2do semestre</option>
+                    <option value="Universitario (3er sem)">Universitario – 3er semestre</option>
+                    <option value="Universitario (4to sem)">Universitario – 4to semestre</option>
+                    <option value="Universitario (5to sem)">Universitario – 5to semestre</option>
+                    <option value="Universitario (6to sem+)">Universitario – 6to sem+</option>
+                </select>
+            </div>
+            <div class="fg">
+                <label>Institución Educativa</label>
+                <input type="text" id="f-inst" placeholder="Nombre de tu colegio o universidad">
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: ÁREAS DE INTERÉS -->
+        <div class="form-section">
+            <p class="section-title"><span>📚</span>Áreas de Interés</p>
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.35);margin-bottom:1rem;">Marca todas las que apliquen</p>
+            <div class="check-grid">
+                <label class="check-item"><input type="checkbox" name="area" value="Matemáticas Básicas"><span>Matemáticas Básicas</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Calculo I"><span>Cálculo I</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Algebra Lineal"><span>Álgebra Lineal</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Física"><span>Física</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Química"><span>Química</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Programación"><span>Programación</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Lectura Crítica"><span>Lectura Crítica</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Inglés"><span>Inglés</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Ciencias Sociales"><span>Ciencias Sociales</span></label>
+                <label class="check-item"><input type="checkbox" name="area" value="Principios de Estática"><span>Principios de Estática</span></label>
+            </div>
+            <div class="fg" style="margin-top:1rem;">
+                <label>¿Con qué temas específicos te gustaría iniciar?</label>
+                <textarea id="f-temas" placeholder="Ej: trigonometría, estructuras de datos, cálculo diferencial..."></textarea>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: ACEPTACIÓN -->
+        <div class="form-section">
+            <p class="section-title"><span>✅</span>Autorización</p>
+            <label class="check-item" style="background:rgba(255,94,0,0.05);border-color:rgba(255,94,0,0.15);">
+                <input type="checkbox" id="f-acepto" required>
+                <span>Acepto el tratamiento de mis datos personales según la política del Programa PRI – ASOESAT.</span>
+            </label>
+        </div>
+
+        <button class="btn-enviar" id="btn-enviar" onclick="enviarSondeo()">📩 Enviar Registro</button>
+    </form>
+
+    <!-- ÉXITO -->
+    <div id="pantalla-exito">
+        <div class="big-icon">🎉</div>
+        <h2>¡Registro Enviado!</h2>
+        <p>Tu sondeo fue registrado exitosamente. El equipo del Programa PRI se pondrá en contacto contigo próximamente.</p>
+        <a href="index.html" style="font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;text-decoration:none;padding:0.85rem 2rem;display:inline-block;">Volver al Inicio</a>
+    </div>
+</div>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA<span class="outline-text-footer">-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="capacitacion.html">Capacitación</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Tumaco, Nariño</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">programapri_bog@unal.edu.co</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+    getFirestore, collection, addDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+    authDomain: "proyecto-pri-81fd5.firebaseapp.com",
+    projectId: "proyecto-pri-81fd5",
+    storageBucket: "proyecto-pri-81fd5.firebasestorage.app",
+    messagingSenderId: "876748063075",
+    appId: "1:876748063075:web:6e075f73a385bb804e5356"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function toast(msg, tipo) {
+    const cont = document.getElementById('toast-ct');
+    const el = document.createElement('div');
+    el.className = 'toast ' + (tipo||'success');
+    el.textContent = msg;
+    cont.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), 10);
+    setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 300); }, 5000);
+}
+
+window.mostrarCamposRol = function() {
+    // Por ahora no hay campos condicionales, pero se puede extender
+};
+
+window.enviarSondeo = async function() {
+    const nombre1 = document.getElementById('f-nombre1').value.trim();
+    const ape1 = document.getElementById('f-ape1').value.trim();
+    const correo = document.getElementById('f-correo').value.trim();
+    const tel = document.getElementById('f-tel').value.trim();
+    const docTipo = document.getElementById('f-doc-tipo').value;
+    const docNum = document.getElementById('f-doc-num').value.trim();
+    const ciudad = document.getElementById('f-ciudad').value.trim();
+    const rol = document.getElementById('f-rol').value;
+    const acepto = document.getElementById('f-acepto').checked;
+
+    if (!nombre1 || !ape1 || !correo || !tel || !docNum || !rol) {
+        toast('Completa todos los campos obligatorios (*)', 'error');
+        return;
+    }
+    if (!acepto) {
+        toast('Debes aceptar el tratamiento de datos', 'error');
+        return;
+    }
+
+    const nombre2 = document.getElementById('f-nombre2').value.trim();
+    const ape2 = document.getElementById('f-ape2').value.trim();
+    const dir = document.getElementById('f-dir').value.trim();
+    const nivel = document.getElementById('f-nivel').value;
+    const inst = document.getElementById('f-inst').value.trim();
+    const temas = document.getElementById('f-temas').value.trim();
+
+    const areas = Array.from(document.querySelectorAll('input[name="area"]:checked')).map(c => c.value);
+
+    const nombre = [nombre1, nombre2, ape1, ape2].filter(Boolean).join(' ');
+
+    const btn = document.getElementById('btn-enviar');
+    btn.textContent = 'Enviando...'; btn.disabled = true;
+
+    try {
+        await addDoc(collection(db, 'sondeo_piloto'), {
+            nombre,
+            correo,
+            tel,
+            ciudad: ciudad || 'Tumaco, Nariño',
+            doc_tipo: docTipo,
+            doc_num: docNum,
+            direccion: dir,
+            rol,
+            nivel,
+            institucion: inst || 'No especificada',
+            areas_interes: areas,
+            temas_preferidos: temas,
+            puntuacion: null,
+            puntaje_max: null,
+            fecha_registro: new Date().toLocaleDateString('es-CO'),
+            fuente: 'formulario_web',
+            timestamp: serverTimestamp()
+        });
+
+        document.getElementById('form-sondeo').style.display = 'none';
+        document.getElementById('pantalla-exito').style.display = 'block';
+    } catch(err) {
+        toast('Error al enviar: ' + err.message, 'error');
+        btn.textContent = '📩 Enviar Registro'; btn.disabled = false;
+    }
+};
+</script>
+
+<script>
+window.addEventListener('scroll', () => {
+    const max = document.body.scrollHeight - window.innerHeight;
+    document.getElementById('scroll-progress').style.width = (window.scrollY / max * 100) + '%';
+});
+</script>
+</body>
+</html>

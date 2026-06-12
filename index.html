@@ -10,8 +10,33 @@
     <link rel="stylesheet" href="style.css">
 
 <style>
-/* ===== MEJORAS INTERACTIVAS - INDEX ===== */
 
+/* ===== OPTIMIZACIÓN RESPONSIVA PARA TARJETAS DE ESTADÍSTICAS ===== */
+.stat-card {
+    /* Cambiamos 'height' fijo por 'min-height' para que la tarjeta pueda crecer si el texto aumenta */
+    min-height: 200px; 
+    height: auto !important; 
+    
+    /* Forzamos un comportamiento flex para que todo el contenido interno se distribuya bien */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye equitativamente sublabel, número y label */
+    align-items: center;
+    
+    padding: 1.5rem; /* Un espacio interno seguro para que el texto no toque los bordes */
+    box-sizing: border-box;
+    overflow: hidden; /* Evita que cualquier residuo visual sobresalga */
+    text-align: center;
+}
+
+/* Asegura que los textos largos hagan salto de línea correctamente y no empujen hacia los lados */
+.stat-label {
+    font-size: 0.9rem; /* Un tamaño sutilmente optimizado para textos largos */
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin-top: auto; /* Empuja el texto hacia la parte inferior del cuadro de manera elegante */
+}
 /* Cursor personalizado */
 .cursor-dot {
     width: 8px; height: 8px;
@@ -525,6 +550,7 @@ body:hover .cursor-dot { opacity: 1; }
     .cta-buttons { flex-direction: column; align-items: center; }
 }
 </style>
+<script src="pri-modal.js"></script>
 </head>
 <body>
 
@@ -704,7 +730,7 @@ body:hover .cursor-dot { opacity: 1; }
         </div>
         <div class="stat-card reveal" style="transition-delay:0.3s">
             <span class="stat-sublabel">Cobertura</span>
-            <span class="stat-number" data-target="90" data-suffix="">90</span>
+            <span class="stat-number" data-target="32" data-suffix="">32</span>
             <span class="stat-label">Estudiantes activos formándose en ciencias exactas e ingeniería</span>
         </div>
         <div class="stat-card reveal" style="transition-delay:0.45s">
@@ -834,6 +860,197 @@ body:hover .cursor-dot { opacity: 1; }
     </div>
 </section>
 
+<!-- ==================== SONDEO DIAGNÓSTICO ==================== -->
+<section id="sondeo-stats" style="padding:5rem 2rem;background:var(--azul-panel,#062040);border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+<div style="max-width:1100px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:3rem;">
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--teal,#38bdf8);margin-bottom:0.75rem;">Sondeo Piloto 2025 · Tumaco, Nariño</p>
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;">Diagnóstico de <span style="color:var(--naranja,#ff5e00);">Nuestros Colegios</span></h2>
+        <p style="color:rgba(240,244,248,0.45);font-size:0.85rem;max-width:520px;margin:0 auto;">Datos reales del proceso de inscripción al Programa PRI. Actualizados en tiempo real.</p>
+    </div>
+
+    <!-- TARJETAS RESUMEN -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2.5rem;">
+        <div style="background:rgba(255,94,0,0.07);border:1px solid rgba(255,94,0,0.2);padding:1.5rem;text-align:center;">
+            <p id="stat-total" style="font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:900;color:var(--naranja,#ff5e00);line-height:1;">—</p>
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-top:0.4rem;">Participantes</p>
+        </div>
+        <div style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);padding:1.5rem;text-align:center;">
+            <p id="stat-inst" style="font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:900;color:var(--teal,#38bdf8);line-height:1;">—</p>
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-top:0.4rem;">Instituciones</p>
+        </div>
+        <div style="background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);padding:1.5rem;text-align:center;">
+            <p id="stat-prom" style="font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:900;color:var(--oro,#ffd700);line-height:1;">—</p>
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-top:0.4rem;">Puntaje Prom / 25</p>
+        </div>
+        <div style="background:rgba(34,197,94,0.07);border:1px solid rgba(34,197,94,0.2);padding:1.5rem;text-align:center;">
+            <p id="stat-est" style="font-family:'Montserrat',sans-serif;font-size:2.2rem;font-weight:900;color:#22c55e;line-height:1;">—</p>
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-top:0.4rem;">Estudiantes</p>
+        </div>
+    </div>
+
+    <!-- FILA PRINCIPAL: INSTITUCIONES + NIVELES -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+        <!-- INSTITUCIONES -->
+        <div style="background:rgba(2,26,54,0.6);border:1px solid rgba(255,255,255,0.07);padding:1.75rem;">
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);">🏫 Por Institución</p>
+            <div id="chart-inst"></div>
+        </div>
+
+        <!-- NIVELES -->
+        <div style="background:rgba(2,26,54,0.6);border:1px solid rgba(255,255,255,0.07);padding:1.75rem;">
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);">🎓 Por Nivel Educativo</p>
+            <div id="chart-nivel"></div>
+        </div>
+    </div>
+
+    <!-- FILA: DISTRIBUCIÓN DE PUNTAJES + ÁREAS DE INTERÉS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;">
+
+        <!-- PUNTAJES -->
+        <div style="background:rgba(2,26,54,0.6);border:1px solid rgba(255,255,255,0.07);padding:1.75rem;">
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);">📊 Distribución de Puntajes (sobre 25)</p>
+            <div id="chart-puntajes"></div>
+        </div>
+
+        <!-- ÁREAS -->
+        <div style="background:rgba(2,26,54,0.6);border:1px solid rgba(255,255,255,0.07);padding:1.75rem;">
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);">📚 Áreas de Mayor Demanda</p>
+            <div id="chart-areas"></div>
+        </div>
+    </div>
+
+    <!-- CTA participar -->
+    <div style="text-align:center;padding-top:1.5rem;">
+        <a href="sondeo.html" style="font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja,#ff5e00);color:#fff;text-decoration:none;padding:0.9rem 2rem;display:inline-block;margin-right:0.75rem;">📝 Registrarme al Sondeo</a>
+        <span style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.3);">¿Eres nuevo? Ingresa tus datos y únete al programa.</span>
+    </div>
+</div>
+</section>
+
+<style>
+/* Barras horizontales del sondeo */
+.sondeo-bar-row{margin-bottom:0.85rem;}
+.sondeo-bar-label{font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.55);margin-bottom:0.3rem;display:flex;justify-content:space-between;}
+.sondeo-bar-label span{color:rgba(240,244,248,0.8);font-weight:700;}
+.sondeo-bar-track{background:rgba(255,255,255,0.06);height:8px;border-radius:0;}
+.sondeo-bar-fill{height:8px;border-radius:0;transition:width 1s ease;width:0;}
+</style>
+
+<script type="module" id="sondeo-stats-script">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+    authDomain: "proyecto-pri-81fd5.firebaseapp.com",
+    projectId: "proyecto-pri-81fd5",
+    storageBucket: "proyecto-pri-81fd5.firebasestorage.app",
+    messagingSenderId: "876748063075",
+    appId: "1:876748063075:web:6e075f73a385bb804e5356"
+};
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Datos piloto como fallback si Firestore está vacío
+const PILOTO = {
+    total: 49, estudiantes: 41, voluntarios: 7,
+    instituciones: {'I.E. Misional Santa Teresita':5,'I.E. Imbili Carretera':2,'Univ. Nacional de Colombia':2,'Universidad de Nariño':1,'Uniremington':1,'No especificada':38},
+    niveles: {'No especificado':35,'11°/Próx. a graduarse':5,'Univ. 5to sem':3,'Egresado/Graduado':2,'Univ. 3er sem':2,'Univ. 1er sem':1,'Univ. 4to sem':1},
+    puntajes: {'0–5':17,'6–10':17,'11–15':7,'16–20':5,'21–25':3},
+    areas: {'Matemáticas Básicas':10,'Programación':8,'Cálculo I':5,'Física':1,'Álgebra Lineal':1},
+    promedio: 8.8
+};
+
+function renderBarras(containerId, datos, color, max) {
+    const cont = document.getElementById(containerId);
+    if (!cont) return;
+    cont.innerHTML = '';
+    const total = max || Object.values(datos).reduce((a,b)=>a+b,0);
+    Object.entries(datos).forEach(([label, val]) => {
+        const pct = total > 0 ? Math.round(val/total*100) : 0;
+        cont.innerHTML += `
+        <div class="sondeo-bar-row">
+            <div class="sondeo-bar-label">${label}<span>${val}</span></div>
+            <div class="sondeo-bar-track"><div class="sondeo-bar-fill" style="background:${color};width:${pct}%"></div></div>
+        </div>`;
+    });
+}
+
+async function cargarStats() {
+    let data = [];
+    try {
+        const snap = await getDocs(collection(db, 'sondeo_piloto'));
+        snap.forEach(d => data.push(d.data()));
+    } catch(e) { /* usar fallback */ }
+
+    if (data.length === 0) {
+        // Mostrar datos piloto directamente
+        mostrarStats(PILOTO);
+        return;
+    }
+
+    // Calcular desde Firestore
+    const inst = {}, nivel = {}, puntajes = {'0–5':0,'6–10':0,'11–15':0,'16–20':0,'21–25':0}, areas = {};
+    let estudiantes = 0, voluntarios = 0;
+    const ps = [];
+
+    data.forEach(r => {
+        // roles
+        if ((r.rol||'').toUpperCase().includes('ESTUDIANT')) estudiantes++;
+        if ((r.rol||'').toUpperCase().includes('VOLUNT')) voluntarios++;
+        // institución
+        const i = r.institucion || 'No especificada';
+        inst[i] = (inst[i]||0)+1;
+        // nivel
+        const n = r.nivel || 'No especificado';
+        nivel[n] = (nivel[n]||0)+1;
+        // puntaje
+        if (typeof r.puntuacion === 'number' && r.puntuacion !== null) {
+            ps.push(r.puntuacion);
+            if (r.puntuacion<=5) puntajes['0–5']++;
+            else if (r.puntuacion<=10) puntajes['6–10']++;
+            else if (r.puntuacion<=15) puntajes['11–15']++;
+            else if (r.puntuacion<=20) puntajes['16–20']++;
+            else puntajes['21–25']++;
+        }
+        // áreas
+        (r.areas_interes||[]).forEach(a => { if(a) areas[a]=(areas[a]||0)+1; });
+    });
+
+    const prom = ps.length ? (ps.reduce((a,b)=>a+b,0)/ps.length).toFixed(1) : '—';
+    const instCount = Object.keys(inst).filter(k=>k!=='No especificada'&&inst[k]>0).length;
+
+    // Ordenar instituciones por cantidad, limitar top 6
+    const instTop = Object.fromEntries(Object.entries(inst).sort((a,b)=>b[1]-a[1]).slice(0,6));
+    const nivelTop = Object.fromEntries(Object.entries(nivel).sort((a,b)=>b[1]-a[1]).slice(0,6));
+    const areasTop = Object.fromEntries(Object.entries(areas).sort((a,b)=>b[1]-a[1]).slice(0,6));
+
+    mostrarStats({ total: data.length, estudiantes, voluntarios, instituciones: instTop, niveles: nivelTop, puntajes, areas: areasTop, promedio: prom, instCount });
+}
+
+function mostrarStats(s) {
+    document.getElementById('stat-total').textContent = s.total;
+    document.getElementById('stat-inst').textContent = s.instCount || Object.values(s.instituciones).filter(v=>v>0).length;
+    document.getElementById('stat-prom').textContent = s.promedio;
+    document.getElementById('stat-est').textContent = s.estudiantes;
+
+    renderBarras('chart-inst', s.instituciones, 'var(--teal,#38bdf8)', s.total);
+    renderBarras('chart-nivel', s.niveles, 'var(--naranja,#ff5e00)', s.total);
+    renderBarras('chart-puntajes', s.puntajes, 'var(--oro,#ffd700)', null);
+    renderBarras('chart-areas', s.areas, '#22c55e', s.total);
+
+    // Animar barras cuando sean visibles
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) { /* ya se renderizan con CSS transition */ } });
+    });
+    obs.observe(document.getElementById('sondeo-stats'));
+}
+
+cargarStats();
+</script>
+
 <!-- ==================== CTA FINAL ==================== -->
 <section class="cta-final">
     <h2 class="reveal">¿LISTO PARA EL<br>SIGUIENTE NIVEL?</h2>
@@ -845,36 +1062,30 @@ body:hover .cursor-dot { opacity: 1; }
 </section>
 
 <!-- ==================== FOOTER ==================== -->
-<footer class="footer-masivo">
-    <div class="footer-grid">
-        <div class="footer-col brand-col">
-            <div class="footer-brand-wrapper">
-                <img src="logo.png" alt="Sello PROGRAMA-PRI" class="footer-logo">
-                <h2 class="massive-footer-text">PROGRAMA<span class="outline-text">-PRI</span></h2>
-            </div>
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA<span class="outline-text-footer">-PRI</span></h2>
         </div>
-        <div class="footer-col links-col">
-            <h3>ENLACES TÁCTICOS</h3>
-            <ul>
-                <li><a href="index.html">Base de Operaciones (Inicio)</a></li>
-                <li><a href="pre-test.html">Simulador de Entrenamiento Pre-Test</a></li>
-                <li><a href="productos.html">Bóveda de Recompensas (Catálogo)</a></li>
-                <li><a href="docentes.html">Módulo de Mentores & Docentes</a></li>
-                <li><a href="dashboard.html">Panel de Métricas e Impacto</a></li>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="ppri.html">Sobre PRI</a></li>
+                <li><a href="pre-test.html">Pre-Test</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+                <li><a href="dashboard.html">Métricas</a></li>
             </ul>
         </div>
-        <div class="footer-col info-col">
-            <h3>CONTACTO & COORDENADAS</h3>
-            <div class="contacto-datos">
-                <p><strong>📍 Ubicación:</strong> Sede de Presencia Nacional — El Mar Pacífico, Tumaco, Nariño.</p>
-                <p><strong>✉️ Correo Oficial:</strong> <a href="mailto:programapri_bog@unal.edu.co" class="link-inline">programapri_bog@unal.edu.co</a></p>
-                <p><strong>📞 Soporte:</strong> +57 (318) 355-3653</p>
-                <p><strong>🌐 Redes:</strong> @ProgramaPRI_UNAL</p>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Tumaco</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">programapri_bog@unal.edu.co</a></p>
             </div>
-            <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
         </div>
     </div>
-    <div class="footer-marea"></div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+    </div>
 </footer>
 
 <script>
@@ -1080,5 +1291,226 @@ document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
     loop();
 })();
 </script>
+<!-- aqui-->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Buscar si hay una sesión guardada
+        const sesion = localStorage.getItem('usuario_sesion_activa');
+        
+        // Si hay una sesión, aplicamos los cambios para el usuario logueado
+        if (sesion) {
+            const usuario = JSON.parse(sesion);
+
+            // 2. Modificar el footer dinámicamente si los elementos existen en la página
+            const footName = document.getElementById('footer-name');
+            const footMeta = document.getElementById('footer-meta');
+            
+            if (footName && footMeta) {
+                // Aquí asumo que usas usuario.nombre u otra propiedad. 
+                // Ajusta las variables según la estructura de tu JSON
+                footName.innerText = `Estudiante: ${usuario.nombre || 'Desconocido'}`;
+                footMeta.innerText = `Perfil Activo`; 
+            }
+            
+            // Opcional: Aquí podrías ocultar el botón de "Iniciar Sesión" 
+            // y mostrar un botón de "Cerrar Sesión"
+        } 
+        // Si no hay sesión (!sesion), no hacemos nada. 
+        // El usuario externo simplemente verá la página normal sin el mensaje emergente.
+    });
+</script>
+<!--aqui-->
+
+<!-- ==================== CICLO DÍA / NOCHE + CONTADOR DINÁMICO ==================== -->
+<style>
+/* LUNA */
+.animated-moon {
+    position: absolute !important;
+    top: 22%; left: 7%;
+    width: 80px; height: 80px;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.5s ease, top 1.5s ease;
+}
+.animated-moon .moon-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffde7, #f9e87e 40%, #e0c040 80%);
+    box-shadow: 0 0 30px 10px rgba(240,215,80,0.35), 0 0 60px 20px rgba(240,215,80,0.12);
+}
+/* Fondo de atardecer */
+.hero-atardecer-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background-image: url('atardecer.png');
+    background-size: cover; background-position: center 30%;
+    opacity: 0; transition: opacity 1.5s ease;
+    pointer-events: none;
+}
+
+/* MOBILE INDEX */
+@media (max-width: 768px) {
+    .hero { min-height: 80vh !important; padding-top: 70px !important; }
+    .hero-content { padding: 1.5rem !important; max-width: 100% !important; }
+    .hero-title { font-size: clamp(1.8rem, 8vw, 3rem) !important; }
+    .hero-buttons { flex-direction: column; gap: 0.75rem; }
+    .hero-buttons .btn { width: 100%; text-align: center; }
+    .tumaco-rock { width: clamp(160px, 45vw, 300px) !important; right: -2% !important; bottom: 4% !important; opacity: 0.7; }
+    .animated-sun { width: 60px !important; height: 60px !important; }
+    .animated-moon { width: 55px !important; height: 55px !important; }
+    .animated-moon .moon-circle { width: 55px; height: 55px; }
+    .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 0.75rem !important; }
+    .stat-number { font-size: 2.2rem !important; }
+    /* Sondeo stats */
+    #sondeo-stats > div > div:nth-child(3),
+    #sondeo-stats > div > div:nth-child(4) { grid-template-columns: 1fr !important; }
+    /* Misión */
+    .mision-section { padding: 3rem 1.25rem !important; }
+    .niveles-grid { grid-template-columns: 1fr 1fr !important; }
+    /* Footer */
+    .footer-container { grid-template-columns: 1fr !important; text-align: center; }
+    .massive-footer-text { font-size: clamp(2.5rem, 12vw, 5rem) !important; }
+    /* CTA */
+    .cta-final h2 { font-size: 1.6rem !important; }
+    .cta-buttons { flex-direction: column !important; gap: 0.75rem !important; }
+    .cta-buttons a { width: 100%; text-align:center; }
+    /* Sondeo stats row */
+    #sondeo-stats [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    /* Impacto / Timeline */
+    .impacto-section { padding: 3rem 1.25rem !important; }
+    /* Navbar */
+    .navbar-links { display: none !important; }
+}
+@media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr !important; }
+    .niveles-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const fc = { apiKey:"AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8", authDomain:"proyecto-pri-81fd5.firebaseapp.com", projectId:"proyecto-pri-81fd5", storageBucket:"proyecto-pri-81fd5.firebasestorage.app", messagingSenderId:"876748063075", appId:"1:876748063075:web:6e075f73a385bb804e5356" };
+const app = getApps().length ? getApps()[0] : initializeApp(fc);
+const db = getFirestore(app);
+
+// === CONTADOR COBERTURA DINÁMICO ===
+async function actualizarContadorCobertura() {
+    try {
+        const snap = await getDocs(collection(db, 'sondeo_piloto'));
+        const total = snap.size || 49;
+        const el = document.querySelector('.stat-number[data-target="32"]');
+        if (el) {
+            el.textContent = total;
+            el.setAttribute('data-target', total);
+        }
+    } catch(e) { /* mantiene 32 */ }
+}
+actualizarContadorCobertura();
+</script>
+
+<script>
+// === CICLO DÍA / NOCHE EN EL HERO ===
+(function() {
+    const hora = new Date().getHours() + new Date().getMinutes() / 60;
+
+    // Añadir fondo atardecer
+    const heroEl = document.querySelector('.hero');
+    if (!heroEl) return;
+    const ataEl = document.createElement('div');
+    ataEl.className = 'hero-atardecer-bg';
+    heroEl.insertAdjacentElement('afterbegin', ataEl);
+
+    // Añadir luna
+    const moonEl = document.createElement('div');
+    moonEl.className = 'animated-moon';
+    moonEl.innerHTML = '<div class="moon-circle"></div>';
+    const oceanEl = document.querySelector('.ocean-system');
+    if (oceanEl) oceanEl.appendChild(moonEl);
+
+    const sunEl = document.querySelector('.animated-sun');
+    const skyStop0 = document.querySelector('#skyGradient stop:first-child');
+    const skyStop1 = document.querySelector('#skyGradient stop:nth-child(2)');
+    const skyStop2 = document.querySelector('#skyGradient stop:nth-child(3)');
+    const skyStop3 = document.querySelector('#skyGradient stop:last-child');
+
+    function setEstado(h) {
+        // h = hora decimal (0-24)
+        if (h >= 5 && h < 12) {
+            // MAÑANA (5-12h): cielo azul claro, sol en ascenso
+            sunEl && (sunEl.style.top = `${Math.max(10, 35 - (h-5)*2)}%`);
+            sunEl && (sunEl.style.left = `${7 + (h-5)*3}%`);
+            sunEl && (sunEl.style.opacity = '1');
+            moonEl.style.opacity = '0';
+            ataEl.style.opacity = '0';
+            if (skyStop0) skyStop0.setAttribute('stop-color', '#1a3a6e');
+            if (skyStop1) skyStop1.setAttribute('stop-color', '#3a6fa8');
+            if (skyStop2) skyStop2.setAttribute('stop-color', '#5a8fc0');
+            if (skyStop3) skyStop3.setAttribute('stop-color', '#8ab4d4');
+
+        } else if (h >= 12 && h < 17) {
+            // MEDIODÍA (12-17h): sol alto centrado, cielo más claro
+            const t = (h - 12) / 5;
+            sunEl && (sunEl.style.top = `${10 + t*15}%`);
+            sunEl && (sunEl.style.left = `${22 + t*20}%`);
+            sunEl && (sunEl.style.opacity = '1');
+            moonEl.style.opacity = '0';
+            ataEl.style.opacity = `${t * 0.3}`;
+            if (skyStop0) skyStop0.setAttribute('stop-color', '#0d2a5e');
+            if (skyStop1) skyStop1.setAttribute('stop-color', '#2a5a9e');
+            if (skyStop2) skyStop2.setAttribute('stop-color', '#4a7fc0');
+            if (skyStop3) skyStop3.setAttribute('stop-color', '#7aaed4');
+
+        } else if (h >= 17 && h < 19) {
+            // ATARDECER (17-19h): sol bajando, cielo naranja/rojo
+            const t = (h - 17) / 2;
+            sunEl && (sunEl.style.top = `${25 + t*35}%`);
+            sunEl && (sunEl.style.left = `${42 + t*30}%`);
+            sunEl && (sunEl.style.opacity = `${1 - t}`);
+            moonEl.style.opacity = '0';
+            ataEl.style.opacity = `${0.3 + t * 0.6}`;
+            if (skyStop0) skyStop0.setAttribute('stop-color', `rgb(${60+Math.round(t*100)},${30+Math.round(t*30)},${20})`);
+            if (skyStop1) skyStop1.setAttribute('stop-color', `rgb(${160+Math.round(t*60)},${80+Math.round(t*30)},${20})`);
+            if (skyStop2) skyStop2.setAttribute('stop-color', `rgb(${180+Math.round(t*40)},${100+Math.round(t*20)},${30})`);
+            if (skyStop3) skyStop3.setAttribute('stop-color', `rgb(${80+Math.round(t*40)},${50+Math.round(t*20)},${50})`);
+
+        } else if (h >= 19 || h < 4) {
+            // NOCHE (19h-4h): cielo oscuro, luna visible
+            sunEl && (sunEl.style.opacity = '0');
+            ataEl.style.opacity = '0';
+            moonEl.style.opacity = '1';
+            // Posición de la luna: simula el arco nocturno
+            const hn = h >= 19 ? h - 19 : h + 5;
+            const t = hn / 9; // 0=19h, 1=4h
+            moonEl.style.top = `${Math.max(8, 35 - Math.sin(t * Math.PI) * 25)}%`;
+            moonEl.style.left = `${8 + t * 60}%`;
+            if (skyStop0) skyStop0.setAttribute('stop-color', '#030d1a');
+            if (skyStop1) skyStop1.setAttribute('stop-color', '#07182a');
+            if (skyStop2) skyStop2.setAttribute('stop-color', '#0d2038');
+            if (skyStop3) skyStop3.setAttribute('stop-color', '#122a48');
+
+        } else {
+            // MADRUGADA (4-5h): transición noche → mañana
+            const t = h - 4;
+            sunEl && (sunEl.style.top = `${70 - t*35}%`);
+            sunEl && (sunEl.style.left = '5%');
+            sunEl && (sunEl.style.opacity = `${t}`);
+            moonEl.style.opacity = `${1 - t}`;
+            if (skyStop0) skyStop0.setAttribute('stop-color', `rgb(${Math.round(t*26)},${Math.round(t*42)},${20+Math.round(t*80)})`);
+            if (skyStop1) skyStop1.setAttribute('stop-color', `rgb(${Math.round(t*50)},${Math.round(t*80)},${30+Math.round(t*120)})`);
+        }
+    }
+
+    // Aplicar al cargar
+    setEstado(hora);
+
+    // Actualizar cada minuto para animación progresiva
+    setInterval(() => {
+        const h2 = new Date().getHours() + new Date().getMinutes() / 60;
+        setEstado(h2);
+    }, 60000);
+})();
+</script>
+
 </body>
 </html>
