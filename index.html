@@ -265,12 +265,17 @@ body:hover .cursor-dot { opacity: 1; }
     color: #cbd5e1;
 }
 .img-founder {
-    width: 70px; height: 70px;
+    width: 90px; height: 90px;
     border-radius: 50%;
     border: 3px solid var(--naranja-atardecer);
+    box-shadow: 4px 4px 0 var(--naranja-atardecer);
     object-fit: cover;
+    object-position: center top;
     margin-bottom: 1.2rem;
     display: block;
+}
+@media (min-width: 769px) {
+    .img-founder { width: 110px; height: 110px; }
 }
 
 /* ===== SECCIÓN NIVELES / FASES MEJORADA ===== */
@@ -583,6 +588,7 @@ body:hover .cursor-dot { opacity: 1; }
             <li><a href="login.html" class="btn-login">Acceso Total</a></li>
         </ul>
     </nav>
+    <div id="nav-backdrop"></div>
 </header>
 
 <!-- ==================== HERO ==================== -->
@@ -601,6 +607,17 @@ body:hover .cursor-dot { opacity: 1; }
                     </linearGradient>
                 </defs>
                 <rect width="100%" height="100%" fill="url(#skyGradient)" />
+                <!-- Nubes difuminadas del atardecer -->
+                <g id="sunset-clouds" style="opacity:0;transition:opacity 2s ease">
+                    <ellipse cx="15%" cy="38%" rx="18%" ry="7%" fill="rgba(255,120,60,0.25)" filter="url(#cloudBlur)"/>
+                    <ellipse cx="40%" cy="28%" rx="22%" ry="6%" fill="rgba(200,80,140,0.2)" filter="url(#cloudBlur)"/>
+                    <ellipse cx="70%" cy="35%" rx="20%" ry="8%" fill="rgba(180,60,160,0.22)" filter="url(#cloudBlur)"/>
+                    <ellipse cx="85%" cy="22%" rx="16%" ry="5%" fill="rgba(255,100,80,0.18)" filter="url(#cloudBlur)"/>
+                    <ellipse cx="55%" cy="42%" rx="25%" ry="5%" fill="rgba(220,90,100,0.15)" filter="url(#cloudBlur)"/>
+                </g>
+                <defs>
+                    <filter id="cloudBlur"><feGaussianBlur stdDeviation="12"/></filter>
+                </defs>
             </svg>
         </div>
         
@@ -756,7 +773,8 @@ body:hover .cursor-dot { opacity: 1; }
         </div>
         <div class="reveal-right">
             <div class="founder-card">
-                <img src="joseluis.jpg" alt="José Luis Castro Góngora" class="img-founder" onerror="this.style.display='none'">
+                <img src="joseluis.jpg" alt="José Luis Castro Góngora" class="img-founder"
+                     onerror="this.outerHTML='<svg class=\'img-founder\' viewBox=\'0 0 70 70\' xmlns=\'http://www.w3.org/2000/svg\' style=\'width:70px;height:70px;border-radius:50%;border:3px solid var(--naranja-atardecer);display:block;margin-bottom:1.2rem\'><rect width=\'70\' height=\'70\' rx=\'35\' fill=\'#062040\'/><circle cx=\'35\' cy=\'28\' r=\'13\' fill=\'rgba(255,94,0,0.3)\' stroke=\'rgba(255,94,0,0.6)\' stroke-width=\'1.5\'/><ellipse cx=\'35\' cy=\'56\' rx=\'18\' ry=\'12\' fill=\'rgba(255,94,0,0.2)\' stroke=\'rgba(255,94,0,0.4)\' stroke-width=\'1.5\'/><text x=\'35\' y=\'33\' text-anchor=\'middle\' dominant-baseline=\'middle\' font-family=\'Montserrat,sans-serif\' font-weight=\'900\' font-size=\'16\' fill=\'#ff5e00\'>JL</text></svg>'">
                 <div class="founder-name">José Luis Castro Góngora</div>
                 <div class="founder-role">Fundador & Líder — Ingeniería Mecatrónica, UNAL</div>
                 <p class="founder-quote">"Construir ingeniería en el Pacífico no es solo técnica — es acto político, cultural y de amor al territorio. PRI nació de la necesidad propia y se sostiene del compromiso colectivo."</p>
@@ -1122,11 +1140,17 @@ window.addEventListener('scroll', () => {
     else nav.classList.remove('scrolled');
 });
 
-// ===== MENÚ HAMBURGUESA =====
-document.getElementById('mobile-menu').addEventListener('click', function(){
-    this.classList.toggle('is-active');
-    document.querySelector('.nav-links').classList.toggle('active');
-});
+// ===== MENÚ HAMBURGUESA — cajón lateral =====
+(function(){
+    const toggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const backdrop = document.getElementById('nav-backdrop');
+    function openMenu(){ toggle.classList.add('is-active'); navLinks.classList.add('active'); backdrop.classList.add('active'); document.body.style.overflow='hidden'; }
+    function closeMenu(){ toggle.classList.remove('is-active'); navLinks.classList.remove('active'); backdrop.classList.remove('active'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', function(){ navLinks.classList.contains('active') ? closeMenu() : openMenu(); });
+    backdrop.addEventListener('click', closeMenu);
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+})();
 
 // ===== SCROLL REVEAL =====
 const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
@@ -1434,10 +1458,38 @@ actualizarContadorCobertura();
     const skyStop2 = document.querySelector('#skyGradient stop:nth-child(3)');
     const skyStop3 = document.querySelector('#skyGradient stop:last-child');
 
+    // ── Aves siempre visibles ──────────────────────────────────
+    const birdsEl = document.createElement('div');
+    birdsEl.id = 'animated-birds';
+    birdsEl.style.cssText = 'position:absolute;top:18%;left:20%;z-index:15;pointer-events:none;opacity:1;transition:opacity 1s ease;';
+    birdsEl.innerHTML = `<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">
+        <path d="M0,20 Q6,12 12,20 Q18,28 24,20" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M28,14 Q34,6 40,14 Q46,22 52,14" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M60,22 Q65,15 70,22 Q75,29 80,22" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+        <path d="M90,10 Q95,4 100,10 Q105,16 110,10" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+    if (oceanEl) oceanEl.appendChild(birdsEl);
+
+    // Animación sutil del vuelo de las aves
+    let birdDir = 1, birdPos = 20;
+    setInterval(()=>{ birdPos += birdDir * 0.15; if(birdPos>30||birdPos<10) birdDir*=-1; birdsEl.style.left=birdPos+'%'; }, 100);
+
     function setEstado(h) {
         // h = hora decimal (0-24)
+        // ── Color de las aves según hora ──────────────────────
+        const isDark = (h >= 19 || h < 5);
+        const isSunset = (h >= 16 && h < 19);
+        birdsEl.style.opacity = '1'; // SIEMPRE visibles
+        if (isDark) {
+            birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','rgba(200,220,255,0.7)'));
+        } else if (isSunset) {
+            birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','#2d1a0e'));
+        } else {
+            birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','#1a1a2e'));
+        }
+
         if (h >= 5 && h < 12) {
-            // MAÑANA (5-12h): cielo azul claro, sol en ascenso
+            // MAÑANA (5-12h)
             sunEl && (sunEl.style.top = `${Math.max(10, 35 - (h-5)*2)}%`);
             sunEl && (sunEl.style.left = `${7 + (h-5)*3}%`);
             sunEl && (sunEl.style.opacity = '1');
@@ -1448,49 +1500,69 @@ actualizarContadorCobertura();
             if (skyStop2) skyStop2.setAttribute('stop-color', '#5a8fc0');
             if (skyStop3) skyStop3.setAttribute('stop-color', '#8ab4d4');
 
-        } else if (h >= 12 && h < 17) {
-            // MEDIODÍA (12-17h): sol alto centrado, cielo más claro
-            const t = (h - 12) / 5;
+        } else if (h >= 12 && h < 16) {
+            // MEDIODÍA (12-16h)
+            const t = (h - 12) / 4;
             sunEl && (sunEl.style.top = `${10 + t*15}%`);
-            sunEl && (sunEl.style.left = `${22 + t*20}%`);
+            sunEl && (sunEl.style.left = `${22 + t*18}%`);
             sunEl && (sunEl.style.opacity = '1');
             moonEl.style.opacity = '0';
-            ataEl.style.opacity = `${t * 0.3}`;
+            ataEl.style.opacity = `${t * 0.25}`;
             if (skyStop0) skyStop0.setAttribute('stop-color', '#0d2a5e');
             if (skyStop1) skyStop1.setAttribute('stop-color', '#2a5a9e');
             if (skyStop2) skyStop2.setAttribute('stop-color', '#4a7fc0');
             if (skyStop3) skyStop3.setAttribute('stop-color', '#7aaed4');
 
-        } else if (h >= 17 && h < 19) {
-            // ATARDECER (17-19h): sol bajando, cielo naranja/rojo
-            const t = (h - 17) / 2;
-            sunEl && (sunEl.style.top = `${25 + t*35}%`);
-            sunEl && (sunEl.style.left = `${42 + t*30}%`);
-            sunEl && (sunEl.style.opacity = `${1 - t}`);
+        } else if (h >= 16 && h < 19) {
+            // ATARDECER (16-19h): rojos → morados/lilas
+            const t = (h - 16) / 3; // 0=16h, 1=19h
+            const t2 = Math.min(1, t * 1.5); // transición más dramática al inicio
+            sunEl && (sunEl.style.top = `${25 + t*40}%`);
+            sunEl && (sunEl.style.left = `${40 + t*28}%`);
+            sunEl && (sunEl.style.opacity = `${Math.max(0, 1 - t * 1.4)}`);
             moonEl.style.opacity = '0';
-            ataEl.style.opacity = `${0.3 + t * 0.6}`;
-            if (skyStop0) skyStop0.setAttribute('stop-color', `rgb(${60+Math.round(t*100)},${30+Math.round(t*30)},${20})`);
-            if (skyStop1) skyStop1.setAttribute('stop-color', `rgb(${160+Math.round(t*60)},${80+Math.round(t*30)},${20})`);
-            if (skyStop2) skyStop2.setAttribute('stop-color', `rgb(${180+Math.round(t*40)},${100+Math.round(t*20)},${30})`);
-            if (skyStop3) skyStop3.setAttribute('stop-color', `rgb(${80+Math.round(t*40)},${50+Math.round(t*20)},${50})`);
+            ataEl.style.opacity = `${0.45 + t * 0.55}`;
+
+            // Cielo: naranja intenso → rojo → morado/lila
+            const r0 = Math.round(80  + t2*120); // 80→200
+            const g0 = Math.round(20  + t2*10);  // 20→30 luego baja
+            const b0 = Math.round(10  + t2*60);  // 10→70 (lila)
+            const r1 = Math.round(200 + t2*30);  // 200→230
+            const g1 = Math.round(70  - t2*40);  // 70→30
+            const b1 = Math.round(20  + t2*50);  // 20→70
+            const r2 = Math.round(160 + t2*40);  // naranja→rojizo
+            const g2 = Math.round(60  - t2*30);
+            const b2 = Math.round(20  + t2*80);  // → lila
+            const r3 = Math.round(100 + t2*60);  // horizonte: naranja→púrpura
+            const g3 = Math.round(40  - t2*20);
+            const b3 = Math.round(60  + t2*80);  // → violeta
+            if (skyStop0) skyStop0.setAttribute('stop-color', `rgb(${r0},${g0},${b0})`);
+            if (skyStop1) skyStop1.setAttribute('stop-color', `rgb(${r1},${g1},${b1})`);
+            if (skyStop2) skyStop2.setAttribute('stop-color', `rgb(${r2},${g2},${b2})`);
+            if (skyStop3) skyStop3.setAttribute('stop-color', `rgb(${r3},${g3},${b3})`);
+
+            // Nubes difuminadas en atardecer
+            const cloudLayer = document.getElementById('sunset-clouds');
+            if (cloudLayer) cloudLayer.style.opacity = `${t * 0.85}`;
 
         } else if (h >= 19 || h < 4) {
-            // NOCHE (19h-4h): cielo oscuro, luna visible
+            // NOCHE (19h-4h)
             sunEl && (sunEl.style.opacity = '0');
             ataEl.style.opacity = '0';
             moonEl.style.opacity = '1';
-            // Posición de la luna: simula el arco nocturno
             const hn = h >= 19 ? h - 19 : h + 5;
-            const t = hn / 9; // 0=19h, 1=4h
+            const t = hn / 9;
             moonEl.style.top = `${Math.max(8, 35 - Math.sin(t * Math.PI) * 25)}%`;
             moonEl.style.left = `${8 + t * 60}%`;
             if (skyStop0) skyStop0.setAttribute('stop-color', '#030d1a');
             if (skyStop1) skyStop1.setAttribute('stop-color', '#07182a');
             if (skyStop2) skyStop2.setAttribute('stop-color', '#0d2038');
             if (skyStop3) skyStop3.setAttribute('stop-color', '#122a48');
+            const cloudLayer = document.getElementById('sunset-clouds');
+            if (cloudLayer) cloudLayer.style.opacity = '0';
 
         } else {
-            // MADRUGADA (4-5h): transición noche → mañana
+            // MADRUGADA (4-5h)
             const t = h - 4;
             sunEl && (sunEl.style.top = `${70 - t*35}%`);
             sunEl && (sunEl.style.left = '5%');
