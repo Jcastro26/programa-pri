@@ -848,7 +848,7 @@ body:hover .cursor-dot { opacity: 1; }
         <div class="stat-card reveal" style="transition-delay:0.3s">
             <span class="stat-sublabel">Cobertura</span>
             <span class="stat-number" data-target="32" data-suffix="">32</span>
-            <span class="stat-label">Estudiantes activos formándose en ciencias exactas e ingeniería</span>
+            <span class="stat-label">Estudiantes formados en ciencias exactas e ingeniería en 2025</span>
         </div>
         <div class="stat-card reveal" style="transition-delay:0.45s">
             <span class="stat-sublabel">Retención</span>
@@ -1061,12 +1061,12 @@ import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
-    authDomain: "proyecto-pri-81fd5.firebaseapp.com",
-    projectId: "proyecto-pri-81fd5",
-    storageBucket: "proyecto-pri-81fd5.firebasestorage.app",
-    messagingSenderId: "876748063075",
-    appId: "1:876748063075:web:6e075f73a385bb804e5356"
+    apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+    authDomain: "programa-pri-2d395.firebaseapp.com",
+    projectId: "programa-pri-2d395",
+    storageBucket: "programa-pri-2d395.firebasestorage.app",
+    messagingSenderId: "854011964095",
+    appId: "1:854011964095:web:6e075f73a385bb804e5356"
 };
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -1097,76 +1097,49 @@ function renderBarras(containerId, datos, color, max) {
 }
 
 async function cargarStats() {
-    // --- 1. diagnostico_colegios (los 60 formularios ICFES) ---
-    let icfes = [];
-    try {
-        const snap = await getDocs(collection(db, 'diagnostico_colegios'));
-        snap.forEach(d => icfes.push(d.data()));
-    } catch(e) { /* sin datos ICFES */ }
-
-    // --- 2. sondeo_piloto (registros de inscripción/demografía) ---
-    let sondeo = [];
+    // Fuente: sondeo_piloto = registros de inscripción (personas únicas encuestadas)
+    // NO usar diagnostico_colegios aquí — ese tiene 1 fila por formulario respondido,
+    // no 1 fila por persona, y da cifras infladas (768 para 32 estudiantes).
+    let data = [];
     try {
         const snap = await getDocs(collection(db, 'sondeo_piloto'));
-        snap.forEach(d => sondeo.push(d.data()));
-    } catch(e) { /* sin sondeo */ }
+        snap.forEach(d => data.push(d.data()));
+    } catch(e) { /* usar fallback */ }
 
-    // Si no hay ninguna fuente, usar PILOTO
-    if (icfes.length === 0 && sondeo.length === 0) {
+    if (data.length === 0) {
         mostrarStats(PILOTO);
         return;
     }
 
-    // --- Construir stats desde diagnostico_colegios ---
-    const porFormulario = {}, puntajes = {'0–9':0,'10–19':0,'20–29':0,'30–39':0,'40–49':0,'50–59':0,'60–69':0,'70–79':0,'80–89':0,'90–100':0};
+    const inst = {}, nivel = {}, puntajes = {'0–5':0,'6–10':0,'11–15':0,'16–20':0,'21–25':0}, areas = {};
+    let estudiantes = 0, voluntarios = 0;
     const ps = [];
-    icfes.forEach(r => {
-        // Agrupar por hoja/formulario
-        const hoja = r._hoja || 'Sin nombre';
-        porFormulario[hoja] = (porFormulario[hoja]||0) + 1;
-        // Puntaje (sobre 100 o sobre lo que sea)
-        const pts = parseFloat(r['Puntuación'] || r['puntuacion'] || r['PUNTAJE'] || 0);
-        if (!isNaN(pts) && pts > 0) {
-            ps.push(pts);
-            const bucket = Math.min(9, Math.floor(pts/10));
-            const key = `${bucket*10}–${bucket*10+9}`;
-            if (puntajes[key] !== undefined) puntajes[key]++;
-        }
-    });
-    const prom = ps.length ? (ps.reduce((a,b)=>a+b,0)/ps.length).toFixed(1) : '—';
 
-    // Limpiar buckets vacíos del extremo
-    const puntajesLimpios = Object.fromEntries(Object.entries(puntajes).filter(([,v])=>v>0));
-
-    // Limitar top-8 formularios
-    const formsTop = Object.fromEntries(Object.entries(porFormulario).sort((a,b)=>b[1]-a[1]).slice(0,8));
-
-    // --- Construir stats desde sondeo_piloto (demográficos) ---
-    const inst = {}, nivel = {}, areas = {};
-    let estudiantes = 0;
-    sondeo.forEach(r => {
+    data.forEach(r => {
         if ((r.rol||'').toUpperCase().includes('ESTUDIANT')) estudiantes++;
+        if ((r.rol||'').toUpperCase().includes('VOLUNT')) voluntarios++;
         const i = r.institucion || 'No especificada'; inst[i] = (inst[i]||0)+1;
         const n = r.nivel || 'No especificado'; nivel[n] = (nivel[n]||0)+1;
+        if (typeof r.puntuacion === 'number' && r.puntuacion !== null) {
+            ps.push(r.puntuacion);
+            if (r.puntuacion<=5) puntajes['0–5']++;
+            else if (r.puntuacion<=10) puntajes['6–10']++;
+            else if (r.puntuacion<=15) puntajes['11–15']++;
+            else if (r.puntuacion<=20) puntajes['16–20']++;
+            else puntajes['21–25']++;
+        }
         (r.areas_interes||[]).forEach(a => { if(a) areas[a]=(areas[a]||0)+1; });
     });
-    const instTop   = Object.keys(inst).length   ? Object.fromEntries(Object.entries(inst).sort((a,b)=>b[1]-a[1]).slice(0,6))   : PILOTO.instituciones;
-    const nivelTop  = Object.keys(nivel).length  ? Object.fromEntries(Object.entries(nivel).sort((a,b)=>b[1]-a[1]).slice(0,6))  : PILOTO.niveles;
-    const areasTop  = Object.keys(areas).length  ? Object.fromEntries(Object.entries(areas).sort((a,b)=>b[1]-a[1]).slice(0,6))  : PILOTO.areas;
-    const instCount = Object.keys(inst).filter(k=>k!=='No especificada'&&inst[k]>0).length || Object.keys(PILOTO.instituciones).length;
 
-    mostrarStats({
-        total:        icfes.length || sondeo.length,
-        estudiantes:  estudiantes  || PILOTO.estudiantes,
-        voluntarios:  0,
-        instituciones: instTop,
-        niveles:       nivelTop,
-        puntajes:      Object.keys(puntajesLimpios).length ? puntajesLimpios : PILOTO.puntajes,
-        areas:         areasTop,
-        promedio:      prom !== '—' ? prom : PILOTO.promedio,
-        instCount,
-        porFormulario: Object.keys(formsTop).length ? formsTop : null,
-    });
+    const prom = ps.length ? (ps.reduce((a,b)=>a+b,0)/ps.length).toFixed(1) : '—';
+    const instCount = Object.keys(inst).filter(k=>k!=='No especificada'&&inst[k]>0).length;
+    const instTop  = Object.fromEntries(Object.entries(inst).sort((a,b)=>b[1]-a[1]).slice(0,6));
+    const nivelTop = Object.fromEntries(Object.entries(nivel).sort((a,b)=>b[1]-a[1]).slice(0,6));
+    const areasTop = Object.fromEntries(Object.entries(areas).sort((a,b)=>b[1]-a[1]).slice(0,6));
+
+    mostrarStats({ total: data.length, estudiantes, voluntarios,
+        instituciones: instTop, niveles: nivelTop, puntajes, areas: areasTop,
+        promedio: prom, instCount });
 }
 
 function mostrarStats(s) {
@@ -1175,17 +1148,10 @@ function mostrarStats(s) {
     document.getElementById('stat-prom').textContent = s.promedio;
     document.getElementById('stat-est').textContent = s.estudiantes;
 
-    // Si tenemos datos de formularios ICFES, mostrarlos en el primer chart
-    if (s.porFormulario && Object.keys(s.porFormulario).length) {
-        const titleEl = document.querySelector('#sondeo-stats [data-chart-title="inst"]') || document.querySelector('#chart-inst').previousElementSibling;
-        if (titleEl) titleEl.innerHTML = '📋 Respuestas por Formulario';
-        renderBarras('chart-inst', s.porFormulario, 'var(--teal,#38bdf8)', s.total);
-    } else {
-        renderBarras('chart-inst', s.instituciones, 'var(--teal,#38bdf8)', s.total);
-    }
-    renderBarras('chart-nivel', s.niveles, 'var(--naranja,#ff5e00)', s.total);
-    renderBarras('chart-puntajes', s.puntajes, 'var(--oro,#ffd700)', null);
-    renderBarras('chart-areas', s.areas, '#22c55e', s.total);
+    renderBarras('chart-inst',     s.instituciones, 'var(--teal,#38bdf8)',   s.total);
+    renderBarras('chart-nivel',    s.niveles,        'var(--naranja,#ff5e00)', s.total);
+    renderBarras('chart-puntajes', s.puntajes,       'var(--oro,#ffd700)',     null);
+    renderBarras('chart-areas',    s.areas,           '#22c55e',               s.total);
 }
 
 cargarStats();
@@ -1549,27 +1515,26 @@ document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
 import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const fc = { apiKey:"AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8", authDomain:"proyecto-pri-81fd5.firebaseapp.com", projectId:"proyecto-pri-81fd5", storageBucket:"proyecto-pri-81fd5.firebasestorage.app", messagingSenderId:"876748063075", appId:"1:876748063075:web:6e075f73a385bb804e5356" };
+const fc = { apiKey:"AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30", authDomain:"programa-pri-2d395.firebaseapp.com", projectId:"programa-pri-2d395", storageBucket:"programa-pri-2d395.firebasestorage.app", messagingSenderId:"854011964095", appId:"1:854011964095:web:6e075f73a385bb804e5356" };
 const app = getApps().length ? getApps()[0] : initializeApp(fc);
 const db = getFirestore(app);
 
-// === CONTADOR COBERTURA DINÁMICO ===
-// Lee de diagnostico_colegios (misma fuente que los gráficos del diagnóstico)
+// === CONTADOR COBERTURA: estudiantes reales registrados en el programa ===
+// Muestra el número de usuarios con rol 'estudiante' en Firebase,
+// con base de 32 (los del piloto) si aún no hay registros digitales.
 async function actualizarContadorCobertura() {
     try {
-        const snap = await getDocs(collection(db, 'diagnostico_colegios'));
-        const total = snap.size || 60;
+        const snap = await getDocs(collection(db, 'usuarios'));
+        let estudiantes = 0;
+        snap.forEach(d => { if ((d.data().rol||'') === 'estudiante') estudiantes++; });
+        // Usar max(registros, 32) para no mostrar menos del piloto real
+        const total = Math.max(estudiantes, 32);
         const el = document.querySelector('.stat-number[data-target="32"]');
         if (el) {
             el.textContent = total;
             el.setAttribute('data-target', total);
         }
-        // También actualizar el CTA si tiene un número hardcodeado
-        const ctaP = document.querySelector('.cta-final p.reveal');
-        if (ctaP && total > 0) {
-            ctaP.textContent = `Únete a los ${total} estudiantes que ya están construyendo su futuro universitario con PRI.`;
-        }
-    } catch(e) { /* mantiene valor actual */ }
+    } catch(e) { /* mantiene 32 */ }
 }
 actualizarContadorCobertura();
 </script>

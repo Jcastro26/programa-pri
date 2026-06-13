@@ -224,7 +224,100 @@
         .canje-estado{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:0.25rem 0.75rem;}
         .estado-pendiente{background:rgba(245,158,11,0.1);color:#fcd34d;border:1px solid rgba(245,158,11,0.3);}
         .estado-entregado{background:rgba(34,197,94,0.1);color:#86efac;border:1px solid rgba(34,197,94,0.3);}
-        @media(max-width:900px){.sidebar{display:none;}.main-layout{padding:1rem;}}
+        /* ═══════════════════════════════════════════
+           RESPONSIVE MÓVIL — MENÚ HAMBURGUESA
+        ═══════════════════════════════════════════ */
+        .btn-hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.15);color:var(--blanco);font-size:1.3rem;padding:.45rem .75rem;cursor:pointer;border-radius:4px;line-height:1;flex-shrink:0;}
+
+        /* Overlay menú móvil */
+        #mobile-menu-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(2,14,28,0.97);flex-direction:column;overflow-y:auto;}
+        #mobile-menu-overlay.open{display:flex;}
+        .mobile-menu-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(2,26,54,0.95);position:sticky;top:0;z-index:1;}
+        .mobile-menu-header span{font-family:var(--fuente-t);font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal);}
+        .btn-cerrar-menu{background:none;border:none;color:rgba(240,244,248,0.5);font-size:1.6rem;cursor:pointer;line-height:1;padding:.25rem .5rem;}
+        .mobile-menu-header-user{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .mobile-menu-header-user .u-name{font-family:var(--fuente-t);font-size:.95rem;font-weight:900;color:var(--blanco);}
+        .mobile-menu-header-user .u-role{font-family:var(--fuente-t);font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.15rem;}
+        .mobile-menu-header-user .u-pts{font-family:var(--fuente-t);font-size:.7rem;color:var(--oro);}
+        #mobile-nav-list{flex:1;padding:.75rem 0;}
+        .mobile-nav-btn{display:flex;align-items:center;gap:.75rem;width:100%;padding:1rem 1.5rem;background:none;border:none;border-left:3px solid transparent;color:rgba(240,244,248,0.55);font-family:var(--fuente-t);font-size:.8rem;font-weight:700;letter-spacing:.5px;cursor:pointer;text-align:left;transition:all .18s;}
+        .mobile-nav-btn:active{background:rgba(255,94,0,0.12);}
+        .mobile-nav-btn.active{color:var(--blanco);border-left-color:var(--naranja);background:rgba(255,94,0,0.09);}
+        .mobile-nav-divider{height:1px;background:rgba(255,255,255,0.05);margin:.5rem 1.25rem;}
+        .mobile-menu-footer{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.07);}
+        .mobile-menu-footer .btn-logout-m{width:100%;font-family:var(--fuente-t);font-size:.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#fca5a5;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);padding:.75rem;cursor:pointer;}
+
+        @media(max-width:900px){
+            /* Sidebar escondida — reemplazada por overlay */
+            .sidebar{display:none;}
+            .btn-hamburger{display:flex;align-items:center;}
+
+            /* Header compacto */
+            .site-header{padding:.65rem 1rem;gap:.6rem;}
+            .header-brand-text p{display:none;}
+            .header-brand-text h1{font-size:.75rem;}
+            .header-icon{width:34px;height:34px;}
+            .header-right{gap:.6rem;}
+            .header-user .user-name{font-size:.75rem;}
+            .header-user .user-role{font-size:.5rem;}
+            .header-points{font-size:.6rem;padding:.25rem .5rem;}
+            .btn-logout{display:none;} /* en móvil el logout está en el menú */
+
+            /* Layout */
+            .main-layout{padding:.85rem .75rem;gap:0;}
+
+            /* Paneles */
+            .panel-heading{font-size:1.35rem;}
+            .panel-desc{font-size:.82rem;margin-bottom:1.25rem;}
+            .section-box{padding:1.1rem;margin-bottom:1rem;}
+            .section-box-title{font-size:.58rem;margin-bottom:.85rem;padding-bottom:.5rem;}
+
+            /* KPI grid — 2 columnas en móvil */
+            .kpi-grid{grid-template-columns:repeat(2,1fr);gap:.6rem;margin-bottom:1.25rem;}
+            .kpi-value{font-size:1.6rem;}
+
+            /* Formularios — 1 columna */
+            .form-add{grid-template-columns:1fr !important;}
+            .form-add .fa-group[style*="grid-column"]{grid-column:1 !important;}
+
+            /* Tablas — scroll horizontal */
+            .admin-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+            table{min-width:520px;}
+            thead th,tbody td{padding:.6rem .65rem;font-size:.68rem;}
+
+            /* Grids */
+            .tutores-grid{grid-template-columns:1fr 1fr;}
+            .qa-grid{grid-template-columns:repeat(3,1fr);gap:.6rem;}
+            .qa-card{padding:.85rem .5rem;}
+            .qa-icon{font-size:1.5rem;}
+            .qa-label{font-size:.6rem;}
+            .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
+
+            /* Foro */
+            .foro-messages{height:260px;}
+            .foro-input-row{flex-direction:column;}
+            .btn-send{width:100%;}
+
+            /* Botones de acción en talleres */
+            .btn-add{font-size:.65rem;padding:.6rem 1rem;}
+            .module-item{padding:.85rem 1rem;}
+
+            /* Chart */
+            .chart-container{height:220px;}
+
+            /* Notif — más estrecha en móvil */
+            #notif-container{max-width:calc(100vw - 1.5rem);right:.75rem;top:.75rem;}
+
+            /* Ocultar cursor decorativo */
+            .cursor-dot,.cursor-ring{display:none;}
+        }
+
+        @media(max-width:480px){
+            .qa-grid{grid-template-columns:repeat(2,1fr);}
+            .tutores-grid{grid-template-columns:1fr;}
+            .kpi-grid{grid-template-columns:1fr 1fr;}
+            .site-header{padding:.6rem .75rem;}
+        }
         .footer-minimal{background:rgba(2,26,54,0.95);border-top:1px solid rgba(255,255,255,0.07);padding:1.5rem 2rem;text-align:center;font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.2);position:relative;z-index:1;flex-shrink:0;}
         /* Overflow fix */
         tbody td{overflow-wrap:break-word;word-break:break-word;}
@@ -264,8 +357,26 @@
             <p class="user-name" id="welcome-user">—</p>
         </div>
         <button class="btn-logout" onclick="logoutSession()">Cerrar Sesión</button>
+        <button class="btn-hamburger" onclick="abrirMenuMovil()" aria-label="Menú">☰</button>
     </div>
 </header>
+
+<!-- MENÚ MÓVIL OVERLAY -->
+<div id="mobile-menu-overlay" role="dialog" aria-modal="true">
+    <div class="mobile-menu-header">
+        <span>Navegación</span>
+        <button class="btn-cerrar-menu" onclick="cerrarMenuMovil()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="mobile-menu-header-user">
+        <p class="u-role" id="mob-role">—</p>
+        <p class="u-name" id="mob-name">—</p>
+        <p class="u-pts" id="mob-pts"></p>
+    </div>
+    <nav id="mobile-nav-list"></nav>
+    <div class="mobile-menu-footer">
+        <button class="btn-logout-m" onclick="logoutSession()">🚪 Cerrar Sesión</button>
+    </div>
+</div>
 
 <div class="main-layout">
     <aside class="sidebar">
@@ -667,7 +778,7 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
                     <div>
                         <p class="section-box-title" style="margin:0;">📊 Entregas reales de Google Forms</p>
-                        <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.3rem 0 0;">Respuestas registradas en <code style="color:var(--teal);">diagnostico_colegios</code> — agrupadas por formulario.</p>
+                        <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.3rem 0 0;">Respuestas de <code style="color:var(--teal);">diagnostico_colegios</code> — agrupadas por estudiante con detalle de correctas/incorrectas.</p>
                     </div>
                     <button class="btn-add" style="font-size:.6rem;padding:.4rem .9rem;margin-top:0;" onclick="cargarResumenEntregasICFES()">🔄 Actualizar</button>
                 </div>
@@ -741,18 +852,26 @@
             <div class="section-box" style="margin-bottom:1.2rem;">
                 <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end;">
                     <div style="display:flex;flex-direction:column;gap:.3rem;">
-                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Formulario / Área</label>
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Filtrar por Área</label>
                         <select id="ri-filtro-hoja" onchange="renderResultadosICFES()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;">
-                            <option value="">Todos los formularios</option>
+                            <option value="">Todas las áreas</option>
                         </select>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:.3rem;">
-                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Buscar estudiante (cédula o email)</label>
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Buscar (nombre, cédula o email)</label>
                         <input type="text" id="ri-buscar" oninput="renderResultadosICFES()" placeholder="Buscar..." style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;width:200px;">
                     </div>
                     <button class="btn-add" style="height:2rem;font-size:.65rem;" onclick="exportarResultadosCSV()">📥 Exportar CSV</button>
                 </div>
             </div>
+
+            <!-- Mapeo de nombres de formularios -->
+            <details id="ri-mapeo-wrap" style="margin-bottom:1rem;">
+                <summary style="font-family:var(--fuente-t);font-size:.65rem;font-weight:700;color:var(--teal);cursor:pointer;padding:.5rem;background:rgba(56,189,248,.06);border-radius:6px;border:1px solid rgba(56,189,248,.15);">
+                    ⚙️ Renombrar formularios (mapear _hoja → nombre real)
+                </summary>
+                <div id="ri-mapeo-body" style="background:#081422;border:1px solid rgba(255,255,255,.07);border-top:none;border-radius:0 0 6px 6px;padding:.75rem;"></div>
+            </details>
 
             <!-- Resumen estadístico -->
             <div id="ri-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.2rem;"></div>
@@ -767,16 +886,15 @@
 
             <!-- Tabla de respuestas -->
             <div class="section-box">
-                <p class="section-box-title">📋 Respuestas individuales</p>
+                <p class="section-box-title">📋 Respuestas individuales <span style="font-size:.55rem;font-weight:400;color:rgba(240,244,248,.35);">(clic en una fila para ver todos los datos)</span></p>
                 <div style="overflow-x:auto;">
                     <table style="width:100%;border-collapse:collapse;font-family:var(--fuente-t);font-size:.63rem;">
                         <thead>
                             <tr style="background:rgba(255,255,255,.06);color:rgba(240,244,248,.6);text-align:left;">
-                                <th style="padding:.5rem .6rem;cursor:pointer;" onclick="sortResultados('_hoja')">Formulario ↕</th>
-                                <th style="padding:.5rem .6rem;cursor:pointer;" onclick="sortResultados('Puntuación')">Puntaje ↕</th>
-                                <th style="padding:.5rem .6rem;">Cédula</th>
-                                <th style="padding:.5rem .6rem;">Email</th>
-                                <th style="padding:.5rem .6rem;cursor:pointer;" onclick="sortResultados('Marca temporal')">Fecha ↕</th>
+                                <th style="padding:.5rem .7rem;">Nombre del Estudiante</th>
+                                <th style="padding:.5rem .7rem;">Cédula</th>
+                                <th style="padding:.5rem .7rem;">Email</th>
+                                <th style="padding:.5rem .7rem;text-align:center;">Promedio · Forms</th>
                             </tr>
                         </thead>
                         <tbody id="ri-tbody"></tbody>
@@ -1028,7 +1146,8 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-    getFirestore, collection, onSnapshot, addDoc, getDocs, setDoc, deleteDoc,
+    getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+    collection, onSnapshot, addDoc, getDocs, setDoc, deleteDoc,
     query, orderBy, serverTimestamp, doc, getDoc, updateDoc, increment, where, limit, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 // ── Cloudinary (modo Unsigned – NO enviar public_id) ──────────────
@@ -1046,15 +1165,20 @@ async function subirImagenCloudinary(file) {
 }
 
 const firebaseConfig = {
-    apiKey:"AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
-    authDomain:"proyecto-pri-81fd5.firebaseapp.com",
-    projectId:"proyecto-pri-81fd5",
-    storageBucket:"proyecto-pri-81fd5.firebasestorage.app",
-    messagingSenderId:"876748063075",
-    appId:"1:876748063075:web:6e075f73a385bb804e5356"
+    apiKey:"AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+    authDomain:"programa-pri-2d395.firebaseapp.com",
+    projectId:"programa-pri-2d395",
+    storageBucket:"programa-pri-2d395.firebasestorage.app",
+    messagingSenderId:"854011964095",
+    appId:"1:854011964095:web:10487babbae81aa611340a",
+    measurementId:"G-0FWJS3BX0B"
 };
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// Caché local persistente: los datos ya leídos se sirven desde IndexedDB
+// en recargas y re-visitas, sin consumir cuota de Firestore.
+const db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+});
 
 let currentUser = null;
 let ratingDocId = null, ratingSeleccionado = 0;
@@ -1088,6 +1212,16 @@ let chatPrivadoCon = null; // {uid, nombre}
 let preguntasBuilder = []; // para formulario docente
 let fotoPendienteB64 = null;
 let foroUnsubscribe = null;
+
+// ── Guards onSnapshot: evitan apilar listeners al re-abrir paneles ────────────
+let _unsubAdmin          = null;
+let _unsubTutores        = null;
+let _unsubPlaneacion     = null;
+let _unsubEstudiantes    = null;
+let _unsubForoAdmin      = null;
+let _unsubRetos          = null;
+let inboxUnsubscribe     = null;
+let _unsubNotifTienda    = null;
 
 // ===================== NOTIF =====================
 function notif(titulo, msg, icono='✅', tipo='success') {
@@ -1245,7 +1379,8 @@ function construirMenu(rol) {
             {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
         ]
     };
-    (configs[rol] || configs.estudiante).forEach((op, i) => {
+    const items = configs[rol] || configs.estudiante;
+    items.forEach((op, i) => {
         const btn = document.createElement('button');
         btn.className = 'nav-btn';
         btn.textContent = op.label;
@@ -1257,8 +1392,55 @@ function construirMenu(rol) {
         menu.appendChild(btn);
         if (i === 0) btn.click();
     });
+
+    // Poblar menú móvil overlay
+    const mobileNav = document.getElementById('mobile-nav-list');
+    if (mobileNav) {
+        mobileNav.innerHTML = '';
+        items.forEach((op, i) => {
+            if (i > 0 && i % 4 === 0) {
+                const div = document.createElement('div');
+                div.className = 'mobile-nav-divider';
+                mobileNav.appendChild(div);
+            }
+            const mbtn = document.createElement('button');
+            mbtn.className = 'mobile-nav-btn';
+            mbtn.textContent = op.label;
+            mbtn.addEventListener('click', () => {
+                document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+                mbtn.classList.add('active');
+                cerrarMenuMovil();
+                op.fn();
+            });
+            mobileNav.appendChild(mbtn);
+        });
+    }
+
     if (currentUser.rol === 'docente' || currentUser.rol === 'voluntario') cargarPerfilDocente();
     if (currentUser.rol === 'admin') iniciarListenerNotifTienda();
+}
+
+function abrirMenuMovil() {
+    const overlay = document.getElementById('mobile-menu-overlay');
+    if (!overlay) return;
+    // Sync user info
+    const mobRole = document.getElementById('mob-role');
+    const mobName = document.getElementById('mob-name');
+    const mobPts  = document.getElementById('mob-pts');
+    if (mobRole) mobRole.textContent = (currentUser?.rol || '').toUpperCase();
+    if (mobName) mobName.textContent = currentUser?.nombre || currentUser?.email || '—';
+    if (mobPts)  {
+        const pts = currentUser?.puntos || 0;
+        mobPts.textContent = pts ? `⭐ ${pts} PTS` : '';
+    }
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarMenuMovil() {
+    const overlay = document.getElementById('mobile-menu-overlay');
+    if (overlay) overlay.classList.remove('open');
+    document.body.style.overflow = '';
 }
 
 // ===================== PROGRESO ESTUDIANTE =====================
@@ -1580,18 +1762,36 @@ function renderTalleresGrid(areaFiltro) {
     }).join('');
 }
 
+// Extrae solo el ID de un formId que puede venir como:
+// "1FAIpQL..." | "1FAIpQL.../viewform?..." | "https://docs.google.com/forms/d/e/1FAIpQL.../viewform"
+function normalizarFormId(raw) {
+    if (!raw) return '';
+    // Si es una URL completa, extraer el ID con regex
+    const m = String(raw).match(/\/forms\/d\/e\/([^\/\?]+)/);
+    if (m) return m[1];
+    // Si contiene /viewform u otros sufijos, quitar todo desde /
+    return String(raw).split('/')[0].split('?')[0].trim();
+}
+
+// Para admin/docente: abre el formulario en nueva pestaña sin chequeos de estudiante
+window.previsualizarTaller = function(rawFormId) {
+    const id = normalizarFormId(rawFormId);
+    if (!id) { notif('Sin formulario','Este taller no tiene un formulario asignado.','📋','info'); return; }
+    window.open(`https://docs.google.com/forms/d/e/${id}/viewform`, '_blank');
+};
+
 window.abrirFormICFES = async function(tallerIdOrTitulo, legacyFormId, legacyUrl, legacyId) {
     // Soporte doble: abrirFormICFES(id) — nuevo | abrirFormICFES(titulo,formId,url,id) — legado
     let titulo, formId, fallbackUrl, tallerId;
     const t = window._tallerMapa && window._tallerMapa[tallerIdOrTitulo];
     if (t) {
         titulo      = t.titulo || t.nombre || 'Taller';
-        formId      = t.formId || '';
+        formId      = normalizarFormId(t.formId || '');
         fallbackUrl = t.formUrl || t.link || '';
         tallerId    = t.id || '';
     } else {
         titulo      = tallerIdOrTitulo;
-        formId      = legacyFormId || '';
+        formId      = normalizarFormId(legacyFormId || '');
         fallbackUrl = legacyUrl    || '';
         tallerId    = legacyId     || '';
     }
@@ -1691,7 +1891,8 @@ async function cargarCompletadosEstudiante() {
 // ===================== TUTORES =====================
 function cargarTutores() {
     const container = document.getElementById('lista-docentes-calificar');
-    onSnapshot(collection(db,"docentes"), snap => {
+    if (_unsubTutores) { _unsubTutores(); _unsubTutores = null; }
+    _unsubTutores = onSnapshot(collection(db,"docentes"), snap => {
         if (snap.empty) { container.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay mentores registrados.</p>'; return; }
         container.innerHTML = '';
         snap.forEach(d => {
@@ -1818,7 +2019,12 @@ window.enviarMensajeForo = async function() {
     inp.value = '';
     if (chatPrivadoCon) {
         const chatId = [currentUser.uid, chatPrivadoCon.uid].sort().join('_');
-        await setDoc(doc(db,"chats_privados",chatId), {participantes:[currentUser.uid, chatPrivadoCon.uid]}, {merge:true});
+        await setDoc(doc(db,"chats_privados",chatId), {
+            participantes:[currentUser.uid, chatPrivadoCon.uid],
+            ultimoAutorUid: currentUser.uid,  // desnormalizado para badge sin N+1
+            ultimoMensaje: msg.slice(0,80),
+            ultimoTimestamp: serverTimestamp()
+        }, {merge:true});
         await addDoc(collection(db,"chats_privados",chatId,"mensajes"), {
             autor: currentUser.nombre||'Anónimo', autorUid: currentUser.uid,
             autorFoto: currentUser.fotoUrl||'',
@@ -1835,9 +2041,10 @@ window.enviarMensajeForo = async function() {
 
 // ===================== FORO ADMIN/DOCENTE =====================
 function cargarForoAdmin() {
+    if (_unsubForoAdmin) { _unsubForoAdmin(); _unsubForoAdmin = null; }
     const q = query(collection(db,"foro_comunitario"), orderBy("timestamp","asc"), limit(80));
     let replyTarget = null;
-    onSnapshot(q, snap => {
+    _unsubForoAdmin = onSnapshot(q, snap => {
         const cont = document.getElementById('forum-messages-admin');
         cont.innerHTML = '';
         snap.forEach(d => {
@@ -1885,7 +2092,12 @@ window.enviarMensajeAdmin = async function() {
     const privUid = inp.dataset.privUid;
     if (privUid) {
         const chatId = [currentUser.uid, privUid].sort().join('_');
-        await setDoc(doc(db,"chats_privados",chatId),{participantes:[currentUser.uid,privUid]},{merge:true});
+        await setDoc(doc(db,"chats_privados",chatId),{
+            participantes:[currentUser.uid,privUid],
+            ultimoAutorUid: currentUser.uid,
+            ultimoMensaje: msg.slice(0,80),
+            ultimoTimestamp: serverTimestamp()
+        },{merge:true});
         await addDoc(collection(db,"chats_privados",chatId,"mensajes"),{
             autor:currentUser.nombre||'🛡️ Admin PRI', autorUid:currentUser.uid,
             mensaje:msg, timestamp:serverTimestamp()
@@ -2000,8 +2212,10 @@ window.ejecutarCanje = async function() {
 
 // ===================== ADMIN =====================
 function cargarAdmin() {
-    onSnapshot(query(collection(db,"usuarios")), snap => {
-        const tbody = document.getElementById('admin-table-body');
+    if (_unsubAdmin) { _unsubAdmin(); _unsubAdmin = null; } // limpiar si hubiera listener previo
+    const tbody = document.getElementById('admin-table-body');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando...</td></tr>';
+    getDocs(query(collection(db,"usuarios"))).then(snap => {
         tbody.innerHTML = '';
         let total=0, fichas=0, pts=0;
         snap.forEach(docSnap => {
@@ -2031,6 +2245,8 @@ function cargarAdmin() {
         document.getElementById('kpi-total-estudiantes').textContent = total+32;
         document.getElementById('kpi-fichas-ok').textContent = fichas;
         document.getElementById('kpi-puntos-red').textContent = pts;
+    }).catch(e => {
+        tbody.innerHTML=`<tr><td colspan="7" style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;padding:1rem;">Error: ${e.message}</td></tr>`;
     });
     getDocs(collection(db,"muestras_pretest")).then(snap => {
         document.getElementById('kpi-pretests').textContent = snap.size;
@@ -2162,73 +2378,175 @@ function descargarCSV(csv, nombre) {
 }
 
 // ─── RESULTADOS ICFES ─────────────────────────────────────────────────────────
-let _riDatos = [];       // todos los registros cargados
-let _riSortCol = '_hoja';
-let _riSortAsc = true;
-let _riChart = null;
+let _riDatos    = [];   // registros de diagnostico_colegios
+let _riTalleres = [];   // talleres para mapear _hoja → área
+let _riSortCol  = 'nombre';
+let _riSortAsc  = true;
+let _riChart    = null;
+
+// Mapeo _hoja → nombre amigable (persiste en localStorage)
+function getHojaMapeo() {
+    try { return JSON.parse(localStorage.getItem('_pri_hoja_mapeo') || '{}'); } catch { return {}; }
+}
+function setHojaMapeo(m) { localStorage.setItem('_pri_hoja_mapeo', JSON.stringify(m)); }
+function nombreHoja(hoja) {
+    if (!hoja) return '(sin nombre)';
+    const m = getHojaMapeo();
+    return m[hoja] || hoja;
+}
+
+// Extracción inteligente de campos (prueba múltiples variantes de nombre)
+function extraerCampo(r, ...claves) {
+    for (const c of claves) {
+        const v = r[c];
+        if (v !== undefined && v !== null && String(v).trim() !== '') return String(v).trim();
+    }
+    return null;
+}
+
+// Normaliza cédula: quita prefijos TI, T.I, t.i., CC, cc, etc. y espacios, dejando solo el número
+function normalizarCedula(raw) {
+    if (!raw) return null;
+    return String(raw).trim()
+        .replace(/^(T\.?\s*I\.?\s*|C\.?\s*C\.?\s*|RC\.?\s*|NIT\.?\s*)/i, '')
+        .trim();
+}
+
+// ── helpers locales de ICFES ──────────────────────────────────────────────────
+const _px = (r,...k) => { for(const c of k){ const v=r[c]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } return null; };
+const _pct = raw => { if(!raw) return NaN; const s=String(raw).trim(); const m=s.match(/^([\d.]+)\s*\/\s*([\d.]+)$/); if(m) return parseFloat(m[1])/parseFloat(m[2])*100; return parseFloat(s); };
+const _pcolor = p => isNaN(p)?'rgba(240,244,248,.4)':p>=70?'#86efac':p>=40?'#fbbf24':'#fca5a5';
+
+function _extraerEstudiante(r) {
+    const cedula = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula'));
+    const email  = _px(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email');
+    const nombre = _px(r,'nombre_completo','columna_3','Columna 3','NOMBRE COMPLETO','nombre');
+    const fecha  = _px(r,'marca_temporal','_timestamp_envio','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
+    const pts    = _px(r,'Puntuación','puntuacion','PUNTUACION','Puntaje');
+    return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—' };
+}
+
+// Devuelve el área del taller que tiene ese _hoja como título, o el mapeo manual
+function _areaDeHoja(hoja) {
+    if (!hoja) return null;
+    // 1. match exacto por título en talleres
+    const t = _riTalleres.find(t => (t.titulo||'').toLowerCase() === hoja.toLowerCase());
+    if (t?.area) return t.area;
+    // 2. match parcial
+    const t2 = _riTalleres.find(t => hoja.toLowerCase().includes((t.titulo||'').toLowerCase().slice(0,8)) && t.titulo.length > 4);
+    if (t2?.area) return t2.area;
+    // 3. mapeo manual
+    return getHojaMapeo()[hoja] || null;
+}
 
 async function cargarResultadosICFES() {
     const tbody = document.getElementById('ri-tbody');
     const stats = document.getElementById('ri-stats');
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Cargando datos…</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Cargando datos…</td></tr>`;
     stats.innerHTML = '';
-
     try {
-        const snap = await getDocs(collection(db,'diagnostico_colegios'));
-        _riDatos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Cargar ambas colecciones en paralelo
+        const [snapDiag, snapTall] = await Promise.all([
+            getDocs(collection(db,'diagnostico_colegios')),
+            getDocs(collection(db,'talleres'))
+        ]);
+        _riDatos    = snapDiag.docs.map(d => ({ id:d.id, ...d.data() }));
+        _riTalleres = snapTall.docs.map(d => ({ id:d.id, ...d.data() }));
 
         if (!_riDatos.length) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin datos. Ejecuta la sincronización del Apps Script.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin datos. Ejecuta la sincronización del Apps Script.</td></tr>`;
             return;
         }
 
-        // Poblar selector de formularios
-        const hojas = [...new Set(_riDatos.map(r => r._hoja).filter(Boolean))].sort();
+        // Poblar selector de áreas únicas
+        const areasSet = new Set();
+        _riDatos.forEach(r => { const a = _areaDeHoja(r._hoja); if(a) areasSet.add(a); });
         const sel = document.getElementById('ri-filtro-hoja');
-        sel.innerHTML = '<option value="">Todos los formularios</option>';
-        hojas.forEach(h => { const o = document.createElement('option'); o.value = h; o.textContent = h; sel.appendChild(o); });
+        sel.innerHTML = '<option value="">Todas las áreas</option>';
+        [...areasSet].sort().forEach(a => {
+            const o = document.createElement('option'); o.value = a; o.textContent = a; sel.appendChild(o);
+        });
+
+        // Poblar mapeo manual (para _hoja sin taller match)
+        const sinMatch = [...new Set(_riDatos.map(r=>r._hoja||'').filter(Boolean))].filter(h => !_areaDeHoja(h));
+        const mapeoBody = document.getElementById('ri-mapeo-body');
+        if (mapeoBody) {
+            const mapeo = getHojaMapeo();
+            mapeoBody.innerHTML = sinMatch.length ? `
+                <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.4);margin-bottom:.6rem;">
+                    Estas pestañas no tienen taller asociado. Asígnales un área manualmente:
+                </p>
+                ${sinMatch.map(h=>`
+                <div style="display:grid;grid-template-columns:1.5fr 1fr auto;gap:.5rem;align-items:center;margin-bottom:.4rem;">
+                    <span style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${h}">${h}</span>
+                    <input type="text" id="mapeo-${CSS.escape(h)}" placeholder="Ej: Física, Matemáticas…"
+                        value="${mapeo[h]||''}"
+                        style="font-family:var(--fuente-t);font-size:.62rem;background:#0a1e32;border:1px solid rgba(255,255,255,.12);color:#e8f0f8;border-radius:4px;padding:.3rem .5rem;">
+                    <button onclick="guardarMapeoHoja('${h.replace(/'/g,"\\'")}',document.getElementById('mapeo-${CSS.escape(h)}').value)"
+                        style="font-family:var(--fuente-t);font-size:.55rem;background:var(--teal);color:#000;border:none;border-radius:4px;padding:.3rem .6rem;cursor:pointer;font-weight:700;">✓</button>
+                </div>`).join('')}
+                <button onclick="guardarTodoMapeo()" style="font-family:var(--fuente-t);font-size:.6rem;background:var(--naranja);color:#fff;border:none;border-radius:5px;padding:.4rem 1rem;cursor:pointer;font-weight:700;margin-top:.4rem;">💾 Guardar todo</button>`
+            : `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);">✅ Todos los formularios tienen área asignada desde los talleres.</p>`;
+        }
 
         renderResultadosICFES();
     } catch(err) {
-        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--rojo);font-family:var(--fuente-t);font-size:.65rem;padding:1rem;">${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--rojo);font-family:var(--fuente-t);font-size:.65rem;padding:1rem;">${err.message}</td></tr>`;
     }
 }
 
+window.guardarMapeoHoja = function(hoja, area) {
+    const m = getHojaMapeo(); m[hoja] = area.trim(); setHojaMapeo(m);
+    cargarResultadosICFES();
+    notif('Área guardada',`"${hoja}" → "${area.trim()||hoja}"`, '✅','success');
+};
+window.guardarTodoMapeo = function() {
+    const hojas = [...new Set(_riDatos.map(r=>r._hoja||'').filter(Boolean))];
+    const m = getHojaMapeo();
+    hojas.forEach(h => { const el = document.getElementById('mapeo-'+CSS.escape(h)); if(el&&el.value.trim()) m[h]=el.value.trim(); });
+    setHojaMapeo(m); cargarResultadosICFES();
+    notif('Áreas guardadas','Mapeo actualizado.','✅','success');
+};
+
 function renderResultadosICFES() {
-    const filtroHoja = document.getElementById('ri-filtro-hoja')?.value || '';
+    const filtroArea = document.getElementById('ri-filtro-hoja')?.value || '';
     const buscar     = (document.getElementById('ri-buscar')?.value || '').toLowerCase().trim();
 
-    let datos = _riDatos.filter(r => {
-        if (filtroHoja && r._hoja !== filtroHoja) return false;
-        if (buscar) {
-            const cedula = String(r['NUMERO DE CEDULA'] || r['NÚMERO DE CÉDULA'] || '').toLowerCase();
-            const email  = String(r['Dirección de correo electrónico'] || r['CORREO ELECTRONICO'] || '').toLowerCase();
-            if (!cedula.includes(buscar) && !email.includes(buscar)) return false;
-        }
-        return true;
+    // Agrupar por estudiante (cedula o email como clave)
+    const mapaEst = {};
+    _riDatos.forEach(r => {
+        const e = _extraerEstudiante(r);
+        const clave = e.cedula !== '—' ? e.cedula : (e.email !== '—' ? e.email : 'anon-'+Math.random());
+        const area = _areaDeHoja(r._hoja) || '(sin área)';
+        if (filtroArea && area !== filtroArea) return;
+        if (!mapaEst[clave]) mapaEst[clave] = { ...e, formularios:[] };
+        if (e.nombre !== '—' && mapaEst[clave].nombre === '—') mapaEst[clave].nombre = e.nombre;
+        if (e.email  !== '—' && mapaEst[clave].email  === '—') mapaEst[clave].email  = e.email;
+        mapaEst[clave].formularios.push({ area, pts:e.pts, fecha:e.fecha, hoja:r._hoja||'' });
     });
 
-    // Ordenar
-    datos.sort((a,b) => {
-        let va = a[_riSortCol] || '', vb = b[_riSortCol] || '';
-        if (_riSortCol === 'Puntuación') { va = parseFloat(va)||0; vb = parseFloat(vb)||0; return _riSortAsc ? va-vb : vb-va; }
-        va = String(va).toLowerCase(); vb = String(vb).toLowerCase();
-        return _riSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
-    });
+    let estudiantes = Object.values(mapaEst);
+    if (buscar) {
+        estudiantes = estudiantes.filter(e =>
+            e.nombre.toLowerCase().includes(buscar) ||
+            e.cedula.toLowerCase().includes(buscar) ||
+            e.email.toLowerCase().includes(buscar)
+        );
+    }
+    // Ordenar por nombre
+    estudiantes.sort((a,b) => (a.nombre==='—'?a.email:a.nombre).localeCompare(b.nombre==='—'?b.email:b.nombre));
 
-    // Estadísticas resumen
-    const scores = datos.map(r => parseFloat(r['Puntuación'] || r['puntuacion'] || 0)).filter(n => !isNaN(n));
-    const prom = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : '–';
-    const maximo = scores.length ? Math.max(...scores).toFixed(1) : '–';
-    const minimo = scores.length ? Math.min(...scores).toFixed(1) : '–';
-    const hojasFiltradas = [...new Set(datos.map(r=>r._hoja).filter(Boolean))];
+    // KPIs
+    const totalResp = estudiantes.reduce((s,e)=>s+e.formularios.length,0);
+    const todasPcts = estudiantes.flatMap(e=>e.formularios.map(f=>_pct(f.pts))).filter(n=>!isNaN(n));
+    const promGlobal = todasPcts.length ? (todasPcts.reduce((a,b)=>a+b,0)/todasPcts.length).toFixed(0) : '—';
 
     document.getElementById('ri-stats').innerHTML = [
-        ['📝', 'Respuestas', datos.length],
-        ['📋', 'Formularios', hojasFiltradas.length],
-        ['📊', 'Promedio', prom],
-        ['⬆️', 'Máximo', maximo],
-        ['⬇️', 'Mínimo', minimo],
+        ['👥','Estudiantes', estudiantes.length],
+        ['📝','Respuestas',  totalResp],
+        ['📊','Promedio',    promGlobal+(todasPcts.length?'%':'')],
+        ['⬆️','Máximo',      todasPcts.length?Math.max(...todasPcts).toFixed(0)+'%':'—'],
+        ['⬇️','Mínimo',      todasPcts.length?Math.min(...todasPcts).toFixed(0)+'%':'—'],
     ].map(([ic,lb,val])=>`
         <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:.8rem 1rem;text-align:center;">
             <div style="font-size:1.3rem;">${ic}</div>
@@ -2236,65 +2554,88 @@ function renderResultadosICFES() {
             <div style="font-family:var(--fuente-t);font-size:1.1rem;font-weight:900;color:var(--teal);">${val}</div>
         </div>`).join('');
 
-    // Tabla
+    // Gráfico: promedio por área
+    const porArea = {};
+    estudiantes.forEach(e => e.formularios.forEach(f => {
+        const p = _pct(f.pts); if(isNaN(p)) return;
+        if(!porArea[f.area]) porArea[f.area]={suma:0,n:0};
+        porArea[f.area].suma+=p; porArea[f.area].n++;
+    }));
+    const labels  = Object.keys(porArea).sort();
+    const valores = labels.map(a=>(porArea[a].suma/porArea[a].n).toFixed(1));
+    const colores = valores.map(v=>parseFloat(v)>=70?'rgba(134,239,172,.7)':parseFloat(v)>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
+    const canvas  = document.getElementById('ri-chart');
+    canvas.width  = Math.max(labels.length*60,400);
+    if(_riChart) _riChart.destroy();
+    _riChart = new Chart(canvas,{type:'bar',data:{labels,datasets:[{label:'Promedio %',data:valores,backgroundColor:colores,borderRadius:5}]},
+        options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y}%`}}},
+        scales:{x:{ticks:{color:'rgba(240,244,248,.5)',font:{size:10},maxRotation:30},grid:{color:'rgba(255,255,255,.05)'}},
+                y:{ticks:{color:'rgba(240,244,248,.5)',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'},suggestedMin:0,suggestedMax:100}}}});
+
+    // Tabla agrupada por estudiante
     const tbody = document.getElementById('ri-tbody');
-    if (!datos.length) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin resultados para este filtro.</td></tr>`;
+    if (!estudiantes.length) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin resultados.</td></tr>`;
         document.getElementById('ri-count').textContent = '';
-    } else {
-        tbody.innerHTML = datos.map(r => {
-            const pts   = r['Puntuación'] || r['puntuacion'] || '–';
-            const cedula = r['NUMERO DE CEDULA'] || r['NÚMERO DE CÉDULA'] || '–';
-            const email  = r['Dirección de correo electrónico'] || r['CORREO ELECTRONICO'] || '–';
-            const fecha  = r['Marca temporal'] || r['DIGITE LA FECHA'] || '–';
-            const color  = parseFloat(pts)>=60 ? '#86efac' : parseFloat(pts)>=40 ? '#fbbf24' : '#fca5a5';
-            return `<tr style="border-bottom:1px solid rgba(255,255,255,.05);">
-                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.7);">${r._hoja||'–'}</td>
-                <td style="padding:.45rem .6rem;font-weight:900;color:${color};">${pts}</td>
-                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.5);">${cedula}</td>
-                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.5);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${email}</td>
-                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.4);">${fecha}</td>
-            </tr>`;
-        }).join('');
-        document.getElementById('ri-count').textContent = `Mostrando ${datos.length} registro(s)`;
+        return;
     }
 
-    // Gráfico de barras: promedio por formulario (máx 30 formularios para legibilidad)
-    const porHoja = {};
-    _riDatos.forEach(r => {
-        const h = r._hoja || 'Sin nombre';
-        const p = parseFloat(r['Puntuación'] || 0);
-        if (!porHoja[h]) porHoja[h] = { suma: 0, n: 0 };
-        porHoja[h].suma += p;
-        porHoja[h].n++;
-    });
-    const labels = Object.keys(porHoja).sort().slice(0,30);
-    const valores = labels.map(h => (porHoja[h].suma / porHoja[h].n).toFixed(1));
-    const colores = valores.map(v => parseFloat(v)>=60 ? 'rgba(134,239,172,.7)' : parseFloat(v)>=40 ? 'rgba(251,191,36,.7)' : 'rgba(252,165,165,.7)');
+    const AREA_COLOR = {'Lectura Crítica':'#7c3aed','Química':'#059669','Inglés':'#0369a1','Matemáticas':'#d97706','Geometría':'#0891b2','Biología':'#16a34a','Sociales':'#dc2626','Física':'#0ea5e9','(sin área)':'rgba(240,244,248,.25)'};
 
-    const canvas = document.getElementById('ri-chart');
-    canvas.width = Math.max(labels.length * 42, 400);
-    if (_riChart) _riChart.destroy();
-    _riChart = new Chart(canvas, {
-        type: 'bar',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Promedio',
-                data: valores,
-                backgroundColor: colores,
-                borderRadius: 5,
-            }]
-        },
-        options: {
-            responsive: false,
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` Promedio: ${ctx.parsed.y}` } } },
-            scales: {
-                x: { ticks: { color: 'rgba(240,244,248,.5)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.05)' } },
-                y: { ticks: { color: 'rgba(240,244,248,.5)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.06)' }, suggestedMin:0, suggestedMax:100 }
-            }
-        }
-    });
+    tbody.innerHTML = estudiantes.map((e, idx) => {
+        const detId = `ri-est-${idx}`;
+        const pcts  = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n));
+        const prom  = pcts.length ? Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length) : null;
+        const promStr = prom!=null ? `${prom}%` : '—';
+        const promColor = prom!=null ? _pcolor(prom) : 'rgba(240,244,248,.4)';
+
+        const filasForms = e.formularios
+            .sort((a,b)=>a.area.localeCompare(b.area))
+            .map(f=>{
+                const p = _pct(f.pts); const pc = isNaN(p)?null:Math.round(p);
+                const pts_m = String(f.pts).match(/^([\d.]+)\s*\/\s*([\d.]+)$/);
+                const correctas   = pts_m ? pts_m[1] : (pc!=null?`${pc}%`:'—');
+                const incorrectas = pts_m ? (parseFloat(pts_m[2])-parseFloat(pts_m[1])) : '—';
+                const aColor = AREA_COLOR[f.area]||'var(--teal)';
+                return `<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:.4rem;align-items:center;padding:.3rem .6rem;background:rgba(255,255,255,.02);border-radius:4px;margin-bottom:.2rem;">
+                    <span style="font-family:var(--fuente-t);font-size:.62rem;font-weight:700;color:${aColor};">${f.area}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${_pcolor(p)};text-align:center;">${f.pts}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.6rem;color:#86efac;text-align:center;">✅ ${correctas}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.6rem;color:#fca5a5;text-align:center;">❌ ${incorrectas}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);white-space:nowrap;">${String(f.fecha).slice(0,10)}</span>
+                </div>`;
+            }).join('');
+
+        return `<tr style="border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;transition:background .12s;"
+            onmouseover="this.style.background='rgba(255,94,0,.05)'" onmouseout="this.style.background=''"
+            onclick="const d=document.getElementById('${detId}');d.style.display=d.style.display==='none'?'table-row':'none';">
+            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.68rem;font-weight:900;color:#e8f0f8;">
+                👤 ${e.nombre !== '—' ? e.nombre : e.email}
+            </td>
+            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">${e.cedula}</td>
+            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.email}</td>
+            <td style="padding:.5rem .7rem;text-align:center;">
+                <span style="font-family:var(--fuente-t);font-size:.75rem;font-weight:900;color:${promColor};">${promStr}</span>
+                <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.3);margin-left:.3rem;">${e.formularios.length} form${e.formularios.length!==1?'s':''}</span>
+            </td>
+        </tr>
+        <tr id="${detId}" style="display:none;background:rgba(255,94,0,.03);">
+            <td colspan="4" style="padding:.5rem .8rem .7rem;border-bottom:2px solid rgba(255,94,0,.12);">
+                <div style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(240,244,248,.3);margin-bottom:.4rem;">
+                    📧 ${e.email} · 🪪 ${e.cedula}
+                </div>
+                <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:.4rem;padding:.2rem .6rem;margin-bottom:.3rem;opacity:.4;">
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Área</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Puntaje</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Correctas</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Incorrectas</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Fecha</span>
+                </div>
+                ${filasForms}
+            </td>
+        </tr>`;
+    }).join('');
+    document.getElementById('ri-count').textContent = `${estudiantes.length} estudiante(s) · ${totalResp} respuestas`;
 }
 
 window.sortResultados = function(col) {
@@ -2305,20 +2646,11 @@ window.sortResultados = function(col) {
 
 window.exportarResultadosCSV = function() {
     if (!_riDatos.length) return;
-    const filtroHoja = document.getElementById('ri-filtro-hoja')?.value || '';
-    const buscar     = (document.getElementById('ri-buscar')?.value || '').toLowerCase().trim();
-    let datos = _riDatos.filter(r => {
-        if (filtroHoja && r._hoja !== filtroHoja) return false;
-        if (buscar) {
-            const cedula = String(r['NUMERO DE CEDULA'] || '').toLowerCase();
-            const email  = String(r['Dirección de correo electrónico'] || '').toLowerCase();
-            if (!cedula.includes(buscar) && !email.includes(buscar)) return false;
-        }
-        return true;
-    });
-    let csv = 'Formulario,Puntuación,Cédula,Email,Fecha\n';
-    datos.forEach(r => {
-        csv += `"${r._hoja||''}","${r['Puntuación']||''}","${r['NUMERO DE CEDULA']||''}","${r['Dirección de correo electrónico']||''}","${r['Marca temporal']||''}"\n`;
+    let csv = 'Nombre,Cédula,Email,Área,Puntaje,Fecha\n';
+    _riDatos.forEach(r => {
+        const e = _extraerEstudiante(r);
+        const area = _areaDeHoja(r._hoja)||'';
+        csv += `"${e.nombre}","${e.cedula}","${e.email}","${area}","${e.pts}","${e.fecha}"\n`;
     });
     descargarCSV(csv,'resultados_icfes.csv');
 };
@@ -2499,7 +2831,8 @@ window.cargarTalleresAdmin = async function() {
         TALLERES_ADMIN_DATA = snap.docs.map(d => ({ id:d.id, ...d.data() }))
             .sort((a,b) => (a.area||'').localeCompare(b.area||'') || ((a.sesion||0)-(b.sesion||0)));
         renderTalleresAdmin();
-        cargarResumenEntregasICFES(); // carga automática al abrir el panel
+        // cargarResumenEntregasICFES() — NO auto-cargar: lee toda diagnostico_colegios
+        // Solo carga cuando el admin hace clic en "🔄 Actualizar"
     } catch(e) {
         document.getElementById('ti-lista').innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#f87171;">Error: ${e.message}</p>`;
     }
@@ -2517,64 +2850,137 @@ window.cargarResumenEntregasICFES = async function() {
             return;
         }
 
-        // Agrupar por _hoja (nombre del formulario)
-        const grupos = {};
+        // ── Helpers ─────────────────────────────────────────────
+        const parsePts = raw => {
+            if (!raw) return null;
+            const s = String(raw).trim();
+            // "3 / 18"  or  "3/18"  or  "16.67 / 100"
+            const m = s.match(/^([\d.]+)\s*\/\s*([\d.]+)$/);
+            if (m) return { correctas: parseFloat(m[1]), total: parseFloat(m[2]), raw: s };
+            const n = parseFloat(s);
+            return isNaN(n) ? null : { correctas: n, total: null, raw: s };
+        };
+        const pctColor = pct => pct >= 70 ? '#86efac' : pct >= 40 ? '#fbbf24' : '#fca5a5';
+
+        // ── Agrupar por estudiante (cédula → fallback email) ────
+        const estudiantes = {}; // clave → { cedula, email, nombre, respuestas:[] }
+        const _ext = (r, ...keys) => { for(const k of keys){ const v=r[k]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } return ''; };
         snap.forEach(d => {
             const r = d.data();
-            const hoja = r._hoja || '(sin nombre)';
-            if (!grupos[hoja]) grupos[hoja] = [];
-            grupos[hoja].push(r);
+            const cedula = normalizarCedula(_ext(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula','Cedula','CEDULA','numero_cedula'));
+            const email  = _ext(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email','Email');
+            const nombre = _ext(r,'nombre_completo','columna_3','Columna 3','NOMBRE COMPLETO','nombre','Nombre','nombre_estudiante');
+            const clave  = cedula || email || 'anonimo';
+            if (!estudiantes[clave]) {
+                estudiantes[clave] = { cedula: cedula||'—', email: email||'—', nombre: nombre||'—', respuestas: [] };
+            }
+            if (nombre && estudiantes[clave].nombre === '—') estudiantes[clave].nombre = nombre;
+            estudiantes[clave].respuestas.push(r);
         });
 
-        const AREA_COLORS = {'Lectura Crítica':'#7c3aed','Química':'#059669','Inglés':'#0369a1','Matemáticas':'#d97706','Geometría':'#0891b2','Biología':'#16a34a','Sociales':'#dc2626'};
+        const totalEstudiantes = Object.keys(estudiantes).length;
+        let totalRespuestas = 0;
 
-        // Renderizar grupos
-        const html = Object.entries(grupos)
-            .sort(([,a],[,b]) => b.length - a.length)
-            .map(([hoja, respuestas]) => {
-                const grupoId = 'grp-' + hoja.replace(/[^a-zA-Z0-9]/g,'_').slice(0,30);
-                const pts = respuestas.map(r => parseFloat(r['Puntuación']||r['puntuacion']||0)).filter(n=>n>0);
-                const prom = pts.length ? (pts.reduce((a,b)=>a+b,0)/pts.length).toFixed(1) : '—';
-                const filas = respuestas.map(r => {
-                    const cedula = r['NUMERO DE CEDULA']||r['NÚMERO DE CÉDULA']||'—';
-                    const email  = r['Dirección de correo electrónico']||r['CORREO ELECTRONICO']||'—';
-                    const score  = r['Puntuación']||r['puntuacion']||'—';
-                    const fecha  = r['Marca temporal']||r['DIGITE LA FECHA']||'—';
-                    const color  = score!=='—'?(parseFloat(score)>=60?'#86efac':parseFloat(score)>=40?'#fbbf24':'#fca5a5'):'rgba(240,244,248,.4)';
-                    return `<div style="display:grid;grid-template-columns:1fr 2fr auto auto;gap:.4rem;align-items:center;padding:.3rem .5rem;background:rgba(255,255,255,.02);border-radius:3px;margin-bottom:.15rem;">
-                        <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.45);">CC: ${cedula}</span>
-                        <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.55);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${email}</span>
-                        <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${color};">${score}</span>
-                        <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);white-space:nowrap;">${typeof fecha==='string'?fecha.slice(0,10):fecha}</span>
-                    </div>`;
-                }).join('');
-                return `<div style="background:#0a1e32;border:1px solid rgba(255,255,255,.06);border-left:3px solid var(--teal);border-radius:6px;overflow:hidden;margin-bottom:.5rem;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;cursor:pointer;gap:.5rem;" onclick="const el=document.getElementById('${grupoId}');el.style.display=el.style.display==='none'?'block':'none';">
-                        <div>
-                            <p style="font-family:var(--fuente-t);font-size:.68rem;font-weight:700;color:#e8f0f8;margin:0;">${hoja}</p>
-                            <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:.1rem 0 0;">${respuestas.length} entrega${respuestas.length!==1?'s':''} · Promedio: ${prom}</p>
+        // ── Buscar campo de buscador ─────────────────────────────
+        const buscadorHtml = `<input id="ri-buscar" type="text" placeholder="Buscar por nombre, cédula o correo…"
+            style="width:100%;box-sizing:border-box;background:#0a1e32;border:1px solid rgba(255,255,255,.12);color:#e8f0f8;
+            font-family:var(--fuente-t);font-size:.65rem;padding:.45rem .75rem;border-radius:5px;margin-bottom:.75rem;"
+            oninput="filtrarEstudiantesICFES(this.value)">`;
+
+        // ── Renderizar tarjetas de estudiantes ───────────────────
+        const cards = Object.entries(estudiantes)
+            .sort(([,a],[,b]) => {
+                const na = (a.nombre==='—'?a.email:a.nombre).toLowerCase();
+                const nb = (b.nombre==='—'?b.email:b.nombre).toLowerCase();
+                return na.localeCompare(nb);
+            })
+            .map(([clave, est]) => {
+                totalRespuestas += est.respuestas.length;
+                const cardId = 'est-' + clave.replace(/[^a-zA-Z0-9]/g,'_').slice(0,30);
+
+                // Resumen de puntajes
+                const ptsData = est.respuestas.map(r => parsePts(r['Puntuación']||r['puntuacion'])).filter(Boolean);
+                const promPct = ptsData.length && ptsData[0].total
+                    ? Math.round(ptsData.reduce((a,p)=>a+(p.correctas/p.total*100),0)/ptsData.length)
+                    : null;
+                const totalCorrectas  = ptsData.reduce((a,p)=>a+p.correctas,0);
+                const totalIncorrectas = ptsData.reduce((a,p)=>a+(p.total!=null?p.total-p.correctas:0),0);
+
+                // Filas de formularios
+                const filasForm = est.respuestas
+                    .sort((a,b)=>(a['Marca temporal']||'').localeCompare(b['Marca temporal']||''))
+                    .map(r => {
+                        const hoja  = r._hoja || '(sin nombre)';
+                        const pts   = parsePts(r['Puntuación']||r['puntuacion']);
+                        const fecha = (_ext(r,'marca_temporal','_timestamp_envio','digita_la_fecha','Marca temporal','DIGITE LA FECHA')||'—').toString().slice(0,16);
+                        const pct   = pts?.total ? Math.round(pts.correctas/pts.total*100) : null;
+                        const scoreStr = pts ? pts.raw : '—';
+                        const inco  = pts?.total != null ? pts.total - pts.correctas : '—';
+                        const color = pct!=null ? pctColor(pct) : 'rgba(240,244,248,.4)';
+                        const pctStr = pct!=null ? `(${pct}%)` : '';
+                        return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:.4rem;align-items:center;
+                                    padding:.35rem .6rem;background:rgba(255,255,255,.02);border-radius:4px;margin-bottom:.2rem;">
+                            <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${hoja}">📄 ${hoja}</span>
+                            <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${color};text-align:center;">${scoreStr} ${pctStr}</span>
+                            <span style="font-family:var(--fuente-t);font-size:.6rem;color:#86efac;text-align:center;">✅ ${pts?.correctas??'—'}</span>
+                            <span style="font-family:var(--fuente-t);font-size:.6rem;color:#fca5a5;text-align:center;">❌ ${inco}</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);white-space:nowrap;">${fecha}</span>
+                        </div>`;
+                    }).join('');
+
+                const promedioDisplay = promPct!=null
+                    ? `<span style="font-family:var(--fuente-t);font-size:.75rem;font-weight:900;color:${pctColor(promPct)};margin-left:.5rem;">${promPct}%</span>`
+                    : '';
+
+                return `<div class="ri-card" data-buscar="${(est.nombre+' '+est.cedula+' '+est.email).toLowerCase()}"
+                    style="background:#0a1e32;border:1px solid rgba(255,255,255,.06);border-left:3px solid var(--naranja);border-radius:6px;overflow:hidden;margin-bottom:.5rem;">
+                    <!-- cabecera -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:.55rem .75rem;cursor:pointer;gap:.5rem;"
+                        onclick="const el=document.getElementById('${cardId}');el.style.display=el.style.display==='none'?'block':'none';">
+                        <div style="min-width:0;">
+                            <p style="font-family:var(--fuente-t);font-size:.72rem;font-weight:900;color:#e8f0f8;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                👤 ${est.nombre !== '—' ? est.nombre : est.email}
+                                ${promedioDisplay}
+                            </p>
+                            <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:.15rem 0 0;">
+                                CC: ${est.cedula} · ${est.email} · ${est.respuestas.length} formulario${est.respuestas.length!==1?'s':''}
+                                ${ptsData.length&&ptsData[0].total ? ` · ✅ ${Math.round(totalCorrectas)} correctas / ❌ ${Math.round(totalIncorrectas)} incorrectas` : ''}
+                            </p>
                         </div>
-                        <div style="display:flex;gap:.4rem;align-items:center;">
-                            <span style="font-family:var(--fuente-t);font-size:.7rem;font-weight:900;color:var(--teal);">${respuestas.length}</span>
-                            <span style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(240,244,248,.2);">▼</span>
-                        </div>
+                        <span style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(240,244,248,.2);flex-shrink:0;">▼</span>
                     </div>
-                    <div id="${grupoId}" style="display:none;padding:.4rem .6rem .5rem;border-top:1px solid rgba(255,255,255,.05);max-height:240px;overflow-y:auto;">
-                        <div style="display:grid;grid-template-columns:1fr 2fr auto auto;gap:.4rem;padding:.2rem .5rem;margin-bottom:.2rem;opacity:.4;">
-                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Cédula</span>
-                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Email</span>
-                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Pts</span>
+                    <!-- detalle -->
+                    <div id="${cardId}" style="display:none;padding:.4rem .6rem .55rem;border-top:1px solid rgba(255,255,255,.05);">
+                        <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:.4rem;padding:.2rem .6rem;margin-bottom:.3rem;opacity:.4;">
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Formulario</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Puntaje</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Correctas</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Incorrectas</span>
                             <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Fecha</span>
                         </div>
-                        ${filas}
+                        ${filasForm}
                     </div>
                 </div>`;
             }).join('');
 
-        cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin-bottom:.75rem;">Total: <strong style="color:var(--teal);">${snap.size}</strong> entregas en <strong style="color:var(--teal);">${Object.keys(grupos).length}</strong> formularios. Haz clic en un formulario para ver los detalles.</p>${html}`;
+        cont.innerHTML = `
+            <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin-bottom:.6rem;">
+                <strong style="color:var(--naranja);">${totalEstudiantes}</strong> estudiantes ·
+                <strong style="color:var(--teal);">${snap.size}</strong> respuestas en total.
+                Haz clic en un estudiante para ver sus resultados por formulario.
+            </p>
+            ${buscadorHtml}
+            <div id="ri-cards-container">${cards}</div>`;
     } catch(e) {
         cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:#f87171;padding:.5rem;">Error: ${e.message}</p>`;
     }
+};
+
+window.filtrarEstudiantesICFES = function(texto) {
+    const q = texto.toLowerCase().trim();
+    document.querySelectorAll('#ti-entregas-resumen .ri-card').forEach(card => {
+        card.style.display = (!q || card.dataset.buscar.includes(q)) ? '' : 'none';
+    });
 };
 
 window.renderTalleresAdmin = function() {
@@ -2618,7 +3024,7 @@ window.renderTalleresAdmin = function() {
                 <div style="display:flex;gap:.3rem;align-items:center;">
                     <button class="btn-table" onclick="toggleHabilitadoTaller('${t.id}',${!habilitado})" style="padding:.25rem .5rem;font-size:.6rem;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
                     <button class="btn-table" onclick="verCompletadosTaller('${t.id}',${JSON.stringify(titulo)})" style="padding:.25rem .5rem;font-size:.6rem;color:#93c5fd;" title="Ver entregas">👥</button>
-                    ${tieneForm ? `<button class="btn-table" onclick="abrirFormICFES(${JSON.stringify(titulo)},${JSON.stringify(t.formId||'')},${JSON.stringify(t.formUrl||'')},${JSON.stringify(t.id||'')})" style="padding:.25rem .5rem;font-size:.6rem;" title="Previsualizar">👁</button>` : ''}
+                    ${tieneForm ? `<button class="btn-table" onclick="previsualizarTaller(${JSON.stringify(t.formId||'')})" style="padding:.25rem .5rem;font-size:.6rem;" title="Previsualizar formulario">👁</button>` : ''}
                     <button class="btn-table" onclick="editarTallerAdmin('${t.id}')" style="padding:.25rem .5rem;font-size:.6rem;" title="Editar">✏️</button>
                     <button class="btn-table" onclick="eliminarTallerAdmin('${t.id}')" style="padding:.25rem .5rem;font-size:.6rem;color:#f87171;" title="Eliminar">🗑</button>
                 </div>
@@ -2708,7 +3114,7 @@ window.guardarTallerAdmin = async function() {
         grupo:       document.getElementById('ti-grupo').value,
         sesion:      parseInt(document.getElementById('ti-sesion').value) || 1,
         modulo:      document.getElementById('ti-modulo').value.trim(),
-        formId:      document.getElementById('ti-formid').value.trim(),
+        formId:      normalizarFormId(document.getElementById('ti-formid').value.trim()),
         habilitado:  document.getElementById('ti-habilitado').checked,
         fechaLimite: fechaLimiteVal || null,
     };
@@ -2788,43 +3194,46 @@ window.verCompletadosTaller = async function(tallerId, titulo) {
         });
 
         // 2) Respuestas a Google Forms en diagnostico_colegios
-        // Intenta match exacto por _hoja == titulo, y también búsqueda parcial
-        if (titulo) {
-            const snapAll = await getDocs(collection(db,'diagnostico_colegios'));
-            const exactas = [], parciales = [];
-            snapAll.docs.forEach(d => {
-                const r = d.data();
-                const hoja = (r._hoja || '').toLowerCase();
-                const tit  = titulo.toLowerCase();
-                if (hoja === tit) exactas.push(r);
-                else if (hoja.includes(tit.slice(0,10)) || tit.includes(hoja.slice(0,10))) parciales.push(r);
-            });
-            const usarDocs = exactas.length ? exactas : parciales;
-            usarDocs.forEach(r => {
-                const cedula = r['NUMERO DE CEDULA'] || r['NÚMERO DE CÉDULA'] || '';
-                const email  = r['Dirección de correo electrónico'] || r['CORREO ELECTRONICO'] || '';
-                const fecha  = r['Marca temporal'] || r['DIGITE LA FECHA'] || '—';
-                const pts    = r['Puntuación'] || r['puntuacion'] || '';
-                const ptsColor = pts ? (parseFloat(pts)>=60?'#86efac':parseFloat(pts)>=40?'#fbbf24':'#fca5a5') : 'rgba(240,244,248,.4)';
-                const etiqueta = exactas.length ? 'Google Form' : `Form: ${r._hoja||'—'}`;
-                filas.push(`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:rgba(56,189,248,.05);border-radius:4px;margin-bottom:.2rem;border-left:2px solid rgba(56,189,248,.3);">
+        const snapAll = await getDocs(collection(db,'diagnostico_colegios'));
+        const exactas = [], parciales = [];
+        snapAll.docs.forEach(d => {
+            const r = d.data();
+            const hoja = (r._hoja || '').toLowerCase();
+            const tit  = (titulo||'').toLowerCase();
+            // también buscar por área del taller (via _riTalleres si están cargados)
+            const areaTaller = (_riTalleres||[]).find(t2=>t2.id===tallerId)?.area||'';
+            if (tit && hoja === tit) exactas.push(r);
+            else if (tit && (hoja.includes(tit.slice(0,8)) || tit.includes(hoja.slice(0,8)))) parciales.push(r);
+            else if (areaTaller && hoja.includes(areaTaller.toLowerCase().slice(0,6))) parciales.push(r);
+        });
+        const usarDocs = exactas.length ? exactas : parciales;
+        usarDocs.forEach(r => {
+            const est = _extraerEstudiante ? _extraerEstudiante(r) : {};
+            const cedula = est.cedula || '—';
+            const email  = est.email  || '—';
+            const nombre = est.nombre || '—';
+            const fecha  = est.fecha  || '—';
+            const pts    = est.pts    || '—';
+            const pct    = _pct ? _pct(pts) : parseFloat(pts);
+            const ptsColor = isNaN(pct)?'rgba(240,244,248,.4)':pct>=70?'#86efac':pct>=40?'#fbbf24':'#fca5a5';
+            const etiqueta = exactas.length ? 'Google Form ✓' : `Form: ${r._hoja||'—'}`;
+            filas.push(`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:rgba(56,189,248,.05);border-radius:4px;margin-bottom:.2rem;border-left:2px solid rgba(56,189,248,.3);">
                     <div>
-                        <p style="font-family:var(--fuente-t);font-size:.65rem;color:#93c5fd;font-weight:700;margin:0;">${email||cedula||'Anónimo'}</p>
-                        <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${cedula?'CC: '+cedula:''} · ${etiqueta}</p>
+                        <p style="font-family:var(--fuente-t);font-size:.65rem;color:#93c5fd;font-weight:700;margin:0;">${nombre!=='—'?nombre:email}</p>
+                        <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${cedula!=='—'?'CC: '+cedula:''} · ${etiqueta}</p>
                     </div>
                     <div style="text-align:right;">
-                        ${pts?`<p style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${ptsColor};margin:0;">${pts} pts</p>`:''}
-                        <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);">${typeof fecha==='string'?fecha.slice(0,10):fecha}</span>
+                        ${pts!=='—'?`<p style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${ptsColor};margin:0;">${pts}</p>`:''}
+                        <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);">${String(fecha).slice(0,10)}</span>
                     </div>
                 </div>`);
             });
             // Si no hubo match, indica al admin dónde mirar
-            if (!usarDocs.length && snapAll.size > 0) {
-                filas.push(`<div style="padding:.4rem .5rem;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);border-radius:4px;">
-                    <p style="font-family:var(--fuente-t);font-size:.6rem;color:#fde68a;margin:0;">⚠️ No se encontró una hoja de Google Forms con el nombre exacto de este taller.</p>
-                    <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.25rem 0 0;">Ver todas las entregas en la sección <strong style="color:var(--teal);">📊 Entregas reales de Google Forms</strong> más abajo ↓</p>
-                </div>`);
-            }
+        if (!usarDocs.length && snapAll.size > 0) {
+            filas.push(`<div style="padding:.4rem .5rem;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);border-radius:4px;">
+                <p style="font-family:var(--fuente-t);font-size:.6rem;color:#fde68a;margin:0;">⚠️ No se encontró una hoja de Google Forms con el nombre exacto de este taller.</p>
+                <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.25rem 0 0;">Ver todas las entregas en la sección <strong style="color:var(--teal);">📊 Entregas reales de Google Forms</strong> más abajo ↓</p>
+            </div>`);
         }
 
         if (!filas.length) {
@@ -2926,8 +3335,9 @@ window.cambiarEstadoPedido = async function(pedidoId, nuevoEstado, clienteNombre
 // Escuchar nuevas notificaciones de tienda al cargar (solo admin)
 function iniciarListenerNotifTienda() {
     if (!currentUser || currentUser.rol !== 'admin') return;
+    if (_unsubNotifTienda) { _unsubNotifTienda(); _unsubNotifTienda = null; }
     const q = query(collection(db,'notificaciones'), where('para','==','admin'), where('leido','==',false));
-    onSnapshot(q, snap => {
+    _unsubNotifTienda = onSnapshot(q, snap => {
         snap.docChanges().forEach(change => {
             if (change.type === 'added') {
                 const n = change.doc.data();
@@ -3130,7 +3540,8 @@ window.agregarTaller = async function() {
 };
 
 function cargarTalleresPublicados() {
-    onSnapshot(collection(db,"talleres"), snap => {
+    if (_unsubPlaneacion) { _unsubPlaneacion(); _unsubPlaneacion = null; }
+    _unsubPlaneacion = onSnapshot(collection(db,"talleres"), snap => {
         const cont = document.getElementById('talleres-publicados-list'); cont.innerHTML='';
         if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin talleres publicados aún.</p>'; return; }
         snap.forEach(d => {
@@ -3202,11 +3613,12 @@ window.eliminarTaller = async function(id) {
 
 // DOCENTE ESTUDIANTES
 function cargarEstudiantesDocente() {
-    onSnapshot(query(collection(db,"usuarios")), snap => {
+    if (_unsubEstudiantes) { _unsubEstudiantes(); _unsubEstudiantes = null; }
+    _unsubEstudiantes = onSnapshot(query(collection(db,"usuarios"), where('rol','==','estudiante')), snap => {
         const tbody = document.getElementById('docente-est-tbody');
         tbody.innerHTML = ''; let sinActividad=0;
         snap.forEach(d => {
-            const e = d.data(); if (e.rol!=='estudiante') return;
+            const e = d.data();
             const sinAct = !e.fichaCompleta && (!e.puntos||e.puntos<10);
             if (sinAct) sinActividad++;
             const pct = Math.min(100, ((e.puntos||0)/1000)*100);
@@ -3470,7 +3882,7 @@ window.guardarEdicionTaller = async function() {
 };
 
 // ===================== INBOX PRIVADO =====================
-let inboxChatUid = null, inboxChatId = null, inboxUnsubscribe = null;
+let inboxChatUid = null, inboxChatId = null;
 
 async function cargarInbox() {
     const cont = document.getElementById('inbox-threads-list');
@@ -3479,15 +3891,14 @@ async function cargarInbox() {
         const snap = await getDocs(query(collection(db,"chats_privados"), where("participantes","array-contains", currentUser.uid)));
         if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin mensajes privados aún. Usa el foro para iniciar una conversación.</p>'; return; }
         cont.innerHTML = '';
-        for (const d of snap.docs) {
+        snap.forEach(d => {
             const c = d.data();
-            const participantes = c.participantes || [];
-            const otroUid = participantes.find(u => u !== currentUser.uid) || '';
-            const msgsSnap = await getDocs(query(collection(db,"chats_privados",d.id,"mensajes"), orderBy("timestamp","desc"), limit(1)));
-            let ultimoMsg = '—', ultimoAutor = 'Conversación';
-            if (!msgsSnap.empty) { const m = msgsSnap.docs[0].data(); ultimoMsg = m.mensaje||'—'; ultimoAutor = m.autor||'Usuario'; }
+            const otroUid = (c.participantes||[]).find(u => u !== currentUser.uid) || '';
+            // Usar campos desnormalizados del doc raíz — sin N+1 a subcollección
+            const ultimoMsg    = c.ultimoMensaje || '—';
+            const ultimoAutor  = c.ultimoAutorNombre || 'Conversación';
             const inicial = (ultimoAutor||'?')[0].toUpperCase();
-            const esc = (s) => s.replace(/'/g,"\\'");
+            const esc = (s) => (s||'').replace(/'/g,"\\'");
             cont.insertAdjacentHTML('beforeend',`
                 <div class="inbox-thread" onclick="abrirConversacionInbox('${esc(otroUid)}','${esc(ultimoAutor)}','${d.id}')">
                     <div class="inbox-avatar">${inicial}</div>
@@ -3496,7 +3907,7 @@ async function cargarInbox() {
                         <p class="inbox-preview">${ultimoMsg}</p>
                     </div>
                 </div>`);
-        }
+        });
     } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
 }
 
@@ -3531,7 +3942,14 @@ window.enviarMensajeInbox = async function() {
     const inp = document.getElementById('inbox-chat-input');
     const msg = inp.value.trim(); if (!msg || !inboxChatId) return;
     inp.value = '';
-    if (inboxChatUid) await setDoc(doc(db,"chats_privados",inboxChatId), {participantes:[currentUser.uid, inboxChatUid]}, {merge:true});
+    // Actualizar doc raíz con último mensaje (evita N+1 al cargar inbox)
+    await setDoc(doc(db,"chats_privados",inboxChatId), {
+        participantes: [currentUser.uid, ...(inboxChatUid ? [inboxChatUid] : [])],
+        ultimoAutorUid: currentUser.uid,
+        ultimoAutorNombre: currentUser.nombre || 'Usuario',
+        ultimoMensaje: msg.slice(0, 80),
+        ultimoTimestamp: serverTimestamp()
+    }, {merge:true});
     await addDoc(collection(db,"chats_privados",inboxChatId,"mensajes"), {
         autor: currentUser.nombre||'Usuario', autorUid: currentUser.uid,
         autorFoto: currentUser.fotoUrl||'',
@@ -3546,23 +3964,32 @@ window.mostrarBuscadorChat = function() {
     if (buscador.style.display==='block') document.getElementById('inbox-buscar-input').focus();
 };
 
+// Caché en memoria para búsqueda de usuarios — evita leer toda la colección en cada búsqueda
+let _cacheUsuariosChat = null;
+
+async function _obtenerUsuariosChat() {
+    if (_cacheUsuariosChat) return _cacheUsuariosChat;
+    const snap = await getDocs(query(collection(db,"usuarios"), where('rol','!=','admin')));
+    _cacheUsuariosChat = snap.docs
+        .filter(d => d.id !== currentUser.uid)
+        .map(d => ({ id: d.id, ...d.data() }));
+    return _cacheUsuariosChat;
+}
+
 window.buscarUsuarioChat = async function() {
     const q = document.getElementById('inbox-buscar-input').value.trim().toLowerCase();
     const cont = document.getElementById('inbox-buscar-resultados');
     if (!q) return;
     cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);">Buscando...</p>';
     try {
-        const snap = await getDocs(collection(db,"usuarios"));
+        const usuarios = await _obtenerUsuariosChat();
+        const resultados = usuarios.filter(u => (u.nombre||'').toLowerCase().includes(q));
         cont.innerHTML = '';
-        let found = 0;
-        snap.forEach(d => {
-            if (d.id === currentUser.uid) return;
-            const u = d.data();
-            if (!(u.nombre||'').toLowerCase().includes(q)) return;
-            found++;
+        if (!resultados.length) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin resultados para "'+q+'".</p>'; return; }
+        resultados.forEach(u => {
             const esc = s => (s||'').replace(/'/g,"\\'");
             cont.insertAdjacentHTML('beforeend',`
-                <div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:0.4rem;cursor:pointer;" onclick="iniciarNuevaConv('${d.id}','${esc(u.nombre)}')">
+                <div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:0.4rem;cursor:pointer;" onclick="iniciarNuevaConv('${u.id}','${esc(u.nombre)}')">
                     <div style="width:32px;height:32px;background:rgba(255,94,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;color:var(--naranja);flex-shrink:0;">${(u.nombre||'?')[0].toUpperCase()}</div>
                     <div>
                         <p style="font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:700;color:var(--blanco);margin:0;">${u.nombre||'—'}</p>
@@ -3570,7 +3997,6 @@ window.buscarUsuarioChat = async function() {
                     </div>
                 </div>`);
         });
-        if (!found) cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin resultados para "'+q+'".</p>';
     } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
 };
 
@@ -3589,29 +4015,25 @@ let inboxBadgeUnsubscribe = null;
 function iniciarBadgeInbox() {
     if (!currentUser?.uid) return;
     if (inboxBadgeUnsubscribe) inboxBadgeUnsubscribe();
-    // Contar chats donde el último mensaje no es mío
+    // Lee solo los docs de chat (no subcollecciones) — usa el campo ultimoAutorUid
+    // que se debe guardar en el doc raíz al enviar cada mensaje (ver enviarMensaje)
     const q = query(collection(db,"chats_privados"), where("participantes","array-contains",currentUser.uid));
-    inboxBadgeUnsubscribe = onSnapshot(q, async snap => {
-        let total = 0;
-        for (const d of snap.docs) {
-            try {
-                const msgsSnap = await getDocs(query(collection(db,"chats_privados",d.id,"mensajes"),orderBy("timestamp","desc"),limit(1)));
-                if (!msgsSnap.empty) {
-                    const ultimo = msgsSnap.docs[0].data();
-                    if (ultimo.autorUid !== currentUser.uid) total++;
-                }
-            } catch(e){}
-        }
-        // Actualizar badge en sidebar
-        document.querySelectorAll('.nav-btn').forEach(btn => {
+    inboxBadgeUnsubscribe = onSnapshot(q, snap => {
+        // Conta chats donde el último mensaje no fue enviado por mí
+        // usando el campo desnormalizado 'ultimoAutorUid' del doc raíz (sin sub-queries)
+        const total = snap.docs.filter(d => {
+            const data = d.data();
+            return data.ultimoAutorUid && data.ultimoAutorUid !== currentUser.uid;
+        }).length;
+        document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
             if (btn.textContent.includes('Mensajes')) {
-                const badge = btn.querySelector('.msg-badge') || (() => {
-                    const b = document.createElement('span');
-                    b.className = 'msg-badge';
-                    b.style.cssText = 'margin-left:auto;background:var(--naranja);color:#fff;font-family:Montserrat,sans-serif;font-size:0.55rem;font-weight:900;padding:0.15rem 0.45rem;border-radius:0;min-width:18px;text-align:center;';
-                    btn.appendChild(b);
-                    return b;
-                })();
+                let badge = btn.querySelector('.msg-badge');
+                if (!badge) {
+                    badge = document.createElement('span');
+                    badge.className = 'msg-badge';
+                    badge.style.cssText = 'margin-left:auto;background:var(--naranja);color:#fff;font-family:Montserrat,sans-serif;font-size:0.55rem;font-weight:900;padding:0.15rem 0.45rem;border-radius:0;min-width:18px;text-align:center;';
+                    btn.appendChild(badge);
+                }
                 badge.textContent = total > 0 ? total : '';
                 badge.style.display = total > 0 ? 'inline-block' : 'none';
             }

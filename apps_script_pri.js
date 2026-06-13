@@ -4,8 +4,8 @@
 //  Sheet ID: 1a_xsxKrTn6KHe-Ft5_1aSiLs3-NqOiUfc6pMoc_8b5s
 // ============================================================
 
-const FIREBASE_PROJECT_ID = 'proyecto-pri-81fd5';
-const FIREBASE_API_KEY    = 'AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8';
+const FIREBASE_PROJECT_ID = 'programa-pri-2d395';
+const FIREBASE_API_KEY    = 'AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30';
 const COLECCION           = 'diagnostico_colegios';
 
 // ── 1. TRIGGER AUTOMÁTICO — corre cada vez que alguien envía el formulario ──

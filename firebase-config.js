@@ -10,12 +10,12 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
-  authDomain: "proyecto-pri-81fd5.firebaseapp.com",
-  projectId: "proyecto-pri-81fd5",
-  storageBucket: "proyecto-pri-81fd5.firebasestorage.app",
-  messagingSenderId: "876748063075",
-  appId: "1:876748063075:web:6e075f73a385bb804e5356",
+  apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+  authDomain: "programa-pri-2d395.firebaseapp.com",
+  projectId: "programa-pri-2d395",
+  storageBucket: "programa-pri-2d395.firebasestorage.app",
+  messagingSenderId: "854011964095",
+  appId: "1:854011964095:web:6e075f73a385bb804e5356",
   measurementId: "G-BMD6293HG8"
 };
 
