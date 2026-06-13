@@ -35,7 +35,7 @@
         .notif-cerrar:hover{color:var(--blanco);}
         .site-header{position:sticky;top:0;z-index:500;background:rgba(2,26,54,0.95);border-bottom:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(16px);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
         .header-brand{display:flex;align-items:center;gap:1rem;text-decoration:none;}
-        .header-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-weight:900;font-size:1rem;color:var(--azul-deep);border:2px solid var(--azul-deep);box-shadow:3px 3px 0 var(--naranja);flex-shrink:0;overflow:hidden;border-radius:50%;}
+        .header-icon{width:42px;height:42px;background:rgba(6,49,98,0.5);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-weight:900;font-size:1rem;color:var(--azul-deep);border:2px solid rgba(255,255,255,0.15);flex-shrink:0;overflow:hidden;border-radius:50%;}
         .header-icon img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
         .header-brand-text h1{font-family:var(--fuente-t);font-size:1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--blanco);}
         .header-brand-text p{font-family:var(--fuente-t);font-size:0.55rem;letter-spacing:3px;text-transform:uppercase;color:var(--teal);}
@@ -150,6 +150,8 @@
         .badge.rojo{background:rgba(239,68,68,0.1);color:#fca5a5;}
         .btn-table{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(240,244,248,0.5);cursor:pointer;transition:all 0.2s;}
         .btn-table:hover{background:rgba(255,94,0,0.1);border-color:rgba(255,94,0,0.3);color:var(--blanco);}
+        .btn-table-danger{border-color:rgba(239,68,68,0.25);color:rgba(239,68,68,0.6);}
+        .btn-table-danger:hover{background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.5);color:#f87171;}
         /* FORM */
         .form-add{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
         .form-add.full{grid-template-columns:1fr;}
@@ -433,12 +435,12 @@
             </div>
         </div>
 
-        <!-- PANEL: CAPACITACIONES (VOLUNTARIO) -->
+        <!-- PANEL: CAPACITACIONES (VOLUNTARIO / NOTIFICACIONES DOCENTE) -->
         <div class="panel" id="panel-capacitaciones">
-            <p class="panel-title">Agenda</p>
-            <h2 class="panel-heading">Solicitudes de <em>Capacitación</em></h2>
-            <p class="panel-desc">Revisa y acepta solicitudes de capacitación. Se notificará al estudiante por WhatsApp.</p>
-            <div class="section-box"><p class="section-box-title">Solicitudes Pendientes</p><div id="lista-capacitaciones"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando solicitudes...</p></div></div>
+            <p class="panel-title" id="cap-panel-title">Agenda</p>
+            <h2 class="panel-heading" id="cap-panel-heading">Solicitudes de <em>Capacitación</em></h2>
+            <p class="panel-desc" id="cap-panel-desc">Revisa y acepta solicitudes de capacitación. Se notificará al estudiante por WhatsApp.</p>
+            <div class="section-box"><p class="section-box-title" id="cap-section-title">Solicitudes Pendientes</p><div id="lista-capacitaciones"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando solicitudes...</p></div></div>
         </div>
 
         <!-- PANEL: PLANEACIÓN DOCENTE (talleres + formularios) -->
@@ -489,6 +491,7 @@
                 <button class="export-btn" onclick="activarPanel('panel-pretest-data');cargarPretestData()">🔍 Ver Pre-Tests Externos</button>
                 <button class="export-btn" onclick="activarPanel('panel-premios-admin');cargarPremiosAdmin()">🎁 Premios Reclamados</button>
                 <button class="export-btn" onclick="activarPanel('panel-admin-add')">➕ Agregar Contenido</button>
+                <button class="export-btn" onclick="activarPanel('panel-pedidos-tienda');cargarPedidosTienda()" style="background:rgba(255,94,0,0.12);border-color:rgba(255,94,0,0.3);color:var(--naranja)">🛒 Pedidos Tienda</button>
             </div>
             <div class="section-box" style="padding:0;overflow:hidden;">
                 <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);"><p class="section-box-title" style="margin:0;padding:0;border:0;">Directorio de Usuarios — Tiempo Real</p></div>
@@ -538,6 +541,27 @@
             </div>
         </div>
 
+        <!-- PANEL: PEDIDOS TIENDA -->
+        <div class="panel" id="panel-pedidos-tienda">
+            <p class="panel-title">Tienda PRI</p>
+            <h2 class="panel-heading">Pedidos <em>Recibidos</em></h2>
+            <p class="panel-desc">Pedidos realizados desde la Tienda PRI. Actualiza el estado para gestionar el envío.</p>
+            <div id="pedidos-kpis" style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+                <div class="kpi-card" style="min-width:140px"><p class="kpi-label">Total Pedidos</p><p class="kpi-value white" id="pk-total">0</p></div>
+                <div class="kpi-card" style="min-width:140px"><p class="kpi-label">Pendientes Pago</p><p class="kpi-value" id="pk-pendientes">0</p></div>
+                <div class="kpi-card" style="min-width:140px"><p class="kpi-label">En Preparación</p><p class="kpi-value cyan" id="pk-preparacion">0</p></div>
+                <div class="kpi-card" style="min-width:140px"><p class="kpi-label">Enviados</p><p class="kpi-value verde" id="pk-enviados">0</p></div>
+            </div>
+            <div class="section-box" style="padding:0;overflow:hidden;">
+                <div class="admin-table-wrap">
+                    <table>
+                        <thead><tr><th>Pedido</th><th>Cliente</th><th>Ciudad</th><th>Total</th><th>Items</th><th>Estado</th><th>Acción</th></tr></thead>
+                        <tbody id="pedidos-tbody"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando pedidos...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- PANEL: ADMIN AGREGAR CONTENIDO -->
         <div class="panel" id="panel-admin-add">
             <p class="panel-title">Gestión de Contenido</p>
@@ -569,6 +593,128 @@
             </div>
         </div>
 
+        <!-- PANEL: TALLERES ICFES (ADMIN) -->
+        <div class="panel" id="panel-talleres-icfes">
+            <p class="panel-title">Gestión</p>
+            <h2 class="panel-heading">Talleres <em>Pre-ICFES</em></h2>
+            <div class="section-box" style="border:1.5px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.04);">
+                <p class="section-box-title">📥 Importar talleres desde CSV</p>
+                <p style="font-family:var(--fuente-t);font-size:0.68rem;color:rgba(240,244,248,0.5);margin-bottom:.5rem;">Sube un CSV con columnas: <code style="color:var(--teal);background:rgba(56,189,248,.08);padding:.1rem .3rem;border-radius:2px;">titulo, area, grupo, sesion, modulo, formId, fechaLimite, habilitado</code></p>
+                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,.3);margin-bottom:.8rem;">Solo agrega documentos nuevos; no duplica los existentes si el título ya existe. El botón original de los 54 talleres también sigue disponible abajo.</p>
+                <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
+                    <input type="file" id="csv-talleres-input" accept=".csv,text/csv" style="background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-size:0.7rem;padding:.4rem .5rem;flex:1;min-width:0;">
+                    <button class="btn-add" style="background:var(--teal);color:var(--azul-deep);margin-top:0;" onclick="importarTalleresCSV()">📥 Importar</button>
+                </div>
+                <p id="csv-import-status" style="font-family:var(--fuente-t);font-size:0.65rem;margin-top:.5rem;display:none;"></p>
+                <details style="margin-top:.75rem;">
+                    <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);cursor:pointer;letter-spacing:1px;">📥 Carga inicial de los 54 talleres hardcoded (solo primera vez)</summary>
+                    <div style="padding:.75rem 0 .25rem;">
+                        <button class="btn-add" id="btn-seed-talleres" onclick="seedTalleres()" style="font-size:.6rem;padding:.45rem .9rem;">📥 Cargar 54 talleres iniciales</button>
+                        <p id="seed-status" style="font-family:var(--fuente-t);font-size:0.65rem;color:#86efac;margin-top:.5rem;display:none;"></p>
+                    </div>
+                </details>
+            </div>
+            <div class="section-box">
+                <p class="section-box-title">➕ Agregar / Editar Taller</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Título</label><input type="text" id="ti-titulo" placeholder="ej: Sesión 2 - Lectura Crítica G1"></div>
+                    <div class="fa-group"><label>Área</label>
+                        <select id="ti-area">
+                            <option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option>
+                            <option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option>
+                        </select>
+                    </div>
+                    <div class="fa-group"><label>Grupo</label>
+                        <select id="ti-grupo"><option>General</option><option>G1</option><option>G2</option><option>Rehabilitación</option></select>
+                    </div>
+                    <div class="fa-group"><label>Sesión #</label><input type="number" id="ti-sesion" min="1" max="20" placeholder="1"></div>
+                    <div class="fa-group"><label>Módulo</label><input type="text" id="ti-modulo" placeholder="ej: 1B"></div>
+                    <div class="fa-group" style="grid-column:1/-1"><label>Form ID (parte del URL de Google Forms)</label><input type="text" id="ti-formid" placeholder="1FAIpQLSf..."></div>
+                    <div class="fa-group"><label>Fecha límite (opcional)</label><input type="datetime-local" id="ti-fechalimite"></div>
+                    <div class="fa-group" style="justify-content:center;flex-direction:row;align-items:center;gap:.5rem;">
+                        <input type="checkbox" id="ti-habilitado" checked style="width:1rem;height:1rem;accent-color:var(--naranja);">
+                        <label for="ti-habilitado" style="font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);cursor:pointer;">Habilitado para estudiantes</label>
+                    </div>
+                </div>
+                <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;">
+                    <button class="btn-add" onclick="guardarTallerAdmin()">💾 Guardar</button>
+                    <button class="btn-add" style="background:rgba(255,255,255,0.06);" onclick="cancelarEdicionTaller()">✕ Cancelar</button>
+                </div>
+                <p id="ti-edit-label" style="font-family:var(--fuente-t);font-size:0.6rem;color:#fbbf24;margin-top:.4rem;display:none;">✏️ Editando taller existente</p>
+            </div>
+            <div class="section-box">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
+                    <p class="section-box-title" style="margin:0;">📋 Talleres en Firebase</p>
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+                        <select id="ti-filter-area" onchange="renderTalleresAdmin()" style="font-family:var(--fuente-t);font-size:0.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:.3rem .5rem;">
+                            <option value="">Todas las áreas</option>
+                            <option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option>
+                            <option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option>
+                        </select>
+                        <select id="ti-filter-grupo" onchange="renderTalleresAdmin()" style="font-family:var(--fuente-t);font-size:0.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:.3rem .5rem;">
+                            <option value="">Todos los grupos</option>
+                            <option>General</option><option>G1</option><option>G2</option><option>Rehabilitación</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="ti-lista" style="display:flex;flex-direction:column;gap:.4rem;max-height:420px;overflow-y:auto;">
+                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:1.5rem;">Cargando…</p>
+                </div>
+            </div>
+
+            <!-- SECCIÓN: ENTREGAS REALES DE FORMULARIOS -->
+            <div class="section-box" style="border:1.5px solid rgba(56,189,248,0.25);background:rgba(56,189,248,0.03);">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
+                    <div>
+                        <p class="section-box-title" style="margin:0;">📊 Entregas reales de Google Forms</p>
+                        <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.3rem 0 0;">Respuestas registradas en <code style="color:var(--teal);">diagnostico_colegios</code> — agrupadas por formulario.</p>
+                    </div>
+                    <button class="btn-add" style="font-size:.6rem;padding:.4rem .9rem;margin-top:0;" onclick="cargarResumenEntregasICFES()">🔄 Actualizar</button>
+                </div>
+                <div id="ti-entregas-resumen">
+                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.2);text-align:center;padding:1.5rem;">Haz clic en "Actualizar" o espera la carga automática.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL: RETOS ADMIN -->
+        <div class="panel" id="panel-retos-admin">
+            <p class="panel-title">Evaluación</p>
+            <h2 class="panel-heading">Gestión de <em>Retos</em></h2>
+            <div class="section-box">
+                <p class="section-box-title">➕ Crear / Editar Reto</p>
+                <div class="form-add">
+                    <div class="fa-group" style="grid-column:1/-1"><label>Título del Reto</label><input type="text" id="ra-titulo" placeholder="ej: Reto de Comprensión Lectora — Semana 3"></div>
+                    <div class="fa-group"><label>Área</label>
+                        <select id="ra-area"><option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option><option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option><option>General</option></select>
+                    </div>
+                    <div class="fa-group"><label>Puntos al completar</label><input type="number" id="ra-puntos" value="10" min="1" max="100"></div>
+                    <div class="fa-group"><label>Fecha límite (opcional)</label><input type="datetime-local" id="ra-deadline"></div>
+                    <div class="fa-group" style="grid-column:1/-1"><label>Descripción / Instrucciones</label><textarea id="ra-desc" rows="2" placeholder="¿Qué deben hacer los estudiantes?"></textarea></div>
+                    <div class="fa-group" style="grid-column:1/-1"><label>Form ID de Google Forms (opcional)</label><input type="text" id="ra-formid" placeholder="1FAIpQLSf..."></div>
+                    <div class="fa-group" style="grid-column:1/-1"><label>O link externo (PDF, Drive…)</label><input type="url" id="ra-link" placeholder="https://..."></div>
+                </div>
+                <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;">
+                    <button class="btn-add" onclick="guardarRetoAdmin()">💾 Guardar Reto</button>
+                    <button class="btn-add" style="background:rgba(255,255,255,0.06);" onclick="cancelarEdicionReto()">✕ Cancelar</button>
+                </div>
+                <p id="ra-edit-label" style="font-family:var(--fuente-t);font-size:.6rem;color:#fbbf24;margin-top:.4rem;display:none;">✏️ Editando reto existente</p>
+            </div>
+            <div class="section-box">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;">
+                    <p class="section-box-title" style="margin:0;">📋 Retos publicados</p>
+                    <select id="ra-filter-area" onchange="renderRetosAdmin()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .5rem;">
+                        <option value="">Todas las áreas</option>
+                        <option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option>
+                        <option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option><option>General</option>
+                    </select>
+                </div>
+                <div id="ra-lista" style="display:flex;flex-direction:column;gap:.4rem;max-height:420px;overflow-y:auto;">
+                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);text-align:center;padding:1.5rem;">Cargando…</p>
+                </div>
+            </div>
+        </div>
+
         <!-- PANEL: FORO ADMIN/DOCENTE/VOLUNTARIO -->
         <div class="panel" id="panel-foro-admin">
             <p class="panel-title">Supervisión</p>
@@ -583,6 +729,60 @@
                         <button class="btn-send" onclick="enviarMensajeAdmin()">Enviar</button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- PANEL: RESULTADOS ICFES -->
+        <div class="panel" id="panel-resultados-icfes">
+            <p class="panel-title">Análisis</p>
+            <h2 class="panel-heading">Resultados <em>ICFES</em> Diagnóstico</h2>
+
+            <!-- Filtros -->
+            <div class="section-box" style="margin-bottom:1.2rem;">
+                <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end;">
+                    <div style="display:flex;flex-direction:column;gap:.3rem;">
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Formulario / Área</label>
+                        <select id="ri-filtro-hoja" onchange="renderResultadosICFES()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;">
+                            <option value="">Todos los formularios</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:.3rem;">
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Buscar estudiante (cédula o email)</label>
+                        <input type="text" id="ri-buscar" oninput="renderResultadosICFES()" placeholder="Buscar..." style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;width:200px;">
+                    </div>
+                    <button class="btn-add" style="height:2rem;font-size:.65rem;" onclick="exportarResultadosCSV()">📥 Exportar CSV</button>
+                </div>
+            </div>
+
+            <!-- Resumen estadístico -->
+            <div id="ri-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.2rem;"></div>
+
+            <!-- Gráfico de barras por formulario -->
+            <div class="section-box" style="margin-bottom:1.2rem;">
+                <p class="section-box-title">📊 Puntaje promedio por formulario</p>
+                <div id="ri-chart-wrap" style="overflow-x:auto;">
+                    <canvas id="ri-chart" height="220"></canvas>
+                </div>
+            </div>
+
+            <!-- Tabla de respuestas -->
+            <div class="section-box">
+                <p class="section-box-title">📋 Respuestas individuales</p>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;font-family:var(--fuente-t);font-size:.63rem;">
+                        <thead>
+                            <tr style="background:rgba(255,255,255,.06);color:rgba(240,244,248,.6);text-align:left;">
+                                <th style="padding:.5rem .6rem;cursor:pointer;" onclick="sortResultados('_hoja')">Formulario ↕</th>
+                                <th style="padding:.5rem .6rem;cursor:pointer;" onclick="sortResultados('Puntuación')">Puntaje ↕</th>
+                                <th style="padding:.5rem .6rem;">Cédula</th>
+                                <th style="padding:.5rem .6rem;">Email</th>
+                                <th style="padding:.5rem .6rem;cursor:pointer;" onclick="sortResultados('Marca temporal')">Fecha ↕</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ri-tbody"></tbody>
+                    </table>
+                </div>
+                <p id="ri-count" style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.4);margin-top:.6rem;text-align:right;"></p>
             </div>
         </div>
 
@@ -618,9 +818,39 @@
 
         <!-- PANEL: RETOS DOCENTE/VOLUNTARIO -->
         <div class="panel" id="panel-retos-docente">
-            <p class="panel-title">Mis Retos</p>
-            <h2 class="panel-heading">Retos y <em>Formularios</em> Publicados</h2>
-            <p class="panel-desc">Solo los creados por ti. Ve cuántos estudiantes respondieron.</p>
+            <p class="panel-title">Retos</p>
+            <h2 class="panel-heading">Crear y Ver <em>Retos</em></h2>
+            <p class="panel-desc">Crea retos con preguntas para los estudiantes o publica un recurso enlazado. Acceso para docentes y voluntarios.</p>
+
+            <!-- Crear reto rápido -->
+            <div class="section-box">
+                <p class="section-box-title">➕ Nuevo Reto con Preguntas</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Nombre del Reto</label><input type="text" id="reto-nombre" placeholder="Ej: Comprensión Lectora II"></div>
+                    <div class="fa-group"><label>Área</label><input type="text" id="reto-area" placeholder="Ej: Lenguaje"></div>
+                    <div class="fa-group"><label>Descripción</label><textarea id="reto-desc" placeholder="¿Qué evaluará este reto?" rows="2"></textarea></div>
+                    <div class="fa-group"><label>Puntos por pregunta correcta</label><input type="number" id="reto-pts" value="10" min="1" max="100"></div>
+                </div>
+                <div id="reto-preguntas-builder"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p></div>
+                <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;">
+                    <button class="btn-add secondary" onclick="agregarPreguntaReto()">➕ Agregar Pregunta</button>
+                    <button class="btn-add" onclick="publicarReto()">📤 Publicar Reto</button>
+                </div>
+            </div>
+
+            <!-- Publicar recurso/taller enlazado -->
+            <div class="section-box">
+                <p class="section-box-title">📎 Publicar Recurso / Taller</p>
+                <div class="form-add">
+                    <div class="fa-group"><label>Nombre</label><input type="text" id="reto-rec-nombre" placeholder="Ej: Material de Apoyo – Física"></div>
+                    <div class="fa-group"><label>Área</label><input type="text" id="reto-rec-area" placeholder="Ej: Ciencias"></div>
+                    <div class="fa-group"><label>Descripción</label><textarea id="reto-rec-desc" rows="2" placeholder="¿Qué contiene?"></textarea></div>
+                    <div class="fa-group"><label>Link (PDF, Drive, YouTube…)</label><input type="url" id="reto-rec-link" placeholder="https://..."></div>
+                </div>
+                <button class="btn-add" onclick="publicarRecursoReto()">📤 Publicar Recurso</button>
+            </div>
+
+            <!-- Lista de mis publicaciones -->
             <div class="section-box">
                 <p class="section-box-title">📊 Mis Publicaciones</p>
                 <div id="retos-docente-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div>
@@ -749,6 +979,25 @@
     </div>
 </div>
 
+<!-- MODAL: FORMULARIO ICFES -->
+<div class="modal-overlay" id="modal-form-icfes" onclick="if(event.target===this)cerrarFormModal()">
+    <div class="modal-box" style="max-width:780px;width:96vw;height:92vh;padding:0;overflow:hidden;border-radius:12px;display:flex;flex-direction:column;">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.7rem 1rem;background:#071828;border-bottom:1px solid rgba(255,255,255,0.1);flex-shrink:0;">
+            <p id="modal-form-icfes-titulo" style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:.82rem;color:#fff;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;"></p>
+            <div style="display:flex;gap:.5rem;align-items:center;flex-shrink:0;">
+                <button id="btn-marcar-completado" onclick="marcarTallerCompletado()" style="font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.4);border-radius:5px;padding:.3rem .75rem;cursor:pointer;letter-spacing:.5px;display:none;">✅ Marcar como completado</button>
+                <button onclick="window.open(window._formIcfesUrl,'_blank')" style="font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;background:rgba(255,255,255,0.07);color:#a8c4d8;border:1px solid rgba(255,255,255,0.15);border-radius:5px;padding:.3rem .75rem;cursor:pointer;letter-spacing:.5px;">↗ Nueva pestaña</button>
+                <button onclick="cerrarFormModal()" style="font-family:'Montserrat',sans-serif;font-size:.9rem;font-weight:900;background:none;color:rgba(240,244,248,0.5);border:none;cursor:pointer;padding:.2rem .5rem;line-height:1;">✕</button>
+            </div>
+        </div>
+        <div style="background:#0a1e32;padding:.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;display:flex;align-items:center;gap:.5rem;">
+            <span style="font-family:'Montserrat',sans-serif;font-size:.58rem;color:rgba(240,244,248,.4);">⚠️ Completa el formulario sin ayuda de IA. Este es un ejercicio de diagnóstico personal.</span>
+        </div>
+        <div id="modal-form-icfes-loading" style="padding:2rem;text-align:center;font-family:'Montserrat',sans-serif;font-size:.75rem;color:rgba(240,244,248,0.35);flex:1;display:flex;align-items:center;justify-content:center;">Cargando formulario…</div>
+        <iframe id="modal-form-icfes-iframe" src="" style="width:100%;flex:1;border:none;display:none;" onload="this.style.display='block';document.getElementById('modal-form-icfes-loading').style.display='none';" allowfullscreen></iframe>
+    </div>
+</div>
+
 <footer class="footer-industrial">
     <div class="footer-container">
         <div class="footer-brand-panel">
@@ -858,6 +1107,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!sesion) { window.location.href = "login.html"; return; }
     currentUser = JSON.parse(sesion);
 
+    // Verificar timeout de 4 horas (excepto admin por email o rol)
+    const SESSION_MAX_MS = 4 * 60 * 60 * 1000; // 4 horas
+    const sesionTimestamp = localStorage.getItem('sesion_timestamp');
+    const esAdmin = currentUser.email === 'jcastrogo@unal.edu.co' || currentUser.rol === 'admin';
+    if (sesionTimestamp && !esAdmin) {
+        const elapsed = Date.now() - parseInt(sesionTimestamp);
+        if (elapsed > SESSION_MAX_MS) {
+            localStorage.removeItem('usuario_sesion_activa');
+            localStorage.removeItem('sesion_timestamp');
+            window.location.href = "login.html";
+            return;
+        }
+    }
+    // Renovar timestamp en cada carga de página
+    localStorage.setItem('sesion_timestamp', String(Date.now()));
+
     // Refrescar datos desde Firestore
     if (currentUser.uid && currentUser.uid !== 'admin-jcastrogo') {
         try {
@@ -932,6 +1197,10 @@ function construirMenu(rol) {
         admin: [
             {label:'📊 Base Global', fn:()=>{activarPanel('panel-admin-global');cargarAdmin();}},
             {label:'🔬 Pre-Tests', fn:()=>{activarPanel('panel-pretest-data');cargarPretestData();}},
+            {label:'📚 Talleres ICFES', fn:()=>{activarPanel('panel-talleres-icfes');cargarTalleresAdmin();}},
+            {label:'📊 Resultados ICFES', fn:()=>{activarPanel('panel-resultados-icfes');cargarResultadosICFES();}},
+            {label:'🛡️ Retos', fn:()=>{activarPanel('panel-retos-admin');cargarRetosAdmin();}},
+            {label:'🎨 Catálogo', fn:()=>window.open('catalogo.html','_blank')},
             {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-admin');cargarPremiosAdmin();}},
             {label:'➕ Contenido', fn:()=>activarPanel('panel-admin-add')},
             {label:'💬 Foro Global', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
@@ -939,32 +1208,37 @@ function construirMenu(rol) {
             {label:'📷 Mi Foto', fn:()=>{activarPanel('panel-mi-perfil');adaptarPanelFoto();}},
         ],
         docente: [
-            {label:'🏠 Inicio', fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
-            {label:'👤 Mi Perfil', fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
-            {label:'👥 Estudiantes', fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
-            {label:'📝 Planeación', fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
-            {label:'🛡️ Mis Retos', fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
-            {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
-            {label:'💬 Foro', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
-            {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
+            {label:'🏠 Inicio',               fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
+            {label:'👤 Mi Perfil',             fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
+            {label:'🔔 Notificaciones',         fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
+            {label:'👥 Estudiantes',           fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
+            {label:'📚 Formularios ICFES',     fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();}},
+            {label:'📊 Resultados ICFES',      fn:()=>{activarPanel('panel-resultados-icfes');cargarResultadosICFES();}},
+            {label:'📝 Planeación',            fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
+            {label:'🛡️ Mis Retos',             fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
+            {label:'🎁 Premios',               fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
+            {label:'💬 Foro',                  fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
+            {label:'📬 Mensajes',              fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
         ],
         voluntario: [
-            {label:'🏠 Inicio', fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
-            {label:'👤 Mi Perfil', fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
-            {label:'📅 Capacitaciones', fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
-            {label:'👥 Estudiantes', fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
-            {label:'📝 Talleres', fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
-            {label:'🛡️ Mis Retos', fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
-            {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
-            {label:'💬 Foro', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
-            {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
+            {label:'🏠 Inicio',               fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
+            {label:'👤 Mi Perfil',             fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
+            {label:'📅 Capacitaciones',        fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
+            {label:'👥 Estudiantes',           fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
+            {label:'📚 Formularios ICFES',     fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();}},
+            {label:'📊 Resultados ICFES',      fn:()=>{activarPanel('panel-resultados-icfes');cargarResultadosICFES();}},
+            {label:'📝 Talleres',              fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
+            {label:'🛡️ Mis Retos',             fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
+            {label:'🎁 Premios',               fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
+            {label:'💬 Foro',                  fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
+            {label:'📬 Mensajes',              fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
         ],
         estudiante: [
             {label:'📈 Mi Progreso', fn:()=>{activarPanel('panel-progreso');cargarProgreso();}},
             {label:'📷 Mi Foto', fn:()=>{activarPanel('panel-mi-perfil');adaptarPanelFoto();}},
             {label:'📋 Caracterización', fn:()=>window.location.href='caracterizacion.html'},
-            {label:'🛡️ Retos', fn:()=>{activarPanel('panel-retos');cargarRetos();}},
-            {label:'📚 Talleres', fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();cargarTutores();}},
+            {label:'🛡️ Retos', fn:()=>{activarPanel('panel-retos');cargarRetosCompletados().then(()=>cargarRetos());}},
+            {label:'📚 Talleres', fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();cargarCompletadosEstudiante();cargarTutores();}},
             {label:'📣 Capacitación', fn:()=>activarPanel('panel-capacitaciones-sol')},
             {label:'🎁 Productos', fn:()=>{activarPanel('panel-productos');initProductos();}},
             {label:'💬 Foro', fn:()=>{activarPanel('panel-foro');cargarForo();}},
@@ -984,6 +1258,7 @@ function construirMenu(rol) {
         if (i === 0) btn.click();
     });
     if (currentUser.rol === 'docente' || currentUser.rol === 'voluntario') cargarPerfilDocente();
+    if (currentUser.rol === 'admin') iniciarListenerNotifTienda();
 }
 
 // ===================== PROGRESO ESTUDIANTE =====================
@@ -1013,26 +1288,106 @@ function cargarProgreso() {
 // ===================== RETOS =====================
 function cargarRetos() {
     const cont = document.getElementById('lista-retos-db');
-    onSnapshot(collection(db,"talleres"), snap => {
-        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay retos publicados aún.</p>'; return; }
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando retos…</p>';
+    // Lee de colección 'retos' (separada de 'talleres' ICFES)
+    onSnapshot(query(collection(db,'retos'), orderBy('creadoEn','desc')), snap => {
+        if (snap.empty) {
+            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay retos publicados aún. El admin o tu docente publicará retos aquí.</p>';
+            return;
+        }
         cont.innerHTML = '';
         snap.forEach(d => {
             const t = d.data();
-            const esFormulario = t.tipo === 'formulario';
+            const yaCompletado = window._retosCompletados && window._retosCompletados.has(d.id);
+            const deadline = t.deadline ? new Date(t.deadline) : null;
+            const ahora = new Date();
+            const vencido = deadline && ahora > deadline;
+            const fechaStr = deadline ? deadline.toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+
             cont.insertAdjacentHTML('beforeend', `
-                <div class="module-item">
+                <div class="module-item" style="${yaCompletado?'opacity:.6;':''}${vencido&&!yaCompletado?'border-color:rgba(239,68,68,.3);':''}">
                     <div class="module-item-info">
-                        <p class="module-item-name">${t.nombre || 'Taller sin nombre'}</p>
-                        <p class="module-item-meta">${t.area || 'General'} · ${t.descripcion || ''}</p>
+                        <p class="module-item-name">${t.titulo || t.nombre || 'Reto'}</p>
+                        <p class="module-item-meta">${t.area||'General'}${t.puntos?' · +'+t.puntos+' pts':''}${fechaStr?' · ⏰ '+fechaStr:''}</p>
+                        ${t.descripcion ? `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.4);margin-top:.2rem;">${t.descripcion}</p>` : ''}
                     </div>
-                    ${esFormulario
-                        ? `<button class="btn-module" onclick="abrirFormulario('${d.id}')">Responder →</button>`
-                        : t.link ? `<a href="${t.link}" target="_blank" class="btn-module">Abrir →</a>` : '<span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);">Sin link</span>'
+                    ${yaCompletado
+                        ? '<span class="btn-module" style="background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.3);cursor:default;">✅ Completado</span>'
+                        : vencido
+                            ? '<span class="btn-module" style="background:rgba(239,68,68,.08);color:#f87171;border:1px solid rgba(239,68,68,.25);cursor:default;">⏰ Vencido</span>'
+                            : t.formId
+                                ? `<button class="btn-module" data-retoid="${d.id}" onclick="abrirRetoForm(this.dataset.retoid)">Responder →</button>`
+                                : t.link
+                                    ? `<a href="${t.link}" target="_blank" class="btn-module" data-retoid="${d.id}" onclick="registrarRetoVisto('${d.id}')">Abrir →</a>`
+                                    : '<span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);">Sin link</span>'
                     }
                 </div>`);
         });
     });
 }
+
+// Cargar retos completados por el estudiante
+async function cargarRetosCompletados() {
+    if (!currentUser || currentUser.rol !== 'estudiante') return;
+    try {
+        const snap = await getDocs(query(collection(db,'retos_completados'), where('uid','==',currentUser.uid)));
+        window._retosCompletados = new Set(snap.docs.map(d => d.data().retoId));
+    } catch(e) { window._retosCompletados = new Set(); }
+}
+
+// Abrir formulario de reto (Google Forms vía iframe)
+window.abrirRetoForm = async function(retoId) {
+    const snap = await getDoc(doc(db,'retos',retoId));
+    if (!snap.exists()) return;
+    const t = snap.data();
+    if (!t.formId) { if(t.link) window.open(t.link,'_blank'); return; }
+
+    // Verificar si ya respondió
+    if (currentUser) {
+        const compId = `${currentUser.uid}_${retoId}`;
+        const compSnap = await getDoc(doc(db,'retos_completados',compId));
+        if (compSnap.exists()) { notif('Ya completado','Ya respondiste este reto.','✅','info'); return; }
+    }
+
+    window._formIcfesUrl = `https://docs.google.com/forms/d/e/${t.formId}/viewform?embedded=true`;
+    window._formIcfesTitulo = t.titulo || t.nombre || 'Reto';
+    window._formIcfesTallerId = null; // No es un taller ICFES
+    window._formRetoId = retoId;
+
+    const btnComp = document.getElementById('btn-marcar-completado');
+    btnComp.style.display = currentUser?.rol === 'estudiante' ? 'inline-block' : 'none';
+    btnComp.textContent = '✅ Marcar como completado';
+    btnComp.disabled = false;
+    btnComp.onclick = () => marcarRetoCompletado(retoId, t.titulo || t.nombre || 'Reto', t.puntos || 10);
+
+    document.getElementById('modal-form-icfes-titulo').textContent = t.titulo || 'Reto';
+    document.getElementById('modal-form-icfes-iframe').style.display = 'none';
+    document.getElementById('modal-form-icfes-iframe').src = '';
+    document.getElementById('modal-form-icfes-loading').style.display = 'flex';
+    document.getElementById('modal-form-icfes').classList.add('open');
+    setTimeout(() => { document.getElementById('modal-form-icfes-iframe').src = window._formIcfesUrl; }, 80);
+};
+
+window.marcarRetoCompletado = async function(retoId, titulo, puntos) {
+    if (!currentUser) return;
+    const compId = `${currentUser.uid}_${retoId}`;
+    const btn = document.getElementById('btn-marcar-completado');
+    btn.disabled = true; btn.textContent = 'Guardando…';
+    try {
+        await setDoc(doc(db,'retos_completados',compId), {
+            uid: currentUser.uid, email: currentUser.email||currentUser.correo||'',
+            nombre: currentUser.nombre||'', colegio: currentUser.colegio||'',
+            grado: currentUser.grado||'', retoId, titulo,
+            completadoEn: serverTimestamp(),
+        });
+        // Sumar puntos
+        const ptos = puntos || 10;
+        await updateDoc(doc(db,'usuarios',currentUser.uid), { puntos: increment(ptos) });
+        notif('¡Reto completado!',`+${ptos} puntos sumados.`,'🎉','info');
+        cerrarFormModal();
+        cargarRetosCompletados().then(() => cargarRetos());
+    } catch(e) { btn.disabled=false; btn.textContent='✅ Marcar como completado'; }
+};
 
 // ===================== FORMULARIO INLINE =====================
 window.abrirFormulario = async function(tallerId) {
@@ -1128,23 +1483,209 @@ window.abrirFormulario = async function(tallerId) {
 };
 
 // ===================== TALLERES ESTUDIANTE =====================
+const AREA_COLOR_MAP = {'Lectura Crítica':'#7c3aed','Química':'#059669','Inglés':'#0369a1','Matemáticas':'#d97706','Geometría':'#0891b2','Biología':'#16a34a','Sociales':'#dc2626'};
+
 function cargarTalleresEstudiante() {
-    const cont = document.getElementById('talleres-grid-container');
-    onSnapshot(collection(db,"talleres"), snap => {
-        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin talleres publicados.</p>'; return; }
-        cont.innerHTML = '';
-        snap.forEach(d => {
-            const t = d.data();
-            cont.insertAdjacentHTML('beforeend',`
-                <div class="taller-card">
-                    <p class="taller-tag">${t.area||'General'}</p>
-                    <p class="taller-title">${t.nombre||'Taller'}</p>
-                    <p class="taller-desc">${t.descripcion||''}</p>
-                    ${t.link?`<a href="${t.link}" target="_blank" class="btn-taller">Abrir Taller</a>`:''}
-                    ${t.tipo==='formulario'?`<button class="btn-taller" onclick="abrirFormulario('${d.id}')">Responder Test</button>`:''}
-                </div>`);
+    const wrap = document.getElementById('talleres-grid-container');
+    wrap.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando…</p>';
+
+    // Filtros de área
+    const panelMat = document.getElementById('panel-material');
+    if (!panelMat.querySelector('.ti-area-filter-bar')) {
+        const bar = document.createElement('div');
+        bar.className = 'ti-area-filter-bar';
+        bar.style.cssText = 'display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.2rem;';
+        ['Todos','Lectura Crítica','Matemáticas','Inglés','Biología','Química','Sociales','Geometría'].forEach(a => {
+            const b = document.createElement('button');
+            b.textContent = a; b.dataset.area = a;
+            b.style.cssText = `padding:.3rem .75rem;border-radius:20px;border:1.5px solid rgba(255,255,255,0.15);background:transparent;color:${a==='Todos'?'#FF5E00':(AREA_COLOR_MAP[a]||'#a8c4d8')};font-size:.7rem;font-weight:700;cursor:pointer;font-family:'Montserrat',sans-serif;letter-spacing:.5px;`;
+            if (a === 'Todos') b.style.background = 'rgba(255,255,255,0.07)';
+            b.onclick = () => {
+                bar.querySelectorAll('button').forEach(x => x.style.background='transparent');
+                b.style.background = 'rgba(255,255,255,0.1)';
+                renderTalleresGrid(b.dataset.area);
+            };
+            bar.appendChild(b);
         });
+        panelMat.insertBefore(bar, wrap);
+    }
+
+    getDocs(collection(db,'talleres')).then(snap => {
+        window._talleresData = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+            .sort((a,b) => (a.area||'').localeCompare(b.area||'') || ((a.sesion||0)-(b.sesion||0)));
+        renderTalleresGrid('Todos');
+    }).catch(e => {
+        wrap.innerHTML = `<p style="color:#f87171;font-family:var(--fuente-t);font-size:.65rem;">${e.message}</p>`;
     });
+}
+
+// Mapa global para evitar JSON.stringify en onclick (evita el bug de comillas dobles en HTML)
+window._tallerMapa = {};
+
+function renderTalleresGrid(areaFiltro) {
+    const wrap = document.getElementById('talleres-grid-container');
+    const datos = (window._talleresData || []).filter(t => areaFiltro==='Todos' || t.area===areaFiltro);
+    if (!datos.length) { wrap.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,0.3);">Sin talleres para este filtro.</p>'; return; }
+
+    // Registrar en mapa y agrupar por área
+    const byArea = {};
+    datos.forEach(t => {
+        window._tallerMapa[t.id] = t;
+        (byArea[t.area||'General'] = byArea[t.area||'General'] || []).push(t);
+    });
+
+    // Orden de áreas fijo
+    const ORDEN_AREAS = ['Lectura Crítica','Matemáticas','Inglés','Biología','Química','Sociales','Geometría','General'];
+    const areasOrdenadas = ORDEN_AREAS.filter(a => byArea[a]).concat(Object.keys(byArea).filter(a => !ORDEN_AREAS.includes(a)));
+
+    wrap.innerHTML = areasOrdenadas.map(area => {
+        const items = byArea[area];
+        const color = AREA_COLOR_MAP[area] || '#FF5E00';
+
+        // Ordenar por sesión dentro del área
+        const itemsOrdenados = [...items].sort((a,b) => (a.sesion||0)-(b.sesion||0));
+
+        return `<div style="margin-bottom:1.8rem;">
+            <p style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:${color};margin-bottom:.6rem;padding:.28rem .85rem;background:${color}15;border-left:3px solid ${color};border-radius:0 4px 4px 0;display:inline-flex;align-items:center;gap:.5rem;">${area} <span style="opacity:.5;font-size:.6rem;">${itemsOrdenados.length}</span></p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.75rem;">
+                ${itemsOrdenados.map(t => {
+                    const titulo = t.titulo || t.nombre || 'Taller';
+                    const tieneForm = t.formId || t.formUrl || t.link;
+                    const grupo = t.grupo && t.grupo !== 'General' ? t.grupo : '';
+                    const sesion = t.sesion ? `Sesión ${t.sesion}` : '';
+                    const yaCompletado = _estudianteCompletados.has(t.id);
+                    // Deadline check
+                    const habilitado = t.habilitado !== false;
+                    const expirado = t.fechaLimite && new Date(t.fechaLimite) < new Date();
+                    const bloqueado = !habilitado || (expirado && !habilitado);
+                    const cardBorder = yaCompletado ? '#10b981' : bloqueado ? '#ef4444' : color;
+                    return `<div style="background:#0a1e32;border:1.5px solid ${yaCompletado?'rgba(16,185,129,.3)':bloqueado?'rgba(239,68,68,.2)':'rgba(255,255,255,0.07)'};border-top:3px solid ${cardBorder};border-radius:8px;padding:.85rem;display:flex;flex-direction:column;gap:.35rem;position:relative;${bloqueado?'opacity:.6;':''}">
+                        ${yaCompletado ? '<span style="position:absolute;top:.45rem;right:.45rem;background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.4);border-radius:3px;font-family:\'Montserrat\',sans-serif;font-size:.5rem;font-weight:700;color:#10b981;padding:.1rem .35rem;letter-spacing:.5px;">✅</span>' : ''}
+                        ${bloqueado ? '<span style="position:absolute;top:.45rem;right:.45rem;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:3px;font-family:\'Montserrat\',sans-serif;font-size:.5rem;font-weight:700;color:#fca5a5;padding:.1rem .35rem;letter-spacing:.5px;">🔒</span>' : ''}
+                        <p style="font-family:\'Montserrat\',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${bloqueado?'#ef4444':color};margin:0;">${sesion}${grupo?' · '+grupo:''}</p>
+                        <p style="font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:.8rem;color:${bloqueado?'rgba(240,244,248,.4)':'#e8f0f8'};margin:0;line-height:1.3;">${titulo}</p>
+                        ${t.fechaLimite&&!bloqueado ? `<p style="font-family:'Montserrat',sans-serif;font-size:.52rem;color:rgba(240,244,248,.3);margin:0;">📅 Límite: ${new Date(t.fechaLimite).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})}</p>` : ''}
+                        ${yaCompletado
+                            ? '<p style="margin-top:auto;padding:.35rem;background:rgba(16,185,129,.08);color:#10b981;border:1px solid rgba(16,185,129,.2);border-radius:4px;font-family:\'Montserrat\',sans-serif;font-size:.62rem;font-weight:700;text-align:center;">✅ Completado</p>'
+                            : bloqueado
+                                ? '<p style="margin-top:auto;padding:.35rem;background:rgba(239,68,68,.06);color:#fca5a5;border:1px solid rgba(239,68,68,.15);border-radius:4px;font-family:\'Montserrat\',sans-serif;font-size:.62rem;font-weight:700;text-align:center;">🔒 No disponible</p>'
+                            : tieneForm
+                                ? `<button data-tid="${t.id}" style="margin-top:auto;padding:.38rem;background:${color}22;color:${color};border:1px solid ${color}44;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:.63rem;font-weight:700;cursor:pointer;letter-spacing:.4px;" onclick="abrirFormICFES(this.dataset.tid)">📋 Abrir Formulario</button>`
+                                : '<p style="font-size:.58rem;color:rgba(240,244,248,.18);font-family:Montserrat;text-align:center;margin-top:auto;padding:.35rem;">Sin formulario</p>'
+                        }
+                    </div>`;
+                }).join('')}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.abrirFormICFES = async function(tallerIdOrTitulo, legacyFormId, legacyUrl, legacyId) {
+    // Soporte doble: abrirFormICFES(id) — nuevo | abrirFormICFES(titulo,formId,url,id) — legado
+    let titulo, formId, fallbackUrl, tallerId;
+    const t = window._tallerMapa && window._tallerMapa[tallerIdOrTitulo];
+    if (t) {
+        titulo      = t.titulo || t.nombre || 'Taller';
+        formId      = t.formId || '';
+        fallbackUrl = t.formUrl || t.link || '';
+        tallerId    = t.id || '';
+    } else {
+        titulo      = tallerIdOrTitulo;
+        formId      = legacyFormId || '';
+        fallbackUrl = legacyUrl    || '';
+        tallerId    = legacyId     || '';
+    }
+
+    const embedUrl = formId
+        ? `https://docs.google.com/forms/d/e/${formId}/viewform?embedded=true`
+        : fallbackUrl;
+    if (!embedUrl) { notif('Sin formulario','Este taller no tiene un formulario asignado aún.','📋','info'); return; }
+
+    // Check if taller is blocked by deadline/habilitado (only for students)
+    if (currentUser && currentUser.rol === 'estudiante' && t) {
+        const habilitado = t.habilitado !== false;
+        const expirado = t.fechaLimite && new Date(t.fechaLimite) < new Date();
+        if (!habilitado || expirado) {
+            notif('Taller no disponible','Este formulario está cerrado o venció su fecha límite.','🔒','info');
+            return;
+        }
+    }
+
+    // Check if already completed
+    if (currentUser && tallerId) {
+        const compId = `${currentUser.uid}_${tallerId}`;
+        try {
+            const compDoc = await getDoc(doc(db,'talleres_completados', compId));
+            if (compDoc.exists()) {
+                notif('Ya completado','Ya registraste este formulario anteriormente.','✅','info');
+                return;
+            }
+        } catch(e) {}
+    }
+
+    window._formIcfesUrl = embedUrl;
+    window._formIcfesTitulo = titulo;
+    window._formIcfesTallerId = tallerId || null;
+
+    // Show/hide complete button based on role
+    const btnComp = document.getElementById('btn-marcar-completado');
+    btnComp.style.display = (currentUser && currentUser.rol === 'estudiante') ? 'inline-block' : 'none';
+    btnComp.textContent = '✅ Marcar como completado';
+    btnComp.disabled = false;
+
+    document.getElementById('modal-form-icfes-titulo').textContent = titulo;
+    document.getElementById('modal-form-icfes-iframe').style.display = 'none';
+    document.getElementById('modal-form-icfes-iframe').src = '';
+    document.getElementById('modal-form-icfes-loading').style.display = 'flex';
+    document.getElementById('modal-form-icfes').classList.add('open');
+    setTimeout(() => { document.getElementById('modal-form-icfes-iframe').src = embedUrl; }, 80);
+};
+
+window.marcarTallerCompletado = async function() {
+    if (!currentUser) { notif('Inicia sesión','Debes iniciar sesión para registrar tu progreso.','🔒','info'); return; }
+    const tallerId = window._formIcfesTallerId;
+    const titulo   = window._formIcfesTitulo || 'Taller';
+    const compId   = `${currentUser.uid}_${tallerId || Date.now()}`;
+    const btn = document.getElementById('btn-marcar-completado');
+    btn.disabled = true; btn.textContent = 'Guardando…';
+    try {
+        await setDoc(doc(db,'talleres_completados', compId), {
+            uid:          currentUser.uid,
+            email:        currentUser.email || currentUser.correo || '',
+            nombre:       currentUser.nombre || currentUser.email || '',
+            colegio:      currentUser.colegio || '',
+            grado:        currentUser.grado || '',
+            tallerId:     tallerId || '',
+            titulo:       titulo,
+            completadoEn: serverTimestamp(),
+        });
+        // Dar 10 puntos
+        await updateDoc(doc(db,'usuarios',currentUser.uid), { puntos: increment(10) });
+        btn.textContent = '✅ Registrado';
+        notif('¡Taller completado!','¡+10 puntos sumados a tu perfil!','🎉','info');
+        if (window._talleresData) renderTalleresGrid('Todos');
+        cargarCompletadosEstudiante();
+        setTimeout(cerrarFormModal, 1500);
+    } catch(e) {
+        btn.disabled = false; btn.textContent = '✅ Marcar como completado';
+        notif('Error',e.message,'❌','error');
+    }
+};
+
+window.cerrarFormModal = function() {
+    document.getElementById('modal-form-icfes').classList.remove('open');
+    document.getElementById('modal-form-icfes-iframe').src = '';
+};
+
+// ── Cargar talleres completados por el estudiante actual ──────
+let _estudianteCompletados = new Set();
+async function cargarCompletadosEstudiante() {
+    if (!currentUser || currentUser.rol !== 'estudiante') return;
+    try {
+        const snap = await getDocs(query(collection(db,'talleres_completados'), where('uid','==',currentUser.uid)));
+        _estudianteCompletados = new Set(snap.docs.map(d => d.data().tallerId));
+        if (window._talleresData) renderTalleresGrid('Todos');
+    } catch(e) {}
 }
 
 // ===================== TUTORES =====================
@@ -1467,7 +2008,7 @@ function cargarAdmin() {
             const e = docSnap.data();
             total++;
             if (e.fichaCompleta) fichas++;
-            if (e.puntos) pts += parseInt(e.puntos)||0;
+            if (e.puntos && e.rol !== 'admin') pts += parseInt(e.puntos)||0;
             const rolesBadge = {admin:'<span class="badge amarillo">Admin</span>',docente:'<span class="badge cyan" style="background:rgba(56,189,248,0.1);color:var(--teal)">Docente</span>',voluntario:'<span class="badge cyan" style="background:rgba(56,189,248,0.08);color:#a5f3fc">Voluntario</span>',estudiante:'<span class="badge verde">Estudiante</span>'};
             const roleBadge = rolesBadge[e.rol] || `<span class="badge amarillo">${e.rol||'?'}</span>`;
             let vulnBadge = '<span class="badge verde">Estable</span>';
@@ -1478,9 +2019,12 @@ function cargarAdmin() {
                 <td>${roleBadge}</td>
                 <td>${e.colegio||'—'}</td>
                 <td>${e.municipio||'—'}</td>
-                <td><span class="pts-cell">${e.puntos||0}</span></td>
+                <td><span class="pts-cell">${e.rol==='admin'?'—':e.puntos||0}</span></td>
                 <td>${vulnBadge}</td>
-                <td><button class="btn-table" onclick="verDetalleEstudiante('${docSnap.id}')">Ver Perfil</button></td>
+                <td style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
+                    <button class="btn-table" onclick="verDetalleEstudiante('${docSnap.id}')">Ver Perfil</button>
+                    ${e.rol!=='admin'?`<button class="btn-table btn-table-danger" onclick="eliminarUsuario('${docSnap.id}','${(e.nombre||'este usuario').replace(/'/g,"\\'")}')">🗑 Eliminar</button>`:''}
+                </td>
             </tr>`);
         });
         if (!total) tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin usuarios registrados.</td></tr>';
@@ -1492,6 +2036,17 @@ function cargarAdmin() {
         document.getElementById('kpi-pretests').textContent = snap.size;
     }).catch(()=>{});
 }
+
+window.eliminarUsuario = async function(uid, nombre) {
+    if (!confirm(`¿Eliminar permanentemente el perfil de "${nombre}"?\n\nEsta acción no se puede deshacer.`)) return;
+    try {
+        await deleteDoc(doc(db, 'usuarios', uid));
+        mostrarNotif(`✅ Perfil de "${nombre}" eliminado.`, 'verde');
+    } catch(e) {
+        console.error(e);
+        mostrarNotif('Error al eliminar: ' + e.message, 'rojo');
+    }
+};
 
 window.verDetalleEstudiante = async function(uid) {
     activarPanel('panel-admin-perfil');
@@ -1606,6 +2161,680 @@ function descargarCSV(csv, nombre) {
     URL.revokeObjectURL(url);
 }
 
+// ─── RESULTADOS ICFES ─────────────────────────────────────────────────────────
+let _riDatos = [];       // todos los registros cargados
+let _riSortCol = '_hoja';
+let _riSortAsc = true;
+let _riChart = null;
+
+async function cargarResultadosICFES() {
+    const tbody = document.getElementById('ri-tbody');
+    const stats = document.getElementById('ri-stats');
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Cargando datos…</td></tr>`;
+    stats.innerHTML = '';
+
+    try {
+        const snap = await getDocs(collection(db,'diagnostico_colegios'));
+        _riDatos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        if (!_riDatos.length) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin datos. Ejecuta la sincronización del Apps Script.</td></tr>`;
+            return;
+        }
+
+        // Poblar selector de formularios
+        const hojas = [...new Set(_riDatos.map(r => r._hoja).filter(Boolean))].sort();
+        const sel = document.getElementById('ri-filtro-hoja');
+        sel.innerHTML = '<option value="">Todos los formularios</option>';
+        hojas.forEach(h => { const o = document.createElement('option'); o.value = h; o.textContent = h; sel.appendChild(o); });
+
+        renderResultadosICFES();
+    } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--rojo);font-family:var(--fuente-t);font-size:.65rem;padding:1rem;">${err.message}</td></tr>`;
+    }
+}
+
+function renderResultadosICFES() {
+    const filtroHoja = document.getElementById('ri-filtro-hoja')?.value || '';
+    const buscar     = (document.getElementById('ri-buscar')?.value || '').toLowerCase().trim();
+
+    let datos = _riDatos.filter(r => {
+        if (filtroHoja && r._hoja !== filtroHoja) return false;
+        if (buscar) {
+            const cedula = String(r['NUMERO DE CEDULA'] || r['NÚMERO DE CÉDULA'] || '').toLowerCase();
+            const email  = String(r['Dirección de correo electrónico'] || r['CORREO ELECTRONICO'] || '').toLowerCase();
+            if (!cedula.includes(buscar) && !email.includes(buscar)) return false;
+        }
+        return true;
+    });
+
+    // Ordenar
+    datos.sort((a,b) => {
+        let va = a[_riSortCol] || '', vb = b[_riSortCol] || '';
+        if (_riSortCol === 'Puntuación') { va = parseFloat(va)||0; vb = parseFloat(vb)||0; return _riSortAsc ? va-vb : vb-va; }
+        va = String(va).toLowerCase(); vb = String(vb).toLowerCase();
+        return _riSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+
+    // Estadísticas resumen
+    const scores = datos.map(r => parseFloat(r['Puntuación'] || r['puntuacion'] || 0)).filter(n => !isNaN(n));
+    const prom = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : '–';
+    const maximo = scores.length ? Math.max(...scores).toFixed(1) : '–';
+    const minimo = scores.length ? Math.min(...scores).toFixed(1) : '–';
+    const hojasFiltradas = [...new Set(datos.map(r=>r._hoja).filter(Boolean))];
+
+    document.getElementById('ri-stats').innerHTML = [
+        ['📝', 'Respuestas', datos.length],
+        ['📋', 'Formularios', hojasFiltradas.length],
+        ['📊', 'Promedio', prom],
+        ['⬆️', 'Máximo', maximo],
+        ['⬇️', 'Mínimo', minimo],
+    ].map(([ic,lb,val])=>`
+        <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:.8rem 1rem;text-align:center;">
+            <div style="font-size:1.3rem;">${ic}</div>
+            <div style="font-family:var(--fuente-t);font-size:.55rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,244,248,.4);margin:.2rem 0;">${lb}</div>
+            <div style="font-family:var(--fuente-t);font-size:1.1rem;font-weight:900;color:var(--teal);">${val}</div>
+        </div>`).join('');
+
+    // Tabla
+    const tbody = document.getElementById('ri-tbody');
+    if (!datos.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin resultados para este filtro.</td></tr>`;
+        document.getElementById('ri-count').textContent = '';
+    } else {
+        tbody.innerHTML = datos.map(r => {
+            const pts   = r['Puntuación'] || r['puntuacion'] || '–';
+            const cedula = r['NUMERO DE CEDULA'] || r['NÚMERO DE CÉDULA'] || '–';
+            const email  = r['Dirección de correo electrónico'] || r['CORREO ELECTRONICO'] || '–';
+            const fecha  = r['Marca temporal'] || r['DIGITE LA FECHA'] || '–';
+            const color  = parseFloat(pts)>=60 ? '#86efac' : parseFloat(pts)>=40 ? '#fbbf24' : '#fca5a5';
+            return `<tr style="border-bottom:1px solid rgba(255,255,255,.05);">
+                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.7);">${r._hoja||'–'}</td>
+                <td style="padding:.45rem .6rem;font-weight:900;color:${color};">${pts}</td>
+                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.5);">${cedula}</td>
+                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.5);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${email}</td>
+                <td style="padding:.45rem .6rem;color:rgba(240,244,248,.4);">${fecha}</td>
+            </tr>`;
+        }).join('');
+        document.getElementById('ri-count').textContent = `Mostrando ${datos.length} registro(s)`;
+    }
+
+    // Gráfico de barras: promedio por formulario (máx 30 formularios para legibilidad)
+    const porHoja = {};
+    _riDatos.forEach(r => {
+        const h = r._hoja || 'Sin nombre';
+        const p = parseFloat(r['Puntuación'] || 0);
+        if (!porHoja[h]) porHoja[h] = { suma: 0, n: 0 };
+        porHoja[h].suma += p;
+        porHoja[h].n++;
+    });
+    const labels = Object.keys(porHoja).sort().slice(0,30);
+    const valores = labels.map(h => (porHoja[h].suma / porHoja[h].n).toFixed(1));
+    const colores = valores.map(v => parseFloat(v)>=60 ? 'rgba(134,239,172,.7)' : parseFloat(v)>=40 ? 'rgba(251,191,36,.7)' : 'rgba(252,165,165,.7)');
+
+    const canvas = document.getElementById('ri-chart');
+    canvas.width = Math.max(labels.length * 42, 400);
+    if (_riChart) _riChart.destroy();
+    _riChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Promedio',
+                data: valores,
+                backgroundColor: colores,
+                borderRadius: 5,
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` Promedio: ${ctx.parsed.y}` } } },
+            scales: {
+                x: { ticks: { color: 'rgba(240,244,248,.5)', font: { size: 9 }, maxRotation: 45 }, grid: { color: 'rgba(255,255,255,.05)' } },
+                y: { ticks: { color: 'rgba(240,244,248,.5)', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.06)' }, suggestedMin:0, suggestedMax:100 }
+            }
+        }
+    });
+}
+
+window.sortResultados = function(col) {
+    if (_riSortCol === col) _riSortAsc = !_riSortAsc;
+    else { _riSortCol = col; _riSortAsc = true; }
+    renderResultadosICFES();
+};
+
+window.exportarResultadosCSV = function() {
+    if (!_riDatos.length) return;
+    const filtroHoja = document.getElementById('ri-filtro-hoja')?.value || '';
+    const buscar     = (document.getElementById('ri-buscar')?.value || '').toLowerCase().trim();
+    let datos = _riDatos.filter(r => {
+        if (filtroHoja && r._hoja !== filtroHoja) return false;
+        if (buscar) {
+            const cedula = String(r['NUMERO DE CEDULA'] || '').toLowerCase();
+            const email  = String(r['Dirección de correo electrónico'] || '').toLowerCase();
+            if (!cedula.includes(buscar) && !email.includes(buscar)) return false;
+        }
+        return true;
+    });
+    let csv = 'Formulario,Puntuación,Cédula,Email,Fecha\n';
+    datos.forEach(r => {
+        csv += `"${r._hoja||''}","${r['Puntuación']||''}","${r['NUMERO DE CEDULA']||''}","${r['Dirección de correo electrónico']||''}","${r['Marca temporal']||''}"\n`;
+    });
+    descargarCSV(csv,'resultados_icfes.csv');
+};
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── RETOS ADMIN ──────────────────────────────────────────────────────────────
+let RETOS_ADMIN_DATA = [];
+let retoEditandoId = null;
+
+window.cargarRetosAdmin = async function() {
+    try {
+        const snap = await getDocs(collection(db,'retos'));
+        RETOS_ADMIN_DATA = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+            .sort((a,b) => (b.creadoEn?.seconds||0)-(a.creadoEn?.seconds||0));
+        renderRetosAdmin();
+    } catch(e) {
+        document.getElementById('ra-lista').innerHTML = `<p style="color:#f87171;font-family:var(--fuente-t);font-size:.65rem;">${e.message}</p>`;
+    }
+};
+
+window.renderRetosAdmin = function() {
+    const lista = document.getElementById('ra-lista');
+    if (!lista) return;
+    const filterArea = document.getElementById('ra-filter-area')?.value || '';
+    const filtered = RETOS_ADMIN_DATA.filter(r => !filterArea || r.area === filterArea);
+    if (!filtered.length) {
+        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);text-align:center;padding:1.5rem;">Sin retos creados aún.</p>';
+        return;
+    }
+    lista.innerHTML = filtered.map(r => {
+        const titulo = r.titulo || r.nombre || 'Reto';
+        const deadline = r.deadline ? new Date(r.deadline).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Sin límite';
+        return `<div style="background:#0a1e32;border:1px solid rgba(255,255,255,.07);border-left:3px solid #FF5E00;border-radius:6px;overflow:hidden;">
+            <div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;">
+                <div style="flex:1;min-width:0;">
+                    <p style="font-family:var(--fuente-t);font-size:.68rem;font-weight:700;color:#e8f0f8;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${titulo}</p>
+                    <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.35);margin:0;">${r.area||'General'} · ${r.puntos||10} pts · ⏰ ${deadline}</p>
+                </div>
+                <button class="btn-table" onclick="verCompletadosReto('${r.id}')" style="padding:.25rem .5rem;font-size:.6rem;color:#86efac;">👥</button>
+                <button class="btn-table" onclick="editarRetoAdmin('${r.id}')" style="padding:.25rem .5rem;font-size:.6rem;">✏️</button>
+                <button class="btn-table" onclick="eliminarRetoAdmin('${r.id}')" style="padding:.25rem .5rem;font-size:.6rem;color:#f87171;">🗑</button>
+            </div>
+            <div id="completados-reto-${r.id}" style="display:none;padding:.4rem .7rem .5rem;border-top:1px solid rgba(255,255,255,.05);max-height:180px;overflow-y:auto;"></div>
+        </div>`;
+    }).join('');
+};
+
+window.guardarRetoAdmin = async function() {
+    const r = {
+        titulo:   document.getElementById('ra-titulo').value.trim(),
+        area:     document.getElementById('ra-area').value,
+        puntos:   parseInt(document.getElementById('ra-puntos').value) || 10,
+        deadline: document.getElementById('ra-deadline').value || null,
+        descripcion: document.getElementById('ra-desc').value.trim(),
+        formId:   document.getElementById('ra-formid').value.trim(),
+        link:     document.getElementById('ra-link').value.trim(),
+    };
+    if (!r.titulo) { alert('Escribe un título para el reto.'); return; }
+    try {
+        if (retoEditandoId) {
+            await updateDoc(doc(db,'retos',retoEditandoId), r);
+        } else {
+            await addDoc(collection(db,'retos'), { ...r, creadoEn: serverTimestamp() });
+        }
+        cancelarEdicionReto();
+        cargarRetosAdmin();
+    } catch(e) { alert('Error: '+e.message); }
+};
+
+window.editarRetoAdmin = function(id) {
+    const r = RETOS_ADMIN_DATA.find(x => x.id===id); if (!r) return;
+    retoEditandoId = id;
+    document.getElementById('ra-titulo').value    = r.titulo||'';
+    document.getElementById('ra-area').value      = r.area||'General';
+    document.getElementById('ra-puntos').value    = r.puntos||10;
+    document.getElementById('ra-deadline').value  = r.deadline||'';
+    document.getElementById('ra-desc').value      = r.descripcion||'';
+    document.getElementById('ra-formid').value    = r.formId||'';
+    document.getElementById('ra-link').value      = r.link||'';
+    document.getElementById('ra-edit-label').style.display='block';
+    document.getElementById('ra-titulo').scrollIntoView({behavior:'smooth',block:'center'});
+};
+
+window.cancelarEdicionReto = function() {
+    retoEditandoId = null;
+    ['ra-titulo','ra-deadline','ra-desc','ra-formid','ra-link'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    const puntos = document.getElementById('ra-puntos'); if(puntos) puntos.value='10';
+    document.getElementById('ra-edit-label').style.display='none';
+};
+
+window.eliminarRetoAdmin = async function(id) {
+    if (!confirm('¿Eliminar este reto?')) return;
+    try { await deleteDoc(doc(db,'retos',id)); cargarRetosAdmin(); } catch(e) { alert(e.message); }
+};
+
+window.verCompletadosReto = async function(retoId) {
+    const lista = document.getElementById(`completados-reto-${retoId}`);
+    if (!lista) return;
+    if (lista.style.display !== 'none' && lista.innerHTML) { lista.style.display='none'; return; }
+    lista.style.display='block';
+    lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);padding:.4rem;">Cargando…</p>';
+    const snap = await getDocs(query(collection(db,'retos_completados'), where('retoId','==',retoId)));
+    if (snap.empty) { lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.25);padding:.4rem 0;">Nadie ha completado este reto aún.</p>'; return; }
+    lista.innerHTML = snap.docs.map(d => {
+        const r=d.data();
+        const fecha = r.completadoEn?new Date(r.completadoEn.toDate()).toLocaleDateString('es-CO'):'—';
+        return `<div style="display:flex;justify-content:space-between;padding:.3rem .5rem;background:rgba(16,185,129,.06);border-radius:4px;margin-bottom:.25rem;">
+            <div><p style="font-family:var(--fuente-t);font-size:.65rem;color:#86efac;font-weight:700;margin:0;">${r.nombre||r.email||'—'}</p><p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${r.colegio||''}${r.grado?' · Grado '+r.grado:''}</p></div>
+            <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.3);">${fecha}</span>
+        </div>`;
+    }).join('');
+};
+
+// ── TALLERES ICFES ADMIN ──────────────────────────────────────────────────────
+const TALLERES_SEED = [
+  { titulo:"Sesión 1 - Lectura Crítica", area:"Lectura Crítica", grupo:"General", sesion:1, modulo:"1B", formId:"1FAIpQLSfM6a6xw0oqb8NZ4jcpoNx7q1Dg1CjPe7hCQVxdbsUvIaKKJg" },
+  { titulo:"Sesión 2 - Lectura Crítica G1", area:"Lectura Crítica", grupo:"G1", sesion:2, modulo:"2", formId:"1FAIpQLSeAbN91c0EZeGVRByUcLM0wZda3JiS_vz7SNmTcKghaZa33bg" },
+  { titulo:"Sesión 2 - Lectura Crítica G2", area:"Lectura Crítica", grupo:"G2", sesion:2, modulo:"2", formId:"1FAIpQLSfcKy5nfGCyKYd4obuQ2Ror8dZwRLje58gIdj6FlnMvRtPnpw" },
+  { titulo:"Lectura Crítica - Sesión 1 G1 A1", area:"Lectura Crítica", grupo:"G1", sesion:1, modulo:"1B", formId:"1FAIpQLSezdpy5qbUhjKl1Dqgl6AKBwXnMhXjQz6CWCS3HoNlDXimF1g" },
+  { titulo:"Lectura Crítica - Sesión 1 G2 A1", area:"Lectura Crítica", grupo:"G2", sesion:1, modulo:"1B", formId:"1FAIpQLSd3rD41NwzNcFSNzSEs3gbztXIG_wlc2MsEQpzt5xJf6u3Q-g" },
+  { titulo:"Sesión 1B - Lectura Crítica", area:"Lectura Crítica", grupo:"General", sesion:1, modulo:"1B", formId:"1FAIpQLSedknr_BBc0cw30_EMV3qVsUK8bxhVFbpNJOBbiBFHOB2Q1hQ" },
+  { titulo:"Sesión 2 - Lectura Crítica G1 (alt)", area:"Lectura Crítica", grupo:"G1", sesion:2, modulo:"2", formId:"1FAIpQLScSaO_7bkAhRrdBXB-xIeqg6W03bMgomBdJvqrqLZeNywe16g" },
+  { titulo:"Sesión 3 - Lectura Crítica", area:"Lectura Crítica", grupo:"General", sesion:3, modulo:"3", formId:"1FAIpQLSdG5QiOk9qvCt2TBldUivZ_3DYxvIIc3TWKZ0xAADLRN71VtQ" },
+  { titulo:"Sesión 3 - Lectura Crítica G2", area:"Lectura Crítica", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLScm81xq--WSueeSdd_YSbYMfAQBKn9K2TBh9N8-ZcL-5TFaxQ" },
+  { titulo:"Sesión 3 - Lectura Crítica Rehabilitación", area:"Lectura Crítica", grupo:"Rehabilitación", sesion:3, modulo:"3", formId:"1FAIpQLScUVrQ2GpQaJuz5jmrWC3duXt43OON_aoNTcAM8lImrEKlucA" },
+  { titulo:"Sesión 1 - Química", area:"Química", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLSe7p2V669CmVLIYo18rW-6hCSW5wZJxEhzw356hw6tGlHBqKQ" },
+  { titulo:"Sesión 2 - Química", area:"Química", grupo:"General", sesion:2, modulo:"2", formId:"1FAIpQLSeDPF7hGUBStfHv0aCqiWS5DqpXKGl0TMfBq7oZJvCARDuu1Q" },
+  { titulo:"Sesión 2 - Química G1", area:"Química", grupo:"G1", sesion:2, modulo:"2", formId:"1FAIpQLSc3_FNitNMkUDfWzqLtEybO_M2yFFu3G5aazfzitJOpCZ1LSA" },
+  { titulo:"Sesión 1 - Química G2", area:"Química", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLScPk5Og62f8hqi4GGYnzutXC4Tp8YvpwUiY7jrEqkzMNzrdnA" },
+  { titulo:"Sesión 1 - Química G1", area:"Química", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSfkliR0cosKDA09dJ2GkMVPazGgvmC_chKuFhyy2tJeM0qs2w" },
+  { titulo:"Sesión 1 - Inglés", area:"Inglés", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLSd05mh8Kh2Z9IOfpfAOFHtatCBAsWry2YaNMjm7tP30OIpIaA" },
+  { titulo:"Sesión 1 - Inglés G1", area:"Inglés", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSciGTjER23f6LpjfbO63-qDqG_BVGOS1lJEapxgP-BQ7SQfag" },
+  { titulo:"Sesión 1 - Inglés G2", area:"Inglés", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSfCNGtv0pJ1xT7sGdMqpun8nGncb1oc1KlrTToTHR7I3i5NOA" },
+  { titulo:"Sesión 2 - Inglés", area:"Inglés", grupo:"General", sesion:2, modulo:"2", formId:"1FAIpQLSdAFrc-UOggoM_XXhfQbvCmljeizB2q1S1CoP0Cg8hDPd1-Fg" },
+  { titulo:"Sesión 2 - Inglés G1", area:"Inglés", grupo:"G1", sesion:2, modulo:"1", formId:"1FAIpQLSfq83eYgE3J56jbvvF1q7GeryvW3P45839ICBDITiQ1ItRnJQ" },
+  { titulo:"Sesión 2 - Inglés G2", area:"Inglés", grupo:"G2", sesion:2, modulo:"2", formId:"1FAIpQLSceWw-pTtnlU64FX4W_10jDo-jLqOr10uCfmWYXpVYYTF85RA" },
+  { titulo:"Sesión 3 - Inglés G1", area:"Inglés", grupo:"G1", sesion:3, modulo:"3", formId:"1FAIpQLSc6JgJ0bTHk0G3cbIf2pTicUSPANxxier1socSuglfR8sE_OQ" },
+  { titulo:"Sesión 3 - Inglés G2", area:"Inglés", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLSdw35vCsHR9RyqaT6ajnxvqvrOZ83jnrlk7CdKVOTQQ8-pvew" },
+  { titulo:"Sesión 3 - Inglés G1 (alt)", area:"Inglés", grupo:"G1", sesion:3, modulo:"3", formId:"1FAIpQLSdJdGIfcYnaUBPto29g_G5VVRbM2VBMWv33yVCOkD057oBFPQ" },
+  { titulo:"Sesión 4 - Inglés", area:"Inglés", grupo:"General", sesion:4, modulo:"4", formId:"1FAIpQLSfP5ELyfumN8KmFrKjclSPc6b_uIFIN2JJKI3ryljZAIlOudg" },
+  { titulo:"Sesión 3 - Inglés (alt)", area:"Inglés", grupo:"General", sesion:3, modulo:"3", formId:"1FAIpQLSe4VXd1N-TyCW7acoYSXfVMr6XEcj6JM69zpmtNx68OcNlv7Q" },
+  { titulo:"Aritmética S1 - G1", area:"Matemáticas", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSeJa5nGqUVrbz5YHrdtutLvGwVK4es9nor7sojhyUar7B5mmA" },
+  { titulo:"Aritmética S1 - G2", area:"Matemáticas", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSf_AZ2AiHoa3Pov9c-Bw3o71vsSP-xSfui-hOmP_0hHKa2KaQ" },
+  { titulo:"Aritmética S4", area:"Matemáticas", grupo:"General", sesion:4, modulo:"2", formId:"", formUrl:"https://forms.gle/5iHe6hkLJxy88q19A" },
+  { titulo:"Sesión 3 - Matemáticas", area:"Matemáticas", grupo:"General", sesion:3, modulo:"2", formId:"1FAIpQLSe5nSzlmt4WLseydt2FlqCioL0kVr7qB64pObiZe3VhNR0b4g" },
+  { titulo:"Sesión 3 - Matemáticas G1", area:"Matemáticas", grupo:"G1", sesion:3, modulo:"3", formId:"1FAIpQLSeJz6tfLHAIG6FQKDnd82LTBJqxk5ANTVCIOrrdy9foaWoJpA" },
+  { titulo:"Sesión 3 - Matemáticas G2", area:"Matemáticas", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLSeeQ_8XO1ZoVV1xfFe9Hz2pJqghNMz47BWP9MfIjeXsIYx4gw" },
+  { titulo:"Geometría S1 - G1", area:"Geometría", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSfvKbd91V8xsP7JrgJV_1AzzuWI0kdjeKD-acfNQHrne5k5Rg" },
+  { titulo:"Geometría S1 - G2", area:"Geometría", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSfoBkKrBeFlHT4i4IariTaI5oJ2XvbB5AZSJXixDSFD_0PVFg" },
+  { titulo:"Sesión 1 - Biología", area:"Biología", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLScHDJZpOcGEr_Cmg4gcUryoW34kMrANt1QXBQZvOKyOVk3jVA" },
+  { titulo:"Sesión 1 - Biología (alt)", area:"Biología", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLSdgauY0OUrRzgTw6yhpMihNgpJ_jXtkih2Fna8A5mIYAkOghw" },
+  { titulo:"Sesión 1 - Biología G1 A1", area:"Biología", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSdtWq6VvraLuByDeEiHTzK-AYmkCwAxPXFSIOoBHsPm8MGBYQ" },
+  { titulo:"Sesión 1 - Biología G2 A1", area:"Biología", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSej59qDlOMJTy-iRbPnv_CzcrTxkRl3wbOc6WQSCrgcYb1LYw" },
+  { titulo:"Sesión 2 - Biología G1", area:"Biología", grupo:"G1", sesion:2, modulo:"1", formId:"1FAIpQLSfjMiQLNKNAhNNdZpcYWLQIJbr5svWU6Y722dwO1VlLXN5uyw" },
+  { titulo:"Sesión 2 - Biología G2", area:"Biología", grupo:"G2", sesion:2, modulo:"1", formId:"1FAIpQLSfD3lo2xcmou6hC2YXFX9aS9rJvRR1o1rPo589qq39ZgKxC5w" },
+  { titulo:"Sesión 2 - Biología G2 (alt)", area:"Biología", grupo:"G2", sesion:2, modulo:"1", formId:"1FAIpQLScZMrOMEp9qv3pcZXMKPOXH66r6gZGGRi-M1ov7KsJ8yx9ReA" },
+  { titulo:"Sesión 2 - Biología G2 (B)", area:"Biología", grupo:"G2", sesion:2, modulo:"1", formId:"1FAIpQLScpxDbCPwoKtxK_A4SWCo78UIShlZ7ocwBBBb-oW7BZnAfc7Q" },
+  { titulo:"Sesión 1 - Sociales G1", area:"Sociales", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSfRGtpB0WUSbDyTZOPdsaw06lg1osQeWcgA90Q3IjfB9k4q7g" },
+  { titulo:"Sesión 3 - Sociales G2", area:"Sociales", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLSfxM5Fch8c7uiZwuag8rTM60nO-9mmVCKTkK_O-lAflrED1Ag" },
+  { titulo:"Sesión 3 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:3, modulo:"3", formId:"1FAIpQLSd_svkXf4cpirdYblfFzlXJq2G5OxjwZ9BGCWVml4aQK1AtSw" },
+  { titulo:"Sesión 4 - Sociales G1", area:"Sociales", grupo:"G1", sesion:4, modulo:"4", formId:"1FAIpQLSc4eTVK2eHLZAXDJKC1ztwRAb-6Yuwf7GZ1ScXBnGCpTiax7Q" },
+  { titulo:"Sesión 4 - Sociales G2", area:"Sociales", grupo:"G2", sesion:4, modulo:"4", formId:"1FAIpQLSdbZtMmDNnQdYwLm402kf1AfmTr7298JOou3Ixfpi0K8q08Iw" },
+  { titulo:"Sesión 4 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:4, modulo:"4", formId:"1FAIpQLSd0ffX2lE4YOAEY32SPuyZpAwiH6D-PmYkOXiKJbIzwWStHDw" },
+  { titulo:"Sesión 5 - Sociales G1", area:"Sociales", grupo:"G1", sesion:5, modulo:"5", formId:"1FAIpQLSc0fjWasuNmHo2CkeU1L58xYgALiW7VI-Rb-baPZqM7tbqgTw" },
+  { titulo:"Sesión 5 - Sociales G2", area:"Sociales", grupo:"G2", sesion:5, modulo:"5", formId:"1FAIpQLSc4vIX3LSTs4yjszZQnjyMdMJxYhypd-4cwTXcSabOVYbt3ig" },
+  { titulo:"Sesión 5 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:5, modulo:"5", formId:"1FAIpQLSdna-CmRihF2vtUt1zmgTcmOUhhn4umDrlFU-lTmvlXXNYjvA" },
+  { titulo:"Sesión 6 - Sociales G1", area:"Sociales", grupo:"G1", sesion:6, modulo:"5", formId:"1FAIpQLSdeaEY96pbeo0OaEyCbWyJfodWcCUJsoqheJEXMp8i6XgcjjA" },
+  { titulo:"Sesión 6 - Sociales G2", area:"Sociales", grupo:"G2", sesion:6, modulo:"5", formId:"1FAIpQLSfc118Emv4IzScTuzM1fZX_qfk_ouT0pFXvVgQILJ789d9CGA" },
+  { titulo:"Sesión 6 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:6, modulo:"5", formId:"1FAIpQLScUKwDQyqQJdY1mX2Fo7iecoCiDF5ulbo6CoE6FAuurjFM1eg" },
+];
+
+let TALLERES_ADMIN_DATA = [];
+let tallerEditandoId = null;
+
+window.cargarTalleresAdmin = async function() {
+    try {
+        const snap = await getDocs(collection(db,'talleres')); // sort in JS — no composite index needed
+        TALLERES_ADMIN_DATA = snap.docs.map(d => ({ id:d.id, ...d.data() }))
+            .sort((a,b) => (a.area||'').localeCompare(b.area||'') || ((a.sesion||0)-(b.sesion||0)));
+        renderTalleresAdmin();
+        cargarResumenEntregasICFES(); // carga automática al abrir el panel
+    } catch(e) {
+        document.getElementById('ti-lista').innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#f87171;">Error: ${e.message}</p>`;
+    }
+};
+
+// ── Resumen de todas las entregas reales (diagnostico_colegios) ──
+window.cargarResumenEntregasICFES = async function() {
+    const cont = document.getElementById('ti-entregas-resumen');
+    if (!cont) return;
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);text-align:center;padding:1rem;">Cargando entregas…</p>';
+    try {
+        const snap = await getDocs(collection(db,'diagnostico_colegios'));
+        if (snap.empty) {
+            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.2);text-align:center;padding:1rem;">Sin entregas en diagnostico_colegios aún.</p>';
+            return;
+        }
+
+        // Agrupar por _hoja (nombre del formulario)
+        const grupos = {};
+        snap.forEach(d => {
+            const r = d.data();
+            const hoja = r._hoja || '(sin nombre)';
+            if (!grupos[hoja]) grupos[hoja] = [];
+            grupos[hoja].push(r);
+        });
+
+        const AREA_COLORS = {'Lectura Crítica':'#7c3aed','Química':'#059669','Inglés':'#0369a1','Matemáticas':'#d97706','Geometría':'#0891b2','Biología':'#16a34a','Sociales':'#dc2626'};
+
+        // Renderizar grupos
+        const html = Object.entries(grupos)
+            .sort(([,a],[,b]) => b.length - a.length)
+            .map(([hoja, respuestas]) => {
+                const grupoId = 'grp-' + hoja.replace(/[^a-zA-Z0-9]/g,'_').slice(0,30);
+                const pts = respuestas.map(r => parseFloat(r['Puntuación']||r['puntuacion']||0)).filter(n=>n>0);
+                const prom = pts.length ? (pts.reduce((a,b)=>a+b,0)/pts.length).toFixed(1) : '—';
+                const filas = respuestas.map(r => {
+                    const cedula = r['NUMERO DE CEDULA']||r['NÚMERO DE CÉDULA']||'—';
+                    const email  = r['Dirección de correo electrónico']||r['CORREO ELECTRONICO']||'—';
+                    const score  = r['Puntuación']||r['puntuacion']||'—';
+                    const fecha  = r['Marca temporal']||r['DIGITE LA FECHA']||'—';
+                    const color  = score!=='—'?(parseFloat(score)>=60?'#86efac':parseFloat(score)>=40?'#fbbf24':'#fca5a5'):'rgba(240,244,248,.4)';
+                    return `<div style="display:grid;grid-template-columns:1fr 2fr auto auto;gap:.4rem;align-items:center;padding:.3rem .5rem;background:rgba(255,255,255,.02);border-radius:3px;margin-bottom:.15rem;">
+                        <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.45);">CC: ${cedula}</span>
+                        <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.55);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${email}</span>
+                        <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${color};">${score}</span>
+                        <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);white-space:nowrap;">${typeof fecha==='string'?fecha.slice(0,10):fecha}</span>
+                    </div>`;
+                }).join('');
+                return `<div style="background:#0a1e32;border:1px solid rgba(255,255,255,.06);border-left:3px solid var(--teal);border-radius:6px;overflow:hidden;margin-bottom:.5rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;cursor:pointer;gap:.5rem;" onclick="const el=document.getElementById('${grupoId}');el.style.display=el.style.display==='none'?'block':'none';">
+                        <div>
+                            <p style="font-family:var(--fuente-t);font-size:.68rem;font-weight:700;color:#e8f0f8;margin:0;">${hoja}</p>
+                            <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:.1rem 0 0;">${respuestas.length} entrega${respuestas.length!==1?'s':''} · Promedio: ${prom}</p>
+                        </div>
+                        <div style="display:flex;gap:.4rem;align-items:center;">
+                            <span style="font-family:var(--fuente-t);font-size:.7rem;font-weight:900;color:var(--teal);">${respuestas.length}</span>
+                            <span style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(240,244,248,.2);">▼</span>
+                        </div>
+                    </div>
+                    <div id="${grupoId}" style="display:none;padding:.4rem .6rem .5rem;border-top:1px solid rgba(255,255,255,.05);max-height:240px;overflow-y:auto;">
+                        <div style="display:grid;grid-template-columns:1fr 2fr auto auto;gap:.4rem;padding:.2rem .5rem;margin-bottom:.2rem;opacity:.4;">
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Cédula</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Email</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Pts</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Fecha</span>
+                        </div>
+                        ${filas}
+                    </div>
+                </div>`;
+            }).join('');
+
+        cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin-bottom:.75rem;">Total: <strong style="color:var(--teal);">${snap.size}</strong> entregas en <strong style="color:var(--teal);">${Object.keys(grupos).length}</strong> formularios. Haz clic en un formulario para ver los detalles.</p>${html}`;
+    } catch(e) {
+        cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:#f87171;padding:.5rem;">Error: ${e.message}</p>`;
+    }
+};
+
+window.renderTalleresAdmin = function() {
+    const lista = document.getElementById('ti-lista');
+    if (!lista) return;
+    const filterArea  = document.getElementById('ti-filter-area')?.value  || '';
+    const filterGrupo = document.getElementById('ti-filter-grupo')?.value || '';
+    const filtered = TALLERES_ADMIN_DATA.filter(t =>
+        (!filterArea  || t.area  === filterArea) &&
+        (!filterGrupo || t.grupo === filterGrupo)
+    );
+    if (!filtered.length) {
+        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:1.5rem;">Sin talleres. ¿Ya cargaste los 54?</p>';
+        return;
+    }
+    const AREA_COLOR = {'Lectura Crítica':'#7c3aed','Química':'#059669','Inglés':'#0369a1','Matemáticas':'#d97706','Geometría':'#0891b2','Biología':'#16a34a','Sociales':'#dc2626'};
+    lista.innerHTML = filtered.map(t => {
+        const color = AREA_COLOR[t.area] || '#FF5E00';
+        const titulo = t.titulo || t.nombre || 'Sin título';
+        const tieneForm = t.formId || t.formUrl;
+        const habilitado = t.habilitado !== false; // default true for legacy docs
+        const fechaLimite = t.fechaLimite || null;
+        const expirado = fechaLimite && new Date(fechaLimite) < new Date();
+        const bloqueado = expirado && !habilitado;
+        const estadoBadge = bloqueado
+            ? `<span style="font-family:var(--fuente-t);font-size:.5rem;background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25);border-radius:3px;padding:.1rem .35rem;letter-spacing:.5px;">🔒 VENCIDO</span>`
+            : expirado && habilitado
+                ? `<span style="font-family:var(--fuente-t);font-size:.5rem;background:rgba(251,191,36,.1);color:#fde68a;border:1px solid rgba(251,191,36,.25);border-radius:3px;padding:.1rem .35rem;letter-spacing:.5px;">⚠️ VENCIDO/ACTIVO</span>`
+                : fechaLimite
+                    ? `<span style="font-family:var(--fuente-t);font-size:.5rem;background:rgba(16,185,129,.08);color:#86efac;border:1px solid rgba(16,185,129,.2);border-radius:3px;padding:.1rem .35rem;letter-spacing:.5px;">📅 ${new Date(fechaLimite).toLocaleDateString('es-CO',{day:'2-digit',month:'short'})}</span>`
+                    : '';
+        return `<div style="background:#0a1e32;border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${expirado&&!habilitado?'#ef4444':color};border-radius:6px;overflow:hidden;opacity:${habilitado?1:.7};">
+            <div style="display:flex;align-items:center;gap:.5rem;padding:.55rem .7rem;flex-wrap:wrap;">
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">
+                        <p style="font-family:var(--fuente-t);font-size:0.68rem;font-weight:700;color:#e8f0f8;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${titulo}</p>
+                        ${estadoBadge}
+                    </div>
+                    <p style="font-family:var(--fuente-t);font-size:0.58rem;color:rgba(240,244,248,0.35);margin:.1rem 0 0;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}</p>
+                </div>
+                <div style="display:flex;gap:.3rem;align-items:center;">
+                    <button class="btn-table" onclick="toggleHabilitadoTaller('${t.id}',${!habilitado})" style="padding:.25rem .5rem;font-size:.6rem;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
+                    <button class="btn-table" onclick="verCompletadosTaller('${t.id}',${JSON.stringify(titulo)})" style="padding:.25rem .5rem;font-size:.6rem;color:#93c5fd;" title="Ver entregas">👥</button>
+                    ${tieneForm ? `<button class="btn-table" onclick="abrirFormICFES(${JSON.stringify(titulo)},${JSON.stringify(t.formId||'')},${JSON.stringify(t.formUrl||'')},${JSON.stringify(t.id||'')})" style="padding:.25rem .5rem;font-size:.6rem;" title="Previsualizar">👁</button>` : ''}
+                    <button class="btn-table" onclick="editarTallerAdmin('${t.id}')" style="padding:.25rem .5rem;font-size:.6rem;" title="Editar">✏️</button>
+                    <button class="btn-table" onclick="eliminarTallerAdmin('${t.id}')" style="padding:.25rem .5rem;font-size:.6rem;color:#f87171;" title="Eliminar">🗑</button>
+                </div>
+            </div>
+            <div id="completados-${t.id}" style="display:none;padding:.4rem .7rem .5rem;border-top:1px solid rgba(255,255,255,.05);max-height:220px;overflow-y:auto;"></div>
+        </div>`;
+    }).join('');
+};
+
+window.seedTalleres = async function() {
+    const btn = document.getElementById('btn-seed-talleres');
+    const status = document.getElementById('seed-status');
+    btn.disabled = true;
+    btn.textContent = 'Cargando…';
+    status.style.display = 'block';
+    let ok = 0, err = 0;
+    for (const t of TALLERES_SEED) {
+        try {
+            await addDoc(collection(db,'talleres'), { ...t, habilitado: true, creadoEn: serverTimestamp() });
+            ok++;
+            status.textContent = `${ok} / ${TALLERES_SEED.length} talleres cargados…`;
+        } catch(e) { err++; }
+    }
+    status.textContent = `✅ ${ok} talleres cargados${err ? ` (${err} errores)` : ''}.`;
+    btn.textContent = '✅ Completado';
+    cargarTalleresAdmin();
+};
+
+// CSV importer — parsea sin librería externa (PapaParse no está cargado)
+window.importarTalleresCSV = async function() {
+    const input  = document.getElementById('csv-talleres-input');
+    const status = document.getElementById('csv-import-status');
+    if (!input || !input.files.length) { notif('Sin archivo','Selecciona un archivo CSV primero.','⚠️','warn'); return; }
+    const file = input.files[0];
+    status.style.display = 'block';
+    status.style.color = 'rgba(240,244,248,.5)';
+    status.textContent = 'Leyendo archivo…';
+
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    if (lines.length < 2) { status.textContent = '❌ El CSV debe tener al menos una fila de encabezado y una de datos.'; status.style.color='#f87171'; return; }
+
+    // Parse header
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g,''));
+    const COL = (name) => headers.indexOf(name);
+    const get  = (cols, i) => { const v = cols[i]; return v ? v.trim().replace(/^"|"$/g,'') : ''; };
+
+    // Obtener títulos existentes para evitar duplicados
+    const existSnap = await getDocs(collection(db,'talleres'));
+    const existentes = new Set(existSnap.docs.map(d => (d.data().titulo||'').toLowerCase().trim()));
+
+    let ok = 0, skipped = 0, err = 0;
+    for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        const titulo = get(cols, COL('titulo'));
+        if (!titulo) { skipped++; continue; }
+        if (existentes.has(titulo.toLowerCase())) { skipped++; continue; } // no duplicar
+        const taller = {
+            titulo,
+            area:        get(cols, COL('area'))        || 'General',
+            grupo:       get(cols, COL('grupo'))       || 'General',
+            sesion:      parseInt(get(cols, COL('sesion'))) || 1,
+            modulo:      get(cols, COL('modulo'))      || '',
+            formId:      get(cols, COL('formid'))      || '',
+            fechaLimite: get(cols, COL('fechalimite')) || null,
+            habilitado:  get(cols, COL('habilitado')).toLowerCase() !== 'false',
+            creadoEn:    serverTimestamp(),
+        };
+        try {
+            await addDoc(collection(db,'talleres'), taller);
+            existentes.add(titulo.toLowerCase());
+            ok++;
+            status.textContent = `Importando… ${ok} cargados`;
+        } catch(e) { err++; }
+    }
+    status.style.color = err ? '#fbbf24' : '#86efac';
+    status.textContent = `✅ ${ok} importados · ${skipped} omitidos (ya existen o vacíos)${err ? ` · ${err} errores` : ''}.`;
+    input.value = '';
+    cargarTalleresAdmin();
+};
+
+window.guardarTallerAdmin = async function() {
+    const fechaLimiteVal = document.getElementById('ti-fechalimite').value;
+    const t = {
+        titulo:      document.getElementById('ti-titulo').value.trim(),
+        area:        document.getElementById('ti-area').value,
+        grupo:       document.getElementById('ti-grupo').value,
+        sesion:      parseInt(document.getElementById('ti-sesion').value) || 1,
+        modulo:      document.getElementById('ti-modulo').value.trim(),
+        formId:      document.getElementById('ti-formid').value.trim(),
+        habilitado:  document.getElementById('ti-habilitado').checked,
+        fechaLimite: fechaLimiteVal || null,
+    };
+    if (!t.titulo) { alert('Escribe un título para el taller.'); return; }
+    try {
+        if (tallerEditandoId) {
+            await updateDoc(doc(db,'talleres',tallerEditandoId), t);
+        } else {
+            await addDoc(collection(db,'talleres'), { ...t, creadoEn: serverTimestamp() });
+        }
+        cancelarEdicionTaller();
+        cargarTalleresAdmin();
+        notif('Taller guardado','Los cambios fueron guardados correctamente.','✅','success');
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+window.editarTallerAdmin = function(id) {
+    const t = TALLERES_ADMIN_DATA.find(x => x.id === id);
+    if (!t) return;
+    tallerEditandoId = id;
+    document.getElementById('ti-titulo').value      = t.titulo  || '';
+    document.getElementById('ti-area').value        = t.area    || 'Lectura Crítica';
+    document.getElementById('ti-grupo').value       = t.grupo   || 'General';
+    document.getElementById('ti-sesion').value      = t.sesion  || 1;
+    document.getElementById('ti-modulo').value      = t.modulo  || '';
+    document.getElementById('ti-formid').value      = t.formId  || '';
+    document.getElementById('ti-fechalimite').value = t.fechaLimite || '';
+    document.getElementById('ti-habilitado').checked = t.habilitado !== false; // default true
+    document.getElementById('ti-edit-label').style.display = 'block';
+    document.getElementById('ti-titulo').focus();
+    document.getElementById('ti-titulo').scrollIntoView({ behavior:'smooth', block:'center' });
+};
+
+window.cancelarEdicionTaller = function() {
+    tallerEditandoId = null;
+    ['ti-titulo','ti-sesion','ti-modulo','ti-formid','ti-fechalimite'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const hab = document.getElementById('ti-habilitado'); if(hab) hab.checked = true;
+    document.getElementById('ti-edit-label').style.display = 'none';
+};
+
+window.eliminarTallerAdmin = async function(id) {
+    if (!confirm('¿Eliminar este taller de Firebase?')) return;
+    try {
+        await deleteDoc(doc(db,'talleres',id));
+        cargarTalleresAdmin();
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+window.toggleHabilitadoTaller = async function(id, nuevoValor) {
+    try {
+        await updateDoc(doc(db,'talleres',id), { habilitado: nuevoValor });
+        await cargarTalleresAdmin();
+        notif(nuevoValor ? 'Taller habilitado' : 'Taller bloqueado', nuevoValor ? 'Los estudiantes ya pueden acceder.' : 'Los estudiantes no podrán abrirlo.', nuevoValor ? '✅' : '🔒', nuevoValor ? 'success' : 'info');
+    } catch(e) { alert('Error: ' + e.message); }
+};
+
+window.verCompletadosTaller = async function(tallerId, titulo) {
+    const lista = document.getElementById(`completados-${tallerId}`);
+    if (!lista) return;
+    if (lista.style.display !== 'none' && lista.innerHTML.trim() && !lista.innerHTML.includes('Cargando')) { lista.style.display='none'; return; }
+    lista.style.display='block';
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);padding:.4rem;">Cargando…</p>';
+    try {
+        // 1) Registros manuales en talleres_completados
+        const snapManual = await getDocs(query(collection(db,'talleres_completados'), where('tallerId','==',tallerId)));
+        const filas = [];
+        snapManual.docs.forEach(d => {
+            const r = d.data();
+            const fecha = r.completadoEn ? new Date(r.completadoEn.toDate()).toLocaleDateString('es-CO') : '—';
+            filas.push(`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:rgba(16,185,129,.06);border-radius:4px;margin-bottom:.2rem;">
+                <div>
+                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:#86efac;font-weight:700;margin:0;">${r.nombre||r.email||'—'}</p>
+                    <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${r.colegio||''} ${r.grado?'· Grado '+r.grado:''}</p>
+                </div>
+                <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.3);">${fecha} · marcado</span>
+            </div>`);
+        });
+
+        // 2) Respuestas a Google Forms en diagnostico_colegios
+        // Intenta match exacto por _hoja == titulo, y también búsqueda parcial
+        if (titulo) {
+            const snapAll = await getDocs(collection(db,'diagnostico_colegios'));
+            const exactas = [], parciales = [];
+            snapAll.docs.forEach(d => {
+                const r = d.data();
+                const hoja = (r._hoja || '').toLowerCase();
+                const tit  = titulo.toLowerCase();
+                if (hoja === tit) exactas.push(r);
+                else if (hoja.includes(tit.slice(0,10)) || tit.includes(hoja.slice(0,10))) parciales.push(r);
+            });
+            const usarDocs = exactas.length ? exactas : parciales;
+            usarDocs.forEach(r => {
+                const cedula = r['NUMERO DE CEDULA'] || r['NÚMERO DE CÉDULA'] || '';
+                const email  = r['Dirección de correo electrónico'] || r['CORREO ELECTRONICO'] || '';
+                const fecha  = r['Marca temporal'] || r['DIGITE LA FECHA'] || '—';
+                const pts    = r['Puntuación'] || r['puntuacion'] || '';
+                const ptsColor = pts ? (parseFloat(pts)>=60?'#86efac':parseFloat(pts)>=40?'#fbbf24':'#fca5a5') : 'rgba(240,244,248,.4)';
+                const etiqueta = exactas.length ? 'Google Form' : `Form: ${r._hoja||'—'}`;
+                filas.push(`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:rgba(56,189,248,.05);border-radius:4px;margin-bottom:.2rem;border-left:2px solid rgba(56,189,248,.3);">
+                    <div>
+                        <p style="font-family:var(--fuente-t);font-size:.65rem;color:#93c5fd;font-weight:700;margin:0;">${email||cedula||'Anónimo'}</p>
+                        <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${cedula?'CC: '+cedula:''} · ${etiqueta}</p>
+                    </div>
+                    <div style="text-align:right;">
+                        ${pts?`<p style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${ptsColor};margin:0;">${pts} pts</p>`:''}
+                        <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);">${typeof fecha==='string'?fecha.slice(0,10):fecha}</span>
+                    </div>
+                </div>`);
+            });
+            // Si no hubo match, indica al admin dónde mirar
+            if (!usarDocs.length && snapAll.size > 0) {
+                filas.push(`<div style="padding:.4rem .5rem;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);border-radius:4px;">
+                    <p style="font-family:var(--fuente-t);font-size:.6rem;color:#fde68a;margin:0;">⚠️ No se encontró una hoja de Google Forms con el nombre exacto de este taller.</p>
+                    <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.25rem 0 0;">Ver todas las entregas en la sección <strong style="color:var(--teal);">📊 Entregas reales de Google Forms</strong> más abajo ↓</p>
+                </div>`);
+            }
+        }
+
+        if (!filas.length) {
+            lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.25);padding:.4rem 0;">Ningún estudiante ha completado este taller aún.</p>';
+            return;
+        }
+        lista.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.25);margin-bottom:.4rem;padding:0 .2rem;">🟢 marcado manual · 🔵 respuesta Google Form · Total: ${filas.length}</p>` + filas.join('');
+    } catch(e) { lista.innerHTML=`<p style="color:#f87171;font-size:.6rem;">${e.message}</p>`; }
+};
+
 // PREMIOS ADMIN
 function cargarPremiosAdmin() {
     getDocs(query(collection(db,"premios_reclamados"), orderBy("timestamp","desc"))).then(snap => {
@@ -1643,6 +2872,154 @@ window.cambiarEstadoPremio = async function(premioId, uid, estudianteNombre, pre
         notif('Estado actualizado',`Premio marcado como entregado. Se notificó a ${estudianteNombre}.`,'✅','success');
         cargarPremiosAdmin();
     } catch(err) { notif('Error',err.message,'❌','error'); }
+};
+
+// ===================== PEDIDOS TIENDA (admin) =====================
+function cargarPedidosTienda() {
+    const tbody = document.getElementById('pedidos-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando...</td></tr>';
+    getDocs(query(collection(db,"pedidos"), orderBy("creadoEn","desc"))).then(snap => {
+        tbody.innerHTML = '';
+        let total=0, pend=0, prep=0, env=0;
+        if (snap.empty) { tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin pedidos aún.</td></tr>'; return; }
+        snap.forEach(d => {
+            const p = d.data(); total++;
+            if (p.estado==='pendiente_pago') pend++;
+            else if (p.estado==='en_preparacion') prep++;
+            else if (p.estado==='enviado'||p.estado==='entregado') env++;
+            const fecha = p.creadoEn && p.creadoEn.toDate ? new Date(p.creadoEn.toDate()).toLocaleDateString('es-CO') : '—';
+            const items = (p.items||[]).map(i=>`${i.qty}× ${i.nombre}`).join(', ');
+            const estadoMap = {pendiente_pago:'<span class="badge amarillo">Pendiente Pago</span>',en_preparacion:'<span class="badge cyan">En Preparación</span>',enviado:'<span class="badge verde">Enviado</span>',entregado:'<span class="badge verde">Entregado</span>'};
+            const estadoHtml = estadoMap[p.estado] || `<span class="badge">${p.estado||'—'}</span>`;
+            tbody.insertAdjacentHTML('beforeend',`<tr>
+                <td><span class="name-cell" style="font-size:0.7rem;color:var(--naranja)">${p.numeroPedido||d.id.slice(-6)}</span><br><span style="font-size:0.65rem;color:rgba(240,244,248,0.3)">${fecha}</span></td>
+                <td><span class="name-cell">${p.nombre||'—'}</span><br><span style="font-size:0.65rem;color:rgba(240,244,248,0.4)">${p.telefono||''}</span></td>
+                <td style="font-size:0.72rem">${p.ciudad||'—'}</td>
+                <td><span class="pts-cell">$${(p.total||0).toLocaleString('es-CO')}</span></td>
+                <td style="font-size:0.68rem;color:rgba(240,244,248,0.55);max-width:180px;white-space:normal">${items}</td>
+                <td>${estadoHtml}</td>
+                <td>
+                    <select onchange="cambiarEstadoPedido('${d.id}',this.value,${JSON.stringify(p.nombre||'').replace(/"/g,"'")})" style="background:#021a36;border:1px solid rgba(255,255,255,0.12);color:var(--blanco);font-family:var(--fuente-t);font-size:0.65rem;padding:0.3rem">
+                        <option value="">Cambiar…</option>
+                        <option value="pendiente_pago">Pendiente Pago</option>
+                        <option value="en_preparacion">En Preparación</option>
+                        <option value="enviado">Enviado</option>
+                        <option value="entregado">Entregado</option>
+                    </select>
+                </td>
+            </tr>`);
+        });
+        if (document.getElementById('pk-total')) { document.getElementById('pk-total').textContent=total; document.getElementById('pk-pendientes').textContent=pend; document.getElementById('pk-preparacion').textContent=prep; document.getElementById('pk-enviados').textContent=env; }
+    }).catch(e=>{ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-size:0.7rem;color:rgba(240,244,248,0.3);padding:2rem;">Error al cargar pedidos.</td></tr>'; console.warn(e); });
+}
+
+window.cambiarEstadoPedido = async function(pedidoId, nuevoEstado, clienteNombre) {
+    if (!nuevoEstado) return;
+    try {
+        await updateDoc(doc(db,"pedidos",pedidoId), {estado: nuevoEstado});
+        notif('Pedido Actualizado', `Estado de "${clienteNombre}" → ${nuevoEstado}`, '✅', 'success');
+        cargarPedidosTienda();
+    } catch(e) { notif('Error', e.message, '❌', 'error'); }
+};
+
+// Escuchar nuevas notificaciones de tienda al cargar (solo admin)
+function iniciarListenerNotifTienda() {
+    if (!currentUser || currentUser.rol !== 'admin') return;
+    const q = query(collection(db,'notificaciones'), where('para','==','admin'), where('leido','==',false));
+    onSnapshot(q, snap => {
+        snap.docChanges().forEach(change => {
+            if (change.type === 'added') {
+                const n = change.doc.data();
+                if (n.tipo === 'nuevo_pedido') {
+                    notif(n.titulo||'Nuevo Pedido', n.mensaje||'', '🛒', 'success');
+                }
+            }
+        });
+    });
+}
+
+// ===================== RETOS PANEL (docente + voluntario) =====================
+let contadorPreguntasReto = 0;
+
+window.agregarPreguntaReto = function() {
+    contadorPreguntasReto++;
+    const n = contadorPreguntasReto;
+    const builder = document.getElementById('reto-preguntas-builder');
+    if (!builder) return;
+    const div = document.createElement('div');
+    div.id = `retoq-${n}`;
+    div.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);padding:1rem;margin-bottom:0.75rem;border-radius:4px;';
+    div.innerHTML = `
+        <p style="font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;color:rgba(240,244,248,0.4);margin-bottom:0.75rem;">PREGUNTA ${n}</p>
+        <div class="fa-group"><label>Enunciado</label><input type="text" id="rq${n}-q" placeholder="¿Cuál es la pregunta?"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin:0.5rem 0;">
+            <div class="fa-group"><label>A</label><input type="text" id="rq${n}-a" placeholder="Opción A"></div>
+            <div class="fa-group"><label>B</label><input type="text" id="rq${n}-b" placeholder="Opción B"></div>
+            <div class="fa-group"><label>C</label><input type="text" id="rq${n}-c" placeholder="Opción C (opcional)"></div>
+            <div class="fa-group"><label>D</label><input type="text" id="rq${n}-d" placeholder="Opción D (opcional)"></div>
+        </div>
+        <div class="fa-group"><label>Respuesta correcta (0=A, 1=B, 2=C, 3=D)</label><input type="number" id="rq${n}-cor" value="0" min="0" max="3"></div>
+        <div class="fa-group"><label>Explicación (opcional)</label><input type="text" id="rq${n}-exp" placeholder="¿Por qué es correcta?"></div>
+        <button onclick="document.getElementById('retoq-${n}').remove()" style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(239,68,68,0.6);background:none;border:none;cursor:pointer;margin-top:0.25rem;">🗑 Eliminar</button>
+    `;
+    builder.appendChild(div);
+};
+
+window.publicarReto = async function() {
+    const nombre = document.getElementById('reto-nombre').value.trim();
+    const area   = document.getElementById('reto-area').value.trim();
+    const desc   = document.getElementById('reto-desc').value.trim();
+    const pts    = parseInt(document.getElementById('reto-pts').value)||10;
+    if (!nombre) { notif('Falta nombre','Escribe el nombre del reto.','⚠️','warn'); return; }
+    const preguntas = [];
+    let n = 1;
+    while(document.getElementById(`retoq-${n}`)) {
+        const q   = document.getElementById(`rq${n}-q`)?.value.trim();
+        const a   = document.getElementById(`rq${n}-a`)?.value.trim();
+        const b   = document.getElementById(`rq${n}-b`)?.value.trim();
+        const c   = document.getElementById(`rq${n}-c`)?.value.trim();
+        const d   = document.getElementById(`rq${n}-d`)?.value.trim();
+        const cor = parseInt(document.getElementById(`rq${n}-cor`)?.value||0);
+        const exp = document.getElementById(`rq${n}-exp`)?.value.trim();
+        if (q && a && b) preguntas.push({q,o:[a,b,c,d].filter(Boolean),a:cor,explicacion:exp,puntaje:pts});
+        n++;
+    }
+    if (!preguntas.length) { notif('Sin preguntas','Agrega al menos una pregunta al reto.','⚠️','warn'); return; }
+    await addDoc(collection(db,"talleres"),{
+        nombre, area, descripcion:desc, tipo:'formulario',
+        preguntas, puntajePorPregunta:pts,
+        creadoPor:currentUser.nombre, autorUid:currentUser.uid,
+        creadoEn:serverTimestamp()
+    });
+    if (currentUser.uid && (currentUser.rol==='docente'||currentUser.rol==='voluntario')) {
+        await updateDoc(doc(db,"usuarios",currentUser.uid),{puntos:increment(30)});
+        currentUser.puntos=(currentUser.puntos||0)+30;
+        localStorage.setItem('usuario_sesion_activa',JSON.stringify(currentUser));
+    }
+    notif('Reto publicado',`"${nombre}" con ${preguntas.length} preguntas publicado. +30 PTS 🎉`,'✅','success');
+    ['reto-nombre','reto-area','reto-desc'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('reto-pts').value='10';
+    document.getElementById('reto-preguntas-builder').innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p>';
+    contadorPreguntasReto=0;
+    cargarRetosDocente();
+};
+
+window.publicarRecursoReto = async function() {
+    const nombre = document.getElementById('reto-rec-nombre').value.trim();
+    const area   = document.getElementById('reto-rec-area').value.trim();
+    const desc   = document.getElementById('reto-rec-desc').value.trim();
+    const link   = document.getElementById('reto-rec-link').value.trim();
+    if (!nombre) { notif('Falta nombre','Escribe el nombre del recurso.','⚠️','warn'); return; }
+    await addDoc(collection(db,"talleres"),{nombre,area,descripcion:desc,link,tipo:'taller',creadoPor:currentUser.nombre,autorUid:currentUser.uid,creadoEn:serverTimestamp()});
+    if (currentUser.uid && (currentUser.rol==='docente'||currentUser.rol==='voluntario')) {
+        await updateDoc(doc(db,"usuarios",currentUser.uid),{puntos:increment(30)});
+        currentUser.puntos=(currentUser.puntos||0)+30;
+        localStorage.setItem('usuario_sesion_activa',JSON.stringify(currentUser));
+    }
+    notif('Recurso publicado',`"${nombre}" ya visible para los estudiantes. +30 PTS`,'✅','success');
+    ['reto-rec-nombre','reto-rec-area','reto-rec-desc','reto-rec-link'].forEach(id=>document.getElementById(id).value='');
+    cargarRetosDocente();
 };
 
 // ADMIN ADD CONTENT
@@ -1759,21 +3136,62 @@ function cargarTalleresPublicados() {
         snap.forEach(d => {
             const t = d.data();
             const esMio = t.autorUid === currentUser.uid || currentUser.rol==='admin';
+            const titulo = t.titulo || t.nombre || '—';
             cont.insertAdjacentHTML('beforeend',`
-                <div class="module-item">
-                    <div class="module-item-info">
-                        <p class="module-item-name">${t.nombre||'—'}</p>
-                        <p class="module-item-meta">${t.area||'General'} · ${t.tipo||'taller'} · Por: ${t.creadoPor||'—'}</p>
+                <div style="background:#0a1e32;border:1px solid rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;margin-bottom:.35rem;">
+                    <div class="module-item" style="border:0;margin:0;">
+                        <div class="module-item-info">
+                            <p class="module-item-name">${titulo}</p>
+                            <p class="module-item-meta">${t.area||'General'} · ${t.tipo||'taller'} · Por: ${t.creadoPor||'—'}</p>
+                        </div>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+                            <button class="btn-module" style="color:#93c5fd;border-color:rgba(56,189,248,.25);background:rgba(56,189,248,.06);" onclick="verCompletadosTallerPlaneacion('${d.id}',${JSON.stringify(titulo)})">👥 Entregas</button>
+                            ${t.link?`<a href="${t.link}" target="_blank" class="btn-module">Ver →</a>`:''}
+                            ${esMio?`<button class="btn-module secondary" onclick="editarTaller('${d.id}','${(t.nombre||titulo).replace(/'/g,"\\'")}','${(t.area||'').replace(/'/g,"\\'")}','${(t.descripcion||'').replace(/'/g,"\\'").replace(/\n/g,' ')}','${(t.link||'').replace(/'/g,"\\'")}')">✏️</button>`:''}
+                            ${esMio?`<button class="btn-module" style="background:rgba(239,68,68,0.15);color:#fca5a5;border-color:rgba(239,68,68,0.3);" onclick="eliminarTaller('${d.id}')">✕</button>`:''}
+                        </div>
                     </div>
-                    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                        ${t.link?`<a href="${t.link}" target="_blank" class="btn-module">Ver →</a>`:''}
-                        ${esMio?`<button class="btn-module secondary" onclick="editarTaller('${d.id}','${(t.nombre||'').replace(/'/g,"\\'")}','${(t.area||'').replace(/'/g,"\\'")}','${(t.descripcion||'').replace(/'/g,"\\'").replace(/\n/g,' ')}','${(t.link||'').replace(/'/g,"\\'")}')">✏️</button>`:''}
-                        ${esMio?`<button class="btn-module" style="background:rgba(239,68,68,0.15);color:#fca5a5;border-color:rgba(239,68,68,0.3);" onclick="eliminarTaller('${d.id}')">✕</button>`:''}
-                    </div>
+                    <div id="planeacion-comp-${d.id}" style="display:none;padding:.4rem .7rem .5rem;border-top:1px solid rgba(255,255,255,.05);max-height:200px;overflow-y:auto;font-family:var(--fuente-t);font-size:.6rem;"></div>
                 </div>`);
         });
     });
 }
+
+window.verCompletadosTallerPlaneacion = async function(tallerId, titulo) {
+    const lista = document.getElementById(`planeacion-comp-${tallerId}`);
+    if (!lista) return;
+    if (lista.style.display !== 'none' && lista.innerHTML.trim() && !lista.innerHTML.includes('Cargando')) { lista.style.display='none'; return; }
+    lista.style.display='block';
+    lista.innerHTML = '<p style="color:rgba(240,244,248,.3);padding:.3rem;">Cargando…</p>';
+    // Reusa la misma lógica que verCompletadosTaller pero escribe en este div
+    try {
+        const snapManual = await getDocs(query(collection(db,'talleres_completados'), where('tallerId','==',tallerId)));
+        const filas = [];
+        snapManual.docs.forEach(d => {
+            const r = d.data();
+            const fecha = r.completadoEn ? new Date(r.completadoEn.toDate()).toLocaleDateString('es-CO') : '—';
+            filas.push(`<div style="display:flex;justify-content:space-between;padding:.25rem .3rem;background:rgba(16,185,129,.05);border-radius:3px;margin-bottom:.2rem;">
+                <span style="color:#86efac;font-weight:700;">${r.nombre||r.email||'—'}</span>
+                <span style="color:rgba(240,244,248,.3);">${fecha}</span>
+            </div>`);
+        });
+        if (titulo) {
+            const snapForms = await getDocs(query(collection(db,'diagnostico_colegios'), where('_hoja','==',titulo)));
+            snapForms.docs.forEach(d => {
+                const r = d.data();
+                const email = r['Dirección de correo electrónico'] || r['CORREO ELECTRONICO'] || r['NUMERO DE CEDULA'] || 'Anónimo';
+                const pts = r['Puntuación'] || '';
+                filas.push(`<div style="display:flex;justify-content:space-between;padding:.25rem .3rem;background:rgba(56,189,248,.04);border-left:2px solid rgba(56,189,248,.25);border-radius:3px;margin-bottom:.2rem;">
+                    <span style="color:#93c5fd;">${email}</span>
+                    ${pts?`<span style="color:#fbbf24;">${pts} pts</span>`:'<span style="color:rgba(240,244,248,.2);">Google Form</span>'}
+                </div>`);
+            });
+        }
+        lista.innerHTML = filas.length
+            ? `<p style="color:rgba(240,244,248,.25);margin-bottom:.3rem;">Total: ${filas.length} entrega(s)</p>` + filas.join('')
+            : '<p style="color:rgba(240,244,248,.2);padding:.2rem 0;">Sin entregas aún.</p>';
+    } catch(e) { lista.innerHTML = `<p style="color:#f87171;">${e.message}</p>`; }
+};
 
 window.eliminarTaller = async function(id) {
     const ok = await confirmarPRI('Eliminar taller','¿Seguro? Esta acción no se puede deshacer.','🗑️');
@@ -1851,25 +3269,65 @@ window.enviarResenaEstudiante = async function() {
     btn.textContent='Enviar Reseña Anónima 🔒'; btn.disabled=false;
 };
 
-// CAPACITACIONES VOLUNTARIO
+// CAPACITACIONES / NOTIFICACIONES (rol-aware)
 function cargarCapacitaciones() {
-    const cont = document.getElementById('lista-capacitaciones');
-    getDocs(collection(db,"solicitudes_capacitacion")).then(snap => {
-        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay solicitudes pendientes.</p>'; return; }
-        cont.innerHTML='';
-        snap.forEach(d => {
-            const s = d.data();
-            cont.insertAdjacentHTML('beforeend',`
-                <div class="capacitacion-card">
-                    <div class="cap-info">
-                        <p class="cap-nombre">📋 ${s.tema||'Capacitación General'}</p>
-                        <p class="cap-meta">Solicitó: ${s.nombre||'—'} · ${s.colegio||'—'} · ${s.horario||'—'}</p>
-                        ${s.comentario?`<p style="font-size:0.78rem;color:rgba(240,244,248,0.45);margin-top:0.3rem;">${s.comentario}</p>`:''}
-                    </div>
-                    <button class="btn-aceptar" onclick="aceptarCapacitacion('${s.nombre}','${s.contacto||''}','${s.tema||''}')">✅ Aceptar y Notificar</button>
-                </div>`);
+    const rol = currentUser.rol;
+    const titleEl   = document.getElementById('cap-panel-title');
+    const headingEl = document.getElementById('cap-panel-heading');
+    const descEl    = document.getElementById('cap-panel-desc');
+    const secTitleEl= document.getElementById('cap-section-title');
+    const cont      = document.getElementById('lista-capacitaciones');
+
+    if (rol === 'docente') {
+        // Docente: muestra actividad reciente (talleres completados + nuevos estudiantes)
+        if (titleEl)    titleEl.textContent    = 'Actividad';
+        if (headingEl)  headingEl.innerHTML    = 'Notificaciones <em>Recientes</em>';
+        if (descEl)     descEl.textContent     = 'Actividad reciente de tus estudiantes: talleres completados y formularios enviados.';
+        if (secTitleEl) secTitleEl.textContent = 'Últimas entregas';
+        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Cargando actividad…</p>';
+        getDocs(query(collection(db,'talleres_completados'), orderBy('completadoEn','desc'), limit(30))).then(snap => {
+            if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);">Sin actividad reciente.</p>'; return; }
+            cont.innerHTML = '';
+            snap.forEach(d => {
+                const r = d.data();
+                const fecha = r.completadoEn ? new Date(r.completadoEn.toDate()).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+                cont.insertAdjacentHTML('beforeend',`
+                    <div class="capacitacion-card" style="gap:.6rem;">
+                        <div class="cap-info">
+                            <p class="cap-nombre">✅ ${r.titulo||'Taller'}</p>
+                            <p class="cap-meta">Completado por: ${r.nombre||r.email||'—'} · ${r.grado?'Grado '+r.grado:''} · ${r.colegio||'—'}</p>
+                        </div>
+                        <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.3);white-space:nowrap;">${fecha}</span>
+                    </div>`);
+            });
+        }).catch(() => {
+            // fallback: mostrar solicitudes si no hay índice
+            cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);">Sin actividad reciente. (Requiere índice Firestore para orderBy)</p>';
         });
-    }).catch(()=>{ cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin solicitudes.</p>'; });
+    } else {
+        // Voluntario / Admin: solicitudes de capacitación
+        if (titleEl)    titleEl.textContent = 'Agenda';
+        if (headingEl)  headingEl.innerHTML = 'Solicitudes de <em>Capacitación</em>';
+        if (descEl)     descEl.textContent  = 'Revisa y acepta solicitudes de capacitación. Se notificará al estudiante por WhatsApp.';
+        if (secTitleEl) secTitleEl.textContent = 'Solicitudes Pendientes';
+        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando solicitudes…</p>';
+        getDocs(collection(db,"solicitudes_capacitacion")).then(snap => {
+            if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay solicitudes pendientes.</p>'; return; }
+            cont.innerHTML='';
+            snap.forEach(d => {
+                const s = d.data();
+                cont.insertAdjacentHTML('beforeend',`
+                    <div class="capacitacion-card">
+                        <div class="cap-info">
+                            <p class="cap-nombre">📋 ${s.tema||'Capacitación General'}</p>
+                            <p class="cap-meta">Solicitó: ${s.nombre||'—'} · ${s.colegio||'—'} · ${s.horario||'—'}</p>
+                            ${s.comentario?`<p style="font-size:0.78rem;color:rgba(240,244,248,0.45);margin-top:0.3rem;">${s.comentario}</p>`:''}
+                        </div>
+                        <button class="btn-aceptar" onclick="aceptarCapacitacion('${s.nombre}','${s.contacto||''}','${s.tema||''}')">✅ Aceptar y Notificar</button>
+                    </div>`);
+            });
+        }).catch(()=>{ cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin solicitudes.</p>'; });
+    }
 }
 
 window.aceptarCapacitacion = function(nombre, tel, tema) {

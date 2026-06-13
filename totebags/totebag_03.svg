@@ -1,0 +1,37 @@
+<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="220" fill="#1a3a2a" opacity="0.1"/>
+
+  <!-- Ilustración -->
+  <g transform="scale(0.85) translate(12,10)">
+    <!-- Manglar grande -->
+<path d="M100,160 L100,95 M100,95 Q78,68 60,58 M100,95 Q118,65 138,55 M100,110 Q80,95 65,100 M100,105 Q120,88 138,95" stroke="#166534" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M60,58 Q48,44 40,38 M60,58 Q55,42 62,34" stroke="#15803d" stroke-width="2.5" fill="none"/>
+<path d="M138,55 Q148,42 155,36 M138,55 Q148,45 155,50" stroke="#15803d" stroke-width="2.5" fill="none"/>
+<ellipse cx="130" cy="76" rx="10" ry="7" fill="#4ade80" opacity="0.7"/>
+<ellipse cx="72" cy="72" rx="9" ry="6" fill="#86efac" opacity="0.6"/>
+<path d="M50,160 Q75,145 100,150 Q125,145 150,160 Z" fill="#14532d" opacity="0.5"/>
+  </g>
+
+  <!-- Logo PRI -->
+  <image href="../logo.png" x="168" y="6" width="26" height="26"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior -->
+  <rect x="0" y="162" width="200" height="58" fill="#1a3a2a" opacity="0.55"/>
+
+  <!-- Programa PRI -->
+  <text x="100" y="175" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="8"
+        fill="#4ade80" letter-spacing="2" opacity="0.8">PROGRAMA PRI</text>
+  <text x="100" y="186" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="7" font-weight="600"
+        fill="#dcfce7" letter-spacing="1" opacity="0.8">EL PACÍFICO RENACIENDO CON INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="100" y="202" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="13"
+        fill="#4ade80" letter-spacing="2" opacity="1">MANGLAR ANCESTRAL</text>
+  <text x="100" y="214" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="8" font-weight="600"
+        fill="#dcfce7" letter-spacing="1" opacity="0.85">Ecosistema vital</text>
+</svg>

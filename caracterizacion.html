@@ -36,8 +36,8 @@
     <div class="max-w-4xl w-full glass-panel p-6 sm:p-10 rounded-3xl shadow-2xl relative my-6">
         <div class="flex items-center justify-between mb-6">
             <a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;">
-                <img src="logo.png" alt="PRI" style="width:38px;height:38px;object-fit:cover;border:2px solid rgba(255,94,0,0.4);border-radius:50%;" onerror="this.style.display='none'">
-                <span style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.55);">PROGRAMA-PRI</span>
+                <img src="logo.png" alt="PRI" style="width:42px;height:42px;object-fit:cover;border-radius:50%;" onerror="this.style.display='none'">
+                <div><span style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1rem;letter-spacing:2px;text-transform:uppercase;color:#f0f4f8;display:block;line-height:1.2">PROGRAMA-PRI</span><span style="font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#38bdf8">El Pacífico Renaciendo con Ingeniería</span></div>
             </a>
             <a href="dashboard.html" style="font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,244,248,0.4);text-decoration:none;border:1px solid rgba(255,255,255,0.1);padding:0.4rem 0.85rem;">← Volver</a>
         </div>
@@ -51,78 +51,82 @@
         </div>
 
         <form id="form-caracterizacion" class="space-y-8 text-sm">
-            
+
             <div>
                 <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">1. Identificación y Ubicación</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase mb-1">1. Nombre Completo</label>
-                        <input type="text" id="p1" required class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <input type="text" id="p1" required placeholder="Como aparece en tu documento de identidad" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">2. Municipio de Residencia</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">2. Municipio donde vives actualmente</label>
                         <select id="p2" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                             <option value="Tumaco">San Andrés de Tumaco</option>
                             <option value="Buenaventura">Buenaventura</option>
                             <option value="Guapi">Guapi</option>
                             <option value="Quibdó">Quibdó</option>
-                            <option value="Otro">Otro</option>
+                            <option value="Otro">Otro municipio</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">3. Corregimiento / Vereda o Barrio</label>
-                        <input type="text" id="p3" required placeholder="Ej: Ciudadela / Bajito" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">3. Barrio, corregimiento o vereda donde vives</label>
+                        <input type="text" id="p3" required placeholder="Ej: Ciudadela, El Bajito, La Cordialidad, Veredas del Mira…" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                     </div>
                 </div>
             </div>
 
             <div>
-                <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">2. Contexto Socioeconómico y Habitacional</h3>
+                <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">2. Vivienda y Servicios Básicos</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">4. Estrato Residencial</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">4. ¿Qué número de estrato aparece en el último recibo de agua o energía de tu casa?</label>
                         <select id="p4" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="0">Estrato 0 / Rural</option>
+                            <option value="0">Estrato 0 (Rural / Sin recibo de servicios)</option>
                             <option value="1">Estrato 1</option>
                             <option value="2">Estrato 2</option>
                             <option value="3">Estrato 3 o más</option>
+                            <option value="No sabe">No sabe / Sin estratificación asignada</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">5. Tipo de Vivienda</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">5. La casa donde vives ahora mismo, ¿es propia, arrendada o prestada?</label>
                         <select id="p5" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Propia">Propia</option>
-                            <option value="Arrendada">Arrendada</option>
-                            <option value="Familiar">Familiar / Prestada</option>
+                            <option value="Propia">Propia (pagada o en proceso de pago)</option>
+                            <option value="Arrendada">Arrendada / En arriendo</option>
+                            <option value="Familiar">Familiar, prestada o cedida</option>
+                            <option value="Informal">Asentamiento informal / Sin escritura</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">6. Material Predominante</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">6. ¿De qué material está construida principalmente la vivienda?</label>
                         <select id="p6" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Madera">Madera</option>
                             <option value="Bloque">Bloque / Ladrillo / Cemento</option>
-                            <option value="Mixto">Mixto (Madera y Cemento)</option>
+                            <option value="Madera">Madera</option>
+                            <option value="Zinc">Zinc / Plástico / Material provisional</option>
+                            <option value="Mixto">Mixto (madera y cemento)</option>
+                            <option value="Palafito">Palafito / Casa sobre el agua</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">7. Acceso a Agua Potable</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">7. Esta semana, ¿de dónde salió el agua que usaron en tu casa para tomar y cocinar?</label>
                         <select id="p7" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Continuo">Continuo (Todos los días)</option>
-                            <option value="Intermitente">Intermitente (Por días/horas)</option>
-                            <option value="No tiene">No tiene (Lluvia / Pozo / Compra)</option>
+                            <option value="Continuo">Acueducto continuo (todos los días)</option>
+                            <option value="Racionado">Acueducto racionado (ciertos días u horas)</option>
+                            <option value="No tiene">Agua lluvia, pozo, aljibe o compra en pipa</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">8. Servicio de Energía Eléctrica</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">8. Esta semana, ¿hubo cortes de luz en tu casa? ¿Con qué frecuencia?</label>
                         <select id="p8" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Estable">Estable</option>
-                            <option value="Cortes frecuentes">Con cortes frecuentes</option>
-                            <option value="No posee">No posee interconexión</option>
+                            <option value="Estable">Estable (pocas interrupciones)</option>
+                            <option value="Cortes frecuentes">Con cortes frecuentes (varios días a la semana)</option>
+                            <option value="No posee">Sin interconexión formal / Conexión informal</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">9. Número de personas en el hogar</label>
-                        <input type="number" id="p9" min="1" max="20" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">9. ¿Cuántas personas viven en tu hogar contando contigo?</label>
+                        <input type="number" id="p9" min="1" max="20" placeholder="Número de personas" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                     </div>
                 </div>
             </div>
@@ -131,103 +135,135 @@
                 <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">3. Núcleo Familiar y Vulnerabilidad</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">10. Nombre de la Madre</label>
-                        <input type="text" id="p10" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">10. Nombre completo de tu madre o figura materna</label>
+                        <input type="text" id="p10" placeholder="Escribe N/A si no convive contigo" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">11. Ocupación de la Madre</label>
-                        <input type="text" id="p11" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">11. La semana pasada, ¿en qué trabajó tu madre o cómo consiguió dinero tu hogar por su parte?</label>
+                        <select id="p11" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                            <option value="Comercio informal">Comercio informal / Ventas en calle o mercado</option>
+                            <option value="Trabajadora doméstica">Trabajadora doméstica / Empleada del hogar</option>
+                            <option value="Pesca o campo">Pesca, agricultura o trabajo en campo</option>
+                            <option value="Empleada formal">Empleada formal (empresa, institución pública)</option>
+                            <option value="Negocio propio">Microemprendedora / Negocio propio</option>
+                            <option value="Solo hogar">Solo en el hogar / Sin trabajo remunerado</option>
+                            <option value="Sin trabajo">No trabaja actualmente</option>
+                            <option value="No sabe madre">No sé / No convivo con ella</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">12. Nivel Educativo Madre</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">12. ¿Hasta qué grado estudió tu madre?</label>
                         <select id="p12" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Ninguno">Ninguno</option>
-                            <option value="Primaria">Primaria</option>
-                            <option value="Secundaria">Secundaria Completa</option>
-                            <option value="Superior">Técnico / Universitario</option>
+                            <option value="Nunca estudió">Nunca estudió</option>
+                            <option value="Primaria incompleta">Primaria incompleta (hasta grado 4°)</option>
+                            <option value="Primaria completa">Primaria completa (5°)</option>
+                            <option value="Bachillerato incompleto">Bachillerato incompleto</option>
+                            <option value="Secundaria">Bachillerato completo</option>
+                            <option value="Técnico">Técnico o tecnológico</option>
+                            <option value="Superior">Universidad o posgrado</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">13. Nombre del Padre</label>
-                        <input type="text" id="p13" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">13. Nombre completo de tu padre o figura paterna</label>
+                        <input type="text" id="p13" placeholder="Escribe N/A si no convive contigo" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">14. Ocupación del Padre</label>
-                        <input type="text" id="p14" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">14. La semana pasada, ¿en qué trabajó tu padre o cómo consiguió dinero tu hogar por su parte?</label>
+                        <select id="p14" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                            <option value="Comercio informal">Comercio informal / Ventas en calle o mercado</option>
+                            <option value="Pescador o agricultor">Pescador / Agricultor / Trabajo en campo</option>
+                            <option value="Mototaxista">Mototaxista / Conductor</option>
+                            <option value="Trabajador doméstico">Trabajador doméstico / Empleado del hogar</option>
+                            <option value="Empleado formal">Empleado formal (empresa, institución pública)</option>
+                            <option value="Negocio propio">Microemprendedor / Negocio propio</option>
+                            <option value="Sin trabajo padre">No trabaja actualmente</option>
+                            <option value="No sabe padre">No sé / No convivo con él</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">15. Nivel Educativo Padre</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">15. ¿Hasta qué grado estudió tu padre?</label>
                         <select id="p15" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Ninguno">Ninguno</option>
-                            <option value="Primaria">Primaria</option>
-                            <option value="Secundaria">Secundaria Completa</option>
-                            <option value="Superior">Técnico / Universitario</option>
+                            <option value="Nunca estudió">Nunca estudió</option>
+                            <option value="Primaria incompleta">Primaria incompleta (hasta grado 4°)</option>
+                            <option value="Primaria completa">Primaria completa (5°)</option>
+                            <option value="Bachillerato incompleto">Bachillerato incompleto</option>
+                            <option value="Secundaria">Bachillerato completo</option>
+                            <option value="Técnico">Técnico o tecnológico</option>
+                            <option value="Superior">Universidad o posgrado</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">16. ¿Cabeza de Hogar?</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">16. El mes pasado, ¿de quién vino la mayor parte del dinero para los gastos de tu hogar?</label>
                         <select id="p16" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Madre">Madre Cabeza de Hogar</option>
-                            <option value="Padre">Padre Cabeza de Hogar</option>
-                            <option value="Ambos">Ambos aportan equitativamente</option>
+                            <option value="Madre">Mi madre</option>
+                            <option value="Padre">Mi padre</option>
+                            <option value="Ambos">Ambos por igual</option>
+                            <option value="Abuelos">Mis abuelos u otro familiar mayor</option>
+                            <option value="Yo u otro joven">Yo mismo/a u otro joven del hogar</option>
+                            <option value="Nadie">Nadie — no hay ingresos estables actualmente</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">17. ¿Víctima Conflicto Armado?</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">17. ¿Ha habido algún momento en que tu familia tuvo que irse de su casa por violencia, amenazas o conflicto armado?</label>
                         <select id="p17" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="No">No registrado</option>
-                            <option value="Si">Sí, cuento con RUV</option>
+                            <option value="No">No</option>
+                            <option value="Si con RUV">Sí, y contamos con registro en el RUV</option>
+                            <option value="Si sin registro">Sí, pero no tenemos registro oficial</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">18. Pertenencia Étnica</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">18. ¿Con qué grupo étnico o cultural se identifica tu familia?</label>
                         <select id="p18" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Afrocolombiano">Afrocolombiano / Negro / Raizal</option>
-                            <option value="Indigena">Indígena</option>
-                            <option value="Mestizo">Mestizo / Otro</option>
+                            <option value="Afrocolombiano">Afrocolombiano / Negro / Raizal / Palenquero</option>
+                            <option value="Indigena">Indígena / Comunidad indígena</option>
+                            <option value="Mestizo">Mestizo / Sin pertenencia étnica específica</option>
+                            <option value="Otro étnico">Otro</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <div>
-                <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">4. Infraestructura Tecnológica</h3>
+                <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">4. Acceso a Tecnología</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">19. Conexión a Internet en Casa</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">19. La última vez que necesitaste internet para una tarea del colegio, ¿desde dónde te conectaste?</label>
                         <select id="p19" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Fijo">Internet Fijo (Banda Ancha)</option>
-                            <option value="Datos">Solo datos móviles / Recargas</option>
-                            <option value="No tiene">No tiene acceso</option>
+                            <option value="Fijo">Internet fijo en casa (WiFi propio o del hogar)</option>
+                            <option value="Datos">Solo datos móviles del celular (recargas)</option>
+                            <option value="Vecino o externo">Internet de un vecino, café o lugar externo</option>
+                            <option value="No tiene">No tengo acceso a internet</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">20. Equipo de Cómputo Propio</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">20. ¿Con qué dispositivo hiciste la última tarea del colegio que requirió tecnología?</label>
                         <select id="p20" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Computador">Sí, computador propio (Mesa/Portátil)</option>
-                            <option value="Celular">No, solo uso mi teléfono celular</option>
-                            <option value="Ninguno">Ninguno, dependo de salas públicas/colegio</option>
+                            <option value="Computador">Computador portátil o de escritorio propio</option>
+                            <option value="Celular">Solo con mi teléfono celular</option>
+                            <option value="Prestado">Computador o tablet prestado (colegio, familia, amigo)</option>
+                            <option value="Ninguno">No tengo dispositivo propio — dependo de salas públicas</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">21. Compartición de Equipos</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">21. La última vez que necesitaste un dispositivo para estudiar, ¿tuviste que esperar a que alguien más lo terminara de usar?</label>
                         <select id="p21" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                             <option value="Exclusivo">Uso exclusivo personal</option>
-                            <option value="Compartido">Compartido con hermanos o padres</option>
+                            <option value="Compartido">Lo comparto con hermanos u otros familiares</option>
+                            <option value="No aplica">No aplica — no tengo dispositivo propio</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <div>
-                <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">5. Perfil y Expectativas Educativas</h3>
+                <h3 class="text-xs font-black text-cyan-400 uppercase tracking-widest border-b border-slate-800 pb-2 mb-4">5. Perfil Académico y Expectativas</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">22. Institución Educativa</label>
-                        <input type="text" id="p22" required placeholder="Ej: IE Max Seidel" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">22. ¿En qué colegio o institución educativa estás?</label>
+                        <input type="text" id="p22" required placeholder="Ej: IE Max Seidel, IE Técnico del Pacífico…" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">23. Grado Actual</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">23. ¿En qué grado estás este año?</label>
                         <select id="p23" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                             <option value="9">Noveno (9°)</option>
                             <option value="10">Décimo (10°)</option>
@@ -235,36 +271,43 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">24. Área de Mayor Dificultad</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">24. En tus últimas notas del año pasado, ¿en qué área sacaste la calificación más baja?</label>
                         <select id="p24" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Matematicas">Matemáticas / Cálculo</option>
-                            <option value="Ciencias">Ciencias Naturales (Física/Química)</option>
-                            <option value="Lectura">Lectura Crítica / Filosofía</option>
+                            <option value="Matematicas">Matemáticas</option>
+                            <option value="Ciencias">Ciencias Naturales (Física / Química)</option>
+                            <option value="Lectura">Lectura Crítica / Español</option>
                             <option value="Ingles">Inglés</option>
+                            <option value="Sociales">Ciencias Sociales / Historia</option>
+                            <option value="No recuerdo">No recuerdo / Obtuve notas similares en todo</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">25. Interés Universitario Principal</label>
-                        <input type="text" id="p25" required placeholder="Ej: Ingeniería de Sistemas / Medicina" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">25. ¿Qué carrera o área universitaria te gustaría estudiar?</label>
+                        <input type="text" id="p25" required placeholder="Ej: Ingeniería de Sistemas, Medicina, Derecho…" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">26. ¿Primer profesional de la familia?</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">26. En tu familia directa (padres y hermanos), ¿alguien ya terminó una carrera universitaria o técnica?</label>
                         <select id="p26" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
-                            <option value="Si">Sí, seré el primero en ir a la Universidad</option>
-                            <option value="No">No, algún familiar ya ingresó o se graduó</option>
+                            <option value="Si familia directa">Sí, al menos uno de mis padres o hermanos tiene título</option>
+                            <option value="Si familiar lejano">Solo algún primo u otro familiar más lejano</option>
+                            <option value="No primero">No, nadie en mi familia directa ha terminado una carrera</option>
+                            <option value="No sabe">No sé con certeza</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">27. Medio de Transporte al Colegio</label>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">27. ¿Cómo llegaste al colegio los últimos días que fuiste presencialmente?</label>
                         <select id="p27" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white">
                             <option value="Caminando">A pie / Caminando</option>
-                            <option value="Moto">Moto / Mototaxi</option>
-                            <option value="Lancha">Lancha / Transporte Fluvial</option>
+                            <option value="Moto">Mototaxi / Moto</option>
+                            <option value="Lancha">Lancha / Transporte fluvial</option>
+                            <option value="Bus">Bus / Chiva / Transporte público</option>
+                            <option value="Bicicleta">Bicicleta</option>
                         </select>
                     </div>
                     <div class="md:col-span-3">
-                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">28. ¿Cuál es tu mayor motivación para formar parte de PROGRAMA-PRI?</label>
-                        <textarea id="p28" rows="2" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white"></textarea>
+                        <label class="block text-xs font-bold text-slate-400 uppercase mb-1">28. Cuéntanos algo concreto que pasó en tu vida o en tu familia que haya cambiado cómo ves tu futuro</label>
+                        <p class="text-xs text-slate-500 mb-2">¿Qué ocurrió exactamente? ¿Cuándo? No hay respuesta correcta — queremos entender tu situación real, no la ideal. Si hay algo difícil, puedes contarlo: eso nos ayuda a ayudarte mejor.</p>
+                        <textarea id="p28" rows="3" placeholder="Cuéntanos con tus propias palabras…" class="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-3 py-2.5 text-white"></textarea>
                     </div>
                 </div>
             </div>

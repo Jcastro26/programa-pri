@@ -145,7 +145,7 @@
     <div class="logo-container">
         <a href="index.html" class="logo-link">
             <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-            <h2>PROGRAMA-PRI</h2>
+            <div><h2>PROGRAMA-PRI</h2><p>El Pacífico Renaciendo con Ingeniería</p></div>
         </a>
     </div>
     <div class="menu-toggle" id="mobile-menu">
@@ -159,9 +159,10 @@
             <li><a href="pre-test.html">PRE-TEST</a></li>
             <li><a href="docentes.html" class="active">Docentes</a></li>
             <li><a href="productos.html">Productos</a></li>
-            <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+            <li><a href="login.html" class="btn-login">Inicia Sesión</a></li>
         </ul>
     </nav>
+    <div id="nav-backdrop"></div>
 </header>
 
 <!-- HERO -->
@@ -418,9 +419,9 @@ async function cargarMentores() {
                 const materiasHTML = materiasArr.map(m => `<span class="materia-tag">${m}</span>`).join('');
 
                 const btnCalificar = esEstudiantePRI
-                    ? `<button class="btn-material" onclick="abrirModalRating('${id}','${d.nombre.replace(/'/g,"\\'")}')">⭐ Calificar</button>`
+                    ? `<button class="btn-material" onclick="abrirModalRating('${id}','${d.nombre.replace(/'/g,"\\'")}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Calificar</button>`
                     : '';
-                const btnMaterial = `<button class="btn-material" onclick="verPerfilCompleto('${id}')">👁 Ver Perfil</button>`;
+                const btnMaterial = `<button class="btn-material" onclick="verPerfilCompleto('${id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Ver Perfil</button>`;
 
                 todosMentores.push({ id, rol: rolLabel, el: null });
 
@@ -637,10 +638,18 @@ cargarMentores();
 </script>
 
 <script>
-    document.getElementById('mobile-menu').addEventListener('click', () => {
-        document.getElementById('mobile-menu').classList.toggle('is-active');
-        document.querySelector('.nav-links').classList.toggle('active');
-    });
+    // Menú móvil — cajón lateral con backdrop
+    (function(){
+        const toggle = document.getElementById('mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        const backdrop = document.getElementById('nav-backdrop');
+        if (!toggle || !navLinks) return;
+        function openMenu(){ toggle.classList.add('is-active'); navLinks.classList.add('active'); if(backdrop) backdrop.classList.add('active'); document.body.style.overflow='hidden'; }
+        function closeMenu(){ toggle.classList.remove('is-active'); navLinks.classList.remove('active'); if(backdrop) backdrop.classList.remove('active'); document.body.style.overflow=''; }
+        toggle.addEventListener('click', () => navLinks.classList.contains('active') ? closeMenu() : openMenu());
+        if(backdrop) backdrop.addEventListener('click', closeMenu);
+        navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    })();
     window.addEventListener('scroll', () => {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;

@@ -1,0 +1,39 @@
+<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="220" fill="#1e1b4b" opacity="0.1"/>
+
+  <!-- Ilustración -->
+  <g transform="scale(0.85) translate(12,10)">
+    <!-- Ingeniería/puente grande -->
+<path d="M20,155 L180,155" stroke="#4f46e5" stroke-width="4" opacity="0.8"/>
+<path d="M20,155 Q100,85 180,155" stroke="#6366f1" stroke-width="3" fill="none" opacity="0.9"/>
+<line x1="50" y1="155" x2="68" y2="112" stroke="#818cf8" stroke-width="2" opacity="0.8"/>
+<line x1="75" y1="155" x2="88" y2="96" stroke="#818cf8" stroke-width="2" opacity="0.8"/>
+<line x1="100" y1="155" x2="100" y2="86" stroke="#a5b4fc" stroke-width="2.5" opacity="0.9"/>
+<line x1="125" y1="155" x2="112" y2="96" stroke="#818cf8" stroke-width="2" opacity="0.8"/>
+<line x1="150" y1="155" x2="132" y2="112" stroke="#818cf8" stroke-width="2" opacity="0.8"/>
+<path d="M20,120 Q100,100 180,120" stroke="#c7d2fe" stroke-width="1.5" fill="none" opacity="0.5"/>
+  </g>
+
+  <!-- Logo PRI -->
+  <image href="../logo.png" x="168" y="6" width="26" height="26"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior -->
+  <rect x="0" y="162" width="200" height="58" fill="#1e1b4b" opacity="0.55"/>
+
+  <!-- Programa PRI -->
+  <text x="100" y="175" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="8"
+        fill="#818cf8" letter-spacing="2" opacity="0.8">PROGRAMA PRI</text>
+  <text x="100" y="186" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="7" font-weight="600"
+        fill="#e0e7ff" letter-spacing="1" opacity="0.8">EL PACÍFICO RENACIENDO CON INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="100" y="202" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="13"
+        fill="#818cf8" letter-spacing="2" opacity="1">INGENIERÍA PRI</text>
+  <text x="100" y="214" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="8" font-weight="600"
+        fill="#e0e7ff" letter-spacing="1" opacity="0.85">Transformando vidas</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#1c3d2a" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Águila harpía -->
+<path d="M75,82 Q65,65 70,50 Q80,38 100,42 Q120,38 130,50 Q135,65 125,82 Q110,92 100,90 Q88,92 75,82 Z" fill="#166534" opacity="0.85"/>
+<path d="M100,42 L100,30" stroke="#14532d" stroke-width="2"/>
+<ellipse cx="100" cy="28" rx="8" ry="6" fill="#1f2937" opacity="0.9"/>
+<path d="M94,26 Q90,22 88,24 Q90,28 94,28 Z" fill="#f59e0b" opacity="0.9"/>
+<circle cx="96" cy="25" r="2" fill="white" opacity="0.9"/>
+<path d="M75,82 Q55,78 45,70 Q55,62 72,68 Z" fill="#15803d" opacity="0.75"/>
+<path d="M125,82 Q145,78 155,70 Q145,62 128,68 Z" fill="#15803d" opacity="0.75"/>
+<path d="M82,85 Q100,92 118,85" stroke="#bbf7d0" stroke-width="1.5" fill="none" opacity="0.6"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#1c3d2a" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#f0fdf4" opacity="0.95">"La educación nos</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#f0fdf4" opacity="0.95">hace libres e iguales"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#bbf7d0" letter-spacing="1" opacity="0.9">— Nelson Mandela</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#bbf7d0" letter-spacing="2" opacity="1">AGUILA HARPÍA</text>
+</svg>

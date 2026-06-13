@@ -1,0 +1,60 @@
+<svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g8bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d2a18"/>
+      <stop offset="50%" stop-color="#1a4a28"/>
+      <stop offset="100%" stop-color="#0a1e10"/>
+    </linearGradient>
+    <radialGradient id="g8fl1" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff6b6b"/>
+      <stop offset="100%" stop-color="#cc2200"/>
+    </radialGradient>
+    <radialGradient id="g8fl2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#ff8800"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="560" fill="url(#g8bg)"/>
+  <!-- Hojas fondo -->
+  <ellipse cx="80" cy="180" rx="40" ry="15" fill="#1e6b30" transform="rotate(-30 80 180)" opacity="0.7"/>
+  <ellipse cx="320" cy="200" rx="45" ry="14" fill="#1e6b30" transform="rotate(25 320 200)" opacity="0.7"/>
+  <ellipse cx="150" cy="320" rx="35" ry="12" fill="#155a28" transform="rotate(-15 150 320)" opacity="0.6"/>
+  <ellipse cx="260" cy="300" rx="38" ry="13" fill="#155a28" transform="rotate(20 260 300)" opacity="0.6"/>
+  <!-- Flor 1 (roja grande) -->
+  <g transform="translate(130, 120)">
+    <ellipse cx="0" cy="-35" rx="20" ry="30" fill="url(#g8fl1)" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-35" rx="20" ry="30" fill="url(#g8fl1)" transform="rotate(60)"/>
+    <ellipse cx="0" cy="-35" rx="20" ry="30" fill="url(#g8fl1)" transform="rotate(120)"/>
+    <ellipse cx="0" cy="-35" rx="20" ry="30" fill="url(#g8fl1)" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-35" rx="20" ry="30" fill="url(#g8fl1)" transform="rotate(240)"/>
+    <ellipse cx="0" cy="-35" rx="20" ry="30" fill="url(#g8fl1)" transform="rotate(300)"/>
+    <circle cx="0" cy="0" r="15" fill="#ffcc00"/>
+  </g>
+  <!-- Flor 2 (amarilla) -->
+  <g transform="translate(270, 150)">
+    <ellipse cx="0" cy="-28" rx="16" ry="24" fill="url(#g8fl2)" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="24" fill="url(#g8fl2)" transform="rotate(72)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="24" fill="url(#g8fl2)" transform="rotate(144)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="24" fill="url(#g8fl2)" transform="rotate(216)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="24" fill="url(#g8fl2)" transform="rotate(288)"/>
+    <circle cx="0" cy="0" r="12" fill="#ff4400"/>
+  </g>
+  <!-- Flor 3 (pequeña, morada) -->
+  <g transform="translate(200, 260)">
+    <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#9b30ff" opacity="0.85" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#9b30ff" opacity="0.85" transform="rotate(60)"/>
+    <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#9b30ff" opacity="0.85" transform="rotate(120)"/>
+    <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#9b30ff" opacity="0.85" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#9b30ff" opacity="0.85" transform="rotate(240)"/>
+    <ellipse cx="0" cy="-22" rx="12" ry="18" fill="#9b30ff" opacity="0.85" transform="rotate(300)"/>
+    <circle cx="0" cy="0" r="10" fill="#ffdd00"/>
+  </g>
+  <!-- Bordes decorativos -->
+  <rect x="18" y="18" width="364" height="524" fill="none" stroke="rgba(100,200,100,0.3)" stroke-width="1" rx="4"/>
+  <rect x="24" y="24" width="352" height="512" fill="none" stroke="rgba(100,200,100,0.15)" stroke-width="0.5" rx="3"/>
+  <!-- Texto -->
+  <text x="200" y="440" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="3">FLORA</text>
+  <text x="200" y="466" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="11" fill="rgba(120,220,120,0.75)" letter-spacing="5">TROPICAL</text>
+  <line x1="100" y1="480" x2="300" y2="480" stroke="rgba(255,94,0,0.6)" stroke-width="1.5"/>
+  <text x="200" y="500" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="2">PROGRAMA-PRI · TUMACO</text>
+</svg>

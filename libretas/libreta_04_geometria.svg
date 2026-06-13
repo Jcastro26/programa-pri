@@ -1,0 +1,128 @@
+<svg viewBox="0 0 400 566" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#041e40"/>
+      <stop offset="100%" stop-color="#063162"/>
+    </linearGradient>
+    <linearGradient id="acento4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF5E00"/>
+      <stop offset="100%" stop-color="#FFB300"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="400" height="566" fill="url(#bg4)"/>
+
+  <!-- === PATRÓN GEOMÉTRICO PACÍFICO-TUMAQUEÑO === -->
+  <!-- Inspirado en tejidos de comunidades afropacíficas y patrones indígenas Awá -->
+
+  <!-- Capa 1: Rombos grandes de fondo -->
+  <g fill="none" stroke="rgba(255,94,0,0.12)" stroke-width="1">
+    <!-- Rombo 1 -->
+    <polygon points="200,40 340,160 200,280 60,160"/>
+    <!-- Rombo 2 -->
+    <polygon points="200,40 360,180 200,320 40,180"/>
+    <!-- Rombo 3 -->
+    <polygon points="200,280 340,400 200,520 60,400"/>
+  </g>
+
+  <!-- Capa 2: Patrón de triángulos entrelazados (estilo Pacífico) -->
+  <!-- Fila 1 -->
+  <g fill="rgba(255,94,0,0.18)" stroke="rgba(255,178,0,0.3)" stroke-width="0.5">
+    <!-- Triángulos arriba izquierda -->
+    <polygon points="30,150 70,150 50,115"/>
+    <polygon points="70,150 110,150 90,115"/>
+    <polygon points="110,150 150,150 130,115"/>
+    <polygon points="150,150 190,150 170,115"/>
+    <polygon points="190,150 230,150 210,115"/>
+    <polygon points="230,150 270,150 250,115"/>
+    <polygon points="270,150 310,150 290,115"/>
+    <polygon points="310,150 350,150 330,115"/>
+    <polygon points="350,150 390,150 370,115"/>
+    <!-- Triángulos invertidos -->
+    <polygon points="50,115 90,115 70,150"/>
+    <polygon points="90,115 130,115 110,150"/>
+    <polygon points="130,115 170,115 150,150"/>
+    <polygon points="170,115 210,115 190,150"/>
+    <polygon points="210,115 250,115 230,150"/>
+    <polygon points="250,115 290,115 270,150"/>
+    <polygon points="290,115 330,115 310,150"/>
+    <polygon points="330,115 370,115 350,150"/>
+  </g>
+
+  <!-- Capa 3: Cruz central con círculos (motivo solar) -->
+  <!-- Cruz -->
+  <rect x="186" y="200" width="28" height="140" rx="4" fill="url(#acento4)" opacity="0.85"/>
+  <rect x="130" y="256" width="140" height="28" rx="4" fill="url(#acento4)" opacity="0.85"/>
+  <!-- Círculo centro -->
+  <circle cx="200" cy="270" r="30" fill="#063162" stroke="url(#acento4)" stroke-width="3"/>
+  <circle cx="200" cy="270" r="20" fill="url(#acento4)" opacity="0.9"/>
+  <circle cx="200" cy="270" r="10" fill="#041e40"/>
+  <circle cx="200" cy="270" r="4" fill="#FFB300"/>
+  <!-- Puntos cardinales -->
+  <circle cx="200" cy="235" r="5" fill="#FFB300"/>
+  <circle cx="200" cy="305" r="5" fill="#FFB300"/>
+  <circle cx="165" cy="270" r="5" fill="#FFB300"/>
+  <circle cx="235" cy="270" r="5" fill="#FFB300"/>
+
+  <!-- Capa 4: Zigzag lateral izquierdo (bordado) -->
+  <polyline points="25,160 35,175 25,190 35,205 25,220 35,235 25,250 35,265 25,280 35,295 25,310 35,325 25,340 35,355 25,370" stroke="#00A896" stroke-width="2" fill="none"/>
+  <polyline points="15,160 25,175 15,190 25,205 15,220 25,235 15,250 25,265 15,280 25,295 15,310 25,325 15,340 25,355 15,370" stroke="rgba(0,168,150,0.4)" stroke-width="1.5" fill="none"/>
+
+  <!-- Zigzag lateral derecho -->
+  <polyline points="375,160 365,175 375,190 365,205 375,220 365,235 375,250 365,265 375,280 365,295 375,310 365,325 375,340 365,355 375,370" stroke="#00A896" stroke-width="2" fill="none"/>
+  <polyline points="385,160 375,175 385,190 375,205 385,220 375,235 385,250 375,265 385,280 375,295 385,310 375,325 385,340 375,355 385,370" stroke="rgba(0,168,150,0.4)" stroke-width="1.5" fill="none"/>
+
+  <!-- Capa 5: Rombo estrella central ornamental -->
+  <g transform="translate(200,270)">
+    <polygon points="0,-55 12,-12 55,0 12,12 0,55 -12,12 -55,0 -12,-12" fill="none" stroke="#FFB300" stroke-width="1" opacity="0.6"/>
+    <polygon points="0,-42 9,-9 42,0 9,9 0,42 -9,9 -42,0 -9,-9" fill="none" stroke="#FF5E00" stroke-width="0.8" opacity="0.4"/>
+  </g>
+
+  <!-- Patrón inferior repetitivo — rombos pequeños -->
+  <g fill="rgba(0,168,150,0.2)" stroke="rgba(0,168,150,0.35)" stroke-width="0.8">
+    <polygon points="60,400 80,420 60,440 40,420"/>
+    <polygon points="100,400 120,420 100,440 80,420"/>
+    <polygon points="140,400 160,420 140,440 120,420"/>
+    <polygon points="180,400 200,420 180,440 160,420"/>
+    <polygon points="220,400 240,420 220,440 200,420"/>
+    <polygon points="260,400 280,420 260,440 240,420"/>
+    <polygon points="300,400 320,420 300,440 280,420"/>
+    <polygon points="340,400 360,420 340,440 320,420"/>
+  </g>
+
+  <!-- Patrón superior repetitivo -->
+  <g fill="rgba(255,178,0,0.12)" stroke="rgba(255,178,0,0.2)" stroke-width="0.8">
+    <polygon points="60,80 80,100 60,120 40,100"/>
+    <polygon points="100,80 120,100 100,120 80,100"/>
+    <polygon points="140,80 160,100 140,120 120,100"/>
+    <polygon points="180,80 200,100 180,120 160,100"/>
+    <polygon points="220,80 240,100 220,120 200,100"/>
+    <polygon points="260,80 280,100 260,120 240,100"/>
+    <polygon points="300,80 320,100 300,120 280,100"/>
+    <polygon points="340,80 360,100 340,120 320,100"/>
+  </g>
+
+  <!-- Bandas -->
+  <rect x="0" y="0" width="400" height="8" fill="#FF5E00"/>
+  <rect x="0" y="8" width="400" height="2" fill="#FFB300" opacity="0.6"/>
+  <rect x="0" y="556" width="400" height="10" fill="#FF5E00"/>
+
+  <!-- Logo -->
+  <rect x="140" y="148" width="120" height="52" rx="4" fill="rgba(4,30,64,0.7)"/>
+  <text x="200" y="175" text-anchor="middle" font-family="Montserrat, Arial Black, sans-serif" font-weight="900" font-size="11" fill="#FFB300" letter-spacing="4">PROGRAMA</text>
+  <text x="200" y="193" text-anchor="middle" font-family="Montserrat, Arial Black, sans-serif" font-weight="900" font-size="16" fill="white" letter-spacing="5">PRI</text>
+
+  <!-- Título -->
+  <rect x="80" y="448" width="240" height="40" rx="4" fill="rgba(4,30,64,0.6)"/>
+  <text x="200" y="465" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="13" fill="white" opacity="0.95">Geometría Ancestral</text>
+  <text x="200" y="482" text-anchor="middle" font-family="Georgia, serif" font-size="8" fill="rgba(255,255,255,0.4)" letter-spacing="1.5">TUMACO · NARIÑO</text>
+
+  <!-- Líneas nombre -->
+  <g stroke="rgba(255,255,255,0.1)" stroke-width="0.8">
+    <line x1="40" y1="510" x2="360" y2="510"/>
+    <line x1="40" y1="528" x2="360" y2="528"/>
+    <line x1="40" y1="546" x2="360" y2="546"/>
+  </g>
+  <text x="200" y="508" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.2)" font-family="Arial, sans-serif">Nombre:</text>
+</svg>

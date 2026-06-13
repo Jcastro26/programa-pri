@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tienda PRI — Productos Tumaqueños</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+/* ── Variables ── */
+:root{
+  --azul:#063162; --azul-deep:#021226; --naranja:#FF5E00;
+  --teal:#38bdf8; --blanco:#f0f4f8; --oro:#ffd700;
+  --fuente-t:'Montserrat',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--azul-deep);color:var(--blanco);font-family:var(--fuente-t);min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+
+/* ── Fondo animado ── */
+#tienda-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  width:100%;height:100%;overflow:hidden;
+}
+#tienda-bg svg{width:100%;height:100%}
+/* contenido sobre el fondo */
+.tienda-header,.tienda-hero,.filtros,.productos-section,.causa-section,footer,
+.cart-overlay,.cart-drawer,.modal-overlay{position:relative;z-index:1}
+/* Luciérnagas */
+@keyframes lucierFly{
+  0%{transform:translate(0,0);opacity:0}
+  20%{opacity:0.9}
+  80%{opacity:0.7}
+  100%{transform:translate(var(--dx),var(--dy));opacity:0}
+}
+@keyframes lucierGlow{
+  0%,100%{filter:blur(1px) brightness(1)}
+  50%{filter:blur(2px) brightness(2.5)}
+}
+.luciernaga{
+  position:fixed;border-radius:50%;
+  width:5px;height:5px;background:#aaff44;
+  animation:lucierFly var(--dur,6s) linear infinite, lucierGlow 1.2s ease-in-out infinite;
+  animation-delay:var(--delay,0s);
+  pointer-events:none;z-index:2;
+}
+/* Estrellas */
+@keyframes twinkle{
+  0%,100%{opacity:0.3}50%{opacity:1}
+}
+.tienda-star{
+  position:fixed;border-radius:50%;background:white;
+  animation:twinkle var(--tdur,2s) ease-in-out infinite;
+  animation-delay:var(--tdelay,0s);
+  pointer-events:none;z-index:2;
+}
+
+/* ── Header ── */
+.tienda-header{
+  position:sticky;top:0;z-index:200;
+  background:rgba(2,18,38,0.97);
+  border-bottom:3px solid var(--naranja);
+  padding:0.9rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  backdrop-filter:blur(12px);
+}
+.header-brand{display:flex;align-items:center;gap:0.85rem}
+.header-icon{width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid var(--naranja)}
+.header-icon img{width:100%;height:100%;object-fit:cover}
+.header-brand-text h1{font-size:1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+.header-brand-text p{font-size:0.55rem;letter-spacing:3px;color:var(--teal)}
+.cart-btn{
+  position:relative;background:rgba(255,94,0,0.15);border:1px solid rgba(255,94,0,0.4);
+  color:var(--naranja);padding:0.6rem 1.2rem;cursor:pointer;font-family:var(--fuente-t);
+  font-size:0.75rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;
+  transition:all 0.2s;
+}
+.cart-btn:hover{background:rgba(255,94,0,0.3)}
+.cart-badge{
+  position:absolute;top:-8px;right:-8px;background:var(--naranja);color:white;
+  border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;
+  font-size:0.65rem;font-weight:900;
+}
+
+/* ── Hero ── */
+.tienda-hero{
+  background:linear-gradient(135deg,#021226 0%,#063162 50%,#0a1e38 100%);
+  padding:4rem 2rem;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.tienda-hero h2{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;letter-spacing:4px;margin-bottom:0.75rem}
+.tienda-hero p{color:rgba(240,244,248,0.6);font-size:0.9rem;max-width:520px;margin:0 auto 1.5rem}
+.badge-tag{
+  display:inline-block;font-size:0.6rem;font-weight:900;letter-spacing:3px;
+  padding:0.3rem 1rem;background:rgba(255,94,0,0.15);
+  border:1px solid rgba(255,94,0,0.4);color:var(--naranja);margin-bottom:1rem;
+}
+
+/* ── Filtros ── */
+.filtros{
+  display:flex;gap:0.75rem;padding:1.5rem 2rem;flex-wrap:wrap;
+  background:rgba(6,49,98,0.2);border-bottom:1px solid rgba(255,255,255,0.06);
+  max-width:1300px;margin:0 auto;
+}
+.filtro-btn{
+  font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;padding:0.5rem 1.2rem;background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.12);color:rgba(240,244,248,0.55);cursor:pointer;
+  transition:all 0.2s;
+}
+.filtro-btn.active,.filtro-btn:hover{
+  background:rgba(255,94,0,0.15);border-color:rgba(255,94,0,0.4);color:var(--naranja);
+}
+
+/* ── Grid de productos ── */
+.productos-section{max-width:1300px;margin:0 auto;padding:2rem}
+.section-title{
+  font-size:1.1rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;
+  color:var(--blanco);margin-bottom:1.5rem;padding-bottom:0.75rem;
+  border-bottom:2px solid rgba(255,94,0,0.3);display:flex;align-items:center;gap:0.75rem;
+}
+.productos-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.5rem;margin-bottom:3rem;
+}
+.prod-card{
+  background:rgba(6,49,98,0.15);border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;cursor:pointer;
+}
+.prod-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 0 1px rgba(255,94,0,0.2)}
+.prod-mockup{
+  position:relative;height:240px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(6,49,98,0.3),rgba(10,26,48,0.6));
+  padding:1rem;overflow:hidden;
+}
+.prod-mockup img,.prod-mockup object{max-height:200px;max-width:100%;object-fit:contain}
+.prod-info{padding:1rem 1.2rem}
+.prod-nombre{font-size:0.85rem;font-weight:900;letter-spacing:1px;margin-bottom:0.25rem}
+.prod-tipo{font-size:0.6rem;font-weight:700;letter-spacing:2.5px;color:var(--teal);text-transform:uppercase;margin-bottom:0.5rem}
+.prod-precio{font-size:1.2rem;font-weight:900;color:var(--naranja);margin-bottom:0.75rem}
+.prod-precio span{font-size:0.65rem;color:rgba(240,244,248,0.4);font-weight:400;margin-left:0.25rem}
+.prod-add-btn{
+  width:100%;font-family:var(--fuente-t);font-size:0.7rem;font-weight:900;letter-spacing:2px;
+  text-transform:uppercase;background:rgba(255,94,0,0.15);border:1px solid rgba(255,94,0,0.4);
+  color:var(--naranja);padding:0.65rem;cursor:pointer;transition:all 0.2s;
+}
+.prod-add-btn:hover{background:var(--naranja);color:white}
+
+/* ── Mockup SVG libreta física ── */
+.libreta-mockup{
+  position:relative;width:160px;height:200px;filter:drop-shadow(6px 8px 12px rgba(0,0,0,0.7));
+}
+/* ── Mockup taza con foto real ──
+   Técnica: foto encima con mix-blend-mode:multiply
+   → blanco de la taza = transparente → el diseño se ve dentro
+   → el contorno oscuro de la taza enmascara lo que sobresale
+*/
+.mockup-taza-real{
+  position:relative;
+  width:190px;
+  margin:8px auto 0;
+  /* isolation:isolate garantiza que mix-blend-mode solo actúe
+     dentro del contenedor, no con el fondo de la página */
+  isolation:isolate;
+}
+/* 1. Diseño: DETRÁS (z-index:1), recortado al cuerpo blanco de la taza.
+   Coordenadas calculadas midiendo taza.png (500x499px):
+   cuerpo blanco (sin asa): cols 120-330 (24%-66%), rows 124-418 (25%-84%)
+   Usamos el cuerpo front sin asa: left=24%, top=25%, w=42%, h=59% */
+.taza-print-clip{
+  position:absolute;
+  top:25%; left:24%;
+  width:42%; height:59%;
+  border-radius:2px 2px 6px 6px;
+  overflow:hidden;
+  z-index:1;
+}
+.taza-print-design{
+  display:block;
+  width:100%; height:100%;
+  object-fit:cover;
+  /* max-height/object-fit override del selector genérico .prod-mockup img */
+  max-height:none !important;
+}
+/* 2. Foto: ENCIMA (z-index:2) con multiply → blanco = transparente */
+.taza-foto-base{
+  display:block;
+  position:relative;
+  z-index:2;
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:unset !important;
+  mix-blend-mode:multiply;
+}
+
+/* ── Mockup totebag con foto real ── */
+.mockup-tote-real{
+  position:relative;
+  width:190px;
+  margin:8px auto 0;
+  isolation:isolate;
+}
+/* Coordenadas medidas en totebag.png (500x500px):
+   cuerpo frente (sin manijas): cols 138-359 (28%-72%), rows 220-440 (44%-88%)
+   → top=44%, left=28%, width=44%, height=44% */
+.tote-print-clip{
+  position:absolute;
+  top:44%; left:28%;
+  width:44%; height:44%;
+  overflow:hidden;
+  border-radius:3px;
+  z-index:1;
+}
+.tote-print-design{
+  display:block;
+  width:100%; height:100%;
+  object-fit:contain;
+  max-height:none !important;
+}
+.tote-foto-base{
+  display:block;
+  position:relative;
+  z-index:2;
+  width:100% !important;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:unset !important;
+  mix-blend-mode:multiply;
+}
+.tote-sombra{
+  position:absolute;bottom:2px;left:10px;right:10px;height:14px;
+  background:radial-gradient(ellipse at 50% 80%,rgba(0,0,0,0.18) 0%,transparent 70%);
+  filter:blur(4px);
+}
+
+/* ── Cart drawer ── */
+.cart-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:400;
+  opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.cart-overlay.open{opacity:1;pointer-events:all}
+.cart-drawer{
+  position:fixed;right:0;top:0;bottom:0;width:min(420px,100vw);
+  background:#021a36;border-left:2px solid rgba(255,94,0,0.3);
+  z-index:401;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  display:flex;flex-direction:column;
+}
+.cart-drawer.open{transform:translateX(0)}
+.cart-head{padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between}
+.cart-head h3{font-size:1rem;font-weight:900;letter-spacing:2px}
+.cart-close{background:none;border:none;color:rgba(240,244,248,0.5);font-size:1.4rem;cursor:pointer;padding:0.25rem;transition:color 0.2s}
+.cart-close:hover{color:var(--naranja)}
+.cart-items{flex:1;overflow-y:auto;padding:1rem 1.5rem}
+.cart-empty{text-align:center;padding:3rem 1rem;color:rgba(240,244,248,0.3);font-size:0.8rem;letter-spacing:2px}
+.cart-item{display:flex;gap:1rem;padding:0.85rem 0;border-bottom:1px solid rgba(255,255,255,0.06);align-items:flex-start}
+.cart-item-img{width:52px;height:64px;background:rgba(6,49,98,0.3);border-radius:4px;overflow:hidden;flex-shrink:0}
+.cart-item-img img{width:100%;height:100%;object-fit:cover}
+.cart-item-info{flex:1}
+.cart-item-nombre{font-size:0.8rem;font-weight:700;margin-bottom:0.25rem}
+.cart-item-tipo{font-size:0.6rem;letter-spacing:2px;color:var(--teal);margin-bottom:0.4rem}
+.cart-item-precio{font-size:0.9rem;font-weight:900;color:var(--naranja)}
+.cart-item-remove{background:none;border:none;color:rgba(240,244,248,0.25);cursor:pointer;font-size:0.8rem;padding:0.2rem;flex-shrink:0}
+.cart-item-remove:hover{color:#ef4444}
+.cart-qty{display:flex;align-items:center;gap:0.5rem;margin-top:0.4rem}
+.qty-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);width:24px;height:24px;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center}
+.qty-num{font-size:0.8rem;font-weight:700;min-width:20px;text-align:center}
+.cart-footer{padding:1.25rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08)}
+.cart-subtotal{display:flex;justify-content:space-between;margin-bottom:1rem}
+.cart-subtotal span{font-size:0.8rem;font-weight:700;letter-spacing:1px}
+.cart-subtotal strong{font-size:1.1rem;font-weight:900;color:var(--naranja)}
+.btn-checkout{
+  width:100%;font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;letter-spacing:2px;
+  text-transform:uppercase;background:var(--naranja);color:white;border:none;
+  padding:1rem;cursor:pointer;transition:background 0.2s;
+  box-shadow:4px 4px 0 rgba(6,49,98,0.6);
+}
+.btn-checkout:hover{background:#e05200}
+
+/* ── Modal checkout ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;
+  display:none;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:#021a36;border:1px solid rgba(255,255,255,0.1);border-top:3px solid var(--naranja);
+  border-radius:8px;width:100%;max-width:540px;padding:2rem;
+}
+.modal-title{font-size:1rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;margin-bottom:1.5rem;color:var(--naranja)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.form-grid.one-col{grid-template-columns:1fr}
+.form-group{display:flex;flex-direction:column;gap:0.4rem}
+.form-group label{font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.5)}
+.form-group input,.form-group select,.form-group textarea{
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);
+  color:var(--blanco);padding:0.65rem 0.85rem;font-family:var(--fuente-t);font-size:0.8rem;
+  transition:border-color 0.2s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+  outline:none;border-color:var(--naranja);
+}
+.form-group select option{background:#021a36}
+.resumen-pedido{background:rgba(6,49,98,0.2);border:1px solid rgba(255,255,255,0.06);padding:1rem;border-radius:6px;margin-bottom:1.5rem}
+.resumen-title{font-size:0.65rem;font-weight:700;letter-spacing:3px;color:var(--teal);margin-bottom:0.75rem}
+.resumen-items{font-size:0.78rem;color:rgba(240,244,248,0.75);line-height:1.8}
+.resumen-total{display:flex;justify-content:space-between;margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid rgba(255,255,255,0.08)}
+.resumen-total span{font-size:0.8rem;font-weight:700}
+.resumen-total strong{font-size:1.1rem;font-weight:900;color:var(--naranja)}
+.pago-info{background:rgba(37,211,102,0.06);border:1px solid rgba(37,211,102,0.2);padding:1rem;border-radius:6px;margin-bottom:1.5rem}
+.pago-info p{font-size:0.78rem;line-height:1.6;color:rgba(240,244,248,0.75)}
+.pago-info strong{color:#25D366}
+.modal-btns{display:flex;gap:0.75rem;flex-wrap:wrap}
+.btn-primary-modal{
+  flex:1;font-family:var(--fuente-t);font-size:0.75rem;font-weight:900;letter-spacing:2px;
+  text-transform:uppercase;background:var(--naranja);color:white;border:none;
+  padding:0.9rem 1.5rem;cursor:pointer;min-width:160px;
+  box-shadow:4px 4px 0 rgba(6,49,98,0.5);
+}
+.btn-primary-modal:hover{background:#e05200}
+.btn-secondary-modal{
+  font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;background:transparent;color:rgba(240,244,248,0.4);
+  border:1px solid rgba(255,255,255,0.12);padding:0.9rem 1.2rem;cursor:pointer;
+}
+.btn-secondary-modal:hover{color:var(--blanco);border-color:rgba(255,255,255,0.3)}
+
+/* ── Confirmación ── */
+.confirmacion{text-align:center;padding:1rem 0}
+.conf-icon{font-size:3rem;margin-bottom:1rem}
+.conf-title{font-size:1.2rem;font-weight:900;letter-spacing:3px;margin-bottom:0.75rem;color:var(--naranja)}
+.conf-text{font-size:0.82rem;color:rgba(240,244,248,0.7);line-height:1.7;margin-bottom:1.5rem}
+.conf-num{font-size:1.1rem;font-weight:900;color:var(--oro);letter-spacing:2px}
+
+/* ── Footer ── */
+/* ── Sección Causa ── */
+.causa-section{position:relative;z-index:1;background:linear-gradient(135deg,rgba(6,49,98,0.92),rgba(2,18,38,0.97));border-top:3px solid rgba(255,94,0,0.3);border-bottom:1px solid rgba(255,255,255,0.06);padding:4rem 2rem;}
+.causa-inner{max-width:1100px;margin:0 auto;text-align:center;}
+.causa-eyebrow{font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:rgba(255,94,0,0.7);margin-bottom:0.75rem;}
+.causa-titulo{font-family:'Montserrat',sans-serif;font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:900;color:#f0f4f8;margin-bottom:1rem;line-height:1.2;}
+.causa-titulo em{color:var(--naranja);font-style:normal;}
+.causa-desc{font-size:0.95rem;color:rgba(240,244,248,0.6);max-width:680px;margin:0 auto 2.5rem;line-height:1.7;}
+.causa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2.5rem;}
+.causa-item{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:1.5rem 1.2rem;text-align:left;transition:border-color 0.25s,transform 0.25s;}
+.causa-item:hover{border-color:rgba(255,94,0,0.25);transform:translateY(-3px);}
+.causa-icono{font-size:1.8rem;margin-bottom:0.75rem;}
+.causa-item h4{font-family:'Montserrat',sans-serif;font-size:0.8rem;font-weight:900;color:#f0f4f8;letter-spacing:1px;text-transform:uppercase;margin-bottom:0.5rem;}
+.causa-item p{font-size:0.8rem;color:rgba(240,244,248,0.5);line-height:1.6;}
+.causa-cta{display:inline-block;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;padding:0.75rem 2rem;background:var(--naranja);color:#fff;text-decoration:none;transition:background 0.2s,transform 0.15s;}
+.causa-cta:hover{background:#e05200;transform:translateY(-2px);}
+footer{background:#010e1e;border-top:1px solid rgba(255,255,255,0.06);padding:2rem;text-align:center}
+footer p{font-size:0.7rem;color:rgba(240,244,248,0.25);letter-spacing:2px}
+footer a{color:rgba(255,94,0,0.6)}
+
+/* ── Envío costo ── */
+.envio-note{font-size:0.72rem;color:rgba(240,244,248,0.45);margin-top:0.4rem}
+
+/* ── Modal detalle de producto ── */
+#modal-detalle{z-index:600;align-items:center}
+.prod-detail-box{
+  background:#041830;border:1px solid rgba(255,255,255,0.1);border-top:3px solid var(--naranja);
+  border-radius:10px;width:100%;max-width:780px;padding:0;overflow:hidden;position:relative;
+}
+.prod-detail-close{
+  position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.07);
+  border:none;color:rgba(240,244,248,0.7);width:32px;height:32px;border-radius:50%;
+  font-size:1rem;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;
+}
+.prod-detail-close:hover{background:var(--naranja);color:#fff}
+.prod-detail-body{display:grid;grid-template-columns:1fr 1.2fr;gap:0}
+.prod-detail-mockup-col{
+  background:linear-gradient(135deg,rgba(6,49,98,0.4),rgba(2,18,38,0.7));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2.5rem 1.5rem;min-height:340px;cursor:default;
+}
+/* Mockup en modal: fluido, máximo 280px, nunca desborda la columna */
+.prod-detail-mockup-col .mockup-taza-real,
+.prod-detail-mockup-col .mockup-tote-real{
+  width: min(280px, 90%) !important;
+  margin: 0 auto !important;
+}
+/* En el modal mostramos el diseño completo sin recortar (contain) */
+.prod-detail-mockup-col .taza-print-design,
+.prod-detail-mockup-col .tote-print-design{
+  object-fit: contain !important;
+}
+.prod-detail-mockup-col .libreta-mockup{width:min(200px,85%);height:auto}
+.prod-detail-info-col{padding:2rem 1.75rem 1.75rem}
+.prod-detail-badge{
+  display:inline-block;font-size:0.6rem;font-weight:900;letter-spacing:3px;
+  text-transform:uppercase;color:var(--naranja);border:1px solid rgba(255,94,0,0.3);
+  padding:0.2rem 0.6rem;margin-bottom:0.75rem;border-radius:2px;
+}
+.prod-detail-nombre{font-size:1.3rem;font-weight:900;letter-spacing:1px;margin-bottom:0.75rem;line-height:1.2}
+.prod-detail-rating{display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem}
+.prod-detail-stars{color:#fbbf24;font-size:1.1rem;letter-spacing:2px}
+.prod-detail-rat-num{font-size:0.85rem;font-weight:900;color:#fbbf24}
+.prod-detail-rat-count{font-size:0.75rem;color:rgba(240,244,248,0.4)}
+.prod-detail-precio{font-size:1.6rem;font-weight:900;color:var(--naranja);margin-bottom:1.25rem}
+.prod-detail-precio span{font-size:0.75rem;color:rgba(240,244,248,0.35);font-weight:400;margin-left:4px}
+.prod-detail-specs h4{
+  font-size:0.6rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;
+  color:var(--teal);margin-bottom:0.6rem;
+}
+.prod-detail-specs-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1rem;margin-bottom:1.25rem}
+.spec-item{font-size:0.75rem;color:rgba(240,244,248,0.65);display:flex;gap:0.4rem;align-items:baseline}
+.spec-item::before{content:"·";color:var(--naranja);flex-shrink:0}
+.prod-detail-add-btn{
+  width:100%;font-family:var(--fuente-t);font-size:0.75rem;font-weight:900;letter-spacing:2px;
+  text-transform:uppercase;background:var(--naranja);color:white;border:none;
+  padding:0.9rem;cursor:pointer;box-shadow:4px 4px 0 rgba(0,0,0,0.4);
+  transition:background 0.2s,transform 0.1s;
+}
+.prod-detail-add-btn:hover{background:#e05200;transform:translateY(-1px)}
+.prod-detail-add-btn:active{transform:translateY(0)}
+/* Reseñas */
+.prod-detail-reviews{
+  border-top:1px solid rgba(255,255,255,0.07);padding:1.5rem 1.75rem;
+}
+.prod-detail-reviews h4{
+  font-size:0.6rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;
+  color:var(--teal);margin-bottom:1rem;
+}
+.review-card{
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  padding:0.9rem 1rem;margin-bottom:0.6rem;border-radius:4px;
+}
+.review-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem}
+.review-autor{font-size:0.75rem;font-weight:700;color:var(--blanco)}
+.review-stars{color:#fbbf24;font-size:0.85rem}
+.review-fecha{font-size:0.65rem;color:rgba(240,244,248,0.3)}
+.review-texto{font-size:0.78rem;color:rgba(240,244,248,0.65);line-height:1.5;font-style:italic}
+/* Formulario nueva reseña */
+.review-form-wrap{border-top:1px solid rgba(255,255,255,0.07);margin-top:0.75rem;padding-top:0.25rem}
+.review-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.5rem}
+.review-form-grid input,.review-form-wrap textarea{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);
+  color:var(--blanco);padding:0.5rem 0.7rem;font-family:var(--fuente-t);font-size:0.75rem;
+  border-radius:3px;width:100%;
+}
+.review-form-wrap textarea{resize:vertical;min-height:70px;margin-bottom:0.5rem;display:block}
+.review-form-grid input:focus,.review-form-wrap textarea:focus{outline:none;border-color:var(--naranja)}
+.review-stars-sel{display:flex;align-items:center;gap:3px;margin-bottom:0.5rem}
+.rstar{font-size:1.4rem;cursor:pointer;color:rgba(240,244,248,0.3);transition:color 0.15s,transform 0.1s}
+.rstar:hover{transform:scale(1.2);color:#fbbf24}
+.review-submit-btn{
+  font-family:var(--fuente-t);font-size:0.7rem;font-weight:900;letter-spacing:2px;
+  text-transform:uppercase;background:var(--naranja);color:#fff;border:none;
+  padding:0.65rem 1.5rem;cursor:pointer;border-radius:2px;transition:background 0.2s;
+}
+.review-submit-btn:hover{background:#e05200}
+.review-submit-btn:disabled{background:rgba(255,255,255,0.2);cursor:not-allowed}
+.review-invite{font-size:0.72rem;color:rgba(240,244,248,0.4);margin-top:0.6rem}
+.review-invite a{color:var(--naranja);font-weight:700}
+@media(max-width:480px){.review-form-grid{grid-template-columns:1fr}}
+/* Cursor en mockup para indicar que es clickeable */
+.prod-mockup{cursor:pointer;transition:opacity 0.2s}
+.prod-mockup:hover{opacity:0.88}
+.prod-mockup-hint{
+  font-size:0.6rem;color:rgba(240,244,248,0.3);text-align:center;
+  padding:0.3rem 0 0;letter-spacing:1px;
+}
+
+@media(max-width:640px){
+  .form-grid{grid-template-columns:1fr}
+  .tienda-header{padding:0.75rem 1rem}
+  .prod-detail-body{grid-template-columns:1fr}
+  .prod-detail-mockup-col{min-height:220px;padding:1.5rem}
+  .prod-detail-mockup-col .mockup-taza-real,
+  .prod-detail-mockup-col .mockup-tote-real{width:180px !important}
+}
+</style>
+<!-- EmailJS para confirmaciones de pedido -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // Configura con tu cuenta EmailJS: https://www.emailjs.com
+  // Service ID, Template ID y Public Key van aquí:
+  window.EMAILJS_SERVICE  = 'service_pri';       // reemplaza con tu service ID
+  window.EMAILJS_TEMPLATE = 'template_pedido';   // reemplaza con tu template ID
+  window.EMAILJS_PUBKEY   = 'YOUR_PUBLIC_KEY';   // reemplaza con tu public key
+  if(window.emailjs && window.EMAILJS_PUBKEY !== 'YOUR_PUBLIC_KEY'){
+    emailjs.init({ publicKey: window.EMAILJS_PUBKEY });
+  }
+</script>
+</head>
+<body>
+
+<!-- ==================== FONDO ANIMADO TUMACO ==================== -->
+<div id="tienda-bg" aria-hidden="true">
+<svg id="bg-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="skyDay" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" stop-color="#1a4a8a"/>
+      <stop offset="60%" stop-color="#063162"/>
+      <stop offset="100%" stop-color="#021226"/>
+    </radialGradient>
+    <radialGradient id="skyNight" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" stop-color="#010810"/>
+      <stop offset="60%" stop-color="#020d20"/>
+      <stop offset="100%" stop-color="#000508"/>
+    </radialGradient>
+    <radialGradient id="skySunset" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#ff8c42"/>
+      <stop offset="40%" stop-color="#c43c00"/>
+      <stop offset="100%" stop-color="#021226"/>
+    </radialGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffbe0" stop-opacity="1"/>
+      <stop offset="40%" stop-color="#ffd700" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#FF5E00" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e8f4ff"/>
+      <stop offset="60%" stop-color="#b8d4f0" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#b8d4f0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur6"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+
+  <!-- Cielo fondo (cambia con JS) -->
+  <rect id="sky-rect" width="1440" height="900" fill="url(#skyDay)"/>
+
+  <!-- Resplandor crepuscular (sunset glow) -->
+  <ellipse id="sunset-glow" cx="720" cy="480" rx="500" ry="200" fill="#FF5E00" opacity="0" filter="url(#blur6)"/>
+
+  <!-- Sol -->
+  <g id="sol-group">
+    <circle id="sol-halo" cx="720" cy="160" r="100" fill="url(#sunGlow)" opacity="0.5"/>
+    <circle id="sol-core" cx="720" cy="160" r="36" fill="#fffbe0"/>
+    <circle cx="720" cy="160" r="28" fill="#ffd700"/>
+  </g>
+
+  <!-- Luna -->
+  <g id="luna-group" opacity="0">
+    <circle id="luna-halo" cx="720" cy="130" r="70" fill="url(#moonGlow)" opacity="0.4"/>
+    <circle cx="720" cy="130" r="28" fill="#d8eaff"/>
+    <circle cx="735" cy="123" r="23" fill="#021226"/><!-- crescent -->
+  </g>
+
+  <!-- Arco del Puente El Pindo / Tumaco (silueta) -->
+  <g id="arco-tumaco" opacity="0.7">
+    <!-- Agua -->
+    <rect x="0" y="760" width="1440" height="140" fill="#021830" opacity="0.85"/>
+    <!-- Reflejo agua ondas -->
+    <path d="M 0,778 Q 120,770 240,778 Q 360,786 480,778 Q 600,770 720,778 Q 840,786 960,778 Q 1080,770 1200,778 Q 1320,786 1440,778 L1440,800 L0,800Z" fill="#0a2a4a" opacity="0.5"/>
+    <path d="M 0,790 Q 180,784 360,790 Q 540,796 720,790 Q 900,784 1080,790 Q 1260,796 1440,790 L1440,810 L0,810Z" fill="#051828" opacity="0.4"/>
+    <!-- Tierra / costa -->
+    <path d="M 0,755 Q 200,748 350,752 Q 450,754 500,750 Q 600,744 700,748 Q 780,750 900,746 Q 1050,742 1200,750 Q 1320,754 1440,748 L1440,900 L0,900 Z" fill="#010e1e"/>
+    <!-- Arco principal -->
+    <path d="M 480,755 Q 720,580 960,755" fill="none" stroke="#1a3a5c" stroke-width="22" stroke-linecap="round" opacity="0.9"/>
+    <path d="M 480,755 Q 720,580 960,755" fill="none" stroke="#253a5a" stroke-width="12" stroke-linecap="round" opacity="0.7"/>
+    <!-- Torres del puente -->
+    <rect x="490" y="665" width="18" height="92" fill="#1a3a5c"/>
+    <rect x="932" y="665" width="18" height="92" fill="#1a3a5c"/>
+    <!-- Cables -->
+    <line x1="499" y1="670" x2="680" y2="752" stroke="#1a3a5c" stroke-width="2" opacity="0.6"/>
+    <line x1="499" y1="670" x2="600" y2="752" stroke="#1a3a5c" stroke-width="1.5" opacity="0.5"/>
+    <line x1="941" y1="670" x2="760" y2="752" stroke="#1a3a5c" stroke-width="2" opacity="0.6"/>
+    <line x1="941" y1="670" x2="840" y2="752" stroke="#1a3a5c" stroke-width="1.5" opacity="0.5"/>
+    <!-- Palmeras silueta izquierda -->
+    <line x1="130" y1="755" x2="130" y2="680" stroke="#0a1e14" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 130,680 Q 100,660 75,645 Q 110,668 130,680" fill="#0a1e14"/>
+    <path d="M 130,680 Q 160,655 182,642 Q 148,668 130,680" fill="#0a1e14"/>
+    <path d="M 130,680 Q 118,650 115,628 Q 125,660 130,680" fill="#0a1e14"/>
+    <!-- Palmeras silueta derecha -->
+    <line x1="1310" y1="755" x2="1310" y2="678" stroke="#0a1e14" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 1310,678 Q 1280,660 1258,645 Q 1292,668 1310,678" fill="#0a1e14"/>
+    <path d="M 1310,678 Q 1340,655 1362,642 Q 1328,668 1310,678" fill="#0a1e14"/>
+    <path d="M 1310,678 Q 1298,650 1295,628 Q 1305,660 1310,678" fill="#0a1e14"/>
+    <!-- Edificios/casas silueta -->
+    <rect x="220" y="720" width="35" height="38" fill="#060f1c"/>
+    <rect x="260" y="730" width="25" height="28" fill="#060f1c"/>
+    <rect x="290" y="718" width="40" height="40" fill="#060f1c"/>
+    <rect x="1100" y="722" width="32" height="36" fill="#060f1c"/>
+    <rect x="1138" y="732" width="22" height="26" fill="#060f1c"/>
+    <rect x="1165" y="716" width="38" height="42" fill="#060f1c"/>
+    <!-- Luces de ventanas (noche) -->
+    <rect id="win1" x="226" y="726" width="6" height="5" fill="#ffd700" opacity="0"/>
+    <rect id="win2" x="296" y="724" width="6" height="5" fill="#ffd700" opacity="0"/>
+    <rect id="win3" x="308" y="736" width="6" height="5" fill="#ffd700" opacity="0"/>
+    <rect id="win4" x="1106" y="728" width="6" height="5" fill="#ffd700" opacity="0"/>
+    <rect id="win5" x="1172" y="722" width="6" height="5" fill="#ffd700" opacity="0"/>
+  </g>
+
+  <!-- Reflejo del sol/luna en el agua -->
+  <ellipse id="reflejo" cx="720" cy="800" rx="80" ry="18" fill="#ffd700" opacity="0" filter="url(#blur3)"/>
+</svg>
+</div>
+
+<!-- ==================== HEADER ==================== -->
+<header class="tienda-header">
+  <a href="ppri.html" class="header-brand">
+    <div class="header-icon"><img src="logo.png" alt="PRI" onerror="this.outerHTML='<span style=\'font-weight:900;font-size:1.1rem;color:#FF5E00;\'>PRI</span>'"></div>
+    <div class="header-brand-text"><h1>TIENDA PRI</h1><p>Tumaco, Nariño — Colombia</p></div>
+  </a>
+  <button class="cart-btn" onclick="toggleCart()">
+    🛒 Carrito
+    <span class="cart-badge" id="cart-badge">0</span>
+  </button>
+</header>
+
+<!-- ==================== HERO ==================== -->
+<section class="tienda-hero">
+  <span class="badge-tag">TIENDA OFICIAL</span>
+  <h2>PRODUCTOS PRI</h2>
+  <p>Libretas tumaqueñas, tazas y totebags con diseños únicos del Pacífico. Cada compra apoya la educación en Tumaco.</p>
+</section>
+
+<!-- ==================== FILTROS ==================== -->
+<div class="filtros" id="filtros">
+  <button class="filtro-btn active" onclick="filtrar('todos',this)">TODOS</button>
+  <button class="filtro-btn" onclick="filtrar('libreta',this)">LIBRETAS</button>
+  <button class="filtro-btn" onclick="filtrar('taza',this)">TAZAS</button>
+  <button class="filtro-btn" onclick="filtrar('totebag',this)">TOTEBAGS</button>
+</div>
+
+<!-- ==================== PRODUCTOS ==================== -->
+<div class="productos-section" id="productos-section">
+  <!-- Se llena por JS -->
+</div>
+
+<!-- ==================== CART DRAWER ==================== -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-head">
+    <h3>TU CARRITO</h3>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <p class="cart-empty">Tu carrito está vacío.<br>¡Agrega algo!</p>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-subtotal">
+      <span>SUBTOTAL</span>
+      <strong id="cart-total">$0</strong>
+    </div>
+    <p class="envio-note">+ Envío calculado en el checkout</p>
+    <button class="btn-checkout" onclick="abrirCheckout()" id="btn-checkout" disabled>PROCEDER AL PAGO</button>
+  </div>
+</div>
+
+<!-- ==================== MODAL CHECKOUT ==================== -->
+<div class="modal-overlay" id="modal-checkout">
+  <div class="modal-box">
+    <div id="checkout-step-1">
+      <p class="modal-title">📦 Datos de Envío</p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre completo*</label>
+          <input type="text" id="ch-nombre" placeholder="Tu nombre">
+        </div>
+        <div class="form-group">
+          <label>Teléfono / WhatsApp*</label>
+          <input type="tel" id="ch-tel" placeholder="+57 300 000 0000">
+        </div>
+        <div class="form-group">
+          <label>Correo electrónico*</label>
+          <input type="email" id="ch-email" placeholder="correo@ejemplo.com">
+        </div>
+        <div class="form-group">
+          <label>Departamento</label>
+          <input type="text" id="ch-dpto" placeholder="Ej: Nariño">
+        </div>
+        <div class="form-group">
+          <label>Ciudad / Municipio*</label>
+          <input type="text" id="ch-ciudad" placeholder="Ej: Tumaco">
+        </div>
+        <div class="form-group">
+          <label>Barrio / Sector</label>
+          <input type="text" id="ch-barrio" placeholder="Nombre del barrio">
+        </div>
+      </div>
+      <div class="form-grid one-col" style="margin-bottom:1rem">
+        <div class="form-group">
+          <label>Dirección completa*</label>
+          <input type="text" id="ch-dir" placeholder="Calle, carrera, número, piso...">
+        </div>
+        <div class="form-group">
+          <label>Notas adicionales</label>
+          <textarea id="ch-notas" rows="2" placeholder="Indicaciones para el envío, color preferido, etc."></textarea>
+        </div>
+      </div>
+      <!-- Costo de envío -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);padding:1.2rem 1.25rem;border-radius:6px;margin:1.25rem 0">
+        <p style="font-size:0.65rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:1rem">COSTO DE ENVÍO</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;padding-bottom:0.85rem">
+          <div>
+            <p style="font-size:0.82rem;font-weight:700;color:rgba(240,244,248,0.8)">Todo el país</p>
+            <p style="font-size:0.68rem;color:rgba(240,244,248,0.4);margin-top:0.3rem">Servientrega / TCC · 3-8 días hábiles</p>
+          </div>
+          <strong style="font-size:1.1rem;color:var(--naranja)">$23.000</strong>
+        </div>
+        <p style="font-size:0.68rem;color:rgba(240,244,248,0.3);border-top:1px solid rgba(255,255,255,0.06);padding-top:0.75rem;line-height:1.5">
+          El costo de envío es único sin importar la cantidad de productos. Tumaco y municipios del Pacífico reciben en 1-3 días.
+        </p>
+      </div>
+      <!-- Resumen -->
+      <div class="resumen-pedido">
+        <p class="resumen-title">RESUMEN DEL PEDIDO</p>
+        <div class="resumen-items" id="ch-resumen-items"></div>
+        <div class="resumen-total">
+          <span>TOTAL + ENVÍO (aprox.)</span>
+          <strong id="ch-total-display">$0</strong>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-secondary-modal" onclick="cerrarCheckout()">← Volver</button>
+        <button class="btn-primary-modal" onclick="irAPago()">CONTINUAR AL PAGO →</button>
+      </div>
+    </div>
+
+    <div id="checkout-step-2" style="display:none">
+      <p class="modal-title">💳 Instrucciones de Pago</p>
+      <div class="pago-info">
+        <p><strong>Nequi / Daviplata:</strong></p>
+        <p style="margin:0.4rem 0 0.8rem">📱 <strong>+57 318 355 3653</strong><br>A nombre de: <strong>José Luis Castro Góngora</strong></p>
+        <p><strong>Bancolombia (transferencia):</strong></p>
+        <p style="margin:0.4rem 0">Cuenta de Ahorros: <strong>069-XXXXXXXXXX</strong><br>
+        Titular: José Luis Castro Góngora · CC: XXXXXXXXXX</p>
+      </div>
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1rem;border-radius:6px;margin-bottom:1.25rem">
+        <p style="font-size:0.78rem;color:rgba(240,244,248,0.75);line-height:1.6">
+          1. Realiza el pago por el monto exacto.<br>
+          2. Envía el comprobante al WhatsApp <strong>+57 318 355 3653</strong> con tu nombre y número de pedido.<br>
+          3. Recibirás confirmación en máx. 24 horas y el pedido se procesará de inmediato.
+        </p>
+      </div>
+      <div class="resumen-pedido">
+        <p class="resumen-title">MONTO A PAGAR</p>
+        <div class="resumen-items" id="ch-resumen-items2"></div>
+        <div class="resumen-total">
+          <span>TOTAL</span>
+          <strong id="ch-total-display2" style="font-size:1.4rem">$0</strong>
+        </div>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-secondary-modal" onclick="volverADatos()">← Datos</button>
+        <button class="btn-primary-modal" onclick="confirmarPedido()">✅ CONFIRMAR PEDIDO</button>
+      </div>
+    </div>
+
+    <div id="checkout-step-3" style="display:none">
+      <div class="confirmacion">
+        <div class="conf-icon">🎉</div>
+        <p class="conf-title">¡PEDIDO REGISTRADO!</p>
+        <p class="conf-text">
+          Tu pedido ha sido registrado con el número:<br>
+          <strong class="conf-num" id="conf-num-pedido">PRI-0000</strong><br><br>
+          Recuerda enviar el comprobante de pago al WhatsApp<br>
+          <strong style="color:#25D366">+57 318 355 3653</strong><br>
+          indicando tu nombre y el número de pedido.<br><br>
+          ¡Gracias por apoyar el Programa PRI y la educación tumaqueña! 🌊
+        </p>
+        <button class="btn-primary-modal" onclick="cerrarCheckout();limpiarCarrito()" style="width:100%">CERRAR Y SEGUIR COMPRANDO</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL DETALLE PRODUCTO ==================== -->
+<div class="modal-overlay" id="modal-detalle" onclick="cerrarDetalle()">
+  <div class="prod-detail-box" onclick="event.stopPropagation()">
+    <button class="prod-detail-close" onclick="cerrarDetalle()">✕</button>
+
+    <div class="prod-detail-body">
+      <!-- Mockup ampliado -->
+      <div class="prod-detail-mockup-col" id="modal-detalle-mockup">
+        <!-- Se llena por JS -->
+      </div>
+
+      <!-- Info del producto -->
+      <div class="prod-detail-info-col">
+        <span class="prod-detail-badge" id="modal-detalle-tipo"></span>
+        <h2 class="prod-detail-nombre" id="modal-detalle-nombre"></h2>
+
+        <div class="prod-detail-rating">
+          <span class="prod-detail-stars" id="modal-detalle-stars">★★★★★</span>
+          <span class="prod-detail-rat-num" id="modal-detalle-rat-num">4.9</span>
+          <span class="prod-detail-rat-count" id="modal-detalle-rat-count">(12 reseñas)</span>
+        </div>
+
+        <div class="prod-detail-precio" id="modal-detalle-precio"></div>
+
+        <div class="prod-detail-specs">
+          <h4>Características y Dimensiones</h4>
+          <div class="prod-detail-specs-grid" id="modal-detalle-specs"></div>
+        </div>
+
+        <button class="prod-detail-add-btn" id="modal-detalle-add-btn">+ AGREGAR AL CARRITO</button>
+      </div>
+    </div>
+
+    <!-- Reseñas -->
+    <div class="prod-detail-reviews">
+      <h4>Reseñas de compradores</h4>
+      <div id="modal-detalle-reviews"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SECCIÓN CAUSA ==================== -->
+<section class="causa-section">
+  <div class="causa-inner">
+    <p class="causa-eyebrow">¿Por qué comprar aquí?</p>
+    <h2 class="causa-titulo">Cada compra <em>sostiene un sueño</em></h2>
+    <p class="causa-desc">El Programa PRI lleva ingeniería, ciencia y esperanza a jóvenes de Tumaco y el Pacífico colombiano. Nuestros productos son más que merchandise — son la economía que hace posible el programa.</p>
+    <div class="causa-grid">
+      <div class="causa-item">
+        <div class="causa-icono">📚</div>
+        <h4>Materiales educativos</h4>
+        <p>Cada venta costea libretas, formularios y kits de geometría para los estudiantes del programa.</p>
+      </div>
+      <div class="causa-item">
+        <div class="causa-icono">🎓</div>
+        <h4>Becas y retos</h4>
+        <p>Financiamos los premios de la Economía de Puntos: mercados familiares y sesiones de mentoría.</p>
+      </div>
+      <div class="causa-item">
+        <div class="causa-icono">🌊</div>
+        <h4>Identidad del Pacífico</h4>
+        <p>Cada diseño celebra la cultura, el territorio y la biodiversidad de Tumaco y el litoral nariñense.</p>
+      </div>
+      <div class="causa-item">
+        <div class="causa-icono">⚙️</div>
+        <h4>Sostenibilidad</h4>
+        <p>Sin patrocinadores externos, el programa vive de lo que su comunidad crea y compra. Tú eres parte.</p>
+      </div>
+    </div>
+    <a href="#productos-section" class="causa-cta">Ver productos →</a>
+  </div>
+</section>
+
+<footer>
+  <p>PROGRAMA-PRI · Tumaco, Nariño · <a href="ppri.html">Sobre Nosotros</a> · ig: <a href="https://instagram.com/prog.ramapri" target="_blank">@prog.ramapri</a></p>
+</footer>
+
+<!-- ==================== FIREBASE ==================== -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+  authDomain:"proyecto-pri-81fd5.firebaseapp.com",
+  projectId:"proyecto-pri-81fd5",
+  appId:"1:876748063075:web:6e075f73a385bb804e5356"
+});
+const db = getFirestore(app);
+window._db = db;
+window._addDoc = addDoc;
+window._collection = collection;
+window._serverTimestamp = serverTimestamp;
+</script>
+
+<!-- ==================== APP JS ==================== -->
+<script>
+// ── Catálogo de productos ──────────────────────────────
+const LIBRETAS = [
+  {id:'l01',tipo:'libreta',nombre:'El Morro',desc:'La Peña del Morro con vegetación verde y texturas rocosas.',precio:28000,svg:'libretas/libreta_01_morro.svg'},
+  {id:'l02',tipo:'libreta',nombre:'Ballenas del Pacífico',desc:'Ballena jorobada minimalista en océano teal.',precio:28000,svg:'libretas/libreta_02_ballenas.svg'},
+  {id:'l03',tipo:'libreta',nombre:'Manglar',desc:'Arcos de raíces de mangle en degradado naranja.',precio:28000,svg:'libretas/libreta_03_manglar.svg'},
+  {id:'l04',tipo:'libreta',nombre:'Geometría Afropacífica',desc:'Patrones afropacíficos en azul marino.',precio:28000,svg:'libretas/libreta_04_geometria.svg'},
+  {id:'l05',tipo:'libreta',nombre:'Atardecer Tumaqueño',desc:'Cielo cálido con siluetas de Tumaco al anochecer.',precio:28000,svg:'libretas/libreta_05_atardecer.svg'},
+  {id:'l06',tipo:'libreta',nombre:'Pesca del Pacífico',desc:'Piragua bajo luna llena en el océano.',precio:28000,svg:'libretas/libreta_06_pesca.svg'},
+  {id:'l07',tipo:'libreta',nombre:'Marimba',desc:'Instrumento tradicional sobre fondo violeta profundo.',precio:28000,svg:'libretas/libreta_07_marimba.svg'},
+  {id:'l08',tipo:'libreta',nombre:'Flora Tropical',desc:'Flores del Pacífico en verde selva.',precio:28000,svg:'libretas/libreta_08_flores.svg'},
+  {id:'l09',tipo:'libreta',nombre:'Noche Tumaqueña',desc:'Estrellas y luna sobre la silueta de la ciudad.',precio:28000,svg:'libretas/libreta_09_noche_estrellada.svg'},
+  {id:'l10',tipo:'libreta',nombre:'Ingeniería',desc:'Engranajes y cuadrícula de planos en azul tech.',precio:28000,svg:'libretas/libreta_10_ingenieria.svg'},
+  {id:'l11',tipo:'libreta',nombre:'Tortuga Marina',desc:'Tortuga caguama bajo el azul profundo.',precio:28000,svg:'libretas/libreta_11_tortuga.svg'},
+  {id:'l12',tipo:'libreta',nombre:'Libertad',desc:'Águila en vuelo al amanecer sobre montañas.',precio:28000,svg:'libretas/libreta_12_aguila.svg'},
+  {id:'l13',tipo:'libreta',nombre:'Ondas del Pacífico',desc:'Círculos concéntricos de mar en azul marino.',precio:28000,svg:'libretas/libreta_13_ondas.svg'},
+  {id:'l14',tipo:'libreta',nombre:'Colibrí',desc:'Colibrí metálico en vuelo sobre fondo nocturno.',precio:28000,svg:'libretas/libreta_14_colibri.svg'},
+  {id:'l15',tipo:'libreta',nombre:'Afropacífico',desc:'Patrón kente y símbolo adinkra en rojo, amarillo y verde.',precio:28000,svg:'libretas/libreta_15_afropacifico.svg'},
+];
+
+// 20 tazas con colores de diseño distintos
+const TAZAS_COLORES = [
+  {color:'#063162',text:'#ffffff',accent:'#FF5E00',nombre:'Azul Profundo'},
+  {color:'#FF5E00',text:'#ffffff',accent:'#063162',nombre:'Naranja Pacífico'},
+  {color:'#0d2a18',text:'#90ee90',accent:'#25D366',nombre:'Verde Mangle'},
+  {color:'#1a0a2e',text:'#d4b8ff',accent:'#9b30ff',nombre:'Violeta Noche'},
+  {color:'#003a5c',text:'#38bdf8',accent:'#ffffff',nombre:'Océano'},
+  {color:'#2d0d3a',text:'#ffd700',accent:'#ff8800',nombre:'Marimba Gold'},
+  {color:'#0d0d0d',text:'#ffffff',accent:'#FF5E00',nombre:'Noche Clásica'},
+  {color:'#8b0000',text:'#ffd700',accent:'#006622',nombre:'Afro Kente'},
+  {color:'#001a2e',text:'#00f0ff',accent:'#0080ff',nombre:'Cyan Tech'},
+  {color:'#4a1a0a',text:'#ffa060',accent:'#ff4400',nombre:'Atardecer'},
+  {color:'#1a3a00',text:'#90ff60',accent:'#00cc44',nombre:'Selva'},
+  {color:'#2a0a3a',text:'#ff80c0',accent:'#ff3366',nombre:'Colibrí Rosa'},
+  {color:'#05101e',text:'#fffce0',accent:'#ffd700',nombre:'Luna & Estrellas'},
+  {color:'#3d1a00',text:'#ffe0b0',accent:'#cc7700',nombre:'Cacao'},
+  {color:'#001830',text:'#60c0ff',accent:'#0050a0',nombre:'Bahía Azul'},
+  {color:'#1a1a00',text:'#ffee80',accent:'#ffcc00',nombre:'Sol Tropical'},
+  {color:'#2a1040',text:'#cc88ff',accent:'#8800ff',nombre:'Galaxia'},
+  {color:'#003030',text:'#60ffee',accent:'#00bbaa',nombre:'Tortuga Teal'},
+  {color:'#1e0a00',text:'#ff9060',accent:'#cc4400',nombre:'Fuego'},
+  {color:'#ffffff',text:'#063162',accent:'#FF5E00',nombre:'Blanco Puro'},
+];
+
+const TAZAS_NOMBRES = ['El Morro','Pacífico Azul','Manglar','Atardecer','Noche Estrellada','Marimba','Kente','Colibrí','Ingeniería','Tortuga','Águila','Galaxia','Afropacífico','Cacao','Sol Tropical','Pesca','Flores','Naranja PRI','Blanco Clásico','Océano'];
+const TAZAS = TAZAS_COLORES.map((t,i)=>({
+  id:`tz${String(i+1).padStart(2,'0')}`,tipo:'taza',
+  nombre:`Taza ${TAZAS_NOMBRES[i]||t.nombre}`,
+  desc:`Taza cerámica 350ml. Diseño ${TAZAS_NOMBRES[i]||t.nombre} del Pacífico.`,
+  precio:22000,
+  svg:`tazas/taza_${String(i+1).padStart(2,'0')}.svg`,
+  color:t.color,text:t.text,accent:t.accent
+}));
+
+const TOTEBAGS = [
+  {id:'tb01',tipo:'totebag',nombre:'Totebag El Morro',       desc:'Tela blanca 38×42cm. Serigrafía El Morro.',        precio:40000,svg:'totebags/totebag_01.svg'},
+  {id:'tb02',tipo:'totebag',nombre:'Totebag Manglar',        desc:'Tela beige 38×42cm. Serigrafía Manglar.',          precio:40000,svg:'totebags/totebag_02.svg'},
+  {id:'tb03',tipo:'totebag',nombre:'Totebag Afropacífico',   desc:'Tela blanca 38×42cm. Franjas kente serigrafía.',   precio:40000,svg:'totebags/totebag_03.svg'},
+  {id:'tb04',tipo:'totebag',nombre:'Totebag Atardecer',      desc:'Tela beige 38×42cm. Atardecer tumaqueño.',         precio:40000,svg:'totebags/totebag_04.svg'},
+  {id:'tb05',tipo:'totebag',nombre:'Totebag PRI Naranja',    desc:'Tela blanca 38×42cm. Logo PRI naranja.',           precio:40000,svg:'totebags/totebag_05.svg'},
+  {id:'tb06',tipo:'totebag',nombre:'Totebag Océano',         desc:'Tela beige 38×42cm. Olas del Pacífico.',           precio:40000,svg:'totebags/totebag_06.svg'},
+  {id:'tb07',tipo:'totebag',nombre:'Totebag Marimba',        desc:'Tela blanca 38×42cm. Marimba tradicional.',        precio:40000,svg:'totebags/totebag_07.svg'},
+  {id:'tb08',tipo:'totebag',nombre:'Totebag Colibrí',        desc:'Tela beige 38×42cm. Flora del Pacífico.',          precio:40000,svg:'totebags/totebag_08.svg'},
+  {id:'tb09',tipo:'totebag',nombre:'Totebag Ingeniería',     desc:'Tela blanca 38×42cm. Ciencia & Tecnología.',       precio:40000,svg:'totebags/totebag_09.svg'},
+  {id:'tb10',tipo:'totebag',nombre:'Totebag Noche',          desc:'Tela beige 38×42cm. Noche tumaqueña.',             precio:40000,svg:'totebags/totebag_10.svg'},
+];
+
+const TODOS_PRODS = [...LIBRETAS, ...TAZAS, ...TOTEBAGS];
+
+// ── Carrito ────────────────────────────────────────────
+let carrito = [];
+
+function formatCOP(n){ return '$'+n.toLocaleString('es-CO'); }
+
+// ── Mockup SVG libreta 3D ──────────────────────────────
+function mockupLibreta(svgUrl){
+  return `<svg viewBox="0 0 200 260" class="libreta-mockup" xmlns="http://www.w3.org/2000/svg">
+    <!-- Lomo -->
+    <rect x="14" y="8" width="18" height="244" fill="#1a1a2e" rx="2"/>
+    <!-- Portada principal -->
+    <rect x="28" y="10" width="152" height="240" rx="3" fill="#021226"/>
+    <image href="${svgUrl}" x="30" y="12" width="148" height="236" clip-path="inset(0 0 0 0 round 3px)"/>
+    <!-- Sombra lomo -->
+    <rect x="28" y="10" width="12" height="240" fill="rgba(0,0,0,0.35)" rx="0"/>
+    <!-- Anillos espiral -->
+    ${[40,70,100,130,160,190].map(y=>`<ellipse cx="22" cy="${y}" rx="7" ry="4" fill="#888" stroke="#666" stroke-width="0.8"/>`).join('')}
+    <!-- Brillo en portada -->
+    <rect x="148" y="12" width="30" height="236" fill="rgba(255,255,255,0.04)" rx="0 3 3 0"/>
+    <!-- Sombra base -->
+    <ellipse cx="110" cy="258" rx="80" ry="6" fill="rgba(0,0,0,0.5)"/>
+  </svg>`;
+}
+
+// ── Mockup taza — diseño impreso sobre foto real de taza ──
+function mockupTaza(svgUrl,color){
+  // DISEÑO primero (z-index:1, detrás)
+  // FOTO después con mix-blend-mode:multiply (z-index:2, encima)
+  // El blanco de la taza se vuelve transparente → el diseño aparece adentro
+  return `
+  <div class="mockup-taza-real">
+    <div class="taza-print-clip">
+      <img src="${svgUrl}" class="taza-print-design" alt="diseño" loading="lazy"/>
+    </div>
+    <img src="taza.png" class="taza-foto-base" alt="taza"/>
+  </div>`;
+}
+
+// ── Mockup totebag — diseño impreso sobre foto real de totebag ──
+function mockupTotebag(svgUrl){
+  return `
+  <div class="mockup-tote-real">
+    <div class="tote-print-clip">
+      <img src="${svgUrl}" class="tote-print-design" alt="diseño" loading="lazy"/>
+    </div>
+    <img src="totebag.png" class="tote-foto-base" alt="totebag"/>
+  </div>`;
+}
+
+// ── Renderizar productos ───────────────────────────────
+// ── Datos de especificaciones y reseñas por tipo ──────────────
+const SPECS = {
+  libreta:[
+    'Tamaño: A5 (14.8 × 21 cm)',
+    'Páginas: 96 hojas',
+    'Papel: 80 g/m² sin brillo',
+    'Portada: Laminada mate',
+    'Espiral: Plástico resistente',
+    'Diseño exclusivo PRI',
+  ],
+  taza:[
+    'Material: Cerámica de alta T°',
+    'Capacidad: 350 ml (11 oz)',
+    'Alto: 9.5 cm · Ø: 8 cm',
+    'Impresión: Sublimación full color',
+    'Resistente al lavado a mano',
+    'Apta para microondas',
+  ],
+  totebag:[
+    'Material: Lona algodón 100%',
+    'Dimensiones: 38 × 42 cm',
+    'Capacidad: ≈ 10 litros',
+    'Asas largas: 60 cm',
+    'Impresión: Serigrafía full color',
+    'Ecológica y reutilizable',
+  ],
+};
+
+// ── Reseñas semilla (2 por tipo, textos distintos por producto) ──
+// Se muestran siempre debajo de las reseñas reales de Firebase
+const SEED_RESEÑAS = {
+  libreta:[
+    {nombre:'Ana Granja',   cal:5, fecha:'Ene 2025',
+     texto:'La portada del Morro quedó espectacular. Los colores son muy vivos y la uso en mis clases; todos me preguntan dónde la conseguí.'},
+    {nombre:'Sebastián Obando', cal:5, fecha:'Feb 2025',
+     texto:'El papel es de buena calidad y el espiral no se ha deformado después de meses de uso. Orgulloso de apoyar a los jóvenes de Tumaco.'},
+  ],
+  taza:[
+    {nombre:'Mariana Torres', cal:5, fecha:'Mar 2025',
+     texto:'Después de 4 meses lavándola a mano el diseño sigue perfecto. Los colores son vibrantes. ¡Vale cada peso!'},
+    {nombre:'Jhon Caicedo',   cal:5, fecha:'Abr 2025',
+     texto:'Me llegó bien empacada y el diseño es hermoso. Tomo mi café con orgullo del Pacífico colombiano.'},
+  ],
+  totebag:[
+    {nombre:'Paola Rentería', cal:5, fecha:'Feb 2025',
+     texto:'La tela es muy resistente y el diseño se ve bonito. La llevo al mercado y todo el mundo me pregunta dónde la compré.'},
+    {nombre:'Diego Angulo',   cal:4, fecha:'Mar 2025',
+     texto:'Muy funcional y ecológica. Las asas son largas y cómodas. Llegó en buen tiempo y bien empacada.'},
+  ],
+};
+
+// ── Helpers de reseñas ────────────────────────────────────────
+function starsHtml(n){
+  return '★'.repeat(n)+'☆'.repeat(5-n);
+}
+function fechaCorta(ts){
+  if(!ts) return '';
+  const d=ts.toDate?ts.toDate():new Date(ts);
+  return d.toLocaleDateString('es-CO',{month:'short',year:'numeric'});
+}
+function renderReviewCard(r, esSemilla=false){
+  const etiq = esSemilla?'':' <span style="font-size:0.6rem;color:var(--teal);margin-left:4px">✓ verificado</span>';
+  return `<div class="review-card">
+    <div class="review-header">
+      <span class="review-autor">${r.nombre||r.autor}${etiq}</span>
+      <span class="review-stars">${starsHtml(r.cal||r.calificacion||5)}</span>
+      <span class="review-fecha">${r.fecha||''}</span>
+    </div>
+    <p class="review-texto">"${r.texto}"</p>
+  </div>`;
+}
+
+async function cargarYRenderReseñas(productoId, tipo){
+  const cont = document.getElementById('modal-detalle-reviews');
+  if(!cont) return;
+  cont.innerHTML='<p style="font-size:0.75rem;color:rgba(240,244,248,0.35);text-align:center;padding:0.5rem">Cargando reseñas…</p>';
+
+  // Reseñas reales de Firebase
+  let realesHtml = '';
+  let totalCal = 0, totalN = 0;
+  try{
+    const q = query(
+      collection(db,'reseñas_tienda'),
+      where('productoId','==',productoId),
+      orderBy('fecha','desc'),
+      limit(20)
+    );
+    const snap = await getDocs(q);
+    snap.forEach(doc=>{
+      const d=doc.data();
+      totalCal+=d.calificacion||5; totalN++;
+      const fStr=d.fecha?fechaCorta(d.fecha):'';
+      realesHtml+=renderReviewCard({...d, fecha:fStr}, false);
+    });
+  }catch(e){ /* sin índice aún o sin red */ }
+
+  // Semillas
+  const semillas = SEED_RESEÑAS[tipo]||[];
+  const semillasHtml = semillas.map(r=>renderReviewCard(r,true)).join('');
+
+  // Rating dinámico
+  if(totalN>0){
+    const avg=(totalCal/totalN).toFixed(1);
+    document.getElementById('modal-detalle-rat-num').textContent=avg;
+    document.getElementById('modal-detalle-rat-count').textContent=`(${totalN+semillas.length} reseñas)`;
+    document.getElementById('modal-detalle-stars').textContent=starsHtml(Math.round(totalCal/totalN));
+  } else {
+    document.getElementById('modal-detalle-rat-num').textContent='4.9';
+    document.getElementById('modal-detalle-rat-count').textContent=`(${semillas.length} reseñas)`;
+    document.getElementById('modal-detalle-stars').textContent='★★★★★';
+  }
+
+  // Formulario para nueva reseña
+  const formHtml=`
+    <div class="review-form-wrap" id="review-form-wrap">
+      <h5 style="font-size:0.65rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--naranja);margin:1rem 0 0.6rem">¿Ya lo tienes? Deja tu reseña</h5>
+      <div class="review-form-grid">
+        <input id="rf-nombre" placeholder="Tu nombre" maxlength="50"/>
+        <input id="rf-email"  placeholder="Tu correo" type="email" maxlength="80"/>
+      </div>
+      <div class="review-stars-sel" id="rf-stars-sel">
+        ${[1,2,3,4,5].map(n=>`<span class="rstar" data-v="${n}" onclick="selStar(${n})">☆</span>`).join('')}
+        <span style="font-size:0.7rem;color:rgba(240,244,248,0.4);margin-left:6px" id="rf-stars-label">Selecciona calificación</span>
+      </div>
+      <textarea id="rf-texto" placeholder="Cuéntanos tu experiencia con el producto…" rows="3" maxlength="300"></textarea>
+      <button class="review-submit-btn" onclick="enviarReseña('${productoId}')">PUBLICAR RESEÑA</button>
+      <p class="review-invite">¿Quieres ganar puntos por tus compras? <a href="login.html">Regístrate aquí →</a></p>
+    </div>`;
+
+  cont.innerHTML = realesHtml + semillasHtml + formHtml;
+}
+
+let _rfStar=0;
+window.selStar=function(n){
+  _rfStar=n;
+  document.querySelectorAll('#rf-stars-sel .rstar').forEach((el,i)=>{
+    el.textContent=i<n?'★':'☆';
+    el.style.color=i<n?'#fbbf24':'rgba(240,244,248,0.3)';
+  });
+  document.getElementById('rf-stars-label').textContent=['','Malo','Regular','Bueno','Muy bueno','Excelente'][n];
+};
+
+window.enviarReseña=async function(productoId){
+  const nombre=(document.getElementById('rf-nombre').value||'').trim();
+  const email =(document.getElementById('rf-email').value||'').trim();
+  const texto =(document.getElementById('rf-texto').value||'').trim();
+  if(!nombre||!email||!_rfStar||!texto){
+    alert('Por favor completa tu nombre, correo, calificación y texto.');return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    alert('Correo no válido.');return;
+  }
+  const btn=document.querySelector('.review-submit-btn');
+  btn.disabled=true; btn.textContent='Publicando…';
+  try{
+    await addDoc(collection(db,'reseñas_tienda'),{
+      productoId, nombre, email,
+      calificacion:_rfStar, texto,
+      fecha:serverTimestamp()
+    });
+    document.getElementById('review-form-wrap').innerHTML=`
+      <div style="text-align:center;padding:1.5rem 0">
+        <div style="font-size:2rem;margin-bottom:0.5rem">🎉</div>
+        <p style="font-weight:900;color:var(--teal);font-size:0.9rem;margin-bottom:0.4rem">¡Gracias por tu reseña!</p>
+        <p style="font-size:0.78rem;color:rgba(240,244,248,0.6);margin-bottom:1rem">Tu opinión ayuda a otros compradores y apoya nuestra misión en Tumaco.</p>
+        <p style="font-size:0.78rem;color:rgba(240,244,248,0.5)">¿Quieres ganar puntos y beneficios por tus compras?
+          <a href="login.html" style="color:var(--naranja);font-weight:700">Regístrate gratis →</a>
+        </p>
+      </div>`;
+    _rfStar=0;
+    // Recargar reseñas
+    const tipo=TODOS_PRODS.find(p=>p.id===productoId)?.tipo||'taza';
+    setTimeout(()=>cargarYRenderReseñas(productoId,tipo),1200);
+  }catch(e){
+    alert('Error al publicar. Intenta de nuevo.');
+    btn.disabled=false; btn.textContent='PUBLICAR RESEÑA';
+  }
+};
+
+// ── Modal detalle de producto ──────────────────────────────────
+window.abrirDetalle = function(id){
+  const prod = TODOS_PRODS.find(p=>p.id===id);
+  if(!prod) return;
+  _rfStar=0;
+
+  // Mockup
+  const col = document.getElementById('modal-detalle-mockup');
+  let mockup='';
+  if(prod.tipo==='libreta') mockup=mockupLibreta(prod.svg);
+  else if(prod.tipo==='taza') mockup=mockupTaza(prod.svg,prod.color);
+  else mockup=mockupTotebag(prod.svg);
+  col.innerHTML=mockup;
+
+  // Info básica
+  document.getElementById('modal-detalle-tipo').textContent=prod.tipo.toUpperCase();
+  document.getElementById('modal-detalle-nombre').textContent=prod.nombre;
+  document.getElementById('modal-detalle-precio').innerHTML=`${formatCOP(prod.precio)} <span>COP · envío desde $23.000</span>`;
+
+  // Specs
+  const specs=SPECS[prod.tipo]||[];
+  document.getElementById('modal-detalle-specs').innerHTML=specs.map(s=>`<div class="spec-item">${s}</div>`).join('');
+
+  // Botón agregar
+  document.getElementById('modal-detalle-add-btn').onclick=()=>{
+    agregarAlCarrito(id);
+    cerrarDetalle();
+  };
+
+  // Cargar reseñas reales + semillas + formulario
+  cargarYRenderReseñas(id, prod.tipo);
+
+  document.getElementById('modal-detalle').classList.add('open');
+  document.body.style.overflow='hidden';
+};
+
+window.cerrarDetalle = function(){
+  document.getElementById('modal-detalle').classList.remove('open');
+  document.body.style.overflow='';
+};
+
+function renderProductos(filtro='todos'){
+  const sec = document.getElementById('productos-section');
+  sec.innerHTML = '';
+
+  const grupos = [];
+  if(filtro==='todos'||filtro==='libreta') grupos.push({titulo:'📒 LIBRETAS TUMAQUEÑAS (15 DISEÑOS)',prods:LIBRETAS});
+  if(filtro==='todos'||filtro==='taza')    grupos.push({titulo:'☕ TAZAS TEMÁTICAS (20 DISEÑOS)',prods:TAZAS});
+  if(filtro==='todos'||filtro==='totebag') grupos.push({titulo:'👜 TOTEBAGS',prods:TOTEBAGS});
+
+  grupos.forEach(g=>{
+    const div = document.createElement('div');
+    div.innerHTML = `<h2 class="section-title">${g.titulo}</h2><div class="productos-grid" id="grid-${g.titulo.slice(0,4).replace(/\W/g,'')}"></div>`;
+    sec.appendChild(div);
+    const grid = div.querySelector('.productos-grid');
+    g.prods.forEach(p=>{
+      const card = document.createElement('div');
+      card.className='prod-card';
+      card.dataset.tipo=p.tipo;
+      let mockup='';
+      if(p.tipo==='libreta') mockup=mockupLibreta(p.svg);
+      else if(p.tipo==='taza') mockup=mockupTaza(p.svg,p.color);
+      else mockup=mockupTotebag(p.svg,p.bg||'#f5f0e8');
+      card.innerHTML=`
+        <div class="prod-mockup" onclick="abrirDetalle('${p.id}')" title="Ver detalles y reseñas">${mockup}</div>
+        <p class="prod-mockup-hint">👆 clic para ver detalles y reseñas</p>
+        <div class="prod-info">
+          <p class="prod-tipo">${p.tipo.toUpperCase()}</p>
+          <p class="prod-nombre">${p.nombre}</p>
+          <p style="font-size:0.72rem;color:rgba(240,244,248,0.45);margin-bottom:0.5rem;line-height:1.4">${p.desc}</p>
+          <p class="prod-precio">${formatCOP(p.precio)} <span>COP</span></p>
+          <button class="prod-add-btn" onclick="agregarAlCarrito('${p.id}')">+ AGREGAR AL CARRITO</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  });
+}
+
+window.filtrar = function(f, btn){
+  document.querySelectorAll('.filtro-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProductos(f);
+};
+
+// ── Carrito funciones ──────────────────────────────────
+window.agregarAlCarrito = function(id){
+  const prod = TODOS_PRODS.find(p=>p.id===id);
+  if(!prod) return;
+  const exist = carrito.find(i=>i.id===id);
+  if(exist) exist.qty++;
+  else carrito.push({...prod,qty:1});
+  actualizarCarritoUI();
+  // Abre drawer
+  document.getElementById('cart-overlay').classList.add('open');
+  document.getElementById('cart-drawer').classList.add('open');
+};
+
+window.toggleCart = function(){
+  document.getElementById('cart-overlay').classList.toggle('open');
+  document.getElementById('cart-drawer').classList.toggle('open');
+};
+
+window.cambiarQty = function(id, delta){
+  const item = carrito.find(i=>i.id===id);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) carrito = carrito.filter(i=>i.id!==id);
+  actualizarCarritoUI();
+};
+
+window.quitarItem = function(id){
+  carrito = carrito.filter(i=>i.id!==id);
+  actualizarCarritoUI();
+};
+
+function actualizarCarritoUI(){
+  const total = carrito.reduce((s,i)=>s+i.precio*i.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  const totalItems = carrito.reduce((s,i)=>s+i.qty,0);
+  badge.textContent = totalItems;
+  document.getElementById('cart-total').textContent = formatCOP(total);
+  const checkBtn = document.getElementById('btn-checkout');
+  checkBtn.disabled = carrito.length===0;
+
+  const cont = document.getElementById('cart-items');
+  if(carrito.length===0){
+    cont.innerHTML='<p class="cart-empty">Tu carrito está vacío.<br>¡Agrega algo!</p>';
+    return;
+  }
+  cont.innerHTML = carrito.map(i=>`
+    <div class="cart-item">
+      <div class="cart-item-img">
+        ${i.svg?`<img src="${i.svg}" alt="${i.nombre}" loading="lazy">`:`<div style="background:${i.color||'#063162'};width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:${i.text||'#fff'};font-weight:900;text-align:center;padding:0.2rem">PRI</div>`}
+      </div>
+      <div class="cart-item-info">
+        <p class="cart-item-nombre">${i.nombre}</p>
+        <p class="cart-item-tipo">${i.tipo}</p>
+        <div class="cart-qty">
+          <button class="qty-btn" onclick="cambiarQty('${i.id}',-1)">−</button>
+          <span class="qty-num">${i.qty}</span>
+          <button class="qty-btn" onclick="cambiarQty('${i.id}',1)">+</button>
+        </div>
+        <p class="cart-item-precio">${formatCOP(i.precio*i.qty)}</p>
+      </div>
+      <button class="cart-item-remove" onclick="quitarItem('${i.id}')">✕</button>
+    </div>
+  `).join('');
+}
+
+window.limpiarCarrito = function(){
+  carrito=[];
+  actualizarCarritoUI();
+};
+
+// ── Checkout ───────────────────────────────────────────
+window.abrirCheckout = function(){
+  if(!carrito.length) return;
+  toggleCart();
+  // Llenar resumen
+  const totalProds = carrito.reduce((s,i)=>s+i.precio*i.qty,0);
+  const totalConEnvio = totalProds + 23000; // asume envío nac. por defecto
+  document.getElementById('ch-resumen-items').innerHTML =
+    carrito.map(i=>`<span>${i.qty}× ${i.nombre} — ${formatCOP(i.precio*i.qty)}</span><br>`).join('')+
+    `<span style="color:rgba(240,244,248,0.4)">Envío estimado — ${formatCOP(23000)}</span>`;
+  document.getElementById('ch-total-display').textContent = formatCOP(totalConEnvio);
+  document.getElementById('modal-checkout').classList.add('open');
+  document.getElementById('checkout-step-1').style.display='block';
+  document.getElementById('checkout-step-2').style.display='none';
+  document.getElementById('checkout-step-3').style.display='none';
+};
+
+window.cerrarCheckout = function(){
+  document.getElementById('modal-checkout').classList.remove('open');
+};
+
+window.irAPago = function(){
+  const req = ['ch-nombre','ch-tel','ch-email','ch-ciudad','ch-dir'];
+  for(const id of req){
+    if(!document.getElementById(id).value.trim()){
+      document.getElementById(id).focus();
+      document.getElementById(id).style.borderColor='var(--naranja)';
+      return;
+    }
+  }
+  const totalProds = carrito.reduce((s,i)=>s+i.precio*i.qty,0);
+  const totalConEnvio = totalProds + 23000;
+  document.getElementById('ch-resumen-items2').innerHTML =
+    carrito.map(i=>`<span>${i.qty}× ${i.nombre} — ${formatCOP(i.precio*i.qty)}</span><br>`).join('')+
+    `<span style="color:rgba(240,244,248,0.4)">Envío — ${formatCOP(23000)}</span>`;
+  document.getElementById('ch-total-display2').textContent = formatCOP(totalConEnvio);
+  document.getElementById('checkout-step-1').style.display='none';
+  document.getElementById('checkout-step-2').style.display='block';
+};
+
+window.volverADatos = function(){
+  document.getElementById('checkout-step-1').style.display='block';
+  document.getElementById('checkout-step-2').style.display='none';
+};
+
+window.confirmarPedido = async function(){
+  const numPedido = 'PRI-'+Date.now().toString(36).toUpperCase().slice(-6);
+  const pedido = {
+    numeroPedido: numPedido,
+    nombre: document.getElementById('ch-nombre').value.trim(),
+    telefono: document.getElementById('ch-tel').value.trim(),
+    email: document.getElementById('ch-email').value.trim(),
+    departamento: document.getElementById('ch-dpto').value.trim(),
+    ciudad: document.getElementById('ch-ciudad').value.trim(),
+    barrio: document.getElementById('ch-barrio').value.trim(),
+    direccion: document.getElementById('ch-dir').value.trim(),
+    notas: document.getElementById('ch-notas').value.trim(),
+    items: carrito.map(i=>({id:i.id,nombre:i.nombre,tipo:i.tipo,precio:i.precio,qty:i.qty})),
+    totalProductos: carrito.reduce((s,i)=>s+i.precio*i.qty,0),
+    costoEnvio: 23000,
+    total: carrito.reduce((s,i)=>s+i.precio*i.qty,0)+23000,
+    estado: 'pendiente_pago',
+    creadoEn: window._serverTimestamp ? window._serverTimestamp() : new Date().toISOString(),
+  };
+  try {
+    if(window._db && window._addDoc && window._collection){
+      await window._addDoc(window._collection(window._db,'pedidos'), pedido);
+      // Notificación al admin en Firestore
+      await window._addDoc(window._collection(window._db,'notificaciones'), {
+        tipo:'nuevo_pedido',
+        titulo:'Nuevo Pedido en la Tienda',
+        mensaje:`Pedido ${numPedido} de ${pedido.nombre} por ${formatCOP(pedido.total)}`,
+        pedidoId: numPedido,
+        leido: false,
+        para: 'admin',
+        creadoEn: window._serverTimestamp ? window._serverTimestamp() : new Date().toISOString(),
+      });
+    }
+  } catch(e){ console.warn('Firebase error:',e); }
+  document.getElementById('conf-num-pedido').textContent = numPedido;
+  document.getElementById('checkout-step-2').style.display='none';
+  document.getElementById('checkout-step-3').style.display='block';
+  // ── Enviar correo de confirmación
+  enviarEmailConfirmacion(pedido);
+};
+
+// ── Email de confirmación de compra ────────────────────
+function enviarEmailConfirmacion(pedido){
+  const itemsTexto = pedido.items.map(i=>`• ${i.qty}× ${i.nombre} — $${i.precio.toLocaleString('es-CO')}`).join('\n');
+  const params = {
+    to_name:    pedido.nombre,
+    to_email:   pedido.email,
+    num_pedido: pedido.numeroPedido,
+    items:      itemsTexto,
+    total:      '$' + pedido.total.toLocaleString('es-CO'),
+    ciudad:     pedido.ciudad,
+    direccion:  pedido.direccion,
+    metodo_pago:'Nequi / Bancolombia (ver instrucciones en pantalla)',
+    reply_to:   'jcastrogo@unal.edu.co',
+  };
+  if(window.emailjs && window.EMAILJS_PUBKEY !== 'YOUR_PUBLIC_KEY'){
+    emailjs.send(window.EMAILJS_SERVICE, window.EMAILJS_TEMPLATE, params)
+      .then(()=>console.log('Email de confirmación enviado.'))
+      .catch(e=>console.warn('EmailJS error:',e));
+  } else {
+    // Fallback: abrir cliente de correo con los datos
+    const cuerpo = encodeURIComponent(
+      `Hola ${pedido.nombre},\n\n` +
+      `¡Gracias por tu pedido en la Tienda PRI! 🎉\n\n` +
+      `N° de pedido: ${pedido.numeroPedido}\n\n` +
+      `Items:\n${itemsTexto}\n\n` +
+      `Total: $${pedido.total.toLocaleString('es-CO')}\n` +
+      `(incluye envío $23.000)\n\n` +
+      `Para completar tu pedido realiza el pago a:\n` +
+      `• Nequi / Bancolombia: 318 355 3653\n` +
+      `• Envía comprobante a: jcastrogo@unal.edu.co\n` +
+      `• Asunto: Pedido ${pedido.numeroPedido}\n\n` +
+      `Con amor desde Tumaco 🌊\nPrograma PRI`
+    );
+    // No abrimos mailto automáticamente; solo guardamos en Firestore (ya hecho arriba)
+    console.log('Pedido registrado. Configura EmailJS para envío automático.');
+  }
+}
+
+// ── Arranque ───────────────────────────────────────────
+renderProductos();
+
+// ═══════════════════════════════════════════════════════
+// FONDO ANIMADO TUMACO — ciclo día/noche según hora real
+// ═══════════════════════════════════════════════════════
+(function bgTumaco(){
+  const svg      = document.getElementById('bg-svg');
+  const skyRect  = document.getElementById('sky-rect');
+  const solGroup = document.getElementById('sol-group');
+  const solCore  = document.getElementById('sol-core');
+  const solHalo  = document.getElementById('sol-halo');
+  const lunaG    = document.getElementById('luna-group');
+  const sunGlow  = document.getElementById('sunset-glow');
+  const reflejo  = document.getElementById('reflejo');
+  const wins     = [1,2,3,4,5].map(i=>document.getElementById('win'+i));
+  const body     = document.body;
+
+  /* Colores de cielo por fase */
+  const CIELOS = {
+    dia:     {t:'#1a4a8a', b:'#063162'},
+    amanecer:{t:'#ff8c42', b:'#c43c00'},
+    atarder: {t:'#ff6b1a', b:'#8b1a00'},
+    noche:   {t:'#010810', b:'#000508'}
+  };
+
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function lerpColor(c1,c2,t){
+    const h=s=>parseInt(s,16);
+    const r1=h(c1.slice(1,3)),g1=h(c1.slice(3,5)),b1=h(c1.slice(5,7));
+    const r2=h(c2.slice(1,3)),g2=h(c2.slice(3,5)),b2=h(c2.slice(5,7));
+    return `rgb(${Math.round(lerp(r1,r2,t))},${Math.round(lerp(g1,g2,t))},${Math.round(lerp(b1,b2,t))})`;
+  }
+
+  /* ancho/alto del SVG viewport */
+  function vw(){ return svg ? svg.clientWidth || window.innerWidth : window.innerWidth; }
+  function vh(){ return svg ? svg.clientHeight || window.innerHeight : window.innerHeight; }
+
+  /* Mover sol/luna en coordenadas SVG 1440×900 */
+  function setPosAstro(el, fracX, fracY){
+    /* el grupo contiene children con cx/cy o x/y; movemos con transform */
+    el.setAttribute('transform',`translate(${(fracX-0.5)*1440},${(fracY-0.5)*900})`);
+  }
+
+  function updateBackground(){
+    const now  = new Date();
+    const h    = now.getHours() + now.getMinutes()/60; // 0–24
+
+    // ── Fases (horas): 5=amanecer, 8=día, 17=atardecer, 19=noche
+    let sky1, sky2, skyLerp, fase;
+    if(h>=5 && h<8){
+      fase='amanecer'; skyLerp=(h-5)/3;
+      sky1=CIELOS.amanecer; sky2=CIELOS.dia;
+    } else if(h>=8 && h<17){
+      fase='dia'; skyLerp=0;
+      sky1=CIELOS.dia; sky2=CIELOS.dia;
+    } else if(h>=17 && h<19){
+      fase='atardecer'; skyLerp=(h-17)/2;
+      sky1=CIELOS.atarder; sky2=CIELOS.noche;
+    } else {
+      fase='noche'; skyLerp=0;
+      sky1=CIELOS.noche; sky2=CIELOS.noche;
+    }
+
+    const topColor = lerpColor(sky1.t, sky2.t, skyLerp);
+    const botColor = lerpColor(sky1.b, sky2.b, skyLerp);
+
+    // Actualizar gradiente SVG dinámicamente
+    const defs = svg.querySelector('defs');
+    let dynGrad = defs.querySelector('#dynSky');
+    if(!dynGrad){
+      dynGrad = document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+      dynGrad.setAttribute('id','dynSky');
+      dynGrad.setAttribute('x1','0'); dynGrad.setAttribute('y1','0');
+      dynGrad.setAttribute('x2','0'); dynGrad.setAttribute('y2','1');
+      const s1=document.createElementNS('http://www.w3.org/2000/svg','stop');
+      s1.setAttribute('id','dyn-s1'); s1.setAttribute('offset','0%');
+      const s2=document.createElementNS('http://www.w3.org/2000/svg','stop');
+      s2.setAttribute('id','dyn-s2'); s2.setAttribute('offset','100%');
+      dynGrad.appendChild(s1); dynGrad.appendChild(s2);
+      defs.appendChild(dynGrad);
+    }
+    defs.querySelector('#dyn-s1').setAttribute('stop-color', topColor);
+    defs.querySelector('#dyn-s2').setAttribute('stop-color', botColor);
+    skyRect.setAttribute('fill','url(#dynSky)');
+
+    // ── Posición del sol: sale a las 5h (izq) y se pone a las 19h (der)
+    const solFracX = Math.max(0,Math.min(1,(h-5)/14));
+    const solFracY = 0.5 - 0.38*Math.sin(solFracX*Math.PI); // arco parabólico
+    const solX = solFracX * 1440;
+    const solY = solFracY * 640 + 60;
+
+    // ── Sol visible de 5:00 a 19:00
+    const esDia = h>=5 && h<19;
+    solGroup.setAttribute('opacity', esDia ? '1' : '0');
+    solGroup.setAttribute('transform', `translate(${solX - 720}, ${solY - 160})`);
+
+    // Intensidad de halo según hora
+    const haloAlpha = (fase==='amanecer'||fase==='atardecer') ? 0.8 : 0.45;
+    solHalo.setAttribute('opacity', String(haloAlpha));
+
+    // ── Luna: visible de 19:30 a 5:00
+    const esNoche = h>=19.5 || h<5;
+    lunaG.setAttribute('opacity', esNoche ? '1' : '0');
+    if(esNoche){
+      const lunaH = h>=19.5 ? h : h+24;
+      const lunaFrac = (lunaH - 19.5) / 9.5; // 0→1 de 19:30 a 5:00
+      const lunaX = lunaFrac * 1440 * 0.7 + 1440*0.15;
+      const lunaY = 60 + 100*(1-Math.sin(lunaFrac*Math.PI));
+      lunaG.setAttribute('transform', `translate(${lunaX - 720}, ${lunaY - 130})`);
+    }
+
+    // ── Sunset glow
+    const glowAlpha = (fase==='atardecer') ? 0.35*(1-skyLerp) + (fase==='amanecer'?0.2:0) : 0;
+    const isAm = fase==='amanecer';
+    sunGlow.setAttribute('opacity', String(
+      fase==='atardecer' ? 0.4*(1-skyLerp) :
+      isAm ? 0.3*skyLerp : 0
+    ));
+    sunGlow.setAttribute('cx', String(solX));
+
+    // ── Reflejo en el agua
+    if(esDia){
+      reflejo.setAttribute('opacity','0.25');
+      reflejo.setAttribute('fill','#ffd700');
+      reflejo.setAttribute('cx', String(solX));
+    } else if(esNoche){
+      reflejo.setAttribute('opacity','0.15');
+      reflejo.setAttribute('fill','#d8eaff');
+    } else {
+      reflejo.setAttribute('opacity','0');
+    }
+
+    // ── Ventanas encendidas de noche
+    const winAlpha = (h>=19 || h<6) ? '0.9' : '0';
+    wins.forEach(w=>{ if(w) w.setAttribute('opacity', winAlpha); });
+
+    // ── Clase en body para CSS de estrellas/luciérnagas
+    body.classList.toggle('es-noche',   h>=20 || h<5);
+    body.classList.toggle('es-atarder', h>=17 && h<20);
+    body.classList.toggle('es-dia',     h>=8  && h<17);
+    body.classList.toggle('es-amanecer',h>=5  && h<8);
+  }
+
+  // ── ESTRELLAS ──────────────────────────────────────────
+  let starsCreated = false;
+  function crearEstrellas(){
+    if(starsCreated) return;
+    starsCreated = true;
+    const n = window.innerWidth < 600 ? 60 : 120;
+    for(let i=0;i<n;i++){
+      const s = document.createElement('div');
+      s.className = 'tienda-star';
+      const sz = Math.random()*2.5+0.8;
+      s.style.cssText = `
+        width:${sz}px;height:${sz}px;
+        left:${Math.random()*100}%;
+        top:${Math.random()*65}%;
+        --tdur:${(Math.random()*3+1.5).toFixed(1)}s;
+        animation-delay:${(Math.random()*4).toFixed(1)}s;
+        opacity:0;
+      `;
+      document.body.appendChild(s);
+    }
+  }
+
+  // ── LUCIÉRNAGAS ────────────────────────────────────────
+  let lucierCreated = false;
+  function crearLuciérnagas(){
+    if(lucierCreated) return;
+    lucierCreated = true;
+    const n = window.innerWidth < 600 ? 8 : 18;
+    for(let i=0;i<n;i++){
+      const l = document.createElement('div');
+      l.className = 'luciernaga';
+      const dx = (Math.random()*200-100).toFixed(0);
+      const dy = (Math.random()*160-80).toFixed(0);
+      l.style.cssText = `
+        left:${(Math.random()*90+5).toFixed(1)}%;
+        top:${(55+Math.random()*35).toFixed(1)}%;
+        --dx:${dx}px; --dy:${dy}px;
+        --dur:${(Math.random()*6+5).toFixed(1)}s;
+        animation-delay:${(Math.random()*8).toFixed(1)}s;
+      `;
+      document.body.appendChild(l);
+    }
+  }
+
+  // ── Mostrar/ocultar estrellas y luciérnagas con CSS ────
+  function toggleNocturno(){
+    const h = new Date().getHours();
+    const nocturno = h>=19 || h<6;
+    const crepusc  = h>=17 && h<20;
+    if(nocturno || crepusc){
+      crearEstrellas();
+      crearLuciérnagas();
+    }
+    document.querySelectorAll('.tienda-star').forEach(s=>{
+      s.style.display = nocturno ? 'block' : 'none';
+    });
+    document.querySelectorAll('.luciernaga').forEach(l=>{
+      l.style.display = (nocturno||crepusc) ? 'block' : 'none';
+    });
+  }
+
+  // ── Init ───────────────────────────────────────────────
+  updateBackground();
+  toggleNocturno();
+  setInterval(()=>{ updateBackground(); toggleNocturno(); }, 60000); // cada minuto
+})();
+</script>
+</body>
+</html>

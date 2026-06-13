@@ -1,0 +1,41 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#1a1a2e" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Cosmos/espiral -->
+<path d="M100,65 Q108,55 115,58 Q120,63 115,70 Q108,78 100,78 Q88,78 82,70 Q76,58 85,50 Q95,42 110,48" stroke="#8b5cf6" stroke-width="2" fill="none" opacity="0.8"/>
+<circle cx="100" cy="65" r="4" fill="#7c3aed" opacity="0.9"/>
+<circle cx="55" cy="48" r="2" fill="#c4b5fd" opacity="0.7"/>
+<circle cx="145" cy="52" r="1.5" fill="#ddd6fe" opacity="0.6"/>
+<circle cx="68" cy="82" r="2.5" fill="#a78bfa" opacity="0.7"/>
+<circle cx="138" cy="80" r="2" fill="#c4b5fd" opacity="0.6"/>
+<circle cx="80" cy="40" r="1.8" fill="#ddd6fe" opacity="0.5"/>
+<path d="M55,48 l1,2.5 l2.5,0 l-2,2 l1,2.5 l-2.5,-1.5 l-2.5,1.5 l1,-2.5 l-2,-2 l2.5,0 Z" fill="#fde68a" opacity="0.7"/>
+<path d="M80,40 l0.8,2 l2,0 l-1.5,1.5 l0.8,2 l-2,-1.2 l-2,1.2 l0.8,-2 l-1.5,-1.5 l2,0 Z" fill="#fde68a" opacity="0.6"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#1a1a2e" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#ede9fe" opacity="0.95">"Somos polvo de</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#ede9fe" opacity="0.95">estrellas con sueños propios"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#a78bfa" letter-spacing="1" opacity="0.9">— Carl Sagan</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#a78bfa" letter-spacing="2" opacity="1">COSMOS</text>
+</svg>

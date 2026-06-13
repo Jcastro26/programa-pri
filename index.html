@@ -73,7 +73,7 @@ body:hover .cursor-dot { opacity: 1; }
 
 /* Navbar mejorada con glassmorphism real */
 .navbar { transition: padding 0.3s ease, box-shadow 0.3s ease; }
-.navbar.scrolled { padding: 0.6rem 5%; box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.navbar.scrolled { padding: 0.6rem 2.5rem 0.6rem 1.25rem; box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
 .nav-links a { position: relative; }
 .nav-links a::after {
     content: ''; position: absolute; bottom: -4px; left: 0;
@@ -571,7 +571,7 @@ body:hover .cursor-dot { opacity: 1; }
     <div class="logo-container">
         <a href="index.html" class="logo-link">
             <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-            <h2>PROGRAMA-PRI</h2>
+            <div><h2>PROGRAMA-PRI</h2><p>El Pacífico Renaciendo con Ingeniería</p></div>
         </a>
     </div>
     <div class="menu-toggle" id="mobile-menu">
@@ -585,7 +585,7 @@ body:hover .cursor-dot { opacity: 1; }
             <li><a href="pre-test.html">PRE-TEST</a></li>
             <li><a href="docentes.html">Docentes</a></li>
             <li><a href="productos.html">Productos</a></li>
-            <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+            <li><a href="login.html" class="btn-login">Inicia Sesión</a></li>
         </ul>
     </nav>
     <div id="nav-backdrop"></div>
@@ -597,7 +597,7 @@ body:hover .cursor-dot { opacity: 1; }
 
     <div class="ocean-system cloudy-theme">
         <div class="natural-sky">
-            <svg width="100%" height="100%" preserveAspectRatio="none">
+            <svg width="100%" height="100%" viewBox="0 0 1000 500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" stop-color="#1b232e" />
@@ -605,19 +605,120 @@ body:hover .cursor-dot { opacity: 1; }
                         <stop offset="70%" stop-color="#465669" />
                         <stop offset="100%" stop-color="#5c6d81" />
                     </linearGradient>
+                    <!-- Blur base nube: muy suave para forma -->
+                    <filter id="cBlur1" x="-15%" y="-30%" width="130%" height="160%">
+                        <feGaussianBlur stdDeviation="10"/>
+                    </filter>
+                    <!-- Blur cuerpo nube: medio -->
+                    <filter id="cBlur2" x="-10%" y="-20%" width="120%" height="140%">
+                        <feGaussianBlur stdDeviation="5"/>
+                    </filter>
+                    <!-- Blur top: suave y nítido -->
+                    <filter id="cBlur3" x="-8%" y="-15%" width="116%" height="130%">
+                        <feGaussianBlur stdDeviation="2.5"/>
+                    </filter>
+                    <style>
+                        @keyframes cDrift1{0%,100%{transform:translateX(0)}50%{transform:translateX(28px)}}
+                        @keyframes cDrift2{0%,100%{transform:translateX(0)}50%{transform:translateX(-22px)}}
+                        @keyframes cDrift3{0%,100%{transform:translateX(0)}50%{transform:translateX(18px)}}
+                        @keyframes twk1{0%,100%{opacity:0.95}45%{opacity:0.35}}
+                        @keyframes twk2{0%,100%{opacity:0.80}55%{opacity:0.20}}
+                        @keyframes twk3{0%,100%{opacity:0.65}38%{opacity:0.10}}
+                        @keyframes twk4{0%,100%{opacity:0.90}62%{opacity:0.40}}
+                        .cld1{animation:cDrift1 70s ease-in-out infinite}
+                        .cld2{animation:cDrift2 85s ease-in-out infinite 8s}
+                        .cld3{animation:cDrift3 60s ease-in-out infinite 4s}
+                        .s1{animation:twk1 2.8s ease-in-out infinite}
+                        .s2{animation:twk2 3.6s ease-in-out infinite}
+                        .s3{animation:twk3 4.2s ease-in-out infinite}
+                        .s4{animation:twk4 2.2s ease-in-out infinite}
+                    </style>
                 </defs>
-                <rect width="100%" height="100%" fill="url(#skyGradient)" />
-                <!-- Nubes difuminadas del atardecer -->
-                <g id="sunset-clouds" style="opacity:0;transition:opacity 2s ease">
-                    <ellipse cx="15%" cy="38%" rx="18%" ry="7%" fill="rgba(255,120,60,0.25)" filter="url(#cloudBlur)"/>
-                    <ellipse cx="40%" cy="28%" rx="22%" ry="6%" fill="rgba(200,80,140,0.2)" filter="url(#cloudBlur)"/>
-                    <ellipse cx="70%" cy="35%" rx="20%" ry="8%" fill="rgba(180,60,160,0.22)" filter="url(#cloudBlur)"/>
-                    <ellipse cx="85%" cy="22%" rx="16%" ry="5%" fill="rgba(255,100,80,0.18)" filter="url(#cloudBlur)"/>
-                    <ellipse cx="55%" cy="42%" rx="25%" ry="5%" fill="rgba(220,90,100,0.15)" filter="url(#cloudBlur)"/>
+                <rect id="sky-rect" width="100%" height="100%" fill="url(#skyGradient)" style="transition:opacity 1.5s ease"/>
+
+                <!-- ── ESTRELLAS — visibles de noche ── -->
+                <g id="stars-layer" style="opacity:0;transition:opacity 3s ease">
+                    <!-- Grandes brillantes -->
+                    <circle class="s1" cx="68"  cy="22"  r="2.0" fill="white"/>
+                    <circle class="s2" cx="195" cy="14"  r="1.8" fill="#d8e8ff"/>
+                    <circle class="s3" cx="340" cy="28"  r="1.6" fill="white"/>
+                    <circle class="s4" cx="488" cy="10"  r="2.2" fill="#ffe8c0"/>
+                    <circle class="s1" cx="612" cy="18"  r="1.9" fill="white"/>
+                    <circle class="s2" cx="755" cy="8"   r="1.7" fill="#d8e8ff"/>
+                    <circle class="s3" cx="880" cy="25"  r="2.0" fill="white"/>
+                    <circle class="s4" cx="960" cy="15"  r="1.5" fill="#ffe8c0"/>
+                    <!-- Medianas -->
+                    <circle class="s2" cx="38"  cy="55"  r="1.2" fill="white"/>
+                    <circle class="s3" cx="130" cy="44"  r="1.1" fill="#e8f0ff"/>
+                    <circle class="s1" cx="260" cy="60"  r="1.3" fill="white"/>
+                    <circle class="s4" cx="380" cy="42"  r="1.0" fill="white"/>
+                    <circle class="s2" cx="440" cy="70"  r="1.2" fill="#ffe8c0"/>
+                    <circle class="s3" cx="560" cy="52"  r="1.1" fill="white"/>
+                    <circle class="s1" cx="670" cy="40"  r="1.4" fill="#d8e8ff"/>
+                    <circle class="s4" cx="800" cy="58"  r="1.0" fill="white"/>
+                    <circle class="s2" cx="920" cy="48"  r="1.2" fill="white"/>
+                    <circle class="s3" cx="990" cy="35"  r="1.0" fill="#e8f0ff"/>
+                    <!-- Pequeñas -->
+                    <circle class="s1" cx="85"  cy="90"  r="0.8" fill="white"/>
+                    <circle class="s4" cx="165" cy="78"  r="0.9" fill="white"/>
+                    <circle class="s2" cx="290" cy="96"  r="0.8" fill="#ffe8c0"/>
+                    <circle class="s3" cx="415" cy="82"  r="0.7" fill="white"/>
+                    <circle class="s1" cx="520" cy="100" r="0.9" fill="white"/>
+                    <circle class="s4" cx="635" cy="88"  r="0.8" fill="#d8e8ff"/>
+                    <circle class="s2" cx="720" cy="105" r="0.7" fill="white"/>
+                    <circle class="s3" cx="845" cy="92"  r="0.8" fill="white"/>
+                    <circle class="s1" cx="935" cy="80"  r="0.9" fill="#ffe8c0"/>
+                    <!-- Muy pequeñas dispersas -->
+                    <circle class="s3" cx="18"  cy="120" r="0.6" fill="rgba(255,255,255,0.7)"/>
+                    <circle class="s2" cx="220" cy="118" r="0.6" fill="rgba(255,255,255,0.7)"/>
+                    <circle class="s4" cx="360" cy="130" r="0.5" fill="rgba(255,255,255,0.6)"/>
+                    <circle class="s1" cx="475" cy="122" r="0.6" fill="rgba(220,235,255,0.7)"/>
+                    <circle class="s3" cx="590" cy="135" r="0.5" fill="rgba(255,255,255,0.6)"/>
+                    <circle class="s2" cx="710" cy="115" r="0.6" fill="rgba(255,255,255,0.7)"/>
+                    <circle class="s4" cx="870" cy="125" r="0.5" fill="rgba(255,248,200,0.7)"/>
+                    <circle class="s1" cx="980" cy="110" r="0.6" fill="rgba(255,255,255,0.6)"/>
+                    <!-- Estrellas en media altura -->
+                    <circle class="s2" cx="50"  cy="155" r="0.7" fill="rgba(255,255,255,0.5)"/>
+                    <circle class="s3" cx="310" cy="162" r="0.6" fill="rgba(255,255,255,0.5)"/>
+                    <circle class="s4" cx="550" cy="150" r="0.5" fill="rgba(255,248,200,0.5)"/>
+                    <circle class="s1" cx="790" cy="158" r="0.6" fill="rgba(255,255,255,0.5)"/>
+                    <!-- Cruz del Sur (4 estrellas en patrón) -->
+                    <circle class="s1" cx="748" cy="72"  r="1.8" fill="white"/>
+                    <circle class="s1" cx="762" cy="88"  r="1.4" fill="white"/>
+                    <circle class="s2" cx="775" cy="74"  r="1.0" fill="white"/>
+                    <circle class="s3" cx="748" cy="88"  r="0.9" fill="rgba(255,255,255,0.7)"/>
                 </g>
-                <defs>
-                    <filter id="cloudBlur"><feGaussianBlur stdDeviation="12"/></filter>
-                </defs>
+
+                <!-- ── NUBES ATMOSFÉRICAS — visibles de día/atardecer ── -->
+                <g id="sky-clouds" style="opacity:0;transition:opacity 2s ease">
+                    <!-- Nube 1 izquierda -->
+                    <g class="cld1">
+                        <!-- base muy difusa -->
+                        <ellipse cx="155" cy="90" rx="145" ry="18" fill="rgba(200,215,235,0.28)" filter="url(#cBlur1)"/>
+                        <!-- cuerpo principal -->
+                        <ellipse cx="140" cy="76" rx="110" ry="14" fill="rgba(255,255,255,0.50)" filter="url(#cBlur2)"/>
+                        <ellipse cx="175" cy="68" rx="80"  ry="12" fill="rgba(255,255,255,0.65)" filter="url(#cBlur2)"/>
+                        <!-- top brillante -->
+                        <ellipse cx="162" cy="62" rx="60"  ry="9"  fill="rgba(255,255,255,0.82)" filter="url(#cBlur3)"/>
+                        <ellipse cx="198" cy="65" rx="42"  ry="8"  fill="rgba(255,255,255,0.72)" filter="url(#cBlur3)"/>
+                    </g>
+                    <!-- Nube 2 centro, grande -->
+                    <g class="cld2">
+                        <ellipse cx="560" cy="72" rx="185" ry="20" fill="rgba(200,215,235,0.22)" filter="url(#cBlur1)"/>
+                        <ellipse cx="545" cy="58" rx="145" ry="16" fill="rgba(255,255,255,0.45)" filter="url(#cBlur2)"/>
+                        <ellipse cx="575" cy="46" rx="108" ry="14" fill="rgba(255,255,255,0.62)" filter="url(#cBlur2)"/>
+                        <ellipse cx="555" cy="38" rx="75"  ry="11" fill="rgba(255,255,255,0.78)" filter="url(#cBlur3)"/>
+                        <ellipse cx="605" cy="42" rx="58"  ry="10" fill="rgba(255,255,255,0.70)" filter="url(#cBlur3)"/>
+                        <ellipse cx="520" cy="50" rx="45"  ry="9"  fill="rgba(255,255,255,0.60)" filter="url(#cBlur3)"/>
+                    </g>
+                    <!-- Nube 3 derecha -->
+                    <g class="cld3">
+                        <ellipse cx="858" cy="80" rx="130" ry="16" fill="rgba(200,215,235,0.25)" filter="url(#cBlur1)"/>
+                        <ellipse cx="845" cy="65" rx="100" ry="13" fill="rgba(255,255,255,0.48)" filter="url(#cBlur2)"/>
+                        <ellipse cx="862" cy="55" rx="72"  ry="11" fill="rgba(255,255,255,0.65)" filter="url(#cBlur3)"/>
+                        <ellipse cx="892" cy="60" rx="50"  ry="9"  fill="rgba(255,255,255,0.58)" filter="url(#cBlur3)"/>
+                    </g>
+                </g>
             </svg>
         </div>
         
@@ -669,10 +770,6 @@ body:hover .cursor-dot { opacity: 1; }
                         <stop offset="55%" stop-color="#8a7558"/>
                         <stop offset="100%" stop-color="#2e1e0e"/>
                     </linearGradient>
-                    <linearGradient id="faceDark" x1="0%" y1="0%" x2="100%" y2="80%">
-                        <stop offset="0%" stop-color="#6d5d44"/>
-                        <stop offset="100%" stop-color="#120a02"/>
-                    </linearGradient>
                     <clipPath id="rockClip"><rect width="520" height="620"/></clipPath>
                 </defs>
                 <g clip-path="url(#rockClip)">
@@ -703,6 +800,9 @@ body:hover .cursor-dot { opacity: 1; }
         <div class="wave wave-deep"></div>
         <div class="wave wave-mid"></div>
         <div class="wave wave-surface"></div>
+        <div class="wave wave-surf"></div>
+        <div class="wave wave-foam"></div>
+        <div class="wave-shimmer"></div>
         <canvas id="fishCanvas" class="fish-canvas"></canvas>
     </div>
 
@@ -714,7 +814,7 @@ body:hover .cursor-dot { opacity: 1; }
         </h1>
         <p class="hero-subtitle">Pasamos del diagnóstico a la acción técnica. Un programa universitario que transforma el potencial de Tumaco en futuros ingenieros.</p>
         <div class="hero-buttons">
-            <a href="pre-test.html" class="btn btn-primary">🚀 Entrena Ahora</a>
+            <a href="pre-test.html" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-right:6px;vertical-align:middle"><polygon points="5 3 19 12 5 21 5 3"/></svg>Entrena Ahora</a>
             <a href="ppri.html" class="btn btn-secondary">Explora PRI →</a>
         </div>
     </div>
@@ -768,7 +868,7 @@ body:hover .cursor-dot { opacity: 1; }
             <p class="mision-p">Operamos bajo el programa PEAMA de la Universidad Nacional, con un modelo de nivelación escalonada que ataca el rezago desde grado 8° hasta el primer semestre universitario.</p>
             <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
                 <a href="ppri.html" style="display:inline-block;background:var(--azul-deep-tumaco);color:white;padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);box-shadow:5px 5px 0 var(--naranja-atardecer);transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='8px 8px 0 var(--naranja-atardecer)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 var(--naranja-atardecer)'">Ver el Programa</a>
-                <a href="dashboard.html" style="display:inline-block;background:transparent;color:var(--azul-deep-tumaco);padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);transition:all 0.3s ease;" onmouseover="this.style.background='var(--azul-deep-tumaco)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--azul-deep-tumaco)'">Ver Métricas</a>
+                <a href="#sondeo-stats" style="display:inline-block;background:transparent;color:var(--azul-deep-tumaco);padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);transition:all 0.3s ease;" onmouseover="this.style.background='var(--azul-deep-tumaco)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--azul-deep-tumaco)'">Ver Métricas</a>
             </div>
         </div>
         <div class="reveal-right">
@@ -997,55 +1097,76 @@ function renderBarras(containerId, datos, color, max) {
 }
 
 async function cargarStats() {
-    let data = [];
+    // --- 1. diagnostico_colegios (los 60 formularios ICFES) ---
+    let icfes = [];
+    try {
+        const snap = await getDocs(collection(db, 'diagnostico_colegios'));
+        snap.forEach(d => icfes.push(d.data()));
+    } catch(e) { /* sin datos ICFES */ }
+
+    // --- 2. sondeo_piloto (registros de inscripción/demografía) ---
+    let sondeo = [];
     try {
         const snap = await getDocs(collection(db, 'sondeo_piloto'));
-        snap.forEach(d => data.push(d.data()));
-    } catch(e) { /* usar fallback */ }
+        snap.forEach(d => sondeo.push(d.data()));
+    } catch(e) { /* sin sondeo */ }
 
-    if (data.length === 0) {
-        // Mostrar datos piloto directamente
+    // Si no hay ninguna fuente, usar PILOTO
+    if (icfes.length === 0 && sondeo.length === 0) {
         mostrarStats(PILOTO);
         return;
     }
 
-    // Calcular desde Firestore
-    const inst = {}, nivel = {}, puntajes = {'0–5':0,'6–10':0,'11–15':0,'16–20':0,'21–25':0}, areas = {};
-    let estudiantes = 0, voluntarios = 0;
+    // --- Construir stats desde diagnostico_colegios ---
+    const porFormulario = {}, puntajes = {'0–9':0,'10–19':0,'20–29':0,'30–39':0,'40–49':0,'50–59':0,'60–69':0,'70–79':0,'80–89':0,'90–100':0};
     const ps = [];
-
-    data.forEach(r => {
-        // roles
-        if ((r.rol||'').toUpperCase().includes('ESTUDIANT')) estudiantes++;
-        if ((r.rol||'').toUpperCase().includes('VOLUNT')) voluntarios++;
-        // institución
-        const i = r.institucion || 'No especificada';
-        inst[i] = (inst[i]||0)+1;
-        // nivel
-        const n = r.nivel || 'No especificado';
-        nivel[n] = (nivel[n]||0)+1;
-        // puntaje
-        if (typeof r.puntuacion === 'number' && r.puntuacion !== null) {
-            ps.push(r.puntuacion);
-            if (r.puntuacion<=5) puntajes['0–5']++;
-            else if (r.puntuacion<=10) puntajes['6–10']++;
-            else if (r.puntuacion<=15) puntajes['11–15']++;
-            else if (r.puntuacion<=20) puntajes['16–20']++;
-            else puntajes['21–25']++;
+    icfes.forEach(r => {
+        // Agrupar por hoja/formulario
+        const hoja = r._hoja || 'Sin nombre';
+        porFormulario[hoja] = (porFormulario[hoja]||0) + 1;
+        // Puntaje (sobre 100 o sobre lo que sea)
+        const pts = parseFloat(r['Puntuación'] || r['puntuacion'] || r['PUNTAJE'] || 0);
+        if (!isNaN(pts) && pts > 0) {
+            ps.push(pts);
+            const bucket = Math.min(9, Math.floor(pts/10));
+            const key = `${bucket*10}–${bucket*10+9}`;
+            if (puntajes[key] !== undefined) puntajes[key]++;
         }
-        // áreas
+    });
+    const prom = ps.length ? (ps.reduce((a,b)=>a+b,0)/ps.length).toFixed(1) : '—';
+
+    // Limpiar buckets vacíos del extremo
+    const puntajesLimpios = Object.fromEntries(Object.entries(puntajes).filter(([,v])=>v>0));
+
+    // Limitar top-8 formularios
+    const formsTop = Object.fromEntries(Object.entries(porFormulario).sort((a,b)=>b[1]-a[1]).slice(0,8));
+
+    // --- Construir stats desde sondeo_piloto (demográficos) ---
+    const inst = {}, nivel = {}, areas = {};
+    let estudiantes = 0;
+    sondeo.forEach(r => {
+        if ((r.rol||'').toUpperCase().includes('ESTUDIANT')) estudiantes++;
+        const i = r.institucion || 'No especificada'; inst[i] = (inst[i]||0)+1;
+        const n = r.nivel || 'No especificado'; nivel[n] = (nivel[n]||0)+1;
         (r.areas_interes||[]).forEach(a => { if(a) areas[a]=(areas[a]||0)+1; });
     });
+    const instTop   = Object.keys(inst).length   ? Object.fromEntries(Object.entries(inst).sort((a,b)=>b[1]-a[1]).slice(0,6))   : PILOTO.instituciones;
+    const nivelTop  = Object.keys(nivel).length  ? Object.fromEntries(Object.entries(nivel).sort((a,b)=>b[1]-a[1]).slice(0,6))  : PILOTO.niveles;
+    const areasTop  = Object.keys(areas).length  ? Object.fromEntries(Object.entries(areas).sort((a,b)=>b[1]-a[1]).slice(0,6))  : PILOTO.areas;
+    const instCount = Object.keys(inst).filter(k=>k!=='No especificada'&&inst[k]>0).length || Object.keys(PILOTO.instituciones).length;
 
-    const prom = ps.length ? (ps.reduce((a,b)=>a+b,0)/ps.length).toFixed(1) : '—';
-    const instCount = Object.keys(inst).filter(k=>k!=='No especificada'&&inst[k]>0).length;
-
-    // Ordenar instituciones por cantidad, limitar top 6
-    const instTop = Object.fromEntries(Object.entries(inst).sort((a,b)=>b[1]-a[1]).slice(0,6));
-    const nivelTop = Object.fromEntries(Object.entries(nivel).sort((a,b)=>b[1]-a[1]).slice(0,6));
-    const areasTop = Object.fromEntries(Object.entries(areas).sort((a,b)=>b[1]-a[1]).slice(0,6));
-
-    mostrarStats({ total: data.length, estudiantes, voluntarios, instituciones: instTop, niveles: nivelTop, puntajes, areas: areasTop, promedio: prom, instCount });
+    mostrarStats({
+        total:        icfes.length || sondeo.length,
+        estudiantes:  estudiantes  || PILOTO.estudiantes,
+        voluntarios:  0,
+        instituciones: instTop,
+        niveles:       nivelTop,
+        puntajes:      Object.keys(puntajesLimpios).length ? puntajesLimpios : PILOTO.puntajes,
+        areas:         areasTop,
+        promedio:      prom !== '—' ? prom : PILOTO.promedio,
+        instCount,
+        porFormulario: Object.keys(formsTop).length ? formsTop : null,
+    });
 }
 
 function mostrarStats(s) {
@@ -1054,16 +1175,17 @@ function mostrarStats(s) {
     document.getElementById('stat-prom').textContent = s.promedio;
     document.getElementById('stat-est').textContent = s.estudiantes;
 
-    renderBarras('chart-inst', s.instituciones, 'var(--teal,#38bdf8)', s.total);
+    // Si tenemos datos de formularios ICFES, mostrarlos en el primer chart
+    if (s.porFormulario && Object.keys(s.porFormulario).length) {
+        const titleEl = document.querySelector('#sondeo-stats [data-chart-title="inst"]') || document.querySelector('#chart-inst').previousElementSibling;
+        if (titleEl) titleEl.innerHTML = '📋 Respuestas por Formulario';
+        renderBarras('chart-inst', s.porFormulario, 'var(--teal,#38bdf8)', s.total);
+    } else {
+        renderBarras('chart-inst', s.instituciones, 'var(--teal,#38bdf8)', s.total);
+    }
     renderBarras('chart-nivel', s.niveles, 'var(--naranja,#ff5e00)', s.total);
     renderBarras('chart-puntajes', s.puntajes, 'var(--oro,#ffd700)', null);
     renderBarras('chart-areas', s.areas, '#22c55e', s.total);
-
-    // Animar barras cuando sean visibles
-    const obs = new IntersectionObserver(entries => {
-        entries.forEach(e => { if(e.isIntersecting) { /* ya se renderizan con CSS transition */ } });
-    });
-    obs.observe(document.getElementById('sondeo-stats'));
 }
 
 cargarStats();
@@ -1074,7 +1196,7 @@ cargarStats();
     <h2 class="reveal">¿LISTO PARA EL<br>SIGUIENTE NIVEL?</h2>
     <p class="reveal">Únete a los 90 estudiantes que ya están construyendo su futuro universitario con PRI.</p>
     <div class="cta-buttons reveal">
-        <a href="pre-test.html" class="btn-cta-white">🎯 Hacer el Pre-Test</a>
+        <a href="pre-test.html" class="btn-cta-white"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-right:6px;vertical-align:middle"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Hacer el Pre-Test</a>
         <a href="https://wa.me/573183553653?text=Hola!%20Quiero%20información%20sobre%20el%20Programa%20PRI" target="_blank" class="btn-cta-dark">📲 Contactar por WhatsApp</a>
     </div>
 </section>
@@ -1233,6 +1355,20 @@ document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
         const step = 40;
         return (waveOscY(t+step) - waveOscY(t-step)) / (step*2) * 55;
     }
+    function getWaterLine() {
+        // Medimos la posición VISUAL real del elemento wave-surface con getBoundingClientRect.
+        // Así el barco siempre sigue el agua sin importar el tamaño de ventana.
+        const oceanEl = boat.closest('.ocean-system') || boat.parentElement;
+        const waveEl  = document.querySelector('.wave-surface');
+        if (!waveEl || !oceanEl) return window.innerHeight * 0.144;
+        const oRect = oceanEl.getBoundingClientRect();
+        const wRect = waveEl.getBoundingClientRect();
+        // El SVG de la ola tiene viewBox 0 0 1440 200 con la cresta en y≈88.
+        // Eso es 88/200 = 44% desde arriba del elemento → 56% desde abajo.
+        const waterY = wRect.top + wRect.height * 0.44;
+        return Math.max(6, oRect.bottom - waterY);
+    }
+
     function animate(ts) {
         if (!startTime) startTime = ts;
         const elapsed = ts - startTime;
@@ -1240,8 +1376,7 @@ document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
         const xPct = progress * 70;
         const oscY = waveOscY(elapsed);
         const roll = waveRoll(elapsed);
-        const heroEl = boat.closest('.hero') || document.body;
-        const baseB = (heroEl.offsetHeight || window.innerHeight) * 0.132;
+        const baseB = getWaterLine();
         let alpha = 1;
         if (progress > 0.96) alpha = Math.max(0, 1 - (progress - 0.96) / 0.04);
         boat.style.left = xPct + '%';
@@ -1419,16 +1554,22 @@ const app = getApps().length ? getApps()[0] : initializeApp(fc);
 const db = getFirestore(app);
 
 // === CONTADOR COBERTURA DINÁMICO ===
+// Lee de diagnostico_colegios (misma fuente que los gráficos del diagnóstico)
 async function actualizarContadorCobertura() {
     try {
-        const snap = await getDocs(collection(db, 'sondeo_piloto'));
-        const total = snap.size || 49;
+        const snap = await getDocs(collection(db, 'diagnostico_colegios'));
+        const total = snap.size || 60;
         const el = document.querySelector('.stat-number[data-target="32"]');
         if (el) {
             el.textContent = total;
             el.setAttribute('data-target', total);
         }
-    } catch(e) { /* mantiene 32 */ }
+        // También actualizar el CTA si tiene un número hardcodeado
+        const ctaP = document.querySelector('.cta-final p.reveal');
+        if (ctaP && total > 0) {
+            ctaP.textContent = `Únete a los ${total} estudiantes que ya están construyendo su futuro universitario con PRI.`;
+        }
+    } catch(e) { /* mantiene valor actual */ }
 }
 actualizarContadorCobertura();
 </script>
@@ -1457,6 +1598,9 @@ actualizarContadorCobertura();
     const skyStop1 = document.querySelector('#skyGradient stop:nth-child(2)');
     const skyStop2 = document.querySelector('#skyGradient stop:nth-child(3)');
     const skyStop3 = document.querySelector('#skyGradient stop:last-child');
+    const skyRectEl = document.getElementById('sky-rect');
+    const starsEl   = document.getElementById('stars-layer');
+    const cloudsEl  = document.getElementById('sky-clouds');
 
     // ── Aves siempre visibles ──────────────────────────────────
     const birdsEl = document.createElement('div');
@@ -1479,12 +1623,11 @@ actualizarContadorCobertura();
         // ── Color de las aves según hora ──────────────────────
         const isDark = (h >= 19 || h < 5);
         const isSunset = (h >= 16 && h < 19);
-        birdsEl.style.opacity = '1'; // SIEMPRE visibles
-        if (isDark) {
-            birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','rgba(200,220,255,0.7)'));
-        } else if (isSunset) {
+        // Aves: visibles de día y atardecer, invisibles de noche
+        birdsEl.style.opacity = isDark ? '0' : '1';
+        if (isSunset) {
             birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','#2d1a0e'));
-        } else {
+        } else if (!isDark) {
             birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','#1a1a2e'));
         }
 
@@ -1495,6 +1638,9 @@ actualizarContadorCobertura();
             sunEl && (sunEl.style.opacity = '1');
             moonEl.style.opacity = '0';
             ataEl.style.opacity = '0';
+            if (skyRectEl) skyRectEl.style.opacity = '1';
+            if (starsEl)  starsEl.style.opacity  = '0';
+            if (cloudsEl) cloudsEl.style.opacity  = '1';
             if (skyStop0) skyStop0.setAttribute('stop-color', '#1a3a6e');
             if (skyStop1) skyStop1.setAttribute('stop-color', '#3a6fa8');
             if (skyStop2) skyStop2.setAttribute('stop-color', '#5a8fc0');
@@ -1507,49 +1653,45 @@ actualizarContadorCobertura();
             sunEl && (sunEl.style.left = `${22 + t*18}%`);
             sunEl && (sunEl.style.opacity = '1');
             moonEl.style.opacity = '0';
-            ataEl.style.opacity = `${t * 0.25}`;
+            ataEl.style.opacity = `${t * 0.3}`;
+            if (skyRectEl) skyRectEl.style.opacity = `${1 - t * 0.3}`;
+            if (starsEl)  starsEl.style.opacity  = '0';
+            if (cloudsEl) cloudsEl.style.opacity  = '1';
             if (skyStop0) skyStop0.setAttribute('stop-color', '#0d2a5e');
             if (skyStop1) skyStop1.setAttribute('stop-color', '#2a5a9e');
             if (skyStop2) skyStop2.setAttribute('stop-color', '#4a7fc0');
             if (skyStop3) skyStop3.setAttribute('stop-color', '#7aaed4');
 
         } else if (h >= 16 && h < 19) {
-            // ATARDECER (16-19h): rojos → morados/lilas
+            // ATARDECER (16-19h): atardecer.png domina, gradiente se retira
             const t = (h - 16) / 3; // 0=16h, 1=19h
-            const t2 = Math.min(1, t * 1.5); // transición más dramática al inicio
             sunEl && (sunEl.style.top = `${25 + t*40}%`);
             sunEl && (sunEl.style.left = `${40 + t*28}%`);
             sunEl && (sunEl.style.opacity = `${Math.max(0, 1 - t * 1.4)}`);
             moonEl.style.opacity = '0';
-            ataEl.style.opacity = `${0.45 + t * 0.55}`;
+            if (starsEl)  starsEl.style.opacity  = '0';
+            // Nubes con tinte cálido al atardecer (opacidad reducida para que la foto domine)
+            if (cloudsEl) cloudsEl.style.opacity  = `${Math.max(0.15, 0.7 - t * 0.6)}`;
+            // Foto real de atardecer domina el cielo
+            ataEl.style.opacity = `${0.55 + t * 0.45}`;
+            // Gradiente SVG se retira para dejar ver la foto
+            if (skyRectEl) skyRectEl.style.opacity = `${Math.max(0.05, 0.5 - t * 0.45)}`;
 
-            // Cielo: naranja intenso → rojo → morado/lila
-            const r0 = Math.round(80  + t2*120); // 80→200
-            const g0 = Math.round(20  + t2*10);  // 20→30 luego baja
-            const b0 = Math.round(10  + t2*60);  // 10→70 (lila)
-            const r1 = Math.round(200 + t2*30);  // 200→230
-            const g1 = Math.round(70  - t2*40);  // 70→30
-            const b1 = Math.round(20  + t2*50);  // 20→70
-            const r2 = Math.round(160 + t2*40);  // naranja→rojizo
-            const g2 = Math.round(60  - t2*30);
-            const b2 = Math.round(20  + t2*80);  // → lila
-            const r3 = Math.round(100 + t2*60);  // horizonte: naranja→púrpura
-            const g3 = Math.round(40  - t2*20);
-            const b3 = Math.round(60  + t2*80);  // → violeta
-            if (skyStop0) skyStop0.setAttribute('stop-color', `rgb(${r0},${g0},${b0})`);
-            if (skyStop1) skyStop1.setAttribute('stop-color', `rgb(${r1},${g1},${b1})`);
-            if (skyStop2) skyStop2.setAttribute('stop-color', `rgb(${r2},${g2},${b2})`);
-            if (skyStop3) skyStop3.setAttribute('stop-color', `rgb(${r3},${g3},${b3})`);
-
-            // Nubes difuminadas en atardecer
-            const cloudLayer = document.getElementById('sunset-clouds');
-            if (cloudLayer) cloudLayer.style.opacity = `${t * 0.85}`;
+            // Gradiente cálido residual (tonos dorados/rojos sobre la foto)
+            const t2 = Math.min(1, t * 1.5);
+            if (skyStop0) skyStop0.setAttribute('stop-color', `rgba(${Math.round(90+t2*80)},${Math.round(25+t2*5)},${Math.round(5+t2*20)},0.7)`);
+            if (skyStop1) skyStop1.setAttribute('stop-color', `rgba(${Math.round(190+t2*30)},${Math.round(60-t2*30)},${Math.round(10+t2*30)},0.7)`);
+            if (skyStop2) skyStop2.setAttribute('stop-color', `rgba(${Math.round(150+t2*30)},${Math.round(50-t2*20)},${Math.round(15+t2*50)},0.7)`);
+            if (skyStop3) skyStop3.setAttribute('stop-color', `rgba(${Math.round(90+t2*40)},${Math.round(35-t2*15)},${Math.round(50+t2*60)},0.7)`);
 
         } else if (h >= 19 || h < 4) {
             // NOCHE (19h-4h)
             sunEl && (sunEl.style.opacity = '0');
             ataEl.style.opacity = '0';
             moonEl.style.opacity = '1';
+            if (skyRectEl) skyRectEl.style.opacity = '1';
+            if (starsEl)  starsEl.style.opacity  = '1';
+            if (cloudsEl) cloudsEl.style.opacity  = '0';
             const hn = h >= 19 ? h - 19 : h + 5;
             const t = hn / 9;
             moonEl.style.top = `${Math.max(8, 35 - Math.sin(t * Math.PI) * 25)}%`;
@@ -1558,8 +1700,6 @@ actualizarContadorCobertura();
             if (skyStop1) skyStop1.setAttribute('stop-color', '#07182a');
             if (skyStop2) skyStop2.setAttribute('stop-color', '#0d2038');
             if (skyStop3) skyStop3.setAttribute('stop-color', '#122a48');
-            const cloudLayer = document.getElementById('sunset-clouds');
-            if (cloudLayer) cloudLayer.style.opacity = '0';
 
         } else {
             // MADRUGADA (4-5h)
@@ -1568,6 +1708,9 @@ actualizarContadorCobertura();
             sunEl && (sunEl.style.left = '5%');
             sunEl && (sunEl.style.opacity = `${t}`);
             moonEl.style.opacity = `${1 - t}`;
+            if (skyRectEl) skyRectEl.style.opacity = '1';
+            if (starsEl)  starsEl.style.opacity  = `${1 - t}`;
+            if (cloudsEl) cloudsEl.style.opacity  = `${t * 0.7}`;
             if (skyStop0) skyStop0.setAttribute('stop-color', `rgb(${Math.round(t*26)},${Math.round(t*42)},${20+Math.round(t*80)})`);
             if (skyStop1) skyStop1.setAttribute('stop-color', `rgb(${Math.round(t*50)},${Math.round(t*80)},${30+Math.round(t*120)})`);
         }

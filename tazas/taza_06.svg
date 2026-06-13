@@ -1,0 +1,39 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#4a1942" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Mariposas -->
+<path d="M100,65 Q78,42 60,48 Q55,60 75,68 Q82,70 100,65 Z" fill="#d946ef" opacity="0.8"/>
+<path d="M100,65 Q122,42 140,48 Q145,60 125,68 Q118,70 100,65 Z" fill="#c026d3" opacity="0.8"/>
+<path d="M100,65 Q80,80 65,88 Q62,76 78,72 Q88,70 100,65 Z" fill="#e879f9" opacity="0.7"/>
+<path d="M100,65 Q120,80 135,88 Q138,76 122,72 Q112,70 100,65 Z" fill="#d946ef" opacity="0.7"/>
+<line x1="100" y1="55" x2="100" y2="90" stroke="#4a044e" stroke-width="1.5" opacity="0.5"/>
+<circle cx="100" cy="65" r="3" fill="#fae8ff"/>
+<path d="M55,50 Q45,38 50,32" stroke="#d946ef" stroke-width="1.5" fill="none" opacity="0.4"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#4a1942" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#fae8ff" opacity="0.95">"Instruir es construir;</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#fae8ff" opacity="0.95">educar es sembrar"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#e879f9" letter-spacing="1" opacity="0.9">— Simón Bolívar</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#e879f9" letter-spacing="2" opacity="1">MARIPOSAS</text>
+</svg>

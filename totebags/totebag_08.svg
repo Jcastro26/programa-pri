@@ -1,0 +1,40 @@
+<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="220" fill="#1c2a1c" opacity="0.1"/>
+
+  <!-- Ilustración -->
+  <g transform="scale(0.85) translate(12,10)">
+    <!-- Tortuga grande -->
+<ellipse cx="100" cy="118" rx="45" ry="32" fill="#15803d" opacity="0.85"/>
+<ellipse cx="100" cy="118" rx="33" ry="23" fill="none" stroke="#4ade80" stroke-width="1.5" opacity="0.5"/>
+<path d="M72,100 Q62,82 50,86 Q46,100 62,108 Z" fill="#166534" opacity="0.8"/>
+<path d="M128,100 Q138,82 150,86 Q154,100 138,108 Z" fill="#166534" opacity="0.8"/>
+<path d="M72,136 Q62,155 50,150 Q55,138 70,128 Z" fill="#166534" opacity="0.75"/>
+<path d="M128,136 Q138,155 150,150 Q145,138 130,128 Z" fill="#166534" opacity="0.75"/>
+<ellipse cx="100" cy="90" rx="13" ry="9" fill="#14532d" opacity="0.9"/>
+<circle cx="95" cy="87" r="3" fill="white" opacity="0.8"/>
+<path d="M75,114 Q100,106 125,114 Q100,125 75,114 Z" fill="#86efac" opacity="0.35"/>
+  </g>
+
+  <!-- Logo PRI -->
+  <image href="../logo.png" x="168" y="6" width="26" height="26"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior -->
+  <rect x="0" y="162" width="200" height="58" fill="#1c2a1c" opacity="0.55"/>
+
+  <!-- Programa PRI -->
+  <text x="100" y="175" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="8"
+        fill="#86efac" letter-spacing="2" opacity="0.8">PROGRAMA PRI</text>
+  <text x="100" y="186" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="7" font-weight="600"
+        fill="#f0fdf4" letter-spacing="1" opacity="0.8">EL PACÍFICO RENACIENDO CON INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="100" y="202" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="13"
+        fill="#86efac" letter-spacing="2" opacity="1">TORTUGA MARINA</text>
+  <text x="100" y="214" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="8" font-weight="600"
+        fill="#f0fdf4" letter-spacing="1" opacity="0.85">Pacífico vivo</text>
+</svg>

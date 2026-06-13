@@ -39,7 +39,7 @@ h1, h2, h3 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 5%;
+    padding: 1rem 2.5rem 1rem 1.25rem;
     background: rgba(2, 26, 54, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 2px solid var(--naranja-atardecer);
@@ -50,10 +50,16 @@ h1, h2, h3 {
 }
 
 .logo-container h2 {
-    font-size: 1.8rem;
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 2px;
     color: var(--blanco-espuma);
-    text-shadow: 2px 2px 0 var(--naranja-atardecer);
+    text-shadow: none;
 }
+
+.menu-toggle { display: none; }
+#nav-backdrop { display: none; }
+.navbar nav { margin-left: auto; }
 
 .nav-links {
     list-style: none;
@@ -77,17 +83,20 @@ h1, h2, h3 {
 
 .btn-login {
     background-color: var(--naranja-atardecer);
-    padding: 0.8rem 1.5rem;
+    /* Padding y font-size se adaptan al ancho de la ventana */
+    padding: clamp(0.45rem, 0.9vw, 0.8rem) clamp(0.75rem, 1.4vw, 1.5rem);
+    font-size: clamp(0.68rem, 1.05vw, 0.88rem);
     border-radius: 5px;
+    white-space: nowrap; /* Evita que el texto se parta en 2 líneas */
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: box-shadow 0.2s, transform 0.15s;
 }
 .btn-login:hover {
-    box-shadow: 2px 2px 0 var(--oro-sol);
-    background-color: var(--naranja-atardecer); /* El fondo cambia a dorado */
-    color: var(--blanco-espuma) !important; /* El texto pasa a azul profundo */
-}
-
-.btn-login:hover {
-    box-shadow: 2px 2px 0 var(--oro-sol);
+    box-shadow: 3px 3px 0 var(--oro-sol);
+    background-color: var(--naranja-atardecer);
+    color: var(--blanco-espuma) !important;
+    transform: translateY(-1px);
 }
 /* --- Contenedor del Logo Clickeable --- */
 .logo-link {
@@ -99,21 +108,31 @@ h1, h2, h3 {
 
 /* --- Texto del Logo --- */
 .logo-link h2 {
-    font-size: 1.8rem;
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
     color: var(--blanco-espuma);
-    text-shadow: 2px 2px 0 var(--naranja-atardecer);
-    transition: color 0.3s ease, transform 0.3s ease;
-    margin: 0; /* Asegura que no tenga márgenes extra que lo desalineen */
+    text-shadow: none;
+    margin: 0;
+    line-height: 1.2;
 }
 
-/* --- Efectos al pasar el mouse por todo el bloque --- */
+.logo-link p {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal, #38bdf8);
+    margin: 0;
+}
+
+/* --- Efectos al pasar el mouse --- */
 .logo-link:hover h2 {
-    color: var(--blanco-espuma); /* El texto cambia a naranja, ya no xd */
-    transform: scale(1.02) rotate(-2deg); /* El logo hace un pequeño giro */
+    color: var(--blanco-espuma);
 }
-
 .logo-link:hover .logo-img {
-    transform: scale(1.05) rotate(-5deg); /* El logo hace un pequeño giro */
+    transform: scale(1.05);
 }
 
 /* ==================== HERO SECTION (MAREAS MAXIMALISTAS) ==================== */
@@ -396,89 +415,20 @@ h1, h2, h3 {
     }
 }
 
+/* Bloque 768px — menú hamburguesa: ahora manejado por el bloque maximalista más abajo */
 @media (max-width: 768px) {
-    /* ... (deja intacto el código del .menu-toggle que ya tienes) ... */
-
-    /* 1. Contenedor con mejor distribución vertical */
-    .nav-links {
-        position: fixed;
-        top: 0;
-        left: 100%; 
-        width: 100vw;
-        height: 100vh;
-        background: rgba(2, 26, 54, 0.98) !important; 
-        backdrop-filter: blur(25px); 
-        -webkit-backdrop-filter: blur(25px);
-        display: none !important; 
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem; /* Reducimos el espacio para que respire sin salirse de la pantalla */
-        padding: 2rem;
-        transition: left 0.5s cubic-bezier(0.77, 0, 0.175, 1);
-        z-index: 2000 !important; 
-        box-sizing: border-box;
-    }
-
-    .nav-links.active { 
-        display: flex !important; 
-        left: 0 !important;       
-    }
-
-    .nav-links li {
-        width: 100%;
-        text-align: center;
-        list-style: none;
-    }
-
-    /* 2. Textos fluidos que no colapsan en celulares pequeños */
-    .nav-links a {
-        display: inline-block;
-        /* Usamos clamp para que el texto se achique si el celular es angosto */
-        font-size: clamp(1.8rem, 8vw, 2.5rem) !important; 
-        font-weight: 900;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        -webkit-text-stroke: 1px var(--blanco-espuma); /* Trazo un poco más fino */
-        color: transparent; 
-        transition: all 0.3s ease;
-        width: auto;
-    }
-
-    .nav-links a:hover, 
-    .nav-links a.active {
-        color: var(--naranja-atardecer) !important;
-        -webkit-text-stroke: 0px transparent !important;
-        transform: scale(1.05);
-    }
-
-    /* 3. Botón de Acceso: Contraste Máximo y Brutalismo */
-    .nav-links a.btn-login {
-        color: var(--azul-deep-tumaco) !important; /* Texto oscuro para que resalte sobre naranja */
-        background-color: var(--naranja-atardecer) !important;
-        -webkit-text-stroke: 0px transparent !important; /* Forzamos a quitar el delineado hueco */
-        padding: 15px 40px !important;
-        font-size: clamp(1.5rem, 6vw, 1.8rem) !important;
-        letter-spacing: 2px;
-        width: 80%; 
-        max-width: 300px;
-        margin-top: 1.5rem;
-        border-radius: 0; /* Bordes rectos rústicos */
-        box-shadow: 8px 8px 0 var(--oro-sol); /* Sombra brutalista dorada */
-    }
-    
-    .nav-links a.btn-login:hover {
-        transform: translate(-4px, -4px) scale(1.02);
-        box-shadow: 12px 12px 0 var(--oro-sol);
-    }
+    /* Deja espacio para el bloque maximalista global */
 }
 /* ==================== ESTILOS DE IMÁGENES MAXIMALISTAS ==================== */
 
 /* --- Logo Animado --- */
 .logo-img {
-    height: 45px; /* Ajusta este valor si tu logo se ve muy grande o pequeño */
-    filter: drop-shadow(3px 3px 0px var(--naranja-atardecer)); /* Sombra ruda */
+    width: 42px;
+    height: 42px;
+    object-fit: cover;
+    border-radius: 50%;
     transition: transform 0.3s ease;
+    flex-shrink: 0;
 }
 
 .logo-img:hover {
@@ -1036,20 +986,42 @@ h1, h2, h3 {
 /* ========================================================================== */
 @media (max-width: 768px) {
     
-    /* 1. Asegurar que el botón de la hamburguesa / X sea visible y esté arriba */
+    /* 1. Botón hamburguesa — visible y con label MENÚ */
     .menu-toggle {
         display: flex !important;
         flex-direction: column;
-        justify-content: space-between;
-        width: 30px;
-        height: 21px;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: auto;
+        min-width: 52px;
+        height: auto;
         cursor: pointer;
-        z-index: 3000 !important; /* Lo pone por encima de las mareas de fondo */
+        z-index: 3000 !important;
+        background: rgba(255,94,0,0.12);
+        border: 1.5px solid rgba(255,94,0,0.5);
+        border-radius: 4px;
+        padding: 6px 10px 4px;
+        transition: background 0.2s ease;
     }
+    .menu-toggle:hover, .menu-toggle.is-active {
+        background: rgba(255,94,0,0.22);
+        border-color: var(--naranja-atardecer, #FF5E00);
+    }
+    .menu-toggle::after {
+        content: 'MENÚ';
+        font-family: 'Montserrat', sans-serif;
+        font-size: 0.45rem;
+        font-weight: 900;
+        letter-spacing: 1.5px;
+        color: var(--naranja-atardecer, #FF5E00);
+        margin-top: 1px;
+    }
+    .menu-toggle.is-active::after { content: 'CERRAR'; }
     .menu-toggle .bar {
-        width: 100%;
-        height: 3px;
-        background-color: var(--naranja-atardecer, #FF5E00); /* Tu naranja rudo */
+        width: 22px;
+        height: 2.5px;
+        background-color: var(--naranja-atardecer, #FF5E00);
         border-radius: 2px;
         transition: all 0.3s ease-in-out;
     }
@@ -1071,30 +1043,32 @@ h1, h2, h3 {
         position: fixed;
         top: 0;
         right: 0;
-        width: min(280px, 85vw);
+        left: unset !important;
+        width: min(280px, 85vw) !important;
         height: 100vh;
-        background: rgba(2, 26, 54, 0.98) !important;
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        display: flex;
+        background: rgba(2, 20, 48, 0.88) !important;
+        backdrop-filter: blur(28px) saturate(160%);
+        -webkit-backdrop-filter: blur(28px) saturate(160%);
+        border-left: 1.5px solid rgba(255, 94, 0, 0.25);
+        display: flex !important;
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
         gap: 1.8rem;
         padding: 5rem 2rem 2rem;
-        transform: translateX(100%);
+        transform: translateX(100%) !important;
         visibility: hidden;
-        transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s linear 0.4s;
+        transition: transform 0.38s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s linear 0.38s;
         z-index: 2000 !important;
         box-sizing: border-box;
-        box-shadow: -6px 0 30px rgba(0,0,0,0.6);
+        box-shadow: -8px 0 40px rgba(0,0,0,0.55), inset -1px 0 0 rgba(255,255,255,0.04);
     }
 
     /* 3. Clase de Activación */
     .nav-links.active {
-        transform: translateX(0);
+        transform: translateX(0) !important;
         visibility: visible;
-        transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s linear 0s;
+        transition: transform 0.38s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s linear 0s;
     }
 
     /* Fondo oscuro al abrir el cajón */
@@ -3440,9 +3414,86 @@ h1, h2, h3 {
 .wave-surf    { height: 20vh !important; z-index: 4 !important; animation: waveMove 11s linear infinite reverse !important; }
 .wave-foam    { height: 16vh !important; z-index: 5 !important; animation: waveMove 8s linear infinite !important; }
 
-/* Tono nublado del Pacífico */
+/* ── MAR HIPERREALISTA DEL PACÍFICO ─────────────────────────────────────────
+   5 capas de olas con colores reales (azul profundo → verde-azul → espuma)
+   + capa de destello/shimmer de luz sobre el agua.
+   Eliminamos el filtro gris que aplana los colores.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Quitamos el filtro gris: ya los colores SVG reflejan el Pacífico nublado */
 .cloudy-theme .wave {
-    filter: grayscale(0.45) brightness(0.68) contrast(1.25) !important;
+    filter: brightness(0.82) contrast(1.08) !important;
+}
+
+/* WAVE-DEEP: fondo oscuro casi negro — aguas muy profundas */
+.wave-deep {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg"><path fill="%23050d1a" d="M0,122 C240,100 420,145 660,120 C900,95 1080,142 1280,118 C1380,106 1425,114 1440,120 L1440,200 L0,200 Z"/></svg>') !important;
+}
+
+/* WAVE-MID: azul marino profundo */
+.wave-mid {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg"><path fill="%230b2440" d="M0,112 C180,88 320,136 520,108 C720,80 880,134 1060,106 C1240,78 1370,120 1440,108 L1440,200 L0,200 Z"/></svg>') !important;
+}
+
+/* WAVE-SURFACE: teal-azul oscuro — la superficie visible del océano */
+.wave-surface {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg"><path fill="%23103e5e" fill-opacity="0.95" d="M0,96 C130,118 260,68 420,92 C580,116 700,60 860,86 C1020,112 1140,56 1300,82 C1395,98 1430,78 1440,90 L1440,200 L0,200 Z"/></svg>') !important;
+    height: 26vh !important;
+}
+
+/* WAVE-SURF: teal más claro — agua superficial con algo de luz */
+.wave-surf {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg"><path fill="%23185c78" fill-opacity="0.88" d="M0,82 C115,104 225,54 375,78 C525,102 625,46 780,70 C935,94 1040,40 1200,66 C1320,84 1390,60 1440,74 L1440,200 L0,200 Z"/></svg>') !important;
+    height: 20vh !important;
+    z-index: 4 !important;
+    animation: waveMove 11s linear infinite reverse !important;
+}
+
+/* WAVE-FOAM: la orilla más clara con cresta de espuma blanca */
+.wave-foam {
+    background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%25" stop-color="%23a8ccd8" stop-opacity="0.9"/><stop offset="60%25" stop-color="%232d7a96" stop-opacity="0.75"/><stop offset="100%25" stop-color="%23144e6e" stop-opacity="0.95"/></linearGradient></defs><path fill="url(%23fg)" d="M0,68 C88,86 178,44 305,66 C432,88 515,36 642,58 C769,80 856,30 988,54 C1120,78 1234,44 1352,64 C1413,74 1436,60 1440,66 L1440,200 L0,200 Z"/><path fill="white" fill-opacity="0.28" d="M0,66 C50,60 100,70 155,64 C210,58 260,68 320,62 C380,56 430,66 490,60 C560,53 620,65 680,59 C745,52 810,64 875,58 C945,51 1010,64 1080,58 C1150,51 1215,63 1280,57 C1340,52 1400,62 1440,58 L1440,68 C1400,64 1340,74 1280,68 C1215,62 1150,72 1080,66 C1010,60 945,72 875,66 C810,60 745,72 680,66 C620,60 560,72 490,66 C430,60 380,70 320,64 C260,58 210,68 155,62 C100,56 50,68 0,64 Z"/></svg>') !important;
+    height: 16vh !important;
+    z-index: 5 !important;
+    animation: waveMove 8s linear infinite !important;
+}
+
+/* Espuma blanca sutil en el borde superior */
+.wave-foam::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.55) 0%, transparent 100%);
+    z-index: 1;
+    border-radius: 50% 50% 0 0;
+}
+
+/* SHIMMER: destello de luz solar sobre el agua */
+.wave-shimmer {
+    position: absolute !important;
+    bottom: 18vh !important;
+    left: -10% !important;
+    width: 120% !important;
+    height: 5vh !important;
+    background: linear-gradient(105deg,
+        transparent 0%,
+        rgba(160,210,235,0.0) 25%,
+        rgba(200,235,255,0.18) 45%,
+        rgba(255,255,255,0.28) 50%,
+        rgba(200,235,255,0.18) 55%,
+        rgba(160,210,235,0.0) 75%,
+        transparent 100%
+    ) !important;
+    z-index: 9 !important;
+    pointer-events: none !important;
+    animation: shimmerSlide 5s ease-in-out infinite !important;
+    transform-origin: center !important;
+}
+@keyframes shimmerSlide {
+    0%   { transform: translateX(-15%) skewX(-8deg); opacity: 0.3; }
+    45%  { opacity: 0.95; }
+    50%  { transform: translateX(15%) skewX(-8deg); opacity: 0.95; }
+    100% { transform: translateX(-15%) skewX(-8deg); opacity: 0.3; }
 }
 
 /* 7. NIEBLA */
@@ -3973,6 +4024,120 @@ p, li, a, label, span, td, th, input, button, textarea {
 .texturized-bg-dark {
     background-color: var(--azul-deep-tumaco);
     position: relative;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SISTEMA DE BOTONES UNIFICADO — Coherencia en todo el sitio
+   Paleta: naranja (#FF5E00) primario · azul navy secundario
+   ══════════════════════════════════════════════════════════ */
+
+/* Base compartida para todos los botones principales */
+.btn-primary,
+.btn-unirse,
+.btn-ver-solo,
+a.btn-primary {
+    font-family: var(--fuente-titulos, 'Montserrat', sans-serif);
+    font-weight: 900;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background-color: var(--naranja-atardecer, #FF5E00);
+    color: #fff !important;
+    border: none;
+    padding: 0.85rem 1.75rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 4px 4px 0 rgba(6, 49, 98, 0.5);
+    position: relative;
+}
+.btn-primary:hover,
+.btn-unirse:hover,
+a.btn-primary:hover {
+    background-color: #e05200;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(6, 49, 98, 0.6);
+}
+
+/* Botón secundario (outline) */
+.btn-secondary,
+.btn-link-sec,
+a.btn-secondary {
+    font-family: var(--fuente-titulos, 'Montserrat', sans-serif);
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background-color: transparent;
+    color: var(--naranja-atardecer, #FF5E00) !important;
+    border: 2px solid var(--naranja-atardecer, #FF5E00);
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.btn-secondary:hover,
+.btn-link-sec:hover,
+a.btn-secondary:hover {
+    background-color: var(--naranja-atardecer, #FF5E00);
+    color: #fff !important;
+}
+
+/* CTA blanco (secciones oscuras) */
+.btn-cta-white {
+    font-family: var(--fuente-titulos, 'Montserrat', sans-serif);
+    font-weight: 900;
+    font-size: 0.85rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background-color: #fff;
+    color: var(--azul-deep-tumaco, #063162) !important;
+    border: none;
+    padding: 0.9rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 4px 4px 0 rgba(255, 94, 0, 0.5);
+}
+.btn-cta-white:hover {
+    background-color: #f0f4ff;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(255, 94, 0, 0.6);
+}
+
+/* WhatsApp — verde propio, sin cambio */
+.btn-whatsapp {
+    font-family: var(--fuente-titulos, 'Montserrat', sans-serif);
+    font-weight: 900;
+    font-size: 0.82rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background-color: #25D366;
+    color: #fff !important;
+    border: none;
+    padding: 0.85rem 1.75rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+.btn-whatsapp:hover {
+    background-color: #1da851;
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
 }
 
 /* Efecto de ruido granulado (Generado por CSS puro para no usar imágenes) */
@@ -5425,23 +5590,33 @@ button:hover ~ .cursor-ring,
 .galeria-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: 220px 220px;
+    grid-template-rows: repeat(auto-fill, 210px);
+    grid-auto-rows: 210px;
     gap: 0.75rem;
 }
 .foto-piloto {
     position: relative;
     overflow: hidden;
-    border-radius: 6px;
+    border-radius: 10px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.1);
-    cursor: pointer;
+    cursor: zoom-in;
+    height: 210px;
 }
-.foto-piloto.foto-grande { grid-row: span 2; }
+.foto-piloto.foto-grande {
+    grid-column: span 2;
+    grid-row: span 2;
+    height: auto; /* spans calculated by grid */
+    min-height: 432px;
+    border-radius: 14px;
+}
 .foto-piloto img {
-    width: 100%; height: 100%;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    object-position: center 20%;
     display: block;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s ease;
 }
 .foto-piloto:hover img { transform: scale(1.05); }
 .foto-overlay {
@@ -5493,10 +5668,10 @@ button:hover ~ .cursor-ring,
     .sesion-step { min-width: 140px; flex: 1 1 140px; }
     .galeria-grid {
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
+        grid-auto-rows: 160px;
     }
-    .foto-piloto.foto-grande { grid-column: span 2; height: 200px; }
-    .foto-piloto { height: 150px; }
+    .foto-piloto.foto-grande { grid-column: span 2; min-height: 0; height: 220px; }
+    .foto-piloto { height: 160px; }
     .piloto-stats { grid-template-columns: 1fr 1fr; }
     .metodologia-section { padding: 3rem 0; }
     .piloto-section { padding: 3rem 0; }

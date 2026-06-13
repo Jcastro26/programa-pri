@@ -283,7 +283,7 @@
     <div class="logo-container">
         <a href="index.html" class="logo-link">
             <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-            <h2>PROGRAMA-PRI</h2>
+            <div><h2>PROGRAMA-PRI</h2><p>El Pacífico Renaciendo con Ingeniería</p></div>
         </a>
     </div>
     <div class="menu-toggle" id="mobile-menu">
@@ -297,9 +297,10 @@
             <li><a href="pre-test.html">PRE-TEST</a></li>
             <li><a href="docentes.html">Docentes</a></li>
             <li><a href="productos.html">Productos</a></li>
-            <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+            <li><a href="login.html" class="btn-login">Inicia Sesión</a></li>
         </ul>
     </nav>
+    <div id="nav-backdrop"></div>
 </header>
 
 <!-- HERO -->
@@ -489,8 +490,8 @@
                 <p>Al inicio del programa, el promedio regional en Tumaco es de 202 puntos. Con el sistema PRI, ya llevamos a nuestros estudiantes a 315. La meta: superar los 400 puntos antes del examen de noviembre.</p>
                 <p>Cada simulacro genera datos individuales. Identificamos debilidades específicas y dirigimos el refuerzo exactamente donde más se necesita — sin desperdicio de tiempo.</p>
                 <div style="margin-top:2.5rem;display:flex;flex-direction:column;gap:1rem;">
-                    <a href="pre-test.html" style="display:inline-block;background:var(--azul-deep-tumaco);color:white;padding:1.1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);box-shadow:5px 5px 0 var(--naranja-atardecer);transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-2px,-2px)';this.style.boxShadow='7px 7px 0 var(--naranja-atardecer)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 var(--naranja-atardecer)'">🎯 Hacer mi Diagnóstico Ahora</a>
-                    <a href="dashboard.html" style="display:inline-block;color:var(--azul-deep-tumaco);font-family:var(--fuente-titulos);font-weight:800;font-size:0.9rem;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Ver métricas del programa →</a>
+                    <a href="pre-test.html" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Hacer mi Diagnóstico Ahora</a>
+                    <a href="#metricas-programa" style="display:inline-block;color:var(--azul-deep-tumaco);font-family:var(--fuente-titulos);font-weight:800;font-size:0.9rem;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Ver métricas del programa →</a>
                 </div>
             </div>
         </div>
@@ -506,6 +507,118 @@
         <a href="pre-test.html" class="btn-primary" style="display:inline-block;padding:1.2rem 2.5rem;text-decoration:none;font-family:var(--fuente-titulos);font-weight:900;font-size:1.1rem;text-transform:uppercase;">Comenzar Simulacro</a>
         <a href="https://wa.me/573183553653?text=Hola!%20Quiero%20información%20sobre%20el%20Pre-ICFES%20del%20Programa%20PRI" target="_blank" style="display:inline-block;background:transparent;color:var(--blanco-espuma);padding:1.2rem 2.5rem;font-family:var(--fuente-titulos);font-weight:900;font-size:1.1rem;text-transform:uppercase;text-decoration:none;border:2px solid rgba(255,255,255,0.4);box-shadow:5px 5px 0 rgba(0,0,0,0.3);transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-2px,-2px)'" onmouseout="this.style.transform=''">📲 Hablar con un Mentor</a>
     </div>
+</section>
+
+<!-- ==================== MÉTRICAS DEL PROGRAMA ==================== -->
+<section id="metricas-programa" style="padding:5rem 2rem;background:linear-gradient(180deg,#021226 0%,#062040 60%,#021226 100%);border-top:1px solid rgba(255,255,255,0.06);">
+<div style="max-width:1100px;margin:0 auto;">
+
+  <!-- Encabezado -->
+  <div style="text-align:center;margin-bottom:3.5rem;">
+    <span style="display:inline-block;font-size:0.6rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#FF5E00;background:rgba(255,94,0,0.12);border:1px solid rgba(255,94,0,0.3);padding:0.35rem 1rem;margin-bottom:1rem;">Datos Reales · Entregable 2025</span>
+    <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:0.75rem;">Métricas del <span style="color:#FF5E00;">Programa PRI</span></h2>
+    <p style="color:rgba(240,244,248,0.5);font-size:0.9rem;max-width:560px;margin:0 auto;">Cifras reales del diagnóstico educativo de Tumaco y los resultados del modelo de intervención PRI.</p>
+  </div>
+
+  <!-- Diagnóstico: el problema -->
+  <div style="margin-bottom:3rem;">
+    <p style="font-size:0.62rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#38bdf8;margin-bottom:1.2rem;">· El Problema ·</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;">
+
+      <div style="background:rgba(255,94,0,0.07);border:1px solid rgba(255,94,0,0.25);padding:1.8rem 1.5rem;border-top:3px solid #FF5E00;">
+        <div style="font-size:2.8rem;font-weight:900;color:#FF5E00;line-height:1;margin-bottom:0.5rem;">36%</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(240,244,248,0.85);margin-bottom:0.4rem;">Acceso a educación superior</div>
+        <div style="font-size:0.7rem;color:rgba(240,244,248,0.4);">Del total de estudiantes de Tumaco en 2024 lograron ingresar a la universidad.</div>
+      </div>
+
+      <div style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);padding:1.8rem 1.5rem;border-top:3px solid #38bdf8;">
+        <div style="font-size:2.8rem;font-weight:900;color:#38bdf8;line-height:1;margin-bottom:0.5rem;">202</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(240,244,248,0.85);margin-bottom:0.4rem;">Puntos promedio Saber 11</div>
+        <div style="font-size:0.7rem;color:rgba(240,244,248,0.4);">Promedio local en pruebas Saber 11 — insuficiente para el estándar universitario.</div>
+      </div>
+
+      <div style="background:rgba(255,94,0,0.07);border:1px solid rgba(255,94,0,0.25);padding:1.8rem 1.5rem;border-top:3px solid #FF5E00;">
+        <div style="font-size:2.8rem;font-weight:900;color:#FF5E00;line-height:1;margin-bottom:0.5rem;">51%</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(240,244,248,0.85);margin-bottom:0.4rem;">Deserción universitaria</div>
+        <div style="font-size:0.7rem;color:rgba(240,244,248,0.4);">Promedio de abandono en primeros semestres del programa PEAMA (UNAL): entre 45% y 56%.</div>
+      </div>
+
+      <div style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);padding:1.8rem 1.5rem;border-top:3px solid #38bdf8;">
+        <div style="font-size:2.8rem;font-weight:900;color:#38bdf8;line-height:1;margin-bottom:0.5rem;">35%</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(240,244,248,0.85);margin-bottom:0.4rem;">Alcance estratégico</div>
+        <div style="font-size:0.7rem;color:rgba(240,244,248,0.4);">Del estudiantado de Tumaco (grados 8°–11°) en zona urbana con mayor vulnerabilidad socioeconómica.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Divisor -->
+  <div style="border-top:1px solid rgba(255,255,255,0.06);margin-bottom:3rem;"></div>
+
+  <!-- Modelo de impacto: metas -->
+  <div style="margin-bottom:3rem;">
+    <p style="font-size:0.62rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#ffd700;margin-bottom:1.2rem;">· Modelo de Impacto (6–24 meses) ·</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;">
+        <div style="font-size:1.8rem;flex-shrink:0;">🎯</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Meta 2028 · Acceso Universitario</div>
+          <div style="font-size:0.8rem;color:rgba(240,244,248,0.75);">Escalar del 36% actual al <strong style="color:#ffd700;">50%</strong> de tránsito a la universidad — de 773 a <strong style="color:#ffd700;">1.006 personas</strong> preparadas.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;">
+        <div style="font-size:1.8rem;flex-shrink:0;">📈</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Meta · Puntaje ICFES</div>
+          <div style="font-size:0.8rem;color:rgba(240,244,248,0.75);"><strong style="color:#ffd700;">25% de incremento</strong> en puntajes ICFES medido con pre-test y post-test de intervención del programa.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;">
+        <div style="font-size:1.8rem;flex-shrink:0;">🎓</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Alcance por Cohorte</div>
+          <div style="font-size:0.8rem;color:rgba(240,244,248,0.75);"><strong style="color:#ffd700;">30 estudiantes</strong> por grado escolar · 90 estudiantes en total · 4 niveles · 8 ciclos de formación.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;">
+        <div style="font-size:1.8rem;flex-shrink:0;">💰</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Presupuesto Anual</div>
+          <div style="font-size:0.8rem;color:rgba(240,244,248,0.75);">Entre <strong style="color:#ffd700;">$30 y $40 millones</strong> anuales para cubrir 2 cohortes completas (RSE, subsidios públicos y cooperación).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de progreso: 202 → 315 → 400 -->
+  <div style="background:rgba(6,49,98,0.3);border:1px solid rgba(255,255,255,0.08);padding:2rem 2rem 1.5rem;">
+    <p style="font-size:0.62rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#38bdf8;margin-bottom:1.5rem;">· Progresión de Puntajes Saber 11 ·</p>
+    <div style="position:relative;margin-bottom:1.2rem;">
+      <div style="height:12px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;">
+        <div style="height:100%;width:56%;background:linear-gradient(90deg,#FF5E00,#ffd700);border-radius:6px;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:0.6rem;font-size:0.68rem;color:rgba(240,244,248,0.5);">
+        <span>202 pts · Inicio</span>
+        <span style="color:#ffd700;font-weight:900;">315 pts · PRI actual</span>
+        <span>400 pts · Meta</span>
+        <span>500+ pts · Excelencia</span>
+      </div>
+    </div>
+    <p style="font-size:0.75rem;color:rgba(240,244,248,0.45);text-align:center;">Escala orientativa. El progreso real se mide con pre-test y post-test individuales en la plataforma.</p>
+  </div>
+
+  <!-- CTA -->
+  <div style="text-align:center;margin-top:3rem;">
+    <a href="pre-test.html" style="display:inline-flex;align-items:center;gap:10px;background:#FF5E00;color:white;padding:1rem 2.5rem;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:2px solid #FF5E00;box-shadow:5px 5px 0 rgba(255,94,0,0.4);transition:all 0.25s;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='8px 8px 0 rgba(255,94,0,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 rgba(255,94,0,0.4)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Hacer mi Diagnóstico Gratis
+    </a>
+  </div>
+
+</div>
 </section>
 
 <footer class="footer-industrial">
@@ -533,11 +646,18 @@
 </footer>
 
 <script>
-// Navbar hamburguesa
-document.getElementById('mobile-menu').addEventListener('click', function(){
-    this.classList.toggle('is-active');
-    document.querySelector('.nav-links').classList.toggle('active');
-});
+// Menú móvil — cajón lateral con backdrop
+(function(){
+    const toggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const backdrop = document.getElementById('nav-backdrop');
+    if (!toggle || !navLinks) return;
+    function openMenu(){ toggle.classList.add('is-active'); navLinks.classList.add('active'); if(backdrop) backdrop.classList.add('active'); document.body.style.overflow='hidden'; }
+    function closeMenu(){ toggle.classList.remove('is-active'); navLinks.classList.remove('active'); if(backdrop) backdrop.classList.remove('active'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', () => navLinks.classList.contains('active') ? closeMenu() : openMenu());
+    if(backdrop) backdrop.addEventListener('click', closeMenu);
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+})();
 
 // Scroll reveal
 const obs = new IntersectionObserver((entries) => {

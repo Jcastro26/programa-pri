@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portafolio de Productos | Programa PRI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,900;1,400&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --cat-bg: #021226;
+  --cat-card: #071828;
+  --cat-border: rgba(255,255,255,0.08);
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+.cat-nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(2,18,38,0.92);
+  backdrop-filter: blur(20px) saturate(150%);
+  border-bottom: 1px solid rgba(255,94,0,0.2);
+  padding: .85rem 2rem;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+}
+.cat-nav-brand { display:flex; align-items:center; gap:.75rem; text-decoration:none; }
+.cat-nav-brand img { height: 36px; }
+.cat-nav-brand-text { font-family:'Montserrat',sans-serif; font-weight:900; font-size:1rem; color:#fff; letter-spacing:2px; }
+.cat-nav-brand-sub  { font-family:'Montserrat',sans-serif; font-size:.55rem; color:rgba(240,244,248,.4); letter-spacing:3px; text-transform:uppercase; }
+.cat-nav-links { display:flex; gap:.4rem; flex-wrap:wrap; }
+.cat-tab-btn {
+  padding:.35rem 1rem; border-radius:20px; border:1.5px solid rgba(255,255,255,0.15);
+  background:transparent; color:rgba(240,244,248,.6); font-size:.72rem; font-weight:700;
+  cursor:pointer; font-family:'Montserrat',sans-serif; letter-spacing:.5px; transition:all .18s;
+  text-decoration:none; display:inline-block;
+}
+.cat-tab-btn:hover, .cat-tab-btn.active {
+  background:rgba(255,94,0,.12); border-color:#FF5E00; color:#FF5E00;
+}
+.cat-nav-right { display:flex; align-items:center; gap:.75rem; }
+.cat-admin-badge {
+  font-family:'Montserrat',sans-serif; font-size:.6rem; font-weight:700;
+  letter-spacing:1.5px; padding:.25rem .7rem; border-radius:4px;
+  background:rgba(255,94,0,.15); border:1px solid rgba(255,94,0,.4); color:#FF5E00;
+}
+.cat-back-btn {
+  font-family:'Montserrat',sans-serif; font-size:.65rem; font-weight:700;
+  letter-spacing:1px; padding:.35rem .85rem; border-radius:6px;
+  border:1px solid rgba(255,255,255,.15); background:transparent;
+  color:rgba(240,244,248,.5); text-decoration:none; transition:all .18s;
+}
+.cat-back-btn:hover { color:#fff; border-color:rgba(255,255,255,.4); }
+
+/* ── HERO ────────────────────────────────────────────────── */
+.cat-hero {
+  background: linear-gradient(135deg,#021226 0%,#0a2440 60%,#0d3558 100%);
+  padding: 5rem 2rem 3.5rem;
+  text-align: center;
+  border-bottom: 2px solid rgba(255,94,0,0.2);
+}
+.cat-hero-eyebrow {
+  font-family:'Montserrat',sans-serif; font-size:.7rem; font-weight:700;
+  letter-spacing:4px; text-transform:uppercase; color:#FF5E00; margin-bottom:.75rem;
+}
+.cat-hero h1 {
+  font-family:'Montserrat',sans-serif; font-weight:900;
+  font-size:clamp(2rem,5vw,3.5rem); color:#fff; line-height:1.05;
+  margin-bottom:.75rem;
+}
+.cat-hero h1 span { color:#FF5E00; }
+.cat-hero p {
+  font-family:'Lora',serif; font-size:1.05rem; color:rgba(240,244,248,.65);
+  max-width:540px; margin:0 auto 1.5rem;
+}
+.cat-hero-cta {
+  font-family:'Montserrat',sans-serif; font-size:.72rem; font-weight:700;
+  letter-spacing:1px; padding:.55rem 1.5rem; border-radius:6px;
+  background:rgba(255,94,0,.12); border:1.5px solid rgba(255,94,0,.5); color:#FF5E00;
+  text-decoration:none; display:inline-block; transition:all .2s;
+}
+.cat-hero-cta:hover { background:#FF5E00; color:#fff; }
+
+/* ── MAIN ────────────────────────────────────────────────── */
+.cat-main { max-width: 1400px; margin: 0 auto; padding: 3rem 2rem 4rem; }
+
+/* ── SECTION HEADER ──────────────────────────────────────── */
+.cat-section { margin-bottom: 4rem; scroll-margin-top: 80px; }
+.cat-section-header {
+  display:flex; align-items:baseline; gap:1rem; margin-bottom:1.5rem;
+  padding-bottom:.75rem; border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.cat-section-header h2 {
+  font-family:'Montserrat',sans-serif; font-weight:900;
+  font-size:1.4rem; color:#fff; letter-spacing:3px; text-transform:uppercase;
+}
+.cat-section-header h2 span { color:#FF5E00; }
+.cat-section-count {
+  font-family:'Montserrat',sans-serif; font-size:.62rem; font-weight:700;
+  letter-spacing:2px; color:rgba(240,244,248,.35); text-transform:uppercase;
+}
+.cat-section-desc {
+  font-family:'Lora',serif; font-size:.9rem; color:rgba(240,244,248,.5);
+  margin-bottom:1.5rem; margin-top:-.5rem;
+}
+
+/* ── PRODUCT GRID ────────────────────────────────────────── */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ── PRODUCT CARD ────────────────────────────────────────── */
+.cat-card {
+  background: var(--cat-card);
+  border: 1.5px solid var(--cat-border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+  display: flex; flex-direction: column;
+}
+.cat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  border-color: rgba(255,94,0,.3);
+}
+.cat-card-preview {
+  background: #fff;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.cat-card-preview.square { aspect-ratio: 1/1; }
+.cat-card-preview.wide   { aspect-ratio: 4/3; }
+.cat-card-preview img, .cat-card-preview object {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+}
+.cat-card-body { padding: .9rem .85rem; flex: 1; display: flex; flex-direction: column; gap: .4rem; }
+.cat-card-num  { font-family:'Montserrat',sans-serif; font-size:.58rem; font-weight:700; letter-spacing:2px; color:#FF5E00; text-transform:uppercase; }
+.cat-card-name { font-family:'Montserrat',sans-serif; font-weight:900; font-size:.82rem; color:#e8f0f8; line-height:1.3; }
+.cat-card-actions { margin-top: auto; padding-top: .6rem; display:flex; flex-direction:column; gap:.35rem; }
+.btn-preview {
+  padding:.4rem; border-radius:5px; font-family:'Montserrat',sans-serif;
+  font-size:.65rem; font-weight:700; letter-spacing:.5px; cursor:pointer;
+  border:1.5px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04);
+  color:rgba(240,244,248,.6); transition:all .18s; text-align:center; text-decoration:none;
+  display:block;
+}
+.btn-preview:hover { background:rgba(255,255,255,.08); color:#fff; border-color:rgba(255,255,255,.25); }
+.btn-download {
+  padding:.4rem; border-radius:5px; font-family:'Montserrat',sans-serif;
+  font-size:.65rem; font-weight:700; letter-spacing:.5px; cursor:pointer;
+  border:1.5px solid rgba(255,94,0,.4); background:rgba(255,94,0,.1);
+  color:#FF5E00; transition:all .18s; text-align:center; text-decoration:none;
+  display:none; /* hidden by default, shown for admin */
+}
+.btn-download:hover { background:#FF5E00; color:#fff; }
+.is-admin .btn-download { display: block; }
+
+/* ── MODAL ───────────────────────────────────────────────── */
+.img-modal-overlay {
+  position:fixed; inset:0; z-index:500;
+  background:rgba(0,0,0,.92);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.img-modal-overlay.open { opacity:1; pointer-events:all; }
+.img-modal-box {
+  background:#fff; border-radius:8px;
+  max-width:90vw; max-height:90vh;
+  overflow:auto; position:relative;
+  display:flex; flex-direction:column;
+}
+.img-modal-header {
+  background:#021226; padding:.6rem 1rem;
+  display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.img-modal-header p { font-family:'Montserrat',sans-serif; font-size:.75rem; font-weight:900; color:#fff; }
+.img-modal-header button { background:none;border:none;color:rgba(240,244,248,.5);font-size:1.1rem;cursor:pointer;padding:.2rem .5rem; }
+.img-modal-img { width:100%; height:auto; display:block; }
+
+/* ── CONTACT ─────────────────────────────────────────────── */
+.cat-contact {
+  background:rgba(6,49,98,.15); border:1px solid rgba(255,255,255,.08);
+  border-radius:12px; padding:2.5rem; text-align:center; margin-top:2rem;
+}
+.cat-contact h3 { font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.1rem; color:#fff; margin-bottom:.5rem; letter-spacing:2px; }
+.cat-contact p { font-family:'Lora',serif; font-size:.9rem; color:rgba(240,244,248,.55); margin-bottom:1.25rem; }
+.btn-contact {
+  display:inline-block; padding:.7rem 2rem; border-radius:6px;
+  background:linear-gradient(135deg,#FF5E00,#ff8c00);
+  color:#fff; font-family:'Montserrat',sans-serif; font-size:.75rem; font-weight:900;
+  letter-spacing:1.5px; text-transform:uppercase; text-decoration:none;
+  transition:opacity .2s;
+}
+.btn-contact:hover { opacity:.85; }
+
+@media(max-width:640px){
+  .cat-nav { padding:.7rem 1rem; }
+  .cat-nav-links { display:none; }
+  .cat-main { padding:2rem 1rem 3rem; }
+  .cat-grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:.75rem; }
+}
+</style>
+</head>
+<body style="background:#021226;color:#e8f0f8;">
+
+<!-- NAV -->
+<nav class="cat-nav">
+  <a href="index.html" class="cat-nav-brand">
+    <img src="logo.png" alt="PRI" onerror="this.style.display='none'">
+    <div>
+      <div class="cat-nav-brand-text">PROGRAMA-PRI</div>
+      <div class="cat-nav-brand-sub">Portafolio de Productos</div>
+    </div>
+  </a>
+  <div class="cat-nav-links">
+    <a href="#libretas" class="cat-tab-btn active" onclick="setActive(this)">📓 Libretas</a>
+    <a href="#tazas"    class="cat-tab-btn"         onclick="setActive(this)">☕ Tazas</a>
+    <a href="#totebags" class="cat-tab-btn"         onclick="setActive(this)">👜 Totebags</a>
+  </div>
+  <div class="cat-nav-right">
+    <span id="admin-badge" class="cat-admin-badge" style="display:none;">⚙ ADMIN</span>
+    <a href="index.html" class="cat-back-btn">← Inicio</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="cat-hero">
+  <p class="cat-hero-eyebrow">Programa PRI · Tumaco, Nariño</p>
+  <h1>Portafolio de <span>Productos</span></h1>
+  <p>Diseños inspirados en la cultura, naturaleza y geometría afropacífica de Tumaco. Cada compra apoya directamente el programa de becas.</p>
+  <a href="#libretas" class="cat-hero-cta">Explorar colección ↓</a>
+</section>
+
+<!-- MAIN CONTENT -->
+<main class="cat-main">
+
+  <!-- ── LIBRETAS ── -->
+  <section class="cat-section" id="libretas">
+    <div class="cat-section-header">
+      <h2>📓 Libre<span>tas</span></h2>
+      <span class="cat-section-count">15 diseños</span>
+    </div>
+    <p class="cat-section-desc">Libretas de 80–100 hojas cuadriculadas con portadas de arte afropacífico. Perfectas para estudiantes y profesionales.</p>
+    <div class="cat-grid" id="grid-libretas"></div>
+  </section>
+
+  <!-- ── TAZAS ── -->
+  <section class="cat-section" id="tazas">
+    <div class="cat-section-header">
+      <h2>☕ Ta<span>zas</span></h2>
+      <span class="cat-section-count">20 diseños</span>
+    </div>
+    <p class="cat-section-desc">Tazas de cerámica 350ml con diseños del Pacífico colombiano. Impresión de alta calidad, apta para lavavajillas.</p>
+    <div class="cat-grid" id="grid-tazas"></div>
+  </section>
+
+  <!-- ── TOTEBAGS ── -->
+  <section class="cat-section" id="totebags">
+    <div class="cat-section-header">
+      <h2>👜 Tote<span>bags</span></h2>
+      <span class="cat-section-count">10 diseños</span>
+    </div>
+    <p class="cat-section-desc">Bolsas de tela 100% algodón con estampados de arte tumaqueño. Reutilizables y resistentes.</p>
+    <div class="cat-grid" id="grid-totebags"></div>
+  </section>
+
+  <!-- CONTACT -->
+  <div class="cat-contact">
+    <h3>¿TE INTERESA ALGÚN PRODUCTO?</h3>
+    <p>Escríbenos para cotizaciones, pedidos personalizados o información sobre envíos a todo Colombia.</p>
+    <a href="mailto:programapri_bog@unal.edu.co" class="btn-contact">📩 Contactar al equipo PRI</a>
+  </div>
+
+</main>
+
+<!-- MODAL DE PREVISUALIZACIÓN -->
+<div class="img-modal-overlay" id="img-modal" onclick="if(event.target===this)cerrarImgModal()">
+  <div class="img-modal-box">
+    <div class="img-modal-header">
+      <p id="img-modal-titulo"></p>
+      <button onclick="cerrarImgModal()">✕</button>
+    </div>
+    <img id="img-modal-src" class="img-modal-img" src="" alt="">
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const FB = { apiKey:"AIzaSyDNcz4b8pO17erLeIJsbhxc2ekchPkmha8",
+  authDomain:"proyecto-pri-81fd5.firebaseapp.com",
+  projectId:"proyecto-pri-81fd5",
+  appId:"1:876748063075:web:6e075f73a385bb804e5356" };
+initializeApp(FB);
+const auth = getAuth();
+
+const ADMIN_EMAIL = 'jcastrogo@unal.edu.co';
+
+// Renovar sesión timestamp al cargar cualquier página del sistema
+(function renovarSesionTimestamp() {
+  try {
+    if (localStorage.getItem('usuario_sesion_activa')) {
+      localStorage.setItem('sesion_timestamp', String(Date.now()));
+    }
+  } catch(e) {}
+})();
+
+// Detectar admin inmediatamente desde localStorage (sin esperar Firebase)
+(function detectAdminInmediato() {
+  try {
+    const sesion = localStorage.getItem('usuario_sesion_activa');
+    if (sesion) {
+      const u = JSON.parse(sesion);
+      if (u.email === ADMIN_EMAIL || u.rol === 'admin') {
+        document.body.classList.add('is-admin');
+        document.getElementById('admin-badge').style.display = 'inline-block';
+      }
+    }
+  } catch(e) {}
+})();
+
+onAuthStateChanged(auth, user => {
+  const isAdmin = user && user.email === ADMIN_EMAIL;
+  if (isAdmin) {
+    document.body.classList.add('is-admin');
+    document.getElementById('admin-badge').style.display = 'inline-block';
+  }
+  renderAll();
+});
+
+// ── DATA — libretas con filename completo ──────────────────
+const LIBRETAS = [
+  {id:'01', nombre:'El Morro',                file:'libreta_01_morro'},
+  {id:'02', nombre:'Ballenas del Pacífico',   file:'libreta_02_ballenas'},
+  {id:'03', nombre:'Manglar',                 file:'libreta_03_manglar'},
+  {id:'04', nombre:'Geometría Afropacífica',  file:'libreta_04_geometria'},
+  {id:'05', nombre:'Atardecer Tumaqueño',     file:'libreta_05_atardecer'},
+  {id:'06', nombre:'Pesca del Pacífico',      file:'libreta_06_pesca'},
+  {id:'07', nombre:'Marimba',                 file:'libreta_07_marimba'},
+  {id:'08', nombre:'Flora Tropical',          file:'libreta_08_flores'},
+  {id:'09', nombre:'Noche Tumaqueña',         file:'libreta_09_noche_estrellada'},
+  {id:'10', nombre:'Ingeniería',              file:'libreta_10_ingenieria'},
+  {id:'11', nombre:'Tortuga Marina',          file:'libreta_11_tortuga'},
+  {id:'12', nombre:'Libertad',                file:'libreta_12_aguila'},
+  {id:'13', nombre:'Ondas del Pacífico',      file:'libreta_13_ondas'},
+  {id:'14', nombre:'Colibrí',                 file:'libreta_14_colibri'},
+  {id:'15', nombre:'Afropacífico',            file:'libreta_15_afropacifico'},
+];
+
+const TAZAS = Array.from({length:20}, (_,i) => ({
+  id: String(i+1).padStart(2,'0'),
+  nombre: `Diseño ${String(i+1).padStart(2,'0')}`,
+}));
+
+const TOTEBAGS = Array.from({length:10}, (_,i) => ({
+  id: String(i+1).padStart(2,'0'),
+  nombre: `Diseño ${String(i+1).padStart(2,'0')}`,
+}));
+
+function renderAll() {
+  renderLibretas();
+  render('grid-tazas',    TAZAS,    'tazas',    'taza_',    'square');
+  render('grid-totebags', TOTEBAGS, 'totebags', 'totebag_', 'wide');
+}
+
+function renderLibretas() {
+  const grid = document.getElementById('grid-libretas');
+  grid.innerHTML = LIBRETAS.map(p => {
+    const src = `libretas/${p.file}.svg`;
+    return `<div class="cat-card">
+      <div class="cat-card-preview" data-src="${src}" data-nombre="${p.nombre}" onclick="verPrevia(this.dataset.nombre,this.dataset.src)">
+        <img src="${src}" alt="${p.nombre}" loading="lazy" onerror="this.parentElement.style.background='#0a1e32';this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<p style=\\'margin:auto;font-size:2.5rem;opacity:.3;\\'>📓</p>')">
+      </div>
+      <div class="cat-card-body">
+        <p class="cat-card-num">N° ${p.id}</p>
+        <p class="cat-card-name">${p.nombre}</p>
+        <div class="cat-card-actions">
+          <a class="btn-preview" data-src="${src}" data-nombre="${p.nombre}" onclick="verPrevia(this.dataset.nombre,this.dataset.src)">🔍 Ver diseño</a>
+          <a class="btn-download" href="${src}" download="${p.file}.svg">↓ Descargar SVG</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function render(gridId, items, folder, prefix, aspectClass) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = items.map(p => {
+    const src = `${folder}/${prefix}${p.id}.svg`;
+    return `<div class="cat-card">
+      <div class="cat-card-preview ${aspectClass}" data-src="${src}" data-nombre="${p.nombre}" onclick="verPrevia(this.dataset.nombre,this.dataset.src)">
+        <img src="${src}" alt="${p.nombre}" loading="lazy" onerror="this.parentElement.style.background='#0a1e32';this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<p style=\\'margin:auto;font-size:2.5rem;opacity:.3;\\'>📄</p>')">
+      </div>
+      <div class="cat-card-body">
+        <p class="cat-card-num">N° ${p.id}</p>
+        <p class="cat-card-name">${p.nombre}</p>
+        <div class="cat-card-actions">
+          <a class="btn-preview" data-src="${src}" data-nombre="${p.nombre}" onclick="verPrevia(this.dataset.nombre,this.dataset.src)">🔍 Ver diseño</a>
+          <a class="btn-download" href="${src}" download="${prefix}${p.id}.svg">↓ Descargar SVG</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.verPrevia = function(titulo, src) {
+  document.getElementById('img-modal-titulo').textContent = titulo;
+  document.getElementById('img-modal-src').src = src;
+  document.getElementById('img-modal').classList.add('open');
+};
+window.cerrarImgModal = function() {
+  document.getElementById('img-modal').classList.remove('open');
+};
+
+window.setActive = function(el) {
+  document.querySelectorAll('.cat-tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+};
+</script>
+</body>
+</html>

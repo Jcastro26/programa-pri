@@ -1,0 +1,50 @@
+<svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g15bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b0000"/>
+      <stop offset="35%" stop-color="#cc5500"/>
+      <stop offset="65%" stop-color="#cc8800"/>
+      <stop offset="100%" stop-color="#006622"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="560" fill="url(#g15bg)"/>
+  <!-- Patrón kente horizontal (franjas) -->
+  <rect x="0"   y="0" width="400" height="30" fill="#8b0000"/>
+  <rect x="0"   y="30" width="400" height="15" fill="#000"/>
+  <rect x="0"   y="45" width="400" height="20" fill="#cc8800"/>
+  <rect x="0"   y="65" width="400" height="15" fill="#006622"/>
+  <rect x="0"   y="80" width="400" height="10" fill="#000"/>
+  <!-- Mismo patrón abajo -->
+  <rect x="0" y="455" width="400" height="10" fill="#000"/>
+  <rect x="0" y="465" width="400" height="15" fill="#006622"/>
+  <rect x="0" y="480" width="400" height="20" fill="#cc8800"/>
+  <rect x="0" y="500" width="400" height="15" fill="#000"/>
+  <rect x="0" y="515" width="400" height="45" fill="#8b0000"/>
+  <!-- Patrón central kente vertical -->
+  <g opacity="0.6">
+    <rect x="60"  y="90" width="12" height="365" fill="#8b0000"/>
+    <rect x="72"  y="90" width="6"  height="365" fill="#000"/>
+    <rect x="78"  y="90" width="12" height="365" fill="#cc8800"/>
+    <rect x="90"  y="90" width="6"  height="365" fill="#006622"/>
+    <rect x="96"  y="90" width="8"  height="365" fill="#000"/>
+    <rect x="296" y="90" width="12" height="365" fill="#8b0000"/>
+    <rect x="308" y="90" width="6"  height="365" fill="#000"/>
+    <rect x="314" y="90" width="12" height="365" fill="#cc8800"/>
+    <rect x="326" y="90" width="6"  height="365" fill="#006622"/>
+    <rect x="332" y="90" width="8"  height="365" fill="#000"/>
+  </g>
+  <!-- Adinkra símbolo (aya — helecho, resiliencia) en el centro -->
+  <g transform="translate(200, 260)" opacity="0.9">
+    <circle r="75" fill="none" stroke="rgba(255,215,0,0.5)" stroke-width="2"/>
+    <!-- Espiral aya -->
+    <path d="M 0,-50 C 20,-40 30,-20 20,0 C 10,20 -10,30 -20,15 C -30,0 -20,-20 0,-20 C 20,-20 30,0 20,20 C 10,40 -10,50 -20,40" fill="none" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 0,-50 C -20,-40 -30,-20 -20,0 C -10,20 10,30 20,15 C 30,0 20,-20 0,-20 C -20,-20 -30,0 -20,20 C -10,40 10,50 20,40" fill="none" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/>
+    <!-- Tallo central -->
+    <line x1="0" y1="-50" x2="0" y2="50" stroke="#ffd700" stroke-width="2.5"/>
+  </g>
+  <!-- Texto -->
+  <text x="200" y="393" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="20" fill="#ffd700" letter-spacing="4">AFROPACÍFICO</text>
+  <text x="200" y="416" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="10" fill="rgba(255,255,255,0.8)" letter-spacing="5">CULTURA Y RESISTENCIA</text>
+  <line x1="100" y1="430" x2="300" y2="430" stroke="rgba(255,215,0,0.6)" stroke-width="1.5"/>
+  <text x="200" y="448" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="9" fill="rgba(255,255,255,0.5)" letter-spacing="2">PROGRAMA-PRI · TUMACO</text>
+</svg>

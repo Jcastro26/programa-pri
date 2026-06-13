@@ -1,0 +1,48 @@
+<svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Cuadrícula pequeña: 5mm equivalente -->
+    <pattern id="cSmall" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(100,140,200,0.22)" stroke-width="0.4"/>
+    </pattern>
+    <!-- Cuadrícula grande: cada 5 cuadros = 50px -->
+    <pattern id="cBig" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(70,110,180,0.45)" stroke-width="0.85"/>
+    </pattern>
+  </defs>
+
+  <!-- Fondo papel blanco ligeramente crema -->
+  <rect width="400" height="560" fill="#fefcf7"/>
+
+  <!-- Cuadrícula fina -->
+  <rect x="44" y="0" width="356" height="560" fill="url(#cSmall)"/>
+  <!-- Cuadrícula gruesa superpuesta -->
+  <rect x="44" y="0" width="356" height="560" fill="url(#cBig)"/>
+
+  <!-- Margen vertical izquierdo rojo -->
+  <line x1="44" y1="0" x2="44" y2="560" stroke="#e05050" stroke-width="1.4" stroke-opacity="0.55"/>
+
+  <!-- Margen horizontal superior rojo -->
+  <line x1="0" y1="38" x2="400" y2="38" stroke="#e05050" stroke-width="1.4" stroke-opacity="0.55"/>
+
+  <!-- Franja izquierda blanca (área de espiral/margen) -->
+  <rect x="0" y="0" width="44" height="560" fill="#fefcf7"/>
+
+  <!-- Agujeros de espiral -->
+  <circle cx="22" cy="70"  r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+  <circle cx="22" cy="130" r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+  <circle cx="22" cy="190" r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+  <circle cx="22" cy="250" r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+  <circle cx="22" cy="310" r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+  <circle cx="22" cy="370" r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+  <circle cx="22" cy="430" r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+  <circle cx="22" cy="490" r="6.5" fill="#e8e4de" stroke="#ccc" stroke-width="1.2"/>
+
+  <!-- Marca de agua: logo.png centrado, muy suave -->
+  <image href="../logo.png" x="142" y="210" width="116" height="116" opacity="0.07" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Borde exterior sutil -->
+  <rect x="1" y="1" width="398" height="558" fill="none" stroke="rgba(6,49,98,0.12)" stroke-width="1.5" rx="2"/>
+
+  <!-- Número de página abajo derecha -->
+  <text x="385" y="550" text-anchor="end" font-family="Montserrat,sans-serif" font-size="8.5" fill="rgba(70,110,180,0.4)" letter-spacing="1">pág. ____</text>
+</svg>

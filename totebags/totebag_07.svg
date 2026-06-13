@@ -1,0 +1,42 @@
+<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="220" fill="#0c1a3a" opacity="0.1"/>
+
+  <!-- Ilustración -->
+  <g transform="scale(0.85) translate(12,10)">
+    <!-- Cielo estrellado grande -->
+<circle cx="100" cy="110" r="30" fill="none" stroke="#93c5fd" stroke-width="2" opacity="0.4"/>
+<path d="M100,110 m-30,0 a30,30 0 0,1 30,-30" fill="#1e3a5f" opacity="0.9"/>
+<path d="M82,110 a18,18 0 0,0 36,0 Z" fill="#dbeafe" opacity="0.2"/>
+<circle cx="52" cy="82" r="3.5" fill="#e2e8f0" opacity="0.9"/>
+<circle cx="148" cy="78" r="3" fill="#e2e8f0" opacity="0.85"/>
+<circle cx="40" cy="120" r="2.5" fill="#bae6fd" opacity="0.7"/>
+<circle cx="160" cy="115" r="3" fill="#e2e8f0" opacity="0.8"/>
+<circle cx="75" cy="65" r="2" fill="#bae6fd" opacity="0.6"/>
+<circle cx="128" cy="148" r="2.5" fill="#e2e8f0" opacity="0.7"/>
+<circle cx="168" cy="95" r="2" fill="#bae6fd" opacity="0.6"/>
+<path d="M52,82 l2,5.5 l5.5,0 l-4.5,3.5 l2,5.5 l-5,-3.5 l-5,3.5 l2,-5.5 l-4.5,-3.5 l5.5,0 Z" fill="#fde68a" opacity="0.85"/>
+  </g>
+
+  <!-- Logo PRI -->
+  <image href="../logo.png" x="168" y="6" width="26" height="26"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior -->
+  <rect x="0" y="162" width="200" height="58" fill="#0c1a3a" opacity="0.55"/>
+
+  <!-- Programa PRI -->
+  <text x="100" y="175" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="8"
+        fill="#93c5fd" letter-spacing="2" opacity="0.8">PROGRAMA PRI</text>
+  <text x="100" y="186" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="7" font-weight="600"
+        fill="#eff6ff" letter-spacing="1" opacity="0.8">EL PACÍFICO RENACIENDO CON INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="100" y="202" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="13"
+        fill="#93c5fd" letter-spacing="2" opacity="1">CIELO ESTRELLADO</text>
+  <text x="100" y="214" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="8" font-weight="600"
+        fill="#eff6ff" letter-spacing="1" opacity="0.85">Noche tumaqueña</text>
+</svg>
