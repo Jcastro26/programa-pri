@@ -5719,14 +5719,20 @@ button:hover ~ .cursor-ring,
         min-width: 0;
         overflow: hidden;
     }
-    /* Ocultar nav del flujo flex en móvil — evita que space-between
-       lo ponga al extremo derecho desplazando el menu-toggle */
+    /* Nav sigue visible para que el drawer JS funcione,
+       pero sin ancho en el flujo flex (nav-links está fixed) */
     .navbar nav {
-        display: none !important;
+        width: 0 !important;
+        overflow: visible !important;
+        flex-shrink: 0 !important;
     }
-    /* Botón menú: pegado al extremo derecho, más pequeño */
-    .menu-toggle {
+    /* Pill empuja todo el grupo pill+menú al extremo derecho */
+    #mobile-user-pill {
         margin-left: auto !important;
+    }
+    /* Botón menú: pequeño, sin margen derecho */
+    .menu-toggle {
+        margin-left: 0.4rem !important;
         margin-right: 0 !important;
         min-width: 34px !important;
         padding: 3px 5px 2px !important;
