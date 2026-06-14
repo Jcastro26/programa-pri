@@ -13,6 +13,37 @@
         }
         *, *::before, *::after { box-sizing: border-box; }
 
+        .module-header {
+            padding-top: 100px; /* compensa navbar fijo */
+            padding-bottom: 3rem;
+            text-align: center;
+            background: var(--azul-deep, #021a36);
+            position: relative;
+            overflow: hidden;
+        }
+        .module-title h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--blanco, #fafafa);
+            letter-spacing: -1px;
+        }
+        .module-title p {
+            color: rgba(240,244,248,0.5);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        .sky-background {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, #010c1a 0%, #021a36 100%);
+            z-index: 0;
+        }
+        .module-title { position: relative; z-index: 1; }
+        @media (max-width: 768px) {
+            .module-header { padding-top: 80px; padding-bottom: 2rem; }
+            .module-title h1 { font-size: clamp(1.6rem, 8vw, 2.5rem); }
+        }
         .mentors-section { padding: 3rem 2rem 5rem; background: var(--azul-deep); }
         .section-header { text-align: center; margin-bottom: 3rem; }
         .section-header .eyebrow { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.5rem; }
@@ -314,6 +345,7 @@ import {
     getFirestore, collection, addDoc, getDocs, doc, setDoc,
     onSnapshot, query, orderBy, where, updateDoc, serverTimestamp, getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 // ── Cloudinary (modo Unsigned – NO enviar public_id) ──────────────
 async function subirImagenCloudinary(file) {
     const fd = new FormData();
@@ -338,15 +370,16 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
 const sesion = localStorage.getItem('usuario_sesion_activa');
 const usuario = sesion ? JSON.parse(sesion) : null;
 const esAdmin = usuario && (usuario.rol === 'admin' || usuario.rol === 'Líder / Admin');
 const esEstudiantePRI = usuario && usuario.rol === 'estudiante';
 
-// Solo admin ve el FAB
-if (esAdmin) document.getElementById('fab-registro').style.display = 'block';
+// Solo admin ve el FAB — siempre forzar estado correcto
+document.getElementById('fab-registro').style.display = esAdmin ? 'block' : 'none';
 
 let ratingDocId = null;
 let ratingSeleccionado = 0;
@@ -372,21 +405,41 @@ function notif(titulo, msg, icono = '✅', tipo = 'success') {
 async function cargarMentores() {
     const grid = document.getElementById('mentors-grid');
     try {
-        // Cargar desde colección docentes (incluye los registrados desde login)
-        const q = query(collection(db, "docentes"), orderBy("nombre", "asc"));
-        onSnapshot(q, async (snapshot) => {
-            if (snapshot.empty) {
-                grid.innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>No hay mentores registrados aún.</p></div>`;
-                return;
-            }
-            todosMentores = [];
-            const cards = [];
-            for (const docSnap of snapshot.docs) {
-                const d = docSnap.data();
-                const id = docSnap.id;
-                if (!d.nombre) continue;
+        // Cargar desde colección "docentes" Y desde "usuarios" con rol docente/voluntario
+        // para cubrir usuarios que no tienen entrada en la colección "docentes"
+        const [snapDocentes, snapUsuariosDoc, snapUsuariosVol] = await Promise.all([
+            getDocs(collection(db, "docentes")),
+            getDocs(query(collection(db, "usuarios"), where("rol","==","docente"))),
+            getDocs(query(collection(db, "usuarios"), where("rol","==","voluntario"))),
+        ]);
 
-                const ratingsSnap = await getDocs(collection(db, "docentes", id, "calificaciones"));
+        // Merge sin duplicados (el ID del documento es el uid en ambas colecciones)
+        const merged = new Map();
+        snapDocentes.docs.forEach(d => merged.set(d.id, { ...d.data(), _uid: d.id }));
+        snapUsuariosDoc.docs.forEach(d => {
+            if (!merged.has(d.id)) merged.set(d.id, { ...d.data(), _uid: d.id });
+        });
+        snapUsuariosVol.docs.forEach(d => {
+            if (!merged.has(d.id)) merged.set(d.id, { ...d.data(), _uid: d.id });
+        });
+
+        const allEntries = [...merged.values()].sort((a,b) => (a.nombre||'').localeCompare(b.nombre||''));
+
+        if (allEntries.length === 0) {
+            grid.innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>No hay mentores registrados aún.</p></div>`;
+            return;
+        }
+
+        todosMentores = [];
+        const cards = [];
+        for (const entry of allEntries) {
+            const d = entry;
+            const id = entry._uid;
+            if (!d.nombre) continue;
+            // Intentar calificaciones desde sub-colección de docentes (puede no existir)
+            let ratingsSnap;
+            try { ratingsSnap = await getDocs(collection(db, "docentes", id, "calificaciones")); }
+            catch(e) { ratingsSnap = { forEach: ()=>{} }; }
                 let totalStars = 0, countRatings = 0;
                 const reviews = [];
                 ratingsSnap.forEach(r => {
@@ -400,8 +453,9 @@ async function cargarMentores() {
 
                 const inicial = (d.nombre || '?')[0].toUpperCase();
                 const svgAvatar = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"><rect width="100" height="100" fill="#062040"/><circle cx="50" cy="38" r="20" fill="rgba(255,94,0,0.25)" stroke="rgba(255,94,0,0.5)" stroke-width="1.5"/><ellipse cx="50" cy="80" rx="28" ry="18" fill="rgba(255,94,0,0.15)" stroke="rgba(255,94,0,0.4)" stroke-width="1.5"/><text x="50" y="44" text-anchor="middle" dominant-baseline="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="22" fill="#ff5e00">${inicial}</text></svg>`;
+                // img + fallback sibling: evita el bug de comillas en onerror
                 const fotoHTML = d.fotoUrl
-                    ? `<img src="${d.fotoUrl}" alt="${d.nombre}" onerror="this.outerHTML='<div class=\\"mentor-photo-placeholder\\">${svgAvatar}</div>'">`
+                    ? `<img src="${d.fotoUrl}" alt="${d.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="mentor-photo-placeholder" style="display:none">${svgAvatar}</div>`
                     : `<div class="mentor-photo-placeholder">${svgAvatar}</div>`;
 
                 const reviewsHTML = reviews.slice(0,3).map(rv => `
@@ -448,10 +502,9 @@ async function cargarMentores() {
                     ${countRatings > 0 ? `<div class="reviews-panel">${reviewsHTML}</div>` : ''}
                 `;
                 cards.push(card);
-            }
-            grid.innerHTML = '';
-            cards.forEach(c => grid.appendChild(c));
-        });
+        }
+        grid.innerHTML = '';
+        cards.forEach(c => grid.appendChild(c));
     } catch (err) {
         grid.innerHTML = `<div class="empty-state"><p>Error cargando mentores: ${err.message}</p></div>`;
     }
@@ -610,7 +663,7 @@ window.verPerfilCompleto = async function(docId) {
         const inicialModal = (d.nombre||'?')[0].toUpperCase();
         const svgModal = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" style="border:2px solid rgba(255,94,0,0.4);display:block;"><rect width="80" height="80" fill="#062040"/><circle cx="40" cy="30" r="16" fill="rgba(255,94,0,0.25)" stroke="rgba(255,94,0,0.5)" stroke-width="1.5"/><ellipse cx="40" cy="64" rx="22" ry="14" fill="rgba(255,94,0,0.15)" stroke="rgba(255,94,0,0.4)" stroke-width="1.5"/><text x="40" y="35" text-anchor="middle" dominant-baseline="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="18" fill="#ff5e00">${inicialModal}</text></svg>`;
         let fotoHtml = d.fotoUrl
-            ? `<img src="${d.fotoUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,94,0,0.4);flex-shrink:0;" onerror="this.outerHTML='${svgModal.replace(/'/g,"&#39;")}'"`  + `>`
+            ? `<img src="${d.fotoUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,94,0,0.4);flex-shrink:0;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">${svgModal.replace('display:block','display:none')}`
             : svgModal;
         const materiasArr = d.materias ? d.materias.split(',').map(m=>m.trim()).filter(Boolean) : [];
         const matTagsHtml = materiasArr.map(m=>`<span style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:1px;padding:0.2rem 0.5rem;">${m}</span>`).join(' ');
@@ -634,7 +687,7 @@ window.verPerfilCompleto = async function(docId) {
     } catch(err) { cont.innerHTML = `<p style="color:#fca5a5;font-family:'Montserrat',sans-serif;font-size:0.7rem;">Error: ${err.message}</p>`; }
 };
 
-cargarMentores();
+signInAnonymously(auth).catch(() => {}).finally(() => cargarMentores());
 </script>
 
 <script>
@@ -661,6 +714,53 @@ cargarMentores();
     (function tick(){ if(dot){dot.style.left=mx+'px';dot.style.top=my+'px';} rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14; if(ring){ring.style.left=rx+'px';ring.style.top=ry+'px';} requestAnimationFrame(tick); })();
     document.addEventListener('mouseover', e => { if(e.target.closest('a,button,input,select')) ring.style.transform='translate(-50%,-50%) scale(1.6)'; });
     document.addEventListener('mouseout', e => { if(e.target.closest('a,button,input,select')) ring.style.transform='translate(-50%,-50%) scale(1)'; });
+</script>
+<script>
+/* ── Sesión activa: pill desktop + avatar móvil + IR A PLATAFORMA ── */
+(function(){
+    const raw = localStorage.getItem('usuario_sesion_activa');
+    if (!raw) return;
+    try {
+        const u = JSON.parse(raw);
+        if (u.sesionExpira && Date.now() > u.sesionExpira) {
+            localStorage.removeItem('usuario_sesion_activa'); return;
+        }
+        const primeros = (u.nombre || '').trim().split(/\s+/).slice(0,2).join(' ');
+        const inicial = (primeros[0] || '?').toUpperCase();
+        const avatarStyle = (size, fs) =>
+            u.fotoUrl
+                ? `<img src="${u.fotoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:2px solid #ff5e00;flex-shrink:0;">`
+                : `<div style="width:${size}px;height:${size}px;border-radius:50%;background:#ff5e00;display:flex;align-items:center;justify-content:center;font-size:${fs}px;font-weight:900;color:#fff;flex-shrink:0;">${inicial}</div>`;
+        const btn = document.querySelector('a.btn-login');
+        if (btn) {
+            btn.href = 'dashboard.html';
+            btn.style.cssText = 'display:flex;align-items:center;gap:7px;padding:3px 14px 3px 3px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fafafa;text-decoration:none;';
+            btn.innerHTML = `${avatarStyle(28,11)}<span>${primeros}</span>`;
+        }
+        const toggle = document.getElementById('mobile-menu');
+        if (toggle) {
+            const pill = document.createElement('div');
+            pill.id = 'mobile-user-pill';
+            pill.style.cssText = 'display:none;align-items:center;z-index:3001;cursor:pointer;';
+            pill.innerHTML = avatarStyle(34,13);
+            pill.addEventListener('click', () => { window.location.href='dashboard.html'; });
+            toggle.parentNode.insertBefore(pill, toggle);
+            const mq = window.matchMedia('(max-width:768px)');
+            const setVis = m => { pill.style.display = m.matches ? 'flex' : 'none'; };
+            setVis(mq); mq.addEventListener('change', setVis);
+        }
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) {
+            const li = document.createElement('li');
+            li.className = 'nav-ir-plataforma';
+            li.innerHTML = `<a href="dashboard.html" style="display:block;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:3px;text-decoration:none;text-align:center;">🚀 IR A PLATAFORMA</a>`;
+            navLinks.insertBefore(li, navLinks.firstChild);
+            const s = document.createElement('style');
+            s.textContent = '@media(min-width:769px){.nav-ir-plataforma{display:none!important;}} .nav-ir-plataforma a{font-size:.72rem!important;border-bottom:none!important;transform:none!important;padding:.65rem 1.3rem!important;letter-spacing:2px!important;width:100%!important;box-sizing:border-box;}';
+            document.head.appendChild(s);
+        }
+    } catch(e) {}
+})();
 </script>
 </body>
 </html>

@@ -169,17 +169,42 @@
         .btn-add:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(0,0,0,0.4);}
         .btn-add.secondary{background:var(--teal);color:var(--azul-deep);}
         .btn-add.danger{background:var(--rojo);}
-        /* PRODUCTOS */
+        /* PRODUCTOS – estructura prod-card (igual que productos.html) */
         .productos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem;}
-        .producto-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);padding:1.5rem;text-align:center;transition:all 0.25s;position:relative;}
-        .producto-card:hover{border-color:rgba(255,215,0,0.3);transform:translateY(-3px);}
-        .producto-emoji{font-size:2.5rem;margin-bottom:0.75rem;display:block;}
-        .producto-nombre{font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--blanco);margin-bottom:0.4rem;word-break:break-word;}
-        .producto-pts{font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;color:var(--oro);margin-bottom:1rem;}
-        .btn-canjear{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:linear-gradient(135deg,var(--naranja),#cc4400);color:#fff;border:2px solid var(--azul-deep);box-shadow:3px 3px 0 rgba(0,0,0,0.4);padding:0.5rem 1rem;cursor:pointer;transition:all 0.2s;width:100%;}
+        @media(max-width:600px){.productos-grid{grid-template-columns:repeat(2,1fr);gap:.6rem;} .prod-img{height:130px;} .prod-body{padding:.9rem .9rem .4rem;} .prod-footer{padding:.5rem .9rem .9rem;} .prod-price{font-size:1.1rem;} .btn-canjear{padding:.35rem .5rem;font-size:.58rem;} }
+        .prod-card{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;transition:transform .25s ease,border-color .25s ease;position:relative;overflow:hidden;}
+        .prod-card:hover{transform:translateY(-4px);border-color:rgba(255,94,0,0.3);}
+        .prod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--naranja),var(--oro));transform:scaleX(0);transition:transform .3s ease;transform-origin:left;}
+        .prod-card:hover::before{transform:scaleX(1);}
+        .prod-img{width:100%;height:180px;overflow:hidden;background:var(--azul-card);display:flex;align-items:center;justify-content:center;}
+        .prod-img img{width:100%;height:100%;object-fit:cover;}
+        .prod-img-icon{font-size:3.5rem;}
+        .prod-body{padding:1.2rem 1.2rem .6rem;flex:1;display:flex;flex-direction:column;}
+        .prod-body h3{font-family:var(--fuente-t);font-size:.95rem;font-weight:900;color:var(--blanco);margin-bottom:.5rem;line-height:1.3;}
+        .prod-body p{font-size:.82rem;color:rgba(240,244,248,0.5);line-height:1.55;flex:1;}
+        .prod-footer{padding:.75rem 1.2rem 1.2rem;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;}
+        .prod-price{font-family:var(--fuente-t);font-weight:900;font-size:1.3rem;color:var(--blanco);}
+        .prod-price sup{font-size:.6rem;color:var(--naranja);letter-spacing:1px;font-weight:700;}
+        .prod-no-disponible{position:absolute;inset:0;background:rgba(2,18,38,0.82);backdrop-filter:blur(4px);z-index:10;display:flex;align-items:center;justify-content:center;}
+        .prod-nd-stamp{font-family:var(--fuente-t);font-size:1rem;font-weight:900;letter-spacing:4px;color:rgba(239,68,68,0.9);border:2px solid rgba(239,68,68,0.55);padding:.4rem 1rem;transform:rotate(-18deg);text-shadow:0 0 16px rgba(239,68,68,0.4);white-space:nowrap;}
+        .btn-canjear{font-family:var(--fuente-t);font-size:0.62rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:linear-gradient(135deg,var(--naranja),#cc4400);color:#fff;border:2px solid var(--azul-deep);box-shadow:3px 3px 0 rgba(0,0,0,0.4);padding:0.45rem 0.9rem;cursor:pointer;transition:all 0.2s;white-space:normal;min-width:0;text-align:center;}
         .btn-canjear:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(0,0,0,0.4);}
         .btn-canjear:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
         .mes-limit-note{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);text-align:center;margin-top:0.5rem;}
+        /* VITRINA CARDS */
+        .prod-badge{display:inline-block;font-family:var(--fuente-t);font-size:.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.25rem .6rem;margin-bottom:.75rem;}
+        .badge-gold{background:rgba(255,215,0,0.08);color:var(--oro);}
+        .badge-teal{background:rgba(56,189,248,0.08);color:var(--teal);}
+        .badge-verde{background:rgba(34,197,94,0.08);color:var(--verde);}
+        .prod-card-libretas{background:linear-gradient(135deg,rgba(6,49,98,0.95),rgba(2,18,38,0.98));border:1px solid rgba(255,215,0,0.2);}
+        .libretas-vitrina{display:flex;justify-content:center;gap:1.5rem;padding:1rem 1.5rem 0.5rem;flex-wrap:wrap;}
+        .libreta-preview{display:flex;flex-direction:column;align-items:center;gap:.4rem;}
+        .libreta-preview img{width:130px;height:auto;border-radius:4px;box-shadow:0 4px 18px rgba(0,0,0,0.5);transition:transform .25s ease;}
+        .libreta-preview img:hover{transform:scale(1.06) rotate(-1deg);}
+        .lib-label{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,0.65);}
+        .btn-tienda-libreta{position:relative;display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fuente-t);font-size:.68rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:2px;animation:pulseBtn 2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(255,94,0,0.5);}
+        .btn-tienda-libreta:hover{animation:none;transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,94,0,0.4);}
+        @keyframes pulseBtn{0%{box-shadow:0 0 0 0 rgba(255,94,0,0.6);}50%{box-shadow:0 0 0 10px rgba(255,94,0,0);}100%{box-shadow:0 0 0 0 rgba(255,94,0,0);}}
         /* PERFIL */
         .foto-preview-small{width:80px;height:80px;object-fit:cover;border:2px solid rgba(255,94,0,0.4);display:block;margin:0.5rem 0;}
         .upload-section{background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.1);padding:1.25rem;text-align:center;margin-bottom:1rem;}
@@ -446,7 +471,7 @@
             <p class="panel-title">Recursos</p>
             <h2 class="panel-heading">Talleres y <em>Mentores</em></h2>
             <p class="panel-desc">Explora los talleres y evalúa a tus mentores del programa.</p>
-            <div id="talleres-grid-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin-bottom:2rem;"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando talleres...</p></div>
+            <div id="talleres-grid-container" style="margin-bottom:2rem;"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando talleres...</p></div>
             <div class="section-box"><p class="section-box-title">⭐ Evalúa a tus Mentores</p><div class="tutores-grid" id="lista-docentes-calificar"><p style="font-family:var(--fuente-t);font-size:0.7rem;color:rgba(240,244,248,0.3);">Cargando mentores...</p></div></div>
         </div>
 
@@ -607,6 +632,7 @@
                 <button class="export-btn" onclick="activarPanel('panel-premios-admin');cargarPremiosAdmin()">🎁 Premios Reclamados</button>
                 <button class="export-btn" onclick="activarPanel('panel-admin-add')">➕ Agregar Contenido</button>
                 <button class="export-btn" onclick="activarPanel('panel-pedidos-tienda');cargarPedidosTienda()" style="background:rgba(255,94,0,0.12);border-color:rgba(255,94,0,0.3);color:var(--naranja)">🛒 Pedidos Tienda</button>
+                <button class="export-btn" onclick="activarPanel('panel-config-admin');cargarConfigAdmin()" style="background:rgba(0,200,150,0.08);border-color:rgba(0,200,150,0.25);color:#00c896;">⚙️ Configuración</button>
             </div>
             <div class="section-box" style="padding:0;overflow:hidden;">
                 <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);"><p class="section-box-title" style="margin:0;padding:0;border:0;">Directorio de Usuarios — Tiempo Real</p></div>
@@ -674,6 +700,33 @@
                         <tbody id="pedidos-tbody"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando pedidos...</td></tr></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <!-- PANEL: CONFIGURACIÓN ADMIN -->
+        <div class="panel" id="panel-config-admin">
+            <p class="panel-title">Admin</p>
+            <h2 class="panel-heading">Configuración <em>del Sistema</em></h2>
+            <p class="panel-desc">Ajustes globales del Programa PRI.</p>
+
+            <!-- Clave Docente -->
+            <div class="section-box" style="border:1.5px solid rgba(0,200,150,0.2);background:rgba(0,200,150,0.03);max-width:480px;">
+                <p class="section-box-title">🔐 Clave de Acceso Docente</p>
+                <p style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(240,244,248,.45);margin:.25rem 0 1.1rem;line-height:1.5;">
+                    Cuando un docente se registra con Google, debe ingresar esta clave para obtener su rol. Compártela solo con mentores del programa.
+                </p>
+                <div style="display:flex;gap:.75rem;align-items:flex-end;">
+                    <div style="flex:1;">
+                        <label style="display:block;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem;">Clave actual</label>
+                        <div style="position:relative;">
+                            <input id="input-admin-clave-docente" type="password" placeholder="Cargando…"
+                                style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,150,0.25);border-radius:8px;padding:.65rem 2.5rem .65rem .85rem;color:#fafafa;font-family:'Montserrat',sans-serif;font-size:.82rem;outline:none;">
+                            <span onclick="document.getElementById('input-admin-clave-docente').type=document.getElementById('input-admin-clave-docente').type==='password'?'text':'password'" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(240,244,248,0.3);font-size:.8rem;">👁</span>
+                        </div>
+                    </div>
+                    <button onclick="guardarClaveDocente()" style="padding:.65rem 1.1rem;background:linear-gradient(135deg,#00c896,#00a87a);border:none;border-radius:8px;color:#021a36;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;">Guardar</button>
+                </div>
+                <p id="config-clave-status" style="display:none;font-family:var(--fuente-t);font-size:.68rem;margin:.6rem 0 0;"></p>
             </div>
         </div>
 
@@ -1325,13 +1378,25 @@ document.addEventListener("DOMContentLoaded", async () => {
         try {
             const snap = await getDoc(doc(db, "usuarios", currentUser.uid));
             if (snap.exists()) {
-                currentUser = { ...currentUser, ...snap.data() };
+                const firestoreData = snap.data();
+                // Preservar el rol de localStorage si Firestore no tiene uno válido
+                const rolesValidos = ['estudiante','docente','voluntario','admin'];
+                const rolFirestore = (firestoreData.rol || '').toLowerCase().trim();
+                if (!rolesValidos.includes(rolFirestore)) {
+                    delete firestoreData.rol; // no sobreescribir con valor inválido
+                } else {
+                    firestoreData.rol = rolFirestore; // normalizar a minúsculas
+                }
+                currentUser = { ...currentUser, ...firestoreData };
                 localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
             }
         } catch(e) {}
     }
 
-    if (!currentUser.rol || currentUser.rol === '') currentUser.rol = 'estudiante';
+    // Normalizar rol: minúsculas, sin espacios, default 'estudiante'
+    const rolesValidos = ['estudiante','docente','voluntario','admin'];
+    const rolRaw = (currentUser.rol || '').toLowerCase().trim();
+    currentUser.rol = rolesValidos.includes(rolRaw) ? rolRaw : 'estudiante';
     const rol = currentUser.rol;
 
     document.getElementById('welcome-user').textContent = (currentUser.nombre || 'Usuario').toUpperCase();
@@ -1406,26 +1471,26 @@ function construirMenu(rol) {
             {label:'📷 Mi Foto', fn:()=>{activarPanel('panel-mi-perfil');adaptarPanelFoto();}},
         ],
         docente: [
-            {label:'🏠 Inicio',               fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
+            {label:'🏠 Tu Centro de Trabajo',  fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
             {label:'👤 Mi Perfil',             fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
-            {label:'🔔 Notificaciones',         fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
-            {label:'👥 Estudiantes',           fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
-            {label:'📚 Formularios ICFES',     fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();}},
+            {label:'📋 Solicitudes de Capacitación', fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
+            {label:'📊 Seguimiento',           fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
+            {label:'📚 Pre-ICFES',             fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();}},
             {label:'📊 Resultados ICFES',      fn:()=>{activarPanel('panel-resultados-icfes');cargarResultadosICFES();}},
-            {label:'📝 Planeación',            fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
+            {label:'📝 Planeación de Clases',  fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
             {label:'🛡️ Mis Retos',             fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
             {label:'🎁 Premios',               fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
             {label:'💬 Foro',                  fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
             {label:'📬 Mensajes',              fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
         ],
         voluntario: [
-            {label:'🏠 Inicio',               fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
+            {label:'🏠 Tu Centro de Trabajo',  fn:()=>{activarPanel('panel-mentor-home');cargarMentorHome();}},
             {label:'👤 Mi Perfil',             fn:()=>{activarPanel('panel-mi-perfil');cargarPerfilDocente();}},
-            {label:'📅 Capacitaciones',        fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
-            {label:'👥 Estudiantes',           fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
-            {label:'📚 Formularios ICFES',     fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();}},
+            {label:'📋 Solicitudes de Capacitación', fn:()=>{activarPanel('panel-capacitaciones');cargarCapacitaciones();}},
+            {label:'📊 Seguimiento',           fn:()=>{activarPanel('panel-mis-estudiantes');cargarEstudiantesDocente();}},
+            {label:'📚 Pre-ICFES',             fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();}},
             {label:'📊 Resultados ICFES',      fn:()=>{activarPanel('panel-resultados-icfes');cargarResultadosICFES();}},
-            {label:'📝 Talleres',              fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
+            {label:'📝 Planeación de Clases',  fn:()=>{activarPanel('panel-planeacion');cargarTalleresPublicados();}},
             {label:'🛡️ Mis Retos',             fn:()=>{activarPanel('panel-retos-docente');cargarRetosDocente();}},
             {label:'🎁 Premios',               fn:()=>{activarPanel('panel-premios-mentor');initProductosMentor();}},
             {label:'💬 Foro',                  fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
@@ -1791,9 +1856,9 @@ function renderTalleresGrid(areaFiltro) {
         // Ordenar por sesión dentro del área
         const itemsOrdenados = [...items].sort((a,b) => (a.sesion||0)-(b.sesion||0));
 
-        return `<div style="margin-bottom:1.8rem;">
-            <p style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:${color};margin-bottom:.6rem;padding:.28rem .85rem;background:${color}15;border-left:3px solid ${color};border-radius:0 4px 4px 0;display:inline-flex;align-items:center;gap:.5rem;">${area} <span style="opacity:.5;font-size:.6rem;">${itemsOrdenados.length}</span></p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.75rem;">
+        return `<div style="margin-bottom:2rem;">
+            <p style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:${color};margin-bottom:.75rem;padding:.28rem .85rem;background:${color}15;border-left:3px solid ${color};border-radius:0 4px 4px 0;display:inline-flex;align-items:center;gap:.5rem;">${area} <span style="opacity:.5;font-size:.6rem;">${itemsOrdenados.length}</span></p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.65rem;">
                 ${itemsOrdenados.map(t => {
                     const titulo = t.titulo || t.nombre || 'Taller';
                     const tieneForm = t.formId || t.formUrl || t.link;
@@ -2222,34 +2287,150 @@ window.solicitarCapacitacion = async function() {
 };
 
 // ===================== PRODUCTOS ESTUDIANTE =====================
-const CATALOGO = [
-    {id:'kit-escolar',emoji:'📚',nombre:'Kit Escolar',pts:500},
-    {id:'tiempo-pc',emoji:'💻',nombre:'Tiempo de PC',pts:300},
-    {id:'tutoria',emoji:'🎓',nombre:'Tutoría Personalizada',pts:400},
-    {id:'certificado',emoji:'🏅',nombre:'Certificado PRI',pts:600},
-    {id:'morral',emoji:'🎒',nombre:'Morral Universitario',pts:800},
-    {id:'datos',emoji:'📱',nombre:'Datos Móviles',pts:350},
-];
+// CATALOGO se carga dinámicamente desde Firestore (ver initProductos / initProductosMentor)
 
-function initProductos() {
+function _renderProductoCard(prod, pts, premiosMes) {
+    const disponible = prod.disponible !== false;
+    const puedeComprar = disponible && pts >= prod.pts && premiosMes < 2;
+    // Fallback de imagen para productos especiales sin imagen Firestore
+    const _nomLower = (prod.nombre || '').toLowerCase();
+    const _autoImg = prod.imagen || (
+        _nomLower.includes('libreta') ? 'libretas/libreta_01_morro.svg' :
+        _nomLower.includes('taza')    ? 'tazas/taza_01.svg' :
+        _nomLower.includes('totebag') ? 'totebags/totebag_01.svg' : null
+    );
+    const imgHtml = _autoImg
+        ? `<img src="${_autoImg}" alt="${prod.nombre}" loading="lazy" style="object-fit:contain;padding:.5rem;">`
+        : `<div class="prod-img-icon">${prod.emoji || '🎁'}</div>`;
+    const watermark = !disponible
+        ? `<div class="prod-no-disponible"><div class="prod-nd-stamp">NO DISPONIBLE</div></div>` : '';
+    const labelBtn = !disponible ? 'No disponible'
+        : premiosMes >= 2 ? 'Límite alcanzado'
+        : pts < prod.pts ? 'Puntos insuficientes'
+        : 'Canjear';
+    return `
+        <div class="prod-card" style="${!disponible ? 'opacity:.85;' : ''}">
+            ${watermark}
+            <div class="prod-img">${imgHtml}</div>
+            <div class="prod-body">
+                <h3>${prod.nombre}</h3>
+                <p>${prod.descripcion || ''}</p>
+            </div>
+            <div class="prod-footer">
+                <div class="prod-price">${prod.pts} <sup>PTS</sup></div>
+                <button class="btn-canjear" ${!puedeComprar ? 'disabled' : ''}
+                    onclick="abrirModalCanje('${prod.id}','${prod.nombre.replace(/'/g,"\\'")}',${prod.pts})">
+                    ${labelBtn}
+                </button>
+            </div>
+        </div>`;
+}
+
+async function _cargarProductosFirestore(gridId, saldoElId, premiosTextoId) {
     const pts = currentUser.puntos || 0;
     const premiosMes = currentUser.premiosMes || 0;
-    document.getElementById('saldo-text').textContent = `Tu saldo: ${pts} PTS`;
-    document.getElementById('premios-mes-text').textContent = `Has reclamado ${premiosMes} de 2 premios este mes.`;
-    const grid = document.getElementById('productos-grid-est');
-    grid.innerHTML = '';
-    CATALOGO.forEach(prod => {
-        const puedeComprar = pts >= prod.pts && premiosMes < 2;
-        grid.insertAdjacentHTML('beforeend',`
-            <div class="producto-card">
-                <span class="producto-emoji">${prod.emoji}</span>
-                <p class="producto-nombre">${prod.nombre}</p>
-                <p class="producto-pts">${prod.pts} PTS</p>
-                <button class="btn-canjear" ${!puedeComprar?'disabled':''} onclick="abrirModalCanje('${prod.id}','${prod.nombre}',${prod.pts})">
-                    ${premiosMes>=2?'Límite alcanzado':pts<prod.pts?'Puntos insuficientes':'Canjear'}
-                </button>
-            </div>`);
-    });
+    if (saldoElId) document.getElementById(saldoElId).textContent = `Tu saldo: ${pts} PTS`;
+    if (premiosTextoId) document.getElementById(premiosTextoId).textContent = `Has reclamado ${premiosMes} de 2 premios este mes.`;
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    grid.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Cargando productos…</p>';
+    try {
+        const snap = await getDocs(collection(db, 'productos'));
+        if (snap.empty) { grid.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Sin productos disponibles.</p>'; return; }
+
+        const libretasCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-gold">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Libretas Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Diseños exclusivos impresos, papel cuadriculado, marca de agua institucional. ¡Colecciónalas!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="libretas/libreta_01_morro.svg" alt="Libreta El Morro" loading="lazy"/>
+                        <span class="lib-label">El Morro</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="libretas/libreta_05_atardecer.svg" alt="Libreta Atardecer" loading="lazy"/>
+                        <span class="lib-label">Atardecer</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">200 <sup>PTS</sup></div>
+                    <button class="btn-canjear" ${pts < 200 || premiosMes >= 2 ? 'disabled' : ''}
+                        onclick="abrirModalCanje('vitrina-libretas','Libreta Corporativa PRI',200)">
+                        ${premiosMes >= 2 ? 'Límite alcanzado' : pts < 200 ? 'Puntos insuficientes' : 'Canjear puntos'}
+                    </button>
+                    <a href="tienda.html" class="btn-tienda-libreta">🛒 Ver en Tienda PRI</a>
+                </div>
+            </div>`;
+
+        const tazasCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-teal">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Tazas Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Diseños exclusivos con motivos del Pacífico y la UNAL. Perfectas para el café del estudio. ¡Colecciónalas!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="tazas/taza_01.svg" alt="Taza PRI 01" loading="lazy"/>
+                        <span class="lib-label">Diseño 01</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="tazas/taza_02.svg" alt="Taza PRI 02" loading="lazy"/>
+                        <span class="lib-label">Diseño 02</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">250 <sup>PTS</sup></div>
+                    <button class="btn-canjear" ${pts < 250 || premiosMes >= 2 ? 'disabled' : ''}
+                        onclick="abrirModalCanje('vitrina-tazas','Taza Oficial PRI',250)">
+                        ${premiosMes >= 2 ? 'Límite alcanzado' : pts < 250 ? 'Puntos insuficientes' : 'Canjear puntos'}
+                    </button>
+                    <a href="tienda.html" class="btn-tienda-libreta">☕ Ver en Tienda PRI</a>
+                </div>
+            </div>`;
+
+        const totebagsCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-verde">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Totebags Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Bolsas de tela con diseños únicos del Pacífico. Resistentes, ecológicas y con identidad PRI. ¡Lleva el programa contigo!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="totebags/totebag_01.svg" alt="Totebag PRI 01" loading="lazy"/>
+                        <span class="lib-label">Diseño 01</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="totebags/totebag_02.svg" alt="Totebag PRI 02" loading="lazy"/>
+                        <span class="lib-label">Diseño 02</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">300 <sup>PTS</sup></div>
+                    <button class="btn-canjear" ${pts < 300 || premiosMes >= 2 ? 'disabled' : ''}
+                        onclick="abrirModalCanje('vitrina-totebags','Totebag Oficial PRI',300)">
+                        ${premiosMes >= 2 ? 'Límite alcanzado' : pts < 300 ? 'Puntos insuficientes' : 'Canjear puntos'}
+                    </button>
+                    <a href="tienda.html" class="btn-tienda-libreta">🛍️ Ver en Tienda PRI</a>
+                </div>
+            </div>`;
+
+        const cards = snap.docs.map(d => _renderProductoCard({id: d.id, ...d.data()}, pts, premiosMes));
+        cards.splice(1, 0, libretasCard);
+        cards.splice(4, 0, tazasCard);
+        cards.splice(7, 0, totebagsCard);
+        grid.innerHTML = cards.join('');
+    } catch (e) {
+        grid.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Error al cargar: ${e.message}</p>`;
+    }
+}
+
+function initProductos() {
+    _cargarProductosFirestore('productos-grid-est', 'saldo-text', 'premios-mes-text');
     cargarHistorialCanjes();
 }
 
@@ -3554,6 +3735,35 @@ window.eliminarProductoAdmin = async function(id) {
     } catch(e) { notif('Error', e.message, '❌', 'error'); }
 };
 
+// ── Config Admin ──────────────────────────────────────────────────
+window.cargarConfigAdmin = async function() {
+    const inp = document.getElementById('input-admin-clave-docente');
+    const status = document.getElementById('config-clave-status');
+    if (!inp) return;
+    inp.placeholder = 'Cargando…';
+    try {
+        const snap = await getDoc(doc(db, 'configuracion', 'acceso'));
+        inp.value = snap.exists() ? (snap.data().claveDocente || '') : '';
+        inp.placeholder = 'Escribe la clave…';
+    } catch (e) {
+        inp.placeholder = 'Error al cargar';
+    }
+};
+
+window.guardarClaveDocente = async function() {
+    const inp = document.getElementById('input-admin-clave-docente');
+    const status = document.getElementById('config-clave-status');
+    const clave = inp ? inp.value.trim() : '';
+    if (!clave) { if(status){status.textContent='⚠️ Escribe una clave antes de guardar.';status.style.color='#ff6b6b';status.style.display='block';} return; }
+    try {
+        await setDoc(doc(db, 'configuracion', 'acceso'), { claveDocente: clave }, { merge: true });
+        if (status) { status.textContent = '✅ Clave guardada correctamente.'; status.style.color = '#00c896'; status.style.display = 'block'; }
+        setTimeout(() => { if(status) status.style.display='none'; }, 3000);
+    } catch (e) {
+        if (status) { status.textContent = '❌ Error: ' + e.message; status.style.color = '#ff6b6b'; status.style.display = 'block'; }
+    }
+};
+
 function cargarPedidosTienda() {
     const tbody = document.getElementById('pedidos-tbody');
     if (!tbody) return;
@@ -3960,34 +4170,10 @@ function cargarCapacitaciones() {
     const secTitleEl= document.getElementById('cap-section-title');
     const cont      = document.getElementById('lista-capacitaciones');
 
-    if (rol === 'docente') {
-        // Docente: muestra actividad reciente (talleres completados + nuevos estudiantes)
-        if (titleEl)    titleEl.textContent    = 'Actividad';
-        if (headingEl)  headingEl.innerHTML    = 'Notificaciones <em>Recientes</em>';
-        if (descEl)     descEl.textContent     = 'Actividad reciente de tus estudiantes: talleres completados y formularios enviados.';
-        if (secTitleEl) secTitleEl.textContent = 'Últimas entregas';
-        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Cargando actividad…</p>';
-        getDocs(query(collection(db,'talleres_completados'), orderBy('completadoEn','desc'), limit(30))).then(snap => {
-            if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);">Sin actividad reciente.</p>'; return; }
-            cont.innerHTML = '';
-            snap.forEach(d => {
-                const r = d.data();
-                const fecha = r.completadoEn ? new Date(r.completadoEn.toDate()).toLocaleDateString('es-CO',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
-                cont.insertAdjacentHTML('beforeend',`
-                    <div class="capacitacion-card" style="gap:.6rem;">
-                        <div class="cap-info">
-                            <p class="cap-nombre">✅ ${r.titulo||'Taller'}</p>
-                            <p class="cap-meta">Completado por: ${r.nombre||r.email||'—'} · ${r.grado?'Grado '+r.grado:''} · ${r.colegio||'—'}</p>
-                        </div>
-                        <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.3);white-space:nowrap;">${fecha}</span>
-                    </div>`);
-            });
-        }).catch(() => {
-            // fallback: mostrar solicitudes si no hay índice
-            cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);">Sin actividad reciente. (Requiere índice Firestore para orderBy)</p>';
-        });
+    if (false) {
+        // bloque eliminado — docente ahora usa solicitudes igual que voluntario
     } else {
-        // Voluntario / Admin: solicitudes de capacitación
+        // Voluntario / Docente / Admin: solicitudes de capacitación
         if (titleEl)    titleEl.textContent = 'Agenda';
         if (headingEl)  headingEl.innerHTML = 'Solicitudes de <em>Capacitación</em>';
         if (descEl)     descEl.textContent  = 'Revisa y acepta solicitudes de capacitación. Se notificará al estudiante por WhatsApp.';
@@ -4395,33 +4581,18 @@ window.verRespuestasTaller = async function(tallerId, tallerNombre) {
 
 // ===================== PREMIOS MENTOR =====================
 function initProductosMentor() {
-    const pts = currentUser.puntos || 0;
-    const premiosMes = currentUser.premiosMes || 0;
-    document.getElementById('saldo-mentor-text').textContent = `Tu saldo: ${pts} PTS`;
-    const grid = document.getElementById('productos-grid-mentor');
-    grid.innerHTML = '';
-    CATALOGO.forEach(prod => {
-        const puede = pts >= prod.pts && premiosMes < 2;
-        grid.insertAdjacentHTML('beforeend',`
-            <div class="producto-card">
-                <span class="producto-emoji">${prod.emoji}</span>
-                <p class="producto-nombre">${prod.nombre}</p>
-                <p class="producto-pts">${prod.pts} PTS</p>
-                <button class="btn-canjear" ${!puede?'disabled':''} onclick="abrirModalCanje('${prod.id}','${prod.nombre}',${prod.pts})">
-                    ${premiosMes>=2?'Límite alcanzado':pts<prod.pts?'Insuficientes':'Canjear'}
-                </button>
-            </div>`);
-    });
+    _cargarProductosFirestore('productos-grid-mentor', 'saldo-mentor-text', null);
     if (!currentUser.uid) return;
     getDocs(query(collection(db,"premios_reclamados"), where("uid","==",currentUser.uid), orderBy("timestamp","desc"))).then(snap => {
         if (snap.empty) return;
         const sec = document.getElementById('historial-canjes-mentor-sec');
         const list = document.getElementById('historial-canjes-mentor-list');
+        if (!sec || !list) return;
         sec.style.display = 'block'; list.innerHTML = '';
         snap.forEach(d => {
-            const r=d.data();
+            const r = d.data();
             const fecha = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString('es-CO') : '—';
-            const sc = r.estado==='Entregado'?'estado-entregado':'estado-pendiente';
+            const sc = r.estado === 'Entregado' ? 'estado-entregado' : 'estado-pendiente';
             list.insertAdjacentHTML('beforeend',`<div class="canje-item"><div><p class="canje-nombre">${r.premio||'—'}</p><p style="font-size:0.7rem;color:rgba(240,244,248,0.3);">${fecha} · ${r.costo||0} PTS</p></div><span class="canje-estado ${sc}">${r.estado||'Pendiente'}</span></div>`);
         });
     }).catch(()=>{});

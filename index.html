@@ -2026,5 +2026,59 @@ actualizarContadorCobertura();
 })();
 </script>
 
+<script>
+/* ── Sesión activa: pill desktop + avatar móvil + IR A PLATAFORMA ── */
+(function(){
+    const raw = localStorage.getItem('usuario_sesion_activa');
+    if (!raw) return;
+    try {
+        const u = JSON.parse(raw);
+        if (u.sesionExpira && Date.now() > u.sesionExpira) {
+            localStorage.removeItem('usuario_sesion_activa'); return;
+        }
+        const primeros = (u.nombre || '').trim().split(/\s+/).slice(0,2).join(' ');
+        const inicial = (primeros[0] || '?').toUpperCase();
+        const avatarStyle = (size, fs) =>
+            u.fotoUrl
+                ? `<img src="${u.fotoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:2px solid #ff5e00;flex-shrink:0;">`
+                : `<div style="width:${size}px;height:${size}px;border-radius:50%;background:#ff5e00;display:flex;align-items:center;justify-content:center;font-size:${fs}px;font-weight:900;color:#fff;flex-shrink:0;">${inicial}</div>`;
+
+        /* ── Desktop: reemplaza "Inicia Sesión" con pill ── */
+        const btn = document.querySelector('a.btn-login');
+        if (btn) {
+            btn.href = 'dashboard.html';
+            btn.style.cssText = 'display:flex;align-items:center;gap:7px;padding:3px 14px 3px 3px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fafafa;text-decoration:none;';
+            btn.innerHTML = `${avatarStyle(28,11)}<span>${primeros}</span>`;
+        }
+
+        /* ── Mobile: mini-avatar junto al hamburger ── */
+        const toggle = document.getElementById('mobile-menu');
+        if (toggle) {
+            const pill = document.createElement('div');
+            pill.id = 'mobile-user-pill';
+            pill.style.cssText = 'display:none;align-items:center;z-index:3001;cursor:pointer;';
+            pill.innerHTML = avatarStyle(34,13);
+            pill.addEventListener('click', () => { window.location.href='dashboard.html'; });
+            toggle.parentNode.insertBefore(pill, toggle);
+            const mq = window.matchMedia('(max-width:768px)');
+            const setVis = m => { pill.style.display = m.matches ? 'flex' : 'none'; };
+            setVis(mq); mq.addEventListener('change', setVis);
+        }
+
+        /* ── Mobile: "IR A PLATAFORMA" como primer ítem del drawer ── */
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) {
+            const li = document.createElement('li');
+            li.className = 'nav-ir-plataforma';
+            li.innerHTML = `<a href="dashboard.html" style="display:block;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:3px;text-decoration:none;text-align:center;">🚀 IR A PLATAFORMA</a>`;
+            navLinks.insertBefore(li, navLinks.firstChild);
+            const s = document.createElement('style');
+            s.textContent = '@media(min-width:769px){.nav-ir-plataforma{display:none!important;}} .nav-ir-plataforma a{font-size:.72rem!important;border-bottom:none!important;transform:none!important;padding:.65rem 1.3rem!important;letter-spacing:2px!important;width:100%!important;box-sizing:border-box;}';
+            document.head.appendChild(s);
+        }
+    } catch(e) {}
+})();
+</script>
+
 </body>
 </html>
