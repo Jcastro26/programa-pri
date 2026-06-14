@@ -5392,9 +5392,9 @@ button:hover ~ .cursor-ring,
 @media (max-width: 768px) {
     .hero-ppri {
         height: auto !important;
-        min-height: 60vh;
+        min-height: 100svh;
         padding-top: 90px !important;
-        padding-bottom: 3rem;
+        padding-bottom: 4rem;
     }
     .ppri-text-content { padding: 0 1.2rem; }
     .title-cutout { font-size: clamp(1.9rem, 7vw, 3rem) !important; }
@@ -5708,6 +5708,18 @@ button:hover ~ .cursor-ring,
     .logo-container h2 {
         font-size: 0.62rem;
         letter-spacing: 0.8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 120px;
+    }
+    .logo-container {
+        flex-shrink: 1;
+        min-width: 0;
+        overflow: hidden;
+    }
+    .navbar nav {
+        flex-shrink: 0;
     }
 }
 
