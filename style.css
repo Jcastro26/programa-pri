@@ -994,14 +994,14 @@ h1, h2, h3 {
         justify-content: center;
         gap: 5px;
         width: auto;
-        min-width: 52px;
+        min-width: 42px;
         height: auto;
         cursor: pointer;
         z-index: 3000 !important;
         background: rgba(255,94,0,0.12);
         border: 1.5px solid rgba(255,94,0,0.5);
         border-radius: 4px;
-        padding: 6px 10px 4px;
+        padding: 4px 7px 2px;
         transition: background 0.2s ease;
     }
     .menu-toggle:hover, .menu-toggle.is-active {
@@ -1054,8 +1054,8 @@ h1, h2, h3 {
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
-        gap: 1.8rem;
-        padding: 5rem 2rem 2rem;
+        gap: 0.85rem;
+        padding: 3.5rem 1.5rem 1.5rem;
         transform: translateX(100%) !important;
         visibility: hidden;
         transition: transform 0.38s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s linear 0.38s;
@@ -1090,15 +1090,15 @@ h1, h2, h3 {
 
     .nav-links a {
         display: inline-block;
-        font-size: 1.25rem !important;
+        font-size: 0.85rem !important;
         font-weight: 900;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 1.5px;
         color: var(--blanco-espuma, #ffffff);
         transition: color 0.2s ease, transform 0.2s ease;
         width: auto;
-        padding: 0.3rem 0;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding: 0.2rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
     .nav-links a:hover,
@@ -1111,15 +1111,15 @@ h1, h2, h3 {
     .nav-links a.btn-login {
         color: var(--blanco-espuma, #ffffff) !important;
         background-color: var(--naranja-atardecer, #ff5722) !important;
-        padding: 10px 24px !important;
+        padding: 7px 16px !important;
         border-radius: 4px;
-        font-size: 1.1rem !important;
+        font-size: 0.78rem !important;
         letter-spacing: 1px;
         width: 100%;
         text-align: center;
-        margin-top: 0.5rem;
+        margin-top: 0.4rem;
         border-bottom: none;
-        box-shadow: 4px 4px 0 rgba(0,0,0,0.4);
+        box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
     }
     .nav-links a.btn-login:hover {
         transform: translate(-2px,-2px) !important;
@@ -2742,15 +2742,15 @@ h1, h2, h3 {
 /* ==================== ANCLAJE Y LIMPIEZA DE LA PEÑA ==================== */
 .tumaco-rock {
     position: absolute !important;
-    bottom: -5vh !important;
-    right: 0 !important; 
-    width: clamp(320px, 45vw, 650px) !important;
-    z-index: 2 !important;
+    bottom: 8vh !important;
+    right: 0 !important;
+    width: clamp(280px, 40vw, 600px) !important;
+    z-index: 6 !important;
 
     /* Sombra oscura hacia la izquierda, CERO blanco, CERO beige */
     filter: drop-shadow(-10px 5px 20px rgba(0, 0, 0, 0.8)) !important;
     opacity: 1 !important;
-    
+
 }
 /* Gaviota Independiente */
 .seagull {
@@ -3522,7 +3522,7 @@ h1, h2, h3 {
     position: absolute !important;
     width: 110px !important;
     height: 55px !important;
-    z-index: 8 !important;
+    z-index: 8;                /* sin !important → el JS puede sobreescribir */
     pointer-events: none !important;
     will-change: transform, top, left !important;
 }
@@ -3785,9 +3785,9 @@ p, li, a, label, span, td, th, input, button, textarea {
     pointer-events: none !important;
 }
 
-/* ── LANCHA encima de todo excepto niebla frontal y texto ─────────── */
+/* ── LANCHA: z-index controlado por JS (sin !important aquí) ──────── */
 .boat-wrapper {
-    z-index: 10 !important;
+    z-index: 8;
 }
 
 /* ── MOBILE ADJUSTMENTS ───────────────────────────────────────────── */
@@ -3951,7 +3951,7 @@ p, li, a, label, span, td, th, input, button, textarea {
     position: absolute !important;
     width: 115px !important;
     height: 58px !important;
-    z-index: 11 !important;           /* encima de olas pero bajo niebla frontal */
+    z-index: 8;                        /* sin !important → el JS puede cambiarlo */
     pointer-events: none !important;
     will-change: transform, bottom, left !important;
     /* bottom y left son seteados por JS */
@@ -3976,7 +3976,7 @@ p, li, a, label, span, td, th, input, button, textarea {
 .tumaco-rock {
     position: absolute !important;
     right: 0% !important;
-    bottom: 0% !important;
+    bottom: 16vh !important;   /* base de la peña cerca de la línea de olas */
     width: clamp(200px, 30vw, 420px) !important;
     height: auto !important;
     z-index: 6 !important;
@@ -5481,7 +5481,7 @@ button:hover ~ .cursor-ring,
     box-shadow: 5px 5px 0 var(--naranja-atardecer);
 }
 .sesion-step.highlight-step h4 { color: var(--oro-sol); }
-.sesion-step.highlight-step p { color: rgba(240,244,248,0.85); }
+.sesion-step.highlight-step p { color: rgba(255,255,255,0.85); }
 
 .step-icon { font-size: 2rem; margin-bottom: 0.5rem; }
 .step-num {
@@ -5572,7 +5572,7 @@ button:hover ~ .cursor-ring,
 }
 .p-stat-label {
     font-size: 0.8rem;
-    color: rgba(240,244,248,0.55);
+    color: rgba(255,255,255,0.55);
     margin-top: 0.5rem;
     line-height: 1.3;
 }
@@ -5583,7 +5583,7 @@ button:hover ~ .cursor-ring,
     font-size: 0.65rem;
     font-weight: 900;
     letter-spacing: 3px;
-    color: rgba(240,244,248,0.3);
+    color: rgba(255,255,255,0.85);
     margin-bottom: 1rem;
     text-align: center;
 }
@@ -5656,7 +5656,7 @@ button:hover ~ .cursor-ring,
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 1px;
-    color: rgba(240,244,248,0.3);
+    color: rgba(255,255,255,0.3);
     text-align: center;
     line-height: 1.4;
 }
@@ -5688,17 +5688,26 @@ button:hover ~ .cursor-ring,
     .navbar {
         padding: 0.55rem 1rem 0.55rem 0.75rem;
     }
-    /* Ocultar subtítulo del logo para ahorrar espacio */
+    /* Subtítulo: visible muy pequeño en móvil */
     .logo-container p {
-        display: none;
+        display: block !important;
+        font-size: 0.3rem !important;
+        letter-spacing: 0.7px !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 110px;
+        color: var(--teal, #38bdf8) !important;
     }
     .logo-img {
-        width: 34px;
-        height: 34px;
+        width: 26px;
+        height: 26px;
     }
     .logo-container h2 {
-        font-size: 0.8rem;
-        letter-spacing: 1.5px;
+        font-size: 0.62rem;
+        letter-spacing: 0.8px;
     }
 }
 
@@ -5820,5 +5829,68 @@ html, body {
         .prod-card-libretas {
             grid-column: span 1 !important;
         }
+    }
+}
+
+/* ── 8. PRE-TEST quiz: columna única en móvil ────────── */
+@media (max-width: 768px) {
+    /* Si JS activa el juego (display:grid), forzar 1 columna */
+    .game-layout[style*="grid"],
+    .game-layout[style*="flex"] {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    .question-panel {
+        padding: 1.2rem !important;
+        box-shadow: 4px 4px 0 #000 !important;
+    }
+    .question-text {
+        font-size: 1rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+    .answer-btn {
+        font-size: 0.85rem !important;
+        padding: 0.8rem !important;
+    }
+    .control-sidebar {
+        order: -1; /* Muestra el panel de control arriba */
+    }
+    .answers-grid {
+        gap: 0.75rem !important;
+    }
+}
+
+/* ── 9. FOOTER: texto compacto en móvil ─────────────── */
+@media (max-width: 768px) {
+    .footer-col h3 {
+        font-size: 0.8rem !important;
+        letter-spacing: 1px !important;
+        margin-bottom: 0.75rem !important;
+    }
+    .links-col a,
+    .info-col p {
+        font-size: 0.72rem !important;
+        margin-bottom: 0.5rem !important;
+        line-height: 1.4 !important;
+    }
+    .massive-footer-text {
+        font-size: clamp(1.4rem, 7vw, 2rem) !important;
+    }
+    .footer-masivo {
+        padding: 2rem 1rem 1.5rem !important;
+    }
+    .footer-grid {
+        gap: 1.5rem !important;
+    }
+    .info-col .copyright {
+        font-size: 0.65rem !important;
+    }
+}
+
+/* ── 10. MORRO móvil: posición adaptada ─────────────── */
+@media (max-width: 768px) {
+    .tumaco-rock {
+        bottom: 12vh !important;
+        width: clamp(200px, 55vw, 320px) !important;
     }
 }

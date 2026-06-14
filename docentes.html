@@ -30,7 +30,7 @@
             letter-spacing: -1px;
         }
         .module-title p {
-            color: rgba(240,244,248,0.5);
+            color: rgba(255,255,255,0.5);
             font-size: 1rem;
             margin-top: 0.5rem;
         }
@@ -48,7 +48,7 @@
         .section-header { text-align: center; margin-bottom: 3rem; }
         .section-header .eyebrow { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.5rem; }
         .section-header h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem,4vw,2.5rem); font-weight: 900; color: var(--blanco); margin-bottom: 0.75rem; }
-        .section-header p { color: rgba(240,244,248,0.5); font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+        .section-header p { color: rgba(255,255,255,0.5); font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
 
         .mentors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
 
@@ -56,7 +56,7 @@
         .filtros-bar { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
         .filtro-btn {
             font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
-            padding: 0.5rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(240,244,248,0.45);
+            padding: 0.5rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.45);
             cursor: pointer; transition: all 0.2s ease;
         }
         .filtro-btn.active, .filtro-btn:hover { background: rgba(255,94,0,0.12); border-color: rgba(255,94,0,0.4); color: var(--blanco); }
@@ -84,18 +84,18 @@
         .mentor-info { padding: 1.5rem; }
         .mentor-career { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); }
         .mentor-info h3 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 900; color: var(--blanco); margin: 0.4rem 0 0.6rem; }
-        .mentor-info p { font-size: 0.85rem; color: rgba(240,244,248,0.55); line-height: 1.55; margin-bottom: 1rem; }
+        .mentor-info p { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.55; margin-bottom: 1rem; }
         .mentor-materias { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
         .materia-tag { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 0.2rem 0.6rem; background: rgba(255,215,0,0.07); border: 1px solid rgba(255,215,0,0.2); color: rgba(255,215,0,0.7); }
 
         .rating-display { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
         .stars { color: var(--oro); font-size: 0.9rem; letter-spacing: 1px; }
-        .rating-num { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 700; color: rgba(240,244,248,0.4); }
+        .rating-num { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.4); }
 
         .btn-material { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--naranja); background: rgba(255,94,0,0.08); border: 1px solid rgba(255,94,0,0.3); padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s ease; width: 100%; }
         .btn-material:hover { background: rgba(255,94,0,0.18); border-color: var(--naranja); }
 
-        .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: rgba(240,244,248,0.25); font-family: 'Montserrat', sans-serif; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; }
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; }
         .empty-state svg { margin-bottom: 1rem; opacity: 0.2; }
 
         /* MODAL RATING */
@@ -104,7 +104,7 @@
         .modal-box { background: var(--azul-panel); border: 1px solid rgba(255,255,255,0.1); max-width: 440px; width: 100%; padding: 2rem; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.25s ease; max-height: 90vh; overflow-y: auto; }
         .modal-overlay.open .modal-box { transform: translateY(0); }
         .modal-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--naranja), var(--oro)); }
-        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(240,244,248,0.4); font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
         .modal-close:hover { color: var(--blanco); }
         .modal-title { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); margin-bottom: 0.4rem; }
         .modal-mentor-name { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--blanco); margin-bottom: 1.5rem; }
@@ -113,7 +113,7 @@
         .star-btn.active, .star-btn:hover { color: var(--oro); transform: scale(1.15); }
         .modal-textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--blanco); font-family: 'Lora', serif; font-size: 0.85rem; padding: 0.85rem; resize: none; height: 90px; margin-bottom: 1.2rem; outline: none; transition: border-color 0.2s ease; }
         .modal-textarea:focus { border-color: rgba(255,94,0,0.5); }
-        .anonimo-label { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 1.5px; color: rgba(240,244,248,0.3); text-transform: uppercase; margin-bottom: 1rem; display: block; }
+        .anonimo-label { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 1rem; display: block; }
         .btn-submit-rating { width: 100%; padding: 0.85rem; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; cursor: pointer; transition: background 0.2s ease; }
         .btn-submit-rating:hover { background: #e05200; }
         .btn-submit-rating:disabled { background: rgba(255,94,0,0.3); cursor: not-allowed; }
@@ -125,11 +125,11 @@
         .review-item:last-child { border-bottom: none; }
         .review-author { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.2rem; }
         .review-stars { color: var(--oro); font-size: 0.75rem; margin-bottom: 0.25rem; }
-        .review-text { font-size: 0.8rem; color: rgba(240,244,248,0.55); }
+        .review-text { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
 
         /* MODAL REGISTRO ADMIN */
         .field-group { margin-bottom: 1rem; }
-        .field-group label { display: block; font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(240,244,248,0.5); margin-bottom: 0.4rem; }
+        .field-group label { display: block; font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 0.4rem; }
         .field-group input, .field-group select, .field-group textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--blanco); font-family: 'Lora', serif; font-size: 0.85rem; padding: 0.75rem; outline: none; transition: border-color 0.2s; }
         .field-group input:focus, .field-group textarea:focus { border-color: rgba(255,94,0,0.5); }
         .field-group select { cursor: pointer; } .field-group select option { background: var(--azul-panel); }
@@ -148,7 +148,7 @@
         .notif-pri.info { border-color: var(--teal); color: var(--teal); }
         .notif-icono { font-size: 1.3rem; display: block; margin-bottom: 0.25rem; }
         .notif-titulo { font-size: 0.8rem; color: var(--blanco); margin-bottom: 0.2rem; }
-        .notif-cerrar { position: absolute; top: 0.5rem; right: 0.75rem; background: none; border: none; color: rgba(240,244,248,0.3); font-size: 1rem; cursor: pointer; }
+        .notif-cerrar { position: absolute; top: 0.5rem; right: 0.75rem; background: none; border: none; color: rgba(255,255,255,0.3); font-size: 1rem; cursor: pointer; }
         .notif-cerrar:hover { color: var(--blanco); }
 
         /* SPINNER */
@@ -246,7 +246,7 @@
         <button class="modal-close" onclick="cerrarModalRating()">✕</button>
         <p class="modal-title">Evaluación Docente</p>
         <h3 class="modal-mentor-name" id="rating-mentor-name">Mentor</h3>
-        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-bottom:0.5rem;">Tu calificación</p>
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;">Tu calificación</p>
         <div class="star-picker" id="star-picker">
             <button class="star-btn" data-val="1" onclick="selectStar(1)">★</button>
             <button class="star-btn" data-val="2" onclick="selectStar(2)">★</button>
@@ -497,7 +497,7 @@ async function cargarMentores() {
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;">
                             ${btnCalificar}${btnMaterial}
                         </div>
-                        ${countRatings > 0 ? `<button onclick="toggleReviews(this)" style="background:none;border:none;color:rgba(240,244,248,0.4);font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;padding:0;margin-bottom:0.5rem;">Ver reseñas ▾</button>` : ''}
+                        ${countRatings > 0 ? `<button onclick="toggleReviews(this)" style="background:none;border:none;color:rgba(255,255,255,0.4);font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;padding:0;margin-bottom:0.5rem;">Ver reseñas ▾</button>` : ''}
                     </div>
                     ${countRatings > 0 ? `<div class="reviews-panel">${reviewsHTML}</div>` : ''}
                 `;
@@ -639,7 +639,7 @@ document.getElementById('modal-perfil-docente').addEventListener('click', e => {
 // ── VER PERFIL COMPLETO + RESEÑAS ────────────────────────────────
 window.verPerfilCompleto = async function(docId) {
     const cont = document.getElementById('perfil-doc-content');
-    cont.innerHTML = '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.35);text-align:center;padding:2rem;">Cargando perfil...</p>';
+    cont.innerHTML = '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(255,255,255,0.35);text-align:center;padding:2rem;">Cargando perfil...</p>';
     document.getElementById('modal-perfil-docente').classList.add('open');
     try {
         const snap = await getDoc(doc(db,"docentes",docId));
@@ -654,8 +654,8 @@ window.verPerfilCompleto = async function(docId) {
             const strs = Array.from({length:5},(_, i) => i < (c.estrellas||0) ? '★' : '☆').join('');
             calHtml += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:0.75rem 1rem;margin-bottom:0.5rem;">
                 <p style="font-family:'Montserrat',sans-serif;font-size:0.7rem;color:#ffd700;margin-bottom:0.25rem;">${strs}</p>
-                ${c.comentario?`<p style="font-size:0.82rem;color:rgba(240,244,248,0.7);">${c.comentario}</p>`:''}
-                <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;color:rgba(240,244,248,0.25);margin-top:0.25rem;">— Reseña de estudiante (anónima)</p>
+                ${c.comentario?`<p style="font-size:0.82rem;color:rgba(255,255,255,0.7);">${c.comentario}</p>`:''}
+                <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;color:rgba(255,255,255,0.25);margin-top:0.25rem;">— Reseña de estudiante (anónima)</p>
             </div>`;
         });
         const avgCal = calSnap.size ? (totalStars/calSnap.size).toFixed(1) : null;
@@ -673,16 +673,16 @@ window.verPerfilCompleto = async function(docId) {
                 <div style="flex:1;min-width:160px;">
                     <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--naranja,#ff5e00);margin-bottom:0.25rem;">${d.rol||'Mentor'}</p>
                     <h3 style="font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:900;color:#f0f4f8;margin-bottom:0.3rem;">${d.nombre||'—'}</h3>
-                    <p style="font-family:'Montserrat',sans-serif;font-size:0.7rem;color:rgba(240,244,248,0.5);margin-bottom:0.5rem;">${d.carrera||'Programa PRI'}</p>
-                    ${avgCal?`<p style="font-family:'Montserrat',sans-serif;font-size:0.8rem;color:#ffd700;">★ ${avgCal}/5 <span style="color:rgba(240,244,248,0.35);font-size:0.6rem;">(${calSnap.size} evaluaciones)</span></p>`:'<p style="font-family:\'Montserrat\',sans-serif;font-size:0.7rem;color:rgba(240,244,248,0.3);">Sin evaluaciones aún</p>'}
+                    <p style="font-family:'Montserrat',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">${d.carrera||'Programa PRI'}</p>
+                    ${avgCal?`<p style="font-family:'Montserrat',sans-serif;font-size:0.8rem;color:#ffd700;">★ ${avgCal}/5 <span style="color:rgba(255,255,255,0.35);font-size:0.6rem;">(${calSnap.size} evaluaciones)</span></p>`:'<p style="font-family:\'Montserrat\',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.3);">Sin evaluaciones aún</p>'}
                 </div>
             </div>
-            ${d.bio?`<p style="font-size:0.9rem;color:rgba(240,244,248,0.75);line-height:1.7;margin-bottom:1rem;">${d.bio}</p>`:''}
+            ${d.bio?`<p style="font-size:0.9rem;color:rgba(255,255,255,0.75);line-height:1.7;margin-bottom:1rem;">${d.bio}</p>`:''}
             ${matTagsHtml?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1rem;">${matTagsHtml}</div>`:''}
             ${d.materialUrl?`<a href="${d.materialUrl}" target="_blank" style="display:inline-block;margin-bottom:1.5rem;padding:0.55rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);text-decoration:none;">📂 Ver Material</a>`:''}
             <div style="margin-top:1rem;">
-                <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.3);margin-bottom:0.75rem;">RESEÑAS DE ESTUDIANTES</p>
-                ${calHtml || '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.25);">Ningún estudiante ha dejado una reseña aún.</p>'}
+                <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.75rem;">RESEÑAS DE ESTUDIANTES</p>
+                ${calHtml || '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(255,255,255,0.25);">Ningún estudiante ha dejado una reseña aún.</p>'}
             </div>`;
     } catch(err) { cont.innerHTML = `<p style="color:#fca5a5;font-family:'Montserrat',sans-serif;font-size:0.7rem;">Error: ${err.message}</p>`; }
 };
@@ -762,5 +762,6 @@ signInAnonymously(auth).catch(() => {}).finally(() => cargarMentores());
     } catch(e) {}
 })();
 </script>
+<script src="fondo-dinamico.js"></script>
 </body>
 </html>

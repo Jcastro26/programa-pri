@@ -319,38 +319,41 @@ body:hover .cursor-dot { opacity: 1; }
     grid-template-columns: 84px 1fr;
     gap: 2rem;
     margin-bottom: 3rem;
-    align-items: start;
+    align-items: center;
 }
 .nivel-num-circle {
     width: 84px; height: 84px;
     border-radius: 50%;
-    background: var(--azul-deep-tumaco);
+    background: rgba(2, 26, 54, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 3px solid var(--naranja-atardecer);
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     font-family: var(--fuente-titulos);
     font-weight: 900;
     flex-shrink: 0;
+    box-shadow: 0 0 24px rgba(255,94,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
     transition: all 0.3s ease;
-    position: relative; z-index: 1;
+    position: relative; z-index: 2;
     cursor: default;
 }
 .nivel-num-circle:hover {
-    background: var(--naranja-atardecer);
-    transform: scale(1.1) rotate(5deg);
+    background: rgba(255,94,0,0.85);
+    box-shadow: 0 0 36px rgba(255,94,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+    transform: scale(1.08) rotate(5deg);
 }
 .nivel-num-circle span:first-child { font-size: 0.65rem; color: var(--oro-sol); letter-spacing: 2px; }
 .nivel-num-circle span:last-child { font-size: 1.8rem; color: var(--blanco-espuma); line-height: 1; }
 .nivel-body {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 1rem;
     padding: 2rem;
     position: relative;
     transition: all 0.35s ease;
 }
 .nivel-body:hover {
-    background: rgba(255,94,0,0.06);
-    border-color: rgba(255,94,0,0.3);
+    background: rgba(255, 94, 0, 0.08) !important;
+    border-color: rgba(255, 94, 0, 0.32) !important;
     transform: translateX(8px);
 }
 .nivel-grado {
@@ -504,6 +507,7 @@ body:hover .cursor-dot { opacity: 1; }
     box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
     transition: all 0.3s ease;
     display: inline-block;
+    border-radius: 0.65rem;
 }
 .btn-cta-dark:hover {
     background: rgba(255,255,255,0.15);
@@ -595,6 +599,14 @@ body:hover .cursor-dot { opacity: 1; }
 <!-- ==================== HERO ==================== -->
 <section class="hero">
     <canvas id="particles-canvas"></canvas>
+
+    <!-- Video animación oceánica (fondo del Hero) -->
+    <div id="hero-video-bg" style="position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;">
+        <video autoplay loop muted playsinline
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);opacity:0.4;">
+            <source src="ANIMACION1.mp4" type="video/mp4">
+        </video>
+    </div>
 
     <div class="ocean-system cloudy-theme">
         <div class="natural-sky">
@@ -781,6 +793,27 @@ body:hover .cursor-dot { opacity: 1; }
                     <path d="M 80,620 C 110,612 150,608 200,610 C 260,612 320,614 370,612 C 410,610 445,607 474,612 C 477,614 474,620 474,620 Z" fill="rgba(195,215,230,0.28)" filter="url(#softShadow2)"/>
                 </g>
             </svg>
+            <!-- Rocas al pie del Morro sumergidas en el mar -->
+            <svg viewBox="0 0 520 80" xmlns="http://www.w3.org/2000/svg" style="position:absolute;bottom:-8px;left:0;width:100%;height:auto;pointer-events:none;">
+                <defs>
+                    <filter id="rockBlur3"><feGaussianBlur stdDeviation="1.5"/></filter>
+                </defs>
+                <!-- Sombra reflejo en el agua -->
+                <ellipse cx="260" cy="70" rx="200" ry="12" fill="rgba(0,0,0,0.25)" filter="url(#rockBlur3)"/>
+                <!-- Roca grande izquierda -->
+                <path d="M 60,72 C 62,58 70,50 82,48 C 96,46 106,54 108,66 C 110,72 108,76 102,78 C 88,80 66,78 60,72 Z" fill="#7a6545"/>
+                <path d="M 68,60 C 74,56 84,55 90,58 C 86,54 80,51 74,52 Z" fill="#a0856c"/>
+                <!-- Roca mediana centro -->
+                <path d="M 200,74 C 202,64 210,57 222,56 C 234,55 242,63 242,72 C 242,78 238,80 228,80 C 214,80 200,78 200,74 Z" fill="#6b5840"/>
+                <path d="M 206,66 C 212,62 220,61 226,64 Z" fill="#9a7d60"/>
+                <!-- Roca pequeña derecha -->
+                <path d="M 360,76 C 361,68 368,63 378,63 C 388,63 394,69 393,76 C 392,80 386,80 376,80 C 366,80 359,78 360,76 Z" fill="#8a7255"/>
+                <!-- Roca mini -->
+                <path d="M 290,78 C 291,73 296,70 302,70 C 308,70 312,73 311,78 C 310,80 306,80 300,80 Z" fill="#7a6545"/>
+                <!-- Agua entre rocas -->
+                <path d="M 108,76 Q 155,68 200,74" stroke="rgba(80,140,180,0.4)" stroke-width="2" fill="none"/>
+                <path d="M 242,74 Q 270,70 290,78" stroke="rgba(80,140,180,0.4)" stroke-width="2" fill="none"/>
+            </svg>
         </div>
 
         <div class="boat-wrapper" id="animBoat">
@@ -868,8 +901,8 @@ body:hover .cursor-dot { opacity: 1; }
             <p class="mision-p">Nuestra metodología cierra la brecha entre el colegio público de Tumaco y la exigencia universitaria. Unimos matemáticas, física y programación con pensamiento crítico para asegurar que no solo ingreses, sino que <strong>lideres</strong>.</p>
             <p class="mision-p">Operamos bajo el programa PEAMA de la Universidad Nacional, con un modelo de nivelación escalonada que ataca el rezago desde grado 8° hasta el primer semestre universitario.</p>
             <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
-                <a href="ppri.html" style="display:inline-block;background:var(--azul-deep-tumaco);color:white;padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);box-shadow:5px 5px 0 var(--naranja-atardecer);transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='8px 8px 0 var(--naranja-atardecer)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 var(--naranja-atardecer)'">Ver el Programa</a>
-                <a href="#sondeo-stats" style="display:inline-block;background:transparent;color:var(--azul-deep-tumaco);padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);transition:all 0.3s ease;" onmouseover="this.style.background='var(--azul-deep-tumaco)';this.style.color='white'" onmouseout="this.style.background='transparent';this.style.color='var(--azul-deep-tumaco)'">Ver Métricas</a>
+                <a href="ppri.html" style="display:inline-block;background:var(--azul-deep-tumaco);color:white;padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);box-shadow:5px 5px 0 var(--naranja-atardecer);transition:all 0.3s ease;border-radius:0.65rem;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='8px 8px 0 var(--naranja-atardecer)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 var(--naranja-atardecer)'">Ver el Programa</a>
+                <a href="#sondeo-stats" style="display:inline-block;background:transparent;color:rgba(255,255,255,0.9);padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid rgba(255,255,255,0.45);transition:all 0.3s ease;border-radius:0.65rem;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Ver Métricas</a>
             </div>
         </div>
         <div class="reveal-right">
@@ -942,7 +975,7 @@ body:hover .cursor-dot { opacity: 1; }
         </div>
     </div>
     <div style="text-align:center;margin-top:4rem;" class="reveal">
-        <a href="ppri.html" style="display:inline-block;background:var(--naranja-atardecer);color:white;padding:1.2rem 2.5rem;font-family:var(--fuente-titulos);font-weight:900;font-size:1rem;text-transform:uppercase;text-decoration:none;border:2px solid #000;box-shadow:6px 6px 0 #000;transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='9px 9px 0 #000'" onmouseout="this.style.transform='';this.style.boxShadow='6px 6px 0 #000'">Ver Programa Completo →</a>
+        <a href="ppri.html" style="display:inline-block;background:var(--naranja-atardecer);color:white;padding:1.2rem 2.5rem;font-family:var(--fuente-titulos);font-weight:900;font-size:1rem;text-transform:uppercase;text-decoration:none;border:2px solid #000;box-shadow:6px 6px 0 #000;transition:all 0.3s ease;border-radius:0.65rem;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='9px 9px 0 #000'" onmouseout="this.style.transform='';this.style.boxShadow='6px 6px 0 #000'">Ver Programa Completo →</a>
     </div>
 </section>
 
@@ -987,7 +1020,7 @@ body:hover .cursor-dot { opacity: 1; }
     <div style="text-align:center;margin-bottom:3.5rem;">
         <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--teal,#38bdf8);margin-bottom:0.75rem;">Sondeo Piloto 2025 · Tumaco, Nariño</p>
         <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;">Diagnóstico de <span style="color:var(--naranja,#ff5e00);">Nuestros Colegios</span></h2>
-        <p style="color:rgba(240,244,248,0.45);font-size:0.85rem;max-width:560px;margin:0 auto;">Datos reales del sondeo piloto al Programa PRI — <strong style="color:rgba(240,244,248,0.7);">48 participantes únicos</strong> evaluados en 8 instituciones del municipio de Tumaco.</p>
+        <p style="color:rgba(255,255,255,0.45);font-size:0.85rem;max-width:560px;margin:0 auto;">Datos reales del sondeo piloto al Programa PRI — <strong style="color:rgba(255,255,255,0.7);">48 participantes únicos</strong> evaluados en 8 instituciones del municipio de Tumaco.</p>
     </div>
 
     <!-- BANNER ALERTA DEFICIENCIA -->
@@ -998,7 +1031,7 @@ body:hover .cursor-dot { opacity: 1; }
         </div>
         <div style="flex:1;min-width:200px;border-left:1px solid rgba(255,94,0,0.25);padding-left:1.5rem;">
             <h3 style="font-family:'Montserrat',sans-serif;font-size:0.9rem;font-weight:900;color:#fff;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.8px;">Diagnóstico: Brecha Formativa Crítica en Tumaco</h3>
-            <p style="font-size:0.8rem;color:rgba(240,244,248,0.6);line-height:1.65;margin:0;">El <strong style="color:rgba(255,140,0,0.95);">83.3% de los participantes obtuvo menos del 60%</strong> en el diagnóstico (≤14/25 pts). Solo <strong style="color:#fff;">8 de 48 estudiantes</strong> alcanzaron nivel aprobatorio. Este dato revela la magnitud del rezago formativo que el <strong style="color:var(--teal,#38bdf8);">Programa PRI</strong> busca revertir con talleres, mentoría y acompañamiento psicoeducativo.</p>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.65;margin:0;">El <strong style="color:rgba(255,140,0,0.95);">83.3% de los participantes obtuvo menos del 60%</strong> en el diagnóstico (≤14/25 pts). Solo <strong style="color:#fff;">8 de 48 estudiantes</strong> alcanzaron nivel aprobatorio. Este dato revela la magnitud del rezago formativo que el <strong style="color:var(--teal,#38bdf8);">Programa PRI</strong> busca revertir con talleres, mentoría y acompañamiento psicoeducativo.</p>
         </div>
     </div>
 
@@ -1087,27 +1120,27 @@ body:hover .cursor-dot { opacity: 1; }
     </div>
 
     <!-- BLOQUE GRADOS OBJETIVO -->
-    <div class="reveal-diag" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(56,189,248,0.07),rgba(56,189,248,0.02));border:1px solid rgba(56,189,248,0.2);padding:2rem 2.5rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;">
+    <div class="reveal-diag" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(56,189,248,0.07),rgba(56,189,248,0.02));border:1px solid rgba(56,189,248,0.2);padding:2rem 2.5rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;border-radius:1.1rem;">
         <div style="flex:0 0 auto;text-align:center;">
             <p style="font-family:'Montserrat',sans-serif;font-size:2.8rem;font-weight:900;color:var(--teal,#38bdf8);line-height:1;margin:0;">8°→11°</p>
             <p style="font-family:'Montserrat',sans-serif;font-size:0.48rem;letter-spacing:3px;text-transform:uppercase;color:rgba(56,189,248,0.6);margin-top:0.35rem;">Grados objetivo<br>del programa</p>
         </div>
         <div style="flex:1;min-width:200px;border-left:1px solid rgba(56,189,248,0.2);padding-left:2rem;">
             <h3 style="font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:900;color:#fff;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.8px;">Nos enfocamos en los grados 8°, 9°, 10° y 11°</h3>
-            <p style="font-size:0.78rem;color:rgba(240,244,248,0.58);line-height:1.68;margin:0;">La brecha formativa más crítica se concentra en el bachillerato medio y superior, exactamente cuando los jóvenes se preparan para el <strong style="color:rgba(240,244,248,0.85);">Examen ICFES Saber 11</strong>. El Programa PRI interviene en estos 4 grados con talleres, mentoría y simulacros para que cada estudiante llegue a la prueba con bases sólidas y confianza académica — aumentando su probabilidad de acceso a la educación superior.</p>
+            <p style="font-size:0.78rem;color:rgba(255,255,255,0.58);line-height:1.68;margin:0;">La brecha formativa más crítica se concentra en el bachillerato medio y superior, exactamente cuando los jóvenes se preparan para el <strong style="color:rgba(255,255,255,0.85);">Examen ICFES Saber 11</strong>. El Programa PRI interviene en estos 4 grados con talleres, mentoría y simulacros para que cada estudiante llegue a la prueba con bases sólidas y confianza académica — aumentando su probabilidad de acceso a la educación superior.</p>
         </div>
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;flex:0 0 auto;">
-            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;">8° GRADO</span>
-            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;">9° GRADO</span>
-            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.4);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;">10° GRADO</span>
-            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(255,94,0,0.15);border:1px solid rgba(255,94,0,0.4);color:var(--naranja,#ff5e00);padding:.35rem .7rem;letter-spacing:1px;">11° ICFES ⭐</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">8° GRADO</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">9° GRADO</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.4);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">10° GRADO</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(255,94,0,0.15);border:1px solid rgba(255,94,0,0.4);color:var(--naranja,#ff5e00);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">11° ICFES ⭐</span>
         </div>
     </div>
 
     <!-- CTA participar -->
     <div style="text-align:center;padding-top:2rem;">
-        <a href="sondeo.html" style="font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja,#ff5e00);color:#fff;text-decoration:none;padding:0.9rem 2rem;display:inline-block;margin-right:0.75rem;">📝 Registrarme al Sondeo</a>
-        <span style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.3);">¿Eres nuevo? Ingresa tus datos y únete al programa.</span>
+        <a href="sondeo.html" style="font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja,#ff5e00);color:#fff;text-decoration:none;padding:0.9rem 2rem;display:inline-block;margin-right:0.75rem;border-radius:0.65rem;">📝 Registrarme al Sondeo</a>
+        <span style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(255,255,255,0.3);">¿Eres nuevo? Ingresa tus datos y únete al programa.</span>
     </div>
 </div>
 </section>
@@ -1163,7 +1196,7 @@ body:hover .cursor-dot { opacity: 1; }
     font-size: 0.58rem;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: rgba(240,244,248,0.38);
+    color: rgba(255,255,255,0.38);
     margin-top: 0.4rem;
 }
 .diag-block {
@@ -1194,7 +1227,7 @@ body:hover .cursor-dot { opacity: 1; }
     font-weight: 700;
     letter-spacing: 3px;
     text-transform: uppercase;
-    color: rgba(240,244,248,0.3);
+    color: rgba(255,255,255,0.3);
     margin-bottom: 1.25rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -1220,22 +1253,22 @@ body:hover .cursor-dot { opacity: 1; }
 .diag-explain-text {
     font-size: 0.75rem;
     line-height: 1.68;
-    color: rgba(240,244,248,0.52);
+    color: rgba(255,255,255,0.52);
     margin: 0;
 }
-.diag-explain-text strong { color: rgba(240,244,248,0.85); }
-.diag-explain-text em { color: rgba(240,244,248,0.7); font-style: italic; }
+.diag-explain-text strong { color: rgba(255,255,255,0.85); }
+.diag-explain-text em { color: rgba(255,255,255,0.7); font-style: italic; }
 /* Barras horizontales */
 .sondeo-bar-row { margin-bottom: 0.9rem; }
 .sondeo-bar-label {
     font-family: 'Montserrat', sans-serif;
     font-size: 0.63rem;
-    color: rgba(240,244,248,0.52);
+    color: rgba(255,255,255,0.52);
     margin-bottom: 0.3rem;
     display: flex;
     justify-content: space-between;
 }
-.sondeo-bar-label span { color: rgba(240,244,248,0.82); font-weight: 700; }
+.sondeo-bar-label span { color: rgba(255,255,255,0.82); font-weight: 700; }
 .sondeo-bar-track { background: rgba(255,255,255,0.06); height: 7px; }
 .sondeo-bar-fill { height: 7px; transition: width 1.3s cubic-bezier(0.4,0,0.2,1); width: 0; }
 /* Reveal animaciones */
@@ -1642,12 +1675,14 @@ document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
     loop();
 })();
 
-// ===== LANCHA ANIMADA =====
+// ===== LANCHA ANIMADA — vaivén: va, rodea la peña y vuelve =====
 (function() {
     const boat = document.getElementById('animBoat');
     if (!boat) return;
-    const DURATION = 26000;
-    let startTime = null;
+
+    // Duración de un ciclo completo: ida (izq→der) + vuelta (der→izq)
+    const CYCLE = 30000; // ms
+
     function waveOscY(t) {
         return Math.sin(t*0.00160+0.50)*6 + Math.sin(t*0.00390+1.30)*3.5 + Math.sin(t*0.00870+2.20)*1.8;
     }
@@ -1656,34 +1691,68 @@ document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
         return (waveOscY(t+step) - waveOscY(t-step)) / (step*2) * 55;
     }
     function getWaterLine() {
-        // Medimos la posición VISUAL real del elemento wave-surface con getBoundingClientRect.
-        // Así el barco siempre sigue el agua sin importar el tamaño de ventana.
         const oceanEl = boat.closest('.ocean-system') || boat.parentElement;
         const waveEl  = document.querySelector('.wave-surface');
         if (!waveEl || !oceanEl) return window.innerHeight * 0.144;
         const oRect = oceanEl.getBoundingClientRect();
         const wRect = waveEl.getBoundingClientRect();
-        // El SVG de la ola tiene viewBox 0 0 1440 200 con la cresta en y≈88.
-        // Eso es 88/200 = 44% desde arriba del elemento → 56% desde abajo.
         const waterY = wRect.top + wRect.height * 0.44;
         return Math.max(6, oRect.bottom - waterY);
     }
 
+    let startTime = null;
     function animate(ts) {
         if (!startTime) startTime = ts;
         const elapsed = ts - startTime;
-        const progress = (elapsed % DURATION) / DURATION;
-        const xPct = progress * 70;
-        const oscY = waveOscY(elapsed);
-        const roll = waveRoll(elapsed);
+
+        // Péndulo con seno: oscila entre 3 % (izq) y 92 % (bien dentro de la peña)
+        const phase    = (elapsed / CYCLE) * Math.PI * 2;
+        const sinVal   = Math.sin(phase);               // -1 → +1
+        const xPct     = 3 + (sinVal + 1) / 2 * 89;    // 3 % → 92 %
+
+        // cos > 0 → yendo hacia la derecha; cos < 0 → volviendo
+        const goingRight = Math.cos(phase) > 0;
+
+        const oscY  = waveOscY(elapsed);
+        const roll  = waveRoll(elapsed);
         const baseB = getWaterLine();
-        let alpha = 1;
-        if (progress > 0.96) alpha = Math.max(0, 1 - (progress - 0.96) / 0.04);
-        boat.style.left = xPct + '%';
-        boat.style.bottom = (baseB - oscY) + 'px';
-        boat.style.top = 'auto';
-        boat.style.opacity = alpha;
-        boat.style.transform = `scaleX(-1) rotate(${-roll}deg)`;
+
+        boat.style.left    = xPct + '%';
+        boat.style.bottom  = (baseB - oscY) + 'px';
+        boat.style.top     = 'auto';
+        boat.style.opacity = '1';
+
+        // scaleX(-1) = mirando a la derecha; scaleX(1) = mirando a la izquierda
+        const flipX   = goingRight ? -1 : 1;
+        const rollDir = goingRight ? -roll : roll;
+        boat.style.transform = `scaleX(${flipX}) rotate(${rollDir}deg)`;
+
+        // ── Transición lancha ↔ peña ─────────────────────────────────────────
+        // La peña empieza visualmente ~62 % desde la izquierda.
+        // Fade estrecho (6 %) justo en ese borde: simula el barrido real de
+        // la roca cubriendo/descubriendo la lancha conforme avanza.
+        //   • Completamente visible : xPct < 61
+        //   • Fade (desaparece / aparece): 61 % → 67 %   (6 % de rango)
+        //   • Completamente detrás  : xPct > 67
+        const FADE_S = 61;   // borde izquierdo visible de la peña
+        const FADE_E = 67;   // borde donde la lancha queda totalmente oculta
+
+        let boatZ, boatAlpha;
+
+        if (xPct <= FADE_S) {
+            boatZ = '8'; boatAlpha = 1;                          // delante, visible
+        } else if (xPct >= FADE_E) {
+            boatZ = '4'; boatAlpha = 0;                          // detrás, oculta
+        } else {
+            // Zona de barrido: la roca "tapa" o "destapa" progresivamente
+            const t = (xPct - FADE_S) / (FADE_E - FADE_S);      // 0 → 1
+            boatAlpha = +(1 - t).toFixed(3);
+            boatZ = t >= 0.55 ? '4' : '8';  // cambia cuando alpha < 0.45 (casi invisible)
+        }
+
+        boat.style.zIndex  = boatZ;
+        boat.style.opacity = String(boatAlpha);
+
         requestAnimationFrame(animate);
     }
     requestAnimationFrame(animate);
@@ -1800,8 +1869,7 @@ document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
 /* Fondo de atardecer */
 .hero-atardecer-bg {
     position: absolute; inset: 0; z-index: 0;
-    background-image: url('atardecer.png');
-    background-size: cover; background-position: center 30%;
+    overflow: hidden;
     opacity: 0; transition: opacity 1.5s ease;
     pointer-events: none;
 }
@@ -1883,7 +1951,9 @@ actualizarContadorCobertura();
     if (!heroEl) return;
     const ataEl = document.createElement('div');
     ataEl.className = 'hero-atardecer-bg';
+    ataEl.innerHTML = '<video autoplay loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);"><source src="fondo_pacifico.mp4" type="video/mp4"></video>';
     heroEl.insertAdjacentElement('afterbegin', ataEl);
+    ataEl.querySelector('video').play().catch(()=>{});
 
     // Añadir luna
     const moonEl = document.createElement('div');
@@ -2080,5 +2150,6 @@ actualizarContadorCobertura();
 })();
 </script>
 
+<script src="fondo-dinamico.js"></script>
 </body>
 </html>

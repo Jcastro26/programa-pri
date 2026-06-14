@@ -31,7 +31,7 @@
         .notif-pri.warn{border-color:var(--oro);color:var(--oro);}
         .notif-icono{font-size:1.3rem;display:block;margin-bottom:0.25rem;}
         .notif-titulo{font-size:0.8rem;color:var(--blanco);margin-bottom:0.2rem;}
-        .notif-cerrar{position:absolute;top:0.5rem;right:0.75rem;background:none;border:none;color:rgba(240,244,248,0.3);font-size:1rem;cursor:pointer;transition:color 0.2s;}
+        .notif-cerrar{position:absolute;top:0.5rem;right:0.75rem;background:none;border:none;color:rgba(255,255,255,0.3);font-size:1rem;cursor:pointer;transition:color 0.2s;}
         .notif-cerrar:hover{color:var(--blanco);}
         .site-header{position:sticky;top:0;z-index:500;background:rgba(2,26,54,0.95);border-bottom:1px solid rgba(255,255,255,0.07);backdrop-filter:blur(16px);padding:0.9rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
         .header-brand{display:flex;align-items:center;gap:1rem;text-decoration:none;}
@@ -49,14 +49,14 @@
         .banner-caract{background:linear-gradient(90deg,rgba(255,94,0,0.12),rgba(255,215,0,0.07));border:1px solid rgba(255,94,0,0.3);border-left:4px solid var(--naranja);padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
         .banner-caract-text{font-family:var(--fuente-t);font-size:0.75rem;}
         .banner-caract-text strong{display:block;color:var(--blanco);margin-bottom:0.2rem;}
-        .banner-caract-text span{color:rgba(240,244,248,0.55);}
+        .banner-caract-text span{color:rgba(255,255,255,0.55);}
         .btn-banner{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;padding:0.6rem 1.2rem;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
         .btn-banner:hover{background:#e05200;}
         .main-layout{flex:1;display:flex;gap:1.5rem;max-width:1600px;width:100%;margin:0 auto;padding:2rem;position:relative;z-index:1;}
         .sidebar{width:240px;flex-shrink:0;position:relative;height:auto;background:none;border-right:none;padding:0;}
         .sidebar-inner{position:sticky;top:80px;background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:1.5rem 1rem;}
-        .sidebar-label{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.25);padding:0 0.5rem;margin-bottom:0.75rem;}
-        .nav-btn{display:flex;align-items:center;gap:0.75rem;width:100%;padding:0.75rem;background:none;border:none;border-left:3px solid transparent;color:rgba(240,244,248,0.45);font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;text-align:left;}
+        .sidebar-label{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.25);padding:0 0.5rem;margin-bottom:0.75rem;}
+        .nav-btn{display:flex;align-items:center;gap:0.75rem;width:100%;padding:0.75rem;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,0.45);font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;text-align:left;}
         .nav-btn:hover{color:var(--blanco);background:rgba(255,94,0,0.06);}
         .nav-btn.active{color:var(--blanco);border-left-color:var(--naranja);background:rgba(255,94,0,0.08);}
         .main-content{flex:1;min-width:0;}
@@ -66,21 +66,21 @@
         .panel-title{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--naranja);margin-bottom:0.4rem;}
         .panel-heading{font-family:var(--fuente-t);font-size:clamp(1.4rem,3vw,2rem);font-weight:900;color:var(--blanco);margin-bottom:0.5rem;}
         .panel-heading em{font-style:normal;color:var(--naranja);}
-        .panel-desc{font-size:0.9rem;color:rgba(240,244,248,0.5);line-height:1.6;margin-bottom:2rem;}
+        .panel-desc{font-size:0.9rem;color:rgba(255,255,255,0.5);line-height:1.6;margin-bottom:2rem;}
         .panel-divider{height:1px;background:rgba(255,255,255,0.07);margin:2rem 0;}
         .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem;}
         .kpi-card{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:1.5rem 1.25rem;position:relative;transition:border-color 0.2s,transform 0.2s;overflow:hidden;}
         .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--naranja);transform:scaleX(0);transition:transform 0.3s;}
         .kpi-card:hover{border-color:rgba(255,94,0,0.3);transform:translateY(-3px);}
         .kpi-card:hover::before{transform:scaleX(1);}
-        .kpi-label{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin-bottom:0.75rem;}
+        .kpi-label{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:0.75rem;}
         .kpi-value{font-family:var(--fuente-t);font-size:2.2rem;font-weight:900;line-height:1;color:var(--naranja);}
         .kpi-value.cyan{color:var(--teal);}
         .kpi-value.green{color:var(--verde);}
         .kpi-value.white{color:var(--blanco);}
-        .kpi-sub{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);letter-spacing:1px;margin-top:0.4rem;}
+        .kpi-sub{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.25);letter-spacing:1px;margin-top:0.4rem;}
         .section-box{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.07);padding:1.75rem;margin-bottom:1.5rem;overflow:hidden;}
-        .section-box-title{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);}
+        .section-box-title{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.25rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.06);}
         .chart-container{height:280px;position:relative;}
         .alert-box{display:flex;gap:1rem;padding:1rem 1.25rem;border-left:4px solid;margin-bottom:1.5rem;}
         .alert-box.warning{background:rgba(245,158,11,0.07);border-color:#f59e0b;color:#fcd34d;}
@@ -92,14 +92,14 @@
         .module-item:hover{border-color:rgba(255,94,0,0.2);}
         .module-item-info{flex:1;min-width:0;}
         .module-item-name{font-family:var(--fuente-t);font-size:0.8rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;word-break:break-word;}
-        .module-item-meta{font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:1px;color:rgba(240,244,248,0.3);text-transform:uppercase;}
+        .module-item-meta{font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:1px;color:rgba(255,255,255,0.3);text-transform:uppercase;}
         .btn-module{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.5rem 1.1rem;background:var(--naranja);color:var(--azul-deep);border:2px solid var(--azul-deep);box-shadow:3px 3px 0 rgba(0,0,0,0.4);cursor:pointer;transition:all 0.2s;flex-shrink:0;}
         .btn-module:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(0,0,0,0.4);}
         .taller-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1.5rem;transition:all 0.25s;}
         .taller-card:hover{border-color:rgba(56,189,248,0.25);transform:translateY(-2px);}
         .taller-tag{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:0.5rem;}
         .taller-title{font-family:var(--fuente-t);font-size:0.85rem;font-weight:900;color:var(--blanco);margin-bottom:0.5rem;word-break:break-word;}
-        .taller-desc{font-size:0.8rem;color:rgba(240,244,248,0.4);line-height:1.5;margin-bottom:1rem;}
+        .taller-desc{font-size:0.8rem;color:rgba(255,255,255,0.4);line-height:1.5;margin-bottom:1rem;}
         .btn-taller{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.55rem 1rem;background:var(--teal);color:var(--azul-deep);border:none;cursor:pointer;transition:background 0.2s;display:inline-block;text-decoration:none;}
         .btn-taller:hover{background:white;}
         .tutores-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
@@ -108,7 +108,7 @@
         .tutor-avatar{width:42px;height:42px;background:var(--naranja-dim);border:2px solid var(--naranja);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.95rem;font-weight:900;color:var(--naranja);flex-shrink:0;overflow:hidden;}
         .tutor-avatar img{width:100%;height:100%;object-fit:cover;}
         .tutor-name{font-family:var(--fuente-t);font-size:0.72rem;font-weight:700;color:var(--blanco);line-height:1.3;word-break:break-word;}
-        .tutor-area{font-family:var(--fuente-t);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:rgba(240,244,248,0.3);}
+        .tutor-area{font-family:var(--fuente-t);font-size:0.58rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.3);}
         .btn-rate{margin-left:auto;font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;color:var(--oro);background:none;border:none;cursor:pointer;flex-shrink:0;transition:color 0.2s;}
         .btn-rate:hover{color:white;}
         /* FORO */
@@ -125,9 +125,9 @@
         .msg-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
         .msg-item-body{flex:1;min-width:0;}
         .msg-author{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;color:var(--teal);margin-bottom:0.2rem;}
-        .msg-author .msg-time{float:right;color:rgba(240,244,248,0.25);font-weight:400;}
-        .msg-text{font-size:0.82rem;color:rgba(240,244,248,0.7);line-height:1.4;word-break:break-word;}
-        .btn-reply-priv{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(240,244,248,0.3);padding:0.2rem 0.5rem;cursor:pointer;margin-top:0.4rem;transition:all 0.2s;}
+        .msg-author .msg-time{float:right;color:rgba(255,255,255,0.25);font-weight:400;}
+        .msg-text{font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.4;word-break:break-word;}
+        .btn-reply-priv{font-family:var(--fuente-t);font-size:0.55rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);padding:0.2rem 0.5rem;cursor:pointer;margin-top:0.4rem;transition:all 0.2s;}
         .btn-reply-priv:hover{border-color:var(--teal);color:var(--teal);}
         .foro-input-row{display:flex;gap:0.75rem;}
         .foro-input{flex:1;background:var(--azul-card);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:var(--fuente-b);font-size:0.85rem;padding:0.75rem 1rem;outline:none;}
@@ -136,23 +136,23 @@
         .btn-send:hover{background:white;}
         /* CHAT PRIVADO */
         .chat-priv-header{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);padding:0.75rem 1rem;background:rgba(56,189,248,0.07);border-bottom:1px solid rgba(56,189,248,0.15);display:flex;align-items:center;justify-content:space-between;}
-        .btn-cerrar-chat{background:none;border:none;color:rgba(240,244,248,0.4);cursor:pointer;font-size:1rem;transition:color 0.2s;}
+        .btn-cerrar-chat{background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem;transition:color 0.2s;}
         .btn-cerrar-chat:hover{color:var(--blanco);}
         /* ADMIN TABLE */
         .admin-table-wrap{overflow-x:auto;}
         table{width:100%;border-collapse:collapse;font-size:0.78rem;}
         thead tr{background:rgba(255,255,255,0.03);}
-        thead th{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35);padding:0.85rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07);white-space:nowrap;}
+        thead th{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:0.85rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07);white-space:nowrap;}
         tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;}
         tbody tr:hover{background:rgba(255,255,255,0.02);}
-        tbody td{padding:0.9rem 1rem;color:rgba(240,244,248,0.6);max-width:200px;overflow:hidden;text-overflow:ellipsis;}
+        tbody td{padding:0.9rem 1rem;color:rgba(255,255,255,0.6);max-width:200px;overflow:hidden;text-overflow:ellipsis;}
         .name-cell{font-family:var(--fuente-t);font-size:0.75rem;font-weight:700;color:var(--blanco);}
         .pts-cell{font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--naranja);}
         .badge{font-family:var(--fuente-t);font-size:0.55rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.2rem 0.6rem;display:inline-block;}
         .badge.verde{background:rgba(34,197,94,0.1);color:#86efac;}
         .badge.amarillo{background:rgba(234,179,8,0.1);color:#fde68a;}
         .badge.rojo{background:rgba(239,68,68,0.1);color:#fca5a5;}
-        .btn-table{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(240,244,248,0.5);cursor:pointer;transition:all 0.2s;}
+        .btn-table{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;}
         .btn-table:hover{background:rgba(255,94,0,0.1);border-color:rgba(255,94,0,0.3);color:var(--blanco);}
         .btn-table-danger{border-color:rgba(239,68,68,0.25);color:rgba(239,68,68,0.6);}
         .btn-table-danger:hover{background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.5);color:#f87171;}
@@ -160,7 +160,7 @@
         .form-add{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;}
         .form-add.full{grid-template-columns:1fr;}
         .fa-group{display:flex;flex-direction:column;gap:0.35rem;}
-        .fa-group label{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);}
+        .fa-group label{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);}
         .fa-group input,.fa-group select,.fa-group textarea{background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:var(--fuente-b);font-size:0.85rem;padding:0.65rem 0.9rem;outline:none;transition:border-color 0.2s;width:100%;}
         .fa-group input:focus,.fa-group select:focus,.fa-group textarea:focus{border-color:var(--naranja);}
         .fa-group textarea{resize:vertical;min-height:80px;}
@@ -181,7 +181,7 @@
         .prod-img-icon{font-size:3.5rem;}
         .prod-body{padding:1.2rem 1.2rem .6rem;flex:1;display:flex;flex-direction:column;}
         .prod-body h3{font-family:var(--fuente-t);font-size:.95rem;font-weight:900;color:var(--blanco);margin-bottom:.5rem;line-height:1.3;}
-        .prod-body p{font-size:.82rem;color:rgba(240,244,248,0.5);line-height:1.55;flex:1;}
+        .prod-body p{font-size:.82rem;color:rgba(255,255,255,0.5);line-height:1.55;flex:1;}
         .prod-footer{padding:.75rem 1.2rem 1.2rem;border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;}
         .prod-price{font-family:var(--fuente-t);font-weight:900;font-size:1.3rem;color:var(--blanco);}
         .prod-price sup{font-size:.6rem;color:var(--naranja);letter-spacing:1px;font-weight:700;}
@@ -190,7 +190,7 @@
         .btn-canjear{font-family:var(--fuente-t);font-size:0.62rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:linear-gradient(135deg,var(--naranja),#cc4400);color:#fff;border:2px solid var(--azul-deep);box-shadow:3px 3px 0 rgba(0,0,0,0.4);padding:0.45rem 0.9rem;cursor:pointer;transition:all 0.2s;white-space:normal;min-width:0;text-align:center;}
         .btn-canjear:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(0,0,0,0.4);}
         .btn-canjear:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
-        .mes-limit-note{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);text-align:center;margin-top:0.5rem;}
+        .mes-limit-note{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.3);text-align:center;margin-top:0.5rem;}
         /* VITRINA CARDS */
         .prod-badge{display:inline-block;font-family:var(--fuente-t);font-size:.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.25rem .6rem;margin-bottom:.75rem;}
         .badge-gold{background:rgba(255,215,0,0.08);color:var(--oro);}
@@ -212,11 +212,11 @@
         .progress-mini-fill{height:100%;background:linear-gradient(90deg,var(--naranja),var(--oro));}
         .calificacion-item{padding:0.85rem 1rem;border-bottom:1px solid rgba(255,255,255,0.05);}
         .cal-stars{color:var(--oro);font-size:0.9rem;}
-        .cal-comentario{font-size:0.8rem;color:rgba(240,244,248,0.55);margin-top:0.3rem;}
+        .cal-comentario{font-size:0.8rem;color:rgba(255,255,255,0.55);margin-top:0.3rem;}
         /* CAPACITACIONES */
         .capacitacion-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);padding:1.25rem;margin-bottom:0.75rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
         .cap-info .cap-nombre{font-family:var(--fuente-t);font-size:0.8rem;font-weight:700;color:var(--blanco);}
-        .cap-info .cap-meta{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);text-transform:uppercase;letter-spacing:1px;}
+        .cap-info .cap-meta{font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1px;}
         .btn-aceptar{font-family:var(--fuente-t);font-size:0.6rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--verde);color:var(--azul-deep);border:none;padding:0.5rem 1rem;cursor:pointer;transition:background 0.2s;}
         .btn-aceptar:hover{background:white;}
         /* MODAL RATING */
@@ -225,7 +225,7 @@
         .modal-box{background:var(--azul-panel);border:1px solid rgba(255,255,255,0.1);max-width:500px;width:100%;padding:2rem;position:relative;box-shadow:12px 12px 0 rgba(0,0,0,0.5);transform:translateY(20px);transition:transform 0.25s;max-height:90vh;overflow-y:auto;}
         .modal-overlay.open .modal-box{transform:translateY(0);}
         .modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--naranja),var(--oro));}
-        .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(240,244,248,0.4);font-size:1.2rem;cursor:pointer;transition:color 0.2s;}
+        .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(255,255,255,0.4);font-size:1.2rem;cursor:pointer;transition:color 0.2s;}
         .modal-close:hover{color:var(--blanco);}
         .modal-title{font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:0.4rem;}
         .modal-mentor-name{font-family:var(--fuente-t);font-size:1.2rem;font-weight:900;color:var(--blanco);margin-bottom:1.5rem;}
@@ -240,7 +240,7 @@
         .pretest-resumen{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
         .pretest-mini{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);padding:1.25rem;text-align:center;}
         .pretest-mini .pm-val{font-family:var(--fuente-t);font-size:1.8rem;font-weight:900;color:var(--teal);}
-        .pretest-mini .pm-label{font-family:var(--fuente-t);font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.3);margin-top:0.4rem;}
+        .pretest-mini .pm-label{font-family:var(--fuente-t);font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:0.4rem;}
         .export-btn{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);color:var(--teal);padding:0.6rem 1.2rem;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;margin-right:0.5rem;margin-bottom:0.5rem;}
         .export-btn:hover{background:rgba(56,189,248,0.2);color:var(--blanco);}
         /* TEST FORMULARIO DOCENTE */
@@ -259,17 +259,17 @@
         .btn-hamburger{display:none;background:none;border:1px solid rgba(255,255,255,0.15);color:var(--blanco);font-size:1.3rem;padding:.45rem .75rem;cursor:pointer;border-radius:4px;line-height:1;flex-shrink:0;}
 
         /* Overlay menú móvil */
-        #mobile-menu-overlay{display:none;position:fixed;inset:0;z-index:9000;background:rgba(2,14,28,0.97);flex-direction:column;overflow-y:auto;}
+        #mobile-menu-overlay{display:none;position:fixed;top:0;right:0;bottom:0;width:min(280px,82vw);z-index:9000;background:rgba(2,14,28,0.98);flex-direction:column;overflow-y:auto;box-shadow:-4px 0 30px rgba(0,0,0,0.6);border-left:1px solid rgba(255,94,0,0.2);}
         #mobile-menu-overlay.open{display:flex;}
-        .mobile-menu-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(2,26,54,0.95);position:sticky;top:0;z-index:1;}
-        .mobile-menu-header span{font-family:var(--fuente-t);font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal);}
-        .btn-cerrar-menu{background:none;border:none;color:rgba(240,244,248,0.5);font-size:1.6rem;cursor:pointer;line-height:1;padding:.25rem .5rem;}
+        .mobile-menu-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,0.08);background:rgba(2,26,54,0.95);position:sticky;top:0;z-index:1;}
+        .mobile-menu-header span{font-family:var(--fuente-t);font-size:.58rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal);}
+        .btn-cerrar-menu{background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.3rem;cursor:pointer;line-height:1;padding:.2rem .4rem;}
         .mobile-menu-header-user{padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);}
-        .mobile-menu-header-user .u-name{font-family:var(--fuente-t);font-size:.95rem;font-weight:900;color:var(--blanco);}
-        .mobile-menu-header-user .u-role{font-family:var(--fuente-t);font-size:.55rem;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.15rem;}
-        .mobile-menu-header-user .u-pts{font-family:var(--fuente-t);font-size:.7rem;color:var(--oro);}
+        .mobile-menu-header-user .u-name{font-family:var(--fuente-t);font-size:.78rem;font-weight:900;color:var(--blanco);}
+        .mobile-menu-header-user .u-role{font-family:var(--fuente-t);font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:.1rem;}
+        .mobile-menu-header-user .u-pts{font-family:var(--fuente-t);font-size:.62rem;color:var(--oro);}
         #mobile-nav-list{flex:1;padding:.75rem 0;}
-        .mobile-nav-btn{display:flex;align-items:center;gap:.75rem;width:100%;padding:1rem 1.5rem;background:none;border:none;border-left:3px solid transparent;color:rgba(240,244,248,0.55);font-family:var(--fuente-t);font-size:.8rem;font-weight:700;letter-spacing:.5px;cursor:pointer;text-align:left;transition:all .18s;}
+        .mobile-nav-btn{display:flex;align-items:center;gap:.6rem;width:100%;padding:.75rem 1.25rem;background:none;border:none;border-left:3px solid transparent;color:rgba(255,255,255,0.55);font-family:var(--fuente-t);font-size:.7rem;font-weight:700;letter-spacing:.5px;cursor:pointer;text-align:left;transition:all .18s;}
         .mobile-nav-btn:active{background:rgba(255,94,0,0.12);}
         .mobile-nav-btn.active{color:var(--blanco);border-left-color:var(--naranja);background:rgba(255,94,0,0.09);}
         .mobile-nav-divider{height:1px;background:rgba(255,255,255,0.05);margin:.5rem 1.25rem;}
@@ -282,14 +282,14 @@
             .btn-hamburger{display:flex;align-items:center;}
 
             /* Header compacto */
-            .site-header{padding:.65rem 1rem;gap:.6rem;}
+            .site-header{padding:.5rem .75rem;gap:.5rem;flex-wrap:nowrap;}
             .header-brand-text p{display:none;}
-            .header-brand-text h1{font-size:.75rem;}
-            .header-icon{width:34px;height:34px;}
-            .header-right{gap:.6rem;}
-            .header-user .user-name{font-size:.75rem;}
-            .header-user .user-role{font-size:.5rem;}
-            .header-points{font-size:.6rem;padding:.25rem .5rem;}
+            .header-brand-text h1{font-size:.6rem;letter-spacing:1px;}
+            .header-icon{width:30px;height:30px;flex-shrink:0;}
+            .header-right{gap:.45rem;flex-shrink:0;}
+            .header-user .user-name{font-size:.6rem;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+            .header-user .user-role{font-size:.44rem;letter-spacing:1px;}
+            .header-points{font-size:.55rem;padding:.2rem .45rem;}
             .btn-logout{display:none;} /* en móvil el logout está en el menú */
 
             /* Layout */
@@ -347,17 +347,23 @@
             .kpi-grid{grid-template-columns:1fr 1fr;}
             .site-header{padding:.6rem .75rem;}
         }
-        .footer-minimal{background:rgba(2,26,54,0.95);border-top:1px solid rgba(255,255,255,0.07);padding:1.5rem 2rem;text-align:center;font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.2);position:relative;z-index:1;flex-shrink:0;}
+        .footer-minimal{background:rgba(2,26,54,0.95);border-top:1px solid rgba(255,255,255,0.07);padding:1.5rem 2rem;text-align:center;font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);position:relative;z-index:1;flex-shrink:0;}
         /* Overflow fix */
         tbody td{overflow-wrap:break-word;word-break:break-word;}
         .module-item-name,.taller-title,.canje-nombre{overflow-wrap:break-word;word-break:break-word;}
+        /* Scroll en cajas de datos */
+        .section-box{overflow-x:auto;}
+        .admin-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0;}
+        table{min-width:600px;}
+        .foro-messages{overflow-y:auto;overflow-x:hidden;}
+        .inbox-list{overflow-y:auto;}
         /* Inbox */
         .inbox-thread{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1rem;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:1rem;}
         .inbox-thread:hover{border-color:rgba(56,189,248,0.3);}
         .inbox-avatar{width:36px;height:36px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--teal);flex-shrink:0;}
         .inbox-info{flex:1;min-width:0;}
         .inbox-name{font-family:var(--fuente-t);font-size:0.75rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;}
-        .inbox-preview{font-size:0.72rem;color:rgba(240,244,248,0.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .inbox-preview{font-size:0.72rem;color:rgba(255,255,255,0.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
         /* Quick access */
         .qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;}
         .qa-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.2s;}
@@ -453,7 +459,7 @@
             </div>
             <div class="section-box" id="box-resenas-recibidas">
                 <p class="section-box-title">🌟 Reseñas Recibidas de Mentores</p>
-                <div id="resenas-recibidas-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando reseñas...</p></div>
+                <div id="resenas-recibidas-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando reseñas...</p></div>
             </div>
         </div>
 
@@ -463,7 +469,7 @@
             <h2 class="panel-heading">Retos y <em>Entregables</em></h2>
             <p class="panel-desc">Completa los módulos. Cada reto respondido suma puntos a tu perfil.</p>
             <div class="alert-box warning"><span class="alert-box-icon">🛡️</span><div class="alert-box-text"><strong>Entorno de Evaluación Auténtica</strong>Prepara tu material antes de comenzar. No puedes avanzar sin responder.</div></div>
-            <div class="section-box"><p class="section-box-title">Módulos Disponibles</p><div id="lista-retos-db"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div></div>
+            <div class="section-box"><p class="section-box-title">Módulos Disponibles</p><div id="lista-retos-db"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando...</p></div></div>
         </div>
 
         <!-- PANEL: TALLERES ESTUDIANTE -->
@@ -471,8 +477,8 @@
             <p class="panel-title">Recursos</p>
             <h2 class="panel-heading">Talleres y <em>Mentores</em></h2>
             <p class="panel-desc">Explora los talleres y evalúa a tus mentores del programa.</p>
-            <div id="talleres-grid-container" style="margin-bottom:2rem;"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando talleres...</p></div>
-            <div class="section-box"><p class="section-box-title">⭐ Evalúa a tus Mentores</p><div class="tutores-grid" id="lista-docentes-calificar"><p style="font-family:var(--fuente-t);font-size:0.7rem;color:rgba(240,244,248,0.3);">Cargando mentores...</p></div></div>
+            <div id="talleres-grid-container" style="margin-bottom:2rem;"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando talleres...</p></div>
+            <div class="section-box"><p class="section-box-title">⭐ Evalúa a tus Mentores</p><div class="tutores-grid" id="lista-docentes-calificar"><p style="font-family:var(--fuente-t);font-size:0.7rem;color:rgba(255,255,255,0.3);">Cargando mentores...</p></div></div>
         </div>
 
         <!-- PANEL: SOLICITAR CAPACITACION (ESTUDIANTE) -->
@@ -502,7 +508,7 @@
                     <span>💬 Chat privado con: <strong id="chat-priv-con">—</strong></span>
                     <button class="btn-cerrar-chat" onclick="cerrarChatPrivado()">✕ Volver al foro</button>
                 </div>
-                <div class="foro-messages" id="forum-messages"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
+                <div class="foro-messages" id="forum-messages"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
                 <div style="padding:1rem;" id="foro-inputs">
                     <div class="foro-input-row">
                         <input class="foro-input" type="text" id="forum-input" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')enviarMensajeForo()">
@@ -538,7 +544,7 @@
                 <p class="section-box-title">📸 Foto de Perfil</p>
                 <div class="upload-section" style="text-align:center;">
                     <img id="foto-perfil-preview" class="foto-preview-small" style="display:none;margin:0 auto 0.75rem;border-radius:50%;width:80px;height:80px;object-fit:cover;">
-                    <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.35);margin-bottom:0.75rem;">Sube tu foto (PNG, JPG, WebP)</p>
+                    <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.35);margin-bottom:0.75rem;">Sube tu foto (PNG, JPG, WebP)</p>
                     <input type="file" id="input-foto-file" accept="image/png,image/jpeg,image/jpg,image/webp" style="background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-size:0.75rem;padding:0.5rem;width:100%;margin-bottom:0.75rem;" onchange="previewFotoFile(this)">
                     <button class="btn-add" onclick="guardarFotoPerfil()">💾 Guardar Foto</button>
                 </div>
@@ -552,7 +558,7 @@
             </div>
             <div class="section-box">
                 <p class="section-box-title">⭐ Mis Calificaciones Anónimas</p>
-                <div id="mis-calificaciones-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando calificaciones...</p></div>
+                <div id="mis-calificaciones-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando calificaciones...</p></div>
             </div>
         </div>
 
@@ -569,7 +575,7 @@
                 <div class="admin-table-wrap">
                     <table>
                         <thead><tr><th>Estudiante</th><th>Grado</th><th>Puntos</th><th>Ficha</th><th>Pre-Test</th><th>Progreso</th><th>Reseña</th></tr></thead>
-                        <tbody id="docente-est-tbody"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Conectando...</td></tr></tbody>
+                        <tbody id="docente-est-tbody"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Conectando...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -580,7 +586,7 @@
             <p class="panel-title" id="cap-panel-title">Agenda</p>
             <h2 class="panel-heading" id="cap-panel-heading">Solicitudes de <em>Capacitación</em></h2>
             <p class="panel-desc" id="cap-panel-desc">Revisa y acepta solicitudes de capacitación. Se notificará al estudiante por WhatsApp.</p>
-            <div class="section-box"><p class="section-box-title" id="cap-section-title">Solicitudes Pendientes</p><div id="lista-capacitaciones"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando solicitudes...</p></div></div>
+            <div class="section-box"><p class="section-box-title" id="cap-section-title">Solicitudes Pendientes</p><div id="lista-capacitaciones"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando solicitudes...</p></div></div>
         </div>
 
         <!-- PANEL: PLANEACIÓN DOCENTE (talleres + formularios) -->
@@ -606,13 +612,13 @@
                     <div class="fa-group"><label>Descripción</label><textarea id="form-desc" placeholder="Objetivo del formulario..." rows="2"></textarea></div>
                     <div class="fa-group"><label>Puntos por pregunta correcta</label><input type="number" id="form-pts-preg" value="10" min="1" max="100"></div>
                 </div>
-                <div id="preguntas-builder"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p></div>
+                <div id="preguntas-builder"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Agrega preguntas usando el botón de abajo.</p></div>
                 <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;">
                     <button class="btn-add secondary" onclick="agregarPreguntaBuilder()">➕ Agregar Pregunta</button>
                     <button class="btn-add" onclick="publicarFormulario()">📤 Publicar Formulario</button>
                 </div>
             </div>
-            <div class="section-box"><p class="section-box-title">📅 Talleres y Formularios Publicados</p><div id="talleres-publicados-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div></div>
+            <div class="section-box"><p class="section-box-title">📅 Talleres y Formularios Publicados</p><div id="talleres-publicados-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando...</p></div></div>
         </div>
 
         <!-- PANEL: ADMIN BASE GLOBAL -->
@@ -638,8 +644,8 @@
                 <div style="padding:1rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.06);"><p class="section-box-title" style="margin:0;padding:0;border:0;">Directorio de Usuarios — Tiempo Real</p></div>
                 <div class="admin-table-wrap">
                     <table>
-                        <thead><tr><th>Nombre</th><th>Rol</th><th>Institución</th><th>Municipio</th><th>Puntos</th><th>Estado</th><th>Acciones</th></tr></thead>
-                        <tbody id="admin-table-body"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Conectando con Firebase...</td></tr></tbody>
+                        <thead><tr><th>Nombre</th><th>Rol</th><th>Institución</th><th>Municipio</th><th>Puntos</th><th>Estado</th><th>🔑 Clave</th><th>Acciones</th></tr></thead>
+                        <tbody id="admin-table-body"><tr><td colspan="8" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Conectando con Firebase...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -661,7 +667,7 @@
                 <div class="admin-table-wrap">
                     <table>
                         <thead><tr><th>Nombre</th><th>Colegio</th><th>Grado</th><th>Municipio</th><th>Puntaje</th><th>Fortalezas</th><th>Falencias</th><th>Registrado</th><th>Fecha</th></tr></thead>
-                        <tbody id="pretest-tbody"><tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando datos...</td></tr></tbody>
+                        <tbody id="pretest-tbody"><tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Cargando datos...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -676,7 +682,7 @@
                 <div class="admin-table-wrap">
                     <table>
                         <thead><tr><th>Estudiante</th><th>Premio</th><th>Puntos</th><th>Fecha</th><th>Estado</th><th>Acción</th></tr></thead>
-                        <tbody id="premios-tbody"><tr><td colspan="6" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando...</td></tr></tbody>
+                        <tbody id="premios-tbody"><tr><td colspan="6" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Cargando...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -697,7 +703,7 @@
                 <div class="admin-table-wrap">
                     <table>
                         <thead><tr><th>Pedido</th><th>Cliente</th><th>Ciudad</th><th>Total</th><th>Items</th><th>Estado</th><th>Acción</th></tr></thead>
-                        <tbody id="pedidos-tbody"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando pedidos...</td></tr></tbody>
+                        <tbody id="pedidos-tbody"><tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Cargando pedidos...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -712,16 +718,16 @@
             <!-- Clave Docente -->
             <div class="section-box" style="border:1.5px solid rgba(0,200,150,0.2);background:rgba(0,200,150,0.03);max-width:480px;">
                 <p class="section-box-title">🔐 Clave de Acceso Docente</p>
-                <p style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(240,244,248,.45);margin:.25rem 0 1.1rem;line-height:1.5;">
+                <p style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(255,255,255,.45);margin:.25rem 0 1.1rem;line-height:1.5;">
                     Cuando un docente se registra con Google, debe ingresar esta clave para obtener su rol. Compártela solo con mentores del programa.
                 </p>
                 <div style="display:flex;gap:.75rem;align-items:flex-end;">
                     <div style="flex:1;">
-                        <label style="display:block;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem;">Clave actual</label>
+                        <label style="display:block;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.35rem;">Clave actual</label>
                         <div style="position:relative;">
                             <input id="input-admin-clave-docente" type="password" placeholder="Cargando…"
                                 style="width:100%;box-sizing:border-box;background:rgba(255,255,255,0.04);border:1px solid rgba(0,200,150,0.25);border-radius:8px;padding:.65rem 2.5rem .65rem .85rem;color:#fafafa;font-family:'Montserrat',sans-serif;font-size:.82rem;outline:none;">
-                            <span onclick="document.getElementById('input-admin-clave-docente').type=document.getElementById('input-admin-clave-docente').type==='password'?'text':'password'" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(240,244,248,0.3);font-size:.8rem;">👁</span>
+                            <span onclick="document.getElementById('input-admin-clave-docente').type=document.getElementById('input-admin-clave-docente').type==='password'?'text':'password'" style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);cursor:pointer;color:rgba(255,255,255,0.3);font-size:.8rem;">👁</span>
                         </div>
                     </div>
                     <button onclick="guardarClaveDocente()" style="padding:.65rem 1.1rem;background:linear-gradient(135deg,#00c896,#00a87a);border:none;border-radius:8px;color:#021a36;font-family:'Montserrat',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;">Guardar</button>
@@ -767,7 +773,7 @@
             <div class="section-box" style="overflow:visible;">
                 <p class="section-box-title">🛒 Productos del Catálogo</p>
                 <div id="gestion-tienda-lista" style="max-height:65vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,94,0,0.3) rgba(255,255,255,0.05);">
-                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:24px;">Cargando…</p>
+                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;padding:24px;">Cargando…</p>
                 </div>
             </div>
         </div>
@@ -809,15 +815,15 @@
             <h2 class="panel-heading">Talleres <em>Pre-ICFES</em></h2>
             <div class="section-box" style="border:1.5px solid rgba(56,189,248,0.3);background:rgba(56,189,248,0.04);">
                 <p class="section-box-title">📥 Importar talleres desde CSV</p>
-                <p style="font-family:var(--fuente-t);font-size:0.68rem;color:rgba(240,244,248,0.5);margin-bottom:.5rem;">Sube un CSV con columnas: <code style="color:var(--teal);background:rgba(56,189,248,.08);padding:.1rem .3rem;border-radius:2px;">titulo, area, grupo, sesion, modulo, formId, fechaLimite, habilitado</code></p>
-                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,.3);margin-bottom:.8rem;">Solo agrega documentos nuevos; no duplica los existentes si el título ya existe. El botón original de los 54 talleres también sigue disponible abajo.</p>
+                <p style="font-family:var(--fuente-t);font-size:0.68rem;color:rgba(255,255,255,0.5);margin-bottom:.5rem;">Sube un CSV con columnas: <code style="color:var(--teal);background:rgba(56,189,248,.08);padding:.1rem .3rem;border-radius:2px;">titulo, area, grupo, sesion, modulo, formId, fechaLimite, habilitado</code></p>
+                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,.3);margin-bottom:.8rem;">Solo agrega documentos nuevos; no duplica los existentes si el título ya existe. El botón original de los 54 talleres también sigue disponible abajo.</p>
                 <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;">
                     <input type="file" id="csv-talleres-input" accept=".csv,text/csv" style="background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-size:0.7rem;padding:.4rem .5rem;flex:1;min-width:0;">
                     <button class="btn-add" style="background:var(--teal);color:var(--azul-deep);margin-top:0;" onclick="importarTalleresCSV()">📥 Importar</button>
                 </div>
                 <p id="csv-import-status" style="font-family:var(--fuente-t);font-size:0.65rem;margin-top:.5rem;display:none;"></p>
                 <details style="margin-top:.75rem;">
-                    <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);cursor:pointer;letter-spacing:1px;">📥 Carga inicial de los 54 talleres hardcoded (solo primera vez)</summary>
+                    <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px;">📥 Carga inicial de los 54 talleres hardcoded (solo primera vez)</summary>
                     <div style="padding:.75rem 0 .25rem;">
                         <button class="btn-add" id="btn-seed-talleres" onclick="seedTalleres()" style="font-size:.6rem;padding:.45rem .9rem;">📥 Cargar 54 talleres iniciales</button>
                         <p id="seed-status" style="font-family:var(--fuente-t);font-size:0.65rem;color:#86efac;margin-top:.5rem;display:none;"></p>
@@ -843,7 +849,7 @@
                     <div class="fa-group"><label>Fecha límite (opcional)</label><input type="datetime-local" id="ti-fechalimite"></div>
                     <div class="fa-group" style="justify-content:center;flex-direction:row;align-items:center;gap:.5rem;">
                         <input type="checkbox" id="ti-habilitado" checked style="width:1rem;height:1rem;accent-color:var(--naranja);">
-                        <label for="ti-habilitado" style="font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);cursor:pointer;">Habilitado para estudiantes</label>
+                        <label for="ti-habilitado" style="font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);cursor:pointer;">Habilitado para estudiantes</label>
                     </div>
                 </div>
                 <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;">
@@ -868,7 +874,7 @@
                     </div>
                 </div>
                 <div id="ti-lista" style="max-height:62vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,0.35) rgba(255,255,255,0.05);">
-                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:24px;">Cargando…</p>
+                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;padding:24px;">Cargando…</p>
                 </div>
             </div>
 
@@ -877,12 +883,12 @@
                 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
                     <div>
                         <p class="section-box-title" style="margin:0;">📊 Entregas reales de Google Forms</p>
-                        <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.3rem 0 0;">Respuestas de <code style="color:var(--teal);">diagnostico_colegios</code> — agrupadas por estudiante con detalle de correctas/incorrectas.</p>
+                        <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.3);margin:.3rem 0 0;">Respuestas de <code style="color:var(--teal);">diagnostico_colegios</code> — agrupadas por estudiante con detalle de correctas/incorrectas.</p>
                     </div>
                     <button class="btn-add" style="font-size:.6rem;padding:.4rem .9rem;margin-top:0;" onclick="cargarResumenEntregasICFES()">🔄 Actualizar</button>
                 </div>
                 <div id="ti-entregas-resumen">
-                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.2);text-align:center;padding:1.5rem;">Haz clic en "Actualizar" o espera la carga automática.</p>
+                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.2);text-align:center;padding:1.5rem;">Haz clic en "Actualizar" o espera la carga automática.</p>
                 </div>
             </div>
         </div>
@@ -920,7 +926,7 @@
                     </select>
                 </div>
                 <div id="ra-lista" style="display:flex;flex-direction:column;gap:.4rem;max-height:420px;overflow-y:auto;">
-                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);text-align:center;padding:1.5rem;">Cargando…</p>
+                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>
                 </div>
             </div>
         </div>
@@ -931,7 +937,7 @@
             <h2 class="panel-heading">Foro <em>Global</em></h2>
             <p class="panel-desc">Vista completa del foro comunitario. Puedes responder públicamente y en privado.</p>
             <div class="section-box" style="padding:0;overflow:hidden;">
-                <div class="foro-messages" id="forum-messages-admin"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
+                <div class="foro-messages" id="forum-messages-admin"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
                 <div style="padding:1rem;" id="foro-admin-reply-banner" style="display:none;"></div>
                 <div style="padding:1rem;">
                     <div class="foro-input-row">
@@ -951,13 +957,13 @@
             <div class="section-box" style="margin-bottom:1.2rem;">
                 <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end;">
                     <div style="display:flex;flex-direction:column;gap:.3rem;">
-                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Filtrar por Área</label>
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">Filtrar por Área</label>
                         <select id="ri-filtro-hoja" onchange="renderResultadosICFES()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;">
                             <option value="">Todas las áreas</option>
                         </select>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:.3rem;">
-                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Buscar (nombre, cédula o email)</label>
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">Buscar (nombre, cédula o email)</label>
                         <input type="text" id="ri-buscar" oninput="renderResultadosICFES()" placeholder="Buscar..." style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;width:200px;">
                     </div>
                     <button class="btn-add secondary" style="height:2rem;font-size:.65rem;" onclick="cargarResultadosICFES()">🔄 Recargar</button>
@@ -986,11 +992,11 @@
 
             <!-- Tabla de respuestas -->
             <div class="section-box">
-                <p class="section-box-title">📋 Respuestas individuales <span style="font-size:.55rem;font-weight:400;color:rgba(240,244,248,.35);">(clic en una fila para ver todos los datos)</span></p>
+                <p class="section-box-title">📋 Respuestas individuales <span style="font-size:.55rem;font-weight:400;color:rgba(255,255,255,.35);">(clic en una fila para ver todos los datos)</span></p>
                 <div style="overflow-x:auto;">
                     <table style="width:100%;border-collapse:collapse;font-family:var(--fuente-t);font-size:.63rem;">
                         <thead>
-                            <tr style="background:rgba(255,255,255,.06);color:rgba(240,244,248,.6);text-align:left;">
+                            <tr style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);text-align:left;">
                                 <th style="padding:.5rem .7rem;">Nombre del Estudiante</th>
                                 <th style="padding:.5rem .7rem;">Cédula</th>
                                 <th style="padding:.5rem .7rem;">Email</th>
@@ -1000,7 +1006,7 @@
                         <tbody id="ri-tbody"></tbody>
                     </table>
                 </div>
-                <p id="ri-count" style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.4);margin-top:.6rem;text-align:right;"></p>
+                <p id="ri-count" style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.4);margin-top:.6rem;text-align:right;"></p>
             </div>
         </div>
 
@@ -1008,7 +1014,7 @@
         <div class="panel" id="panel-admin-perfil">
             <p class="panel-title">Detalle</p>
             <h2 class="panel-heading">Perfil del <em>Usuario</em></h2>
-            <div id="admin-perfil-contenido"><p style="font-family:var(--fuente-t);font-size:0.7rem;color:rgba(240,244,248,0.3);">Selecciona un usuario para ver su perfil.</p></div>
+            <div id="admin-perfil-contenido"><p style="font-family:var(--fuente-t);font-size:0.7rem;color:rgba(255,255,255,0.3);">Selecciona un usuario para ver su perfil.</p></div>
         </div>
 
         <!-- PANEL: INICIO DOCENTE/VOLUNTARIO -->
@@ -1049,7 +1055,7 @@
                     <div class="fa-group"><label>Descripción</label><textarea id="reto-desc" placeholder="¿Qué evaluará este reto?" rows="2"></textarea></div>
                     <div class="fa-group"><label>Puntos por pregunta correcta</label><input type="number" id="reto-pts" value="10" min="1" max="100"></div>
                 </div>
-                <div id="reto-preguntas-builder"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p></div>
+                <div id="reto-preguntas-builder"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Agrega preguntas usando el botón de abajo.</p></div>
                 <div style="display:flex;gap:0.75rem;margin-top:1rem;flex-wrap:wrap;">
                     <button class="btn-add secondary" onclick="agregarPreguntaReto()">➕ Agregar Pregunta</button>
                     <button class="btn-add" onclick="publicarReto()">📤 Publicar Reto</button>
@@ -1071,7 +1077,7 @@
             <!-- Lista de mis publicaciones -->
             <div class="section-box">
                 <p class="section-box-title">📊 Mis Publicaciones</p>
-                <div id="retos-docente-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div>
+                <div id="retos-docente-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando...</p></div>
             </div>
         </div>
 
@@ -1104,11 +1110,11 @@
                     <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
                         <input type="text" id="inbox-buscar-input" placeholder="Nombre del usuario..." style="flex:1;min-width:180px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);color:var(--blanco);padding:0.6rem 0.85rem;font-family:'Montserrat',sans-serif;font-size:0.72rem;" onkeydown="if(event.key==='Enter')buscarUsuarioChat()">
                         <button onclick="buscarUsuarioChat()" style="padding:0.6rem 1rem;font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:var(--naranja);color:#fff;border:none;cursor:pointer;">Buscar</button>
-                        <button onclick="document.getElementById('inbox-buscador').style.display='none'" style="padding:0.6rem 0.9rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;background:rgba(255,255,255,0.05);color:rgba(240,244,248,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">✕</button>
+                        <button onclick="document.getElementById('inbox-buscador').style.display='none'" style="padding:0.6rem 0.9rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">✕</button>
                     </div>
                     <div id="inbox-buscar-resultados" style="margin-top:0.75rem;"></div>
                 </div>
-                <div id="inbox-threads-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p></div>
+                <div id="inbox-threads-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando...</p></div>
             </div>
             <div id="inbox-chat-box" style="display:none;">
                 <div class="section-box" style="padding:0;overflow:hidden;">
@@ -1135,7 +1141,7 @@
         <button class="modal-close" onclick="cerrarModalRating()">✕</button>
         <p class="modal-title">Evaluación Docente</p>
         <h3 class="modal-mentor-name" id="rating-mentor-name">Mentor</h3>
-        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-bottom:0.5rem;">Tu calificación (anónima)</p>
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;">Tu calificación (anónima)</p>
         <div class="star-picker">
             <button class="star-btn" data-val="1" onclick="selectStar(1)">★</button>
             <button class="star-btn" data-val="2" onclick="selectStar(2)">★</button>
@@ -1154,7 +1160,7 @@
         <button class="modal-close" onclick="document.getElementById('modal-resena-estudiante').classList.remove('open')">✕</button>
         <p class="modal-title">Dejar Reseña</p>
         <h3 class="modal-mentor-name" id="resena-est-nombre">Estudiante</h3>
-        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.4);margin-bottom:0.75rem;">Tu reseña es anónima · Ganas +40 PTS</p>
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.75rem;">Tu reseña es anónima · Ganas +40 PTS</p>
         <div class="star-picker" id="resena-star-picker">
             <button class="star-btn" data-val="1" onclick="selectResena(1)">★</button>
             <button class="star-btn" data-val="2" onclick="selectResena(2)">★</button>
@@ -1189,9 +1195,9 @@
         <button class="modal-close" onclick="document.getElementById('modal-canje').classList.remove('open')">✕</button>
         <p class="modal-title">Confirmar Premio</p>
         <h3 class="modal-mentor-name" id="canje-prod-nombre">—</h3>
-        <p id="canje-prod-desc" style="font-size:0.85rem;color:rgba(240,244,248,0.5);margin-bottom:1.5rem;"></p>
+        <p id="canje-prod-desc" style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:1.5rem;"></p>
         <div style="display:flex;gap:0.75rem;">
-            <button style="flex:1;padding:0.85rem;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.05);color:rgba(240,244,248,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;" onclick="document.getElementById('modal-canje').classList.remove('open')">Cancelar</button>
+            <button style="flex:1;padding:0.85rem;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;" onclick="document.getElementById('modal-canje').classList.remove('open')">Cancelar</button>
             <button style="flex:1;padding:0.85rem;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;cursor:pointer;" id="btn-confirmar-canje" onclick="ejecutarCanje()">Confirmar</button>
         </div>
     </div>
@@ -1205,13 +1211,13 @@
             <div style="display:flex;gap:.5rem;align-items:center;flex-shrink:0;">
                 <button id="btn-marcar-completado" onclick="marcarTallerCompletado()" style="font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.4);border-radius:5px;padding:.3rem .75rem;cursor:pointer;letter-spacing:.5px;display:none;">✅ Marcar como completado</button>
                 <button onclick="window.open(window._formIcfesUrl,'_blank')" style="font-family:'Montserrat',sans-serif;font-size:.62rem;font-weight:700;background:rgba(255,255,255,0.07);color:#a8c4d8;border:1px solid rgba(255,255,255,0.15);border-radius:5px;padding:.3rem .75rem;cursor:pointer;letter-spacing:.5px;">↗ Nueva pestaña</button>
-                <button onclick="cerrarFormModal()" style="font-family:'Montserrat',sans-serif;font-size:.9rem;font-weight:900;background:none;color:rgba(240,244,248,0.5);border:none;cursor:pointer;padding:.2rem .5rem;line-height:1;">✕</button>
+                <button onclick="cerrarFormModal()" style="font-family:'Montserrat',sans-serif;font-size:.9rem;font-weight:900;background:none;color:rgba(255,255,255,0.5);border:none;cursor:pointer;padding:.2rem .5rem;line-height:1;">✕</button>
             </div>
         </div>
         <div style="background:#0a1e32;padding:.5rem 1rem;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;display:flex;align-items:center;gap:.5rem;">
-            <span style="font-family:'Montserrat',sans-serif;font-size:.58rem;color:rgba(240,244,248,.4);">⚠️ Completa el formulario sin ayuda de IA. Este es un ejercicio de diagnóstico personal.</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:.58rem;color:rgba(255,255,255,.4);">⚠️ Completa el formulario sin ayuda de IA. Este es un ejercicio de diagnóstico personal.</span>
         </div>
-        <div id="modal-form-icfes-loading" style="padding:2rem;text-align:center;font-family:'Montserrat',sans-serif;font-size:.75rem;color:rgba(240,244,248,0.35);flex:1;display:flex;align-items:center;justify-content:center;">Cargando formulario…</div>
+        <div id="modal-form-icfes-loading" style="padding:2rem;text-align:center;font-family:'Montserrat',sans-serif;font-size:.75rem;color:rgba(255,255,255,0.35);flex:1;display:flex;align-items:center;justify-content:center;">Cargando formulario…</div>
         <iframe id="modal-form-icfes-iframe" src="" style="width:100%;flex:1;border:none;display:none;" onload="this.style.display='block';document.getElementById('modal-form-icfes-loading').style.display='none';" allowfullscreen></iframe>
     </div>
 </div>
@@ -1297,9 +1303,9 @@ if (typeof window.confirmarPRI !== 'function') {
             overlay.innerHTML = `<div style="background:#062040;border:1px solid rgba(255,255,255,0.1);padding:2rem;max-width:380px;width:90%;text-align:center;font-family:'Montserrat',sans-serif;">
                 <p style="font-size:2rem;margin-bottom:0.75rem;">${icono}</p>
                 <p style="font-weight:900;font-size:1rem;color:#f0f4f8;margin-bottom:0.5rem;">${titulo}</p>
-                <p style="font-size:0.8rem;color:rgba(240,244,248,0.5);margin-bottom:1.5rem;">${msg}</p>
+                <p style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:1.5rem;">${msg}</p>
                 <div style="display:flex;gap:0.75rem;justify-content:center;">
-                    <button id="_cpri_no" style="padding:0.65rem 1.5rem;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(240,244,248,0.5);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">Cancelar</button>
+                    <button id="_cpri_no" style="padding:0.65rem 1.5rem;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">Cancelar</button>
                     <button id="_cpri_yes" style="padding:0.65rem 1.5rem;font-family:'Montserrat',sans-serif;font-weight:700;font-size:0.65rem;letter-spacing:1.5px;text-transform:uppercase;background:#ff5e00;color:#fff;border:none;cursor:pointer;">Confirmar</button>
                 </div>
             </div>`;
@@ -1599,11 +1605,11 @@ function cargarProgreso() {
 // ===================== RETOS =====================
 function cargarRetos() {
     const cont = document.getElementById('lista-retos-db');
-    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando retos…</p>';
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando retos…</p>';
     // Lee de colección 'retos' (separada de 'talleres' ICFES)
     onSnapshot(query(collection(db,'retos'), orderBy('creadoEn','desc')), snap => {
         if (snap.empty) {
-            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay retos publicados aún. El admin o tu docente publicará retos aquí.</p>';
+            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">No hay retos publicados aún. El admin o tu docente publicará retos aquí.</p>';
             return;
         }
         cont.innerHTML = '';
@@ -1620,7 +1626,7 @@ function cargarRetos() {
                     <div class="module-item-info">
                         <p class="module-item-name">${t.titulo || t.nombre || 'Reto'}</p>
                         <p class="module-item-meta">${t.area||'General'}${t.puntos?' · +'+t.puntos+' pts':''}${fechaStr?' · ⏰ '+fechaStr:''}</p>
-                        ${t.descripcion ? `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.4);margin-top:.2rem;">${t.descripcion}</p>` : ''}
+                        ${t.descripcion ? `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.4);margin-top:.2rem;">${t.descripcion}</p>` : ''}
                     </div>
                     ${yaCompletado
                         ? '<span class="btn-module" style="background:rgba(16,185,129,.1);color:#10b981;border:1px solid rgba(16,185,129,.3);cursor:default;">✅ Completado</span>'
@@ -1630,7 +1636,7 @@ function cargarRetos() {
                                 ? `<button class="btn-module" data-retoid="${d.id}" onclick="abrirRetoForm(this.dataset.retoid)">Responder →</button>`
                                 : t.link
                                     ? `<a href="${t.link}" target="_blank" class="btn-module" data-retoid="${d.id}" onclick="registrarRetoVisto('${d.id}')">Abrir →</a>`
-                                    : '<span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);">Sin link</span>'
+                                    : '<span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.25);">Sin link</span>'
                     }
                 </div>`);
         });
@@ -1736,13 +1742,13 @@ window.abrirFormulario = async function(tallerId) {
                     <div style="background:var(--azul-panel);border:1px solid rgba(255,255,255,0.08);padding:2rem;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">
                             <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--naranja);">${t.nombre||'Formulario'}</p>
-                            <p style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(240,244,248,0.4);">Pregunta ${indice+1} de ${preguntas.length}</p>
+                            <p style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(255,255,255,0.4);">Pregunta ${indice+1} de ${preguntas.length}</p>
                         </div>
                         <div style="background:rgba(255,94,0,0.08);height:4px;margin-bottom:1.5rem;"><div style="background:var(--naranja);height:100%;width:${((indice+1)/preguntas.length)*100}%;transition:width 0.3s;"></div></div>
                         <h3 style="font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:900;color:var(--blanco);margin-bottom:1.5rem;">${p.pregunta||p.texto||'Pregunta '+( indice+1)}</h3>
                         <div id="opciones-form-container">${opciones}</div>
                         <div style="display:flex;justify-content:flex-end;margin-top:1.5rem;gap:0.75rem;">
-                            <button onclick="document.getElementById('modal-formulario-inline').remove()" style="padding:0.6rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.05);color:rgba(240,244,248,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">Salir</button>
+                            <button onclick="document.getElementById('modal-formulario-inline').remove()" style="padding:0.6rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.1);cursor:pointer;">Salir</button>
                             <button id="btn-sig-form" disabled onclick="siguientePreguntaForm()" style="padding:0.6rem 1.5rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;cursor:pointer;opacity:0.4;transition:opacity 0.2s;">${indice<preguntas.length-1?'Siguiente →':'Enviar ✓'}</button>
                         </div>
                     </div>
@@ -1798,7 +1804,7 @@ const AREA_COLOR_MAP = {'Lectura Crítica':'#7c3aed','Química':'#059669','Ingl�
 
 function cargarTalleresEstudiante() {
     const wrap = document.getElementById('talleres-grid-container');
-    wrap.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando…</p>';
+    wrap.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando…</p>';
 
     // Filtros de área
     const panelMat = document.getElementById('panel-material');
@@ -1836,7 +1842,7 @@ window._tallerMapa = {};
 function renderTalleresGrid(areaFiltro) {
     const wrap = document.getElementById('talleres-grid-container');
     const datos = (window._talleresData || []).filter(t => areaFiltro==='Todos' || t.area===areaFiltro);
-    if (!datos.length) { wrap.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,0.3);">Sin talleres para este filtro.</p>'; return; }
+    if (!datos.length) { wrap.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,0.3);">Sin talleres para este filtro.</p>'; return; }
 
     // Registrar en mapa y agrupar por área
     const byArea = {};
@@ -1875,14 +1881,14 @@ function renderTalleresGrid(areaFiltro) {
                         ${bloqueado ? '<span style="position:absolute;top:.45rem;right:.45rem;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:3px;font-family:\'Montserrat\',sans-serif;font-size:.5rem;font-weight:700;color:#fca5a5;padding:.1rem .35rem;letter-spacing:.5px;">🔒</span>' : ''}
                         <p style="font-family:\'Montserrat\',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:${bloqueado?'#ef4444':color};margin:0;">${sesion}${grupo?' · '+grupo:''}</p>
                         <p style="font-family:\'Montserrat\',sans-serif;font-weight:900;font-size:.8rem;color:${bloqueado?'rgba(240,244,248,.4)':'#e8f0f8'};margin:0;line-height:1.3;">${titulo}</p>
-                        ${t.fechaLimite&&!bloqueado ? `<p style="font-family:'Montserrat',sans-serif;font-size:.52rem;color:rgba(240,244,248,.3);margin:0;">📅 Límite: ${new Date(t.fechaLimite).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})}</p>` : ''}
+                        ${t.fechaLimite&&!bloqueado ? `<p style="font-family:'Montserrat',sans-serif;font-size:.52rem;color:rgba(255,255,255,.3);margin:0;">📅 Límite: ${new Date(t.fechaLimite).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})}</p>` : ''}
                         ${yaCompletado
                             ? '<p style="margin-top:auto;padding:.35rem;background:rgba(16,185,129,.08);color:#10b981;border:1px solid rgba(16,185,129,.2);border-radius:4px;font-family:\'Montserrat\',sans-serif;font-size:.62rem;font-weight:700;text-align:center;">✅ Completado</p>'
                             : bloqueado
                                 ? '<p style="margin-top:auto;padding:.35rem;background:rgba(239,68,68,.06);color:#fca5a5;border:1px solid rgba(239,68,68,.15);border-radius:4px;font-family:\'Montserrat\',sans-serif;font-size:.62rem;font-weight:700;text-align:center;">🔒 No disponible</p>'
                             : tieneForm
                                 ? `<button data-tid="${t.id}" style="margin-top:auto;padding:.38rem;background:${color}22;color:${color};border:1px solid ${color}44;border-radius:5px;font-family:'Montserrat',sans-serif;font-size:.63rem;font-weight:700;cursor:pointer;letter-spacing:.4px;" onclick="abrirFormICFES(this.dataset.tid)">📋 Abrir Formulario</button>`
-                                : '<p style="font-size:.58rem;color:rgba(240,244,248,.18);font-family:Montserrat;text-align:center;margin-top:auto;padding:.35rem;">Sin formulario</p>'
+                                : '<p style="font-size:.58rem;color:rgba(255,255,255,.18);font-family:Montserrat;text-align:center;margin-top:auto;padding:.35rem;">Sin formulario</p>'
                         }
                     </div>`;
                 }).join('')}
@@ -2022,7 +2028,7 @@ function cargarTutores() {
     const container = document.getElementById('lista-docentes-calificar');
     if (_unsubTutores) { _unsubTutores(); _unsubTutores = null; }
     _unsubTutores = onSnapshot(collection(db,"docentes"), snap => {
-        if (snap.empty) { container.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay mentores registrados.</p>'; return; }
+        if (snap.empty) { container.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">No hay mentores registrados.</p>'; return; }
         container.innerHTML = '';
         snap.forEach(d => {
             const t = d.data(); if (!t.nombre) return;
@@ -2076,7 +2082,7 @@ function cargarForo() {
     const q = query(collection(db,"foro_comunitario"), orderBy("timestamp","asc"), limit(60));
     foroUnsubscribe = onSnapshot(q, snap => {
         const cont = document.getElementById('forum-messages');
-        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;">Sé el primero en escribir.</p>'; return; }
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;">Sé el primero en escribir.</p>'; return; }
         cont.innerHTML = '';
 
         snap.forEach(d => {
@@ -2190,7 +2196,7 @@ function cargarForoAdmin() {
     _unsubForoAdmin = onSnapshot(q, snap => {
         const cont = document.getElementById('forum-messages-admin');
         cont.innerHTML = '';
-        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;padding:2rem;">Sé el primero en escribir.</p>'; return; }
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;padding:2rem;">Sé el primero en escribir.</p>'; return; }
         snap.forEach(d => {
             const m = d.data();
             if (m.privado) return;
@@ -2224,7 +2230,7 @@ window.iniciarChatPrivadoAdmin = function(uid, nombre) {
     inp.dataset.privNombre = nombre;
     const banner = document.getElementById('foro-admin-reply-banner');
     banner.style.display = 'block';
-    banner.innerHTML = `<span style="font-family:var(--fuente-t);font-size:0.65rem;color:var(--teal);">💬 Respondiendo en privado a: <strong>${nombre}</strong></span> <button onclick="cancelarReplyAdmin()" style="background:none;border:none;color:rgba(240,244,248,0.4);cursor:pointer;margin-left:1rem;">✕ Cancelar</button>`;
+    banner.innerHTML = `<span style="font-family:var(--fuente-t);font-size:0.65rem;color:var(--teal);">💬 Respondiendo en privado a: <strong>${nombre}</strong></span> <button onclick="cancelarReplyAdmin()" style="background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;margin-left:1rem;">✕ Cancelar</button>`;
     inp.focus();
 };
 window.cancelarReplyAdmin = function() {
@@ -2333,10 +2339,10 @@ async function _cargarProductosFirestore(gridId, saldoElId, premiosTextoId) {
     if (premiosTextoId) document.getElementById(premiosTextoId).textContent = `Has reclamado ${premiosMes} de 2 premios este mes.`;
     const grid = document.getElementById(gridId);
     if (!grid) return;
-    grid.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Cargando productos…</p>';
+    grid.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);">Cargando productos…</p>';
     try {
         const snap = await getDocs(collection(db, 'productos'));
-        if (snap.empty) { grid.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Sin productos disponibles.</p>'; return; }
+        if (snap.empty) { grid.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);">Sin productos disponibles.</p>'; return; }
 
         const libretasCard = `
             <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
@@ -2425,7 +2431,7 @@ async function _cargarProductosFirestore(gridId, saldoElId, premiosTextoId) {
         cards.splice(7, 0, totebagsCard);
         grid.innerHTML = cards.join('');
     } catch (e) {
-        grid.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);">Error al cargar: ${e.message}</p>`;
+        grid.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);">Error al cargar: ${e.message}</p>`;
     }
 }
 
@@ -2448,7 +2454,7 @@ function cargarHistorialCanjes() {
             const estadoClass = r.estado === 'Entregado' ? 'estado-entregado' : 'estado-pendiente';
             list.insertAdjacentHTML('beforeend',`
                 <div class="canje-item">
-                    <div><p class="canje-nombre">${r.premio||'—'}</p><p style="font-size:0.7rem;color:rgba(240,244,248,0.3);">${fecha} · ${r.costo||0} PTS</p></div>
+                    <div><p class="canje-nombre">${r.premio||'—'}</p><p style="font-size:0.7rem;color:rgba(255,255,255,0.3);">${fecha} · ${r.costo||0} PTS</p></div>
                     <span class="canje-estado ${estadoClass}">${r.estado||'Pendiente'}</span>
                 </div>`);
         });
@@ -2487,7 +2493,7 @@ window.ejecutarCanje = async function() {
 function cargarAdmin() {
     if (_unsubAdmin) { _unsubAdmin(); _unsubAdmin = null; } // limpiar si hubiera listener previo
     const tbody = document.getElementById('admin-table-body');
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Cargando...</td></tr>';
     getDocs(query(collection(db,"usuarios"))).then(snap => {
         tbody.innerHTML = '';
         let total=0, fichas=0, pts=0;
@@ -2501,6 +2507,9 @@ function cargarAdmin() {
             let vulnBadge = '<span class="badge verde">Estable</span>';
             if (e.estrato=='1'||e.estrato=='0') vulnBadge='<span class="badge rojo">Vulnerable</span>';
             else if (e.estrato=='2') vulnBadge='<span class="badge amarillo">Atención</span>';
+            const claveCell = e.rol !== 'admin'
+                ? `<td style="font-family:monospace;font-size:0.6rem;color:rgba(255,215,0,0.7);white-space:nowrap;">${e.clave_admin || '—'}</td>`
+                : `<td style="color:rgba(255,255,255,0.2);font-size:0.6rem;">Admin</td>`;
             tbody.insertAdjacentHTML('beforeend',`<tr>
                 <td><span class="name-cell">${e.nombre||'—'}</span></td>
                 <td>${roleBadge}</td>
@@ -2508,13 +2517,14 @@ function cargarAdmin() {
                 <td>${e.municipio||'—'}</td>
                 <td><span class="pts-cell">${e.rol==='admin'?'—':e.puntos||0}</span></td>
                 <td>${vulnBadge}</td>
+                ${claveCell}
                 <td style="display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center;">
                     <button class="btn-table" onclick="verDetalleEstudiante('${docSnap.id}')">Ver Perfil</button>
                     ${e.rol!=='admin'?`<button class="btn-table btn-table-danger" onclick="eliminarUsuario('${docSnap.id}','${(e.nombre||'este usuario').replace(/'/g,"\\'")}')">🗑 Eliminar</button>`:''}
                 </td>
             </tr>`);
         });
-        if (!total) tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin usuarios registrados.</td></tr>';
+        if (!total) tbody.innerHTML='<tr><td colspan="8" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Sin usuarios registrados.</td></tr>';
         document.getElementById('kpi-total-estudiantes').textContent = total+32;
         document.getElementById('kpi-fichas-ok').textContent = fichas;
         document.getElementById('kpi-puntos-red').textContent = pts;
@@ -2539,7 +2549,7 @@ window.eliminarUsuario = async function(uid, nombre) {
 
 window.verDetalleEstudiante = async function(uid) {
     activarPanel('panel-admin-perfil');
-    document.getElementById('admin-perfil-contenido').innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando perfil...</p>';
+    document.getElementById('admin-perfil-contenido').innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando perfil...</p>';
     try {
         const snap = await getDoc(doc(db,"usuarios",uid));
         if (!snap.exists()) { document.getElementById('admin-perfil-contenido').innerHTML='<p>Usuario no encontrado.</p>'; return; }
@@ -2548,7 +2558,7 @@ window.verDetalleEstudiante = async function(uid) {
         let canjesHTML = '';
         canjesSnap.forEach && canjesSnap.forEach(d => {
             const c = d.data();
-            canjesHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(240,244,248,0.6);">${c.premio||'—'} · <span style="color:var(--oro)">${c.costo||0} PTS</span> · <span style="color:rgba(240,244,248,0.3)">${c.estado||'Pendiente'}</span></div>`;
+            canjesHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(255,255,255,0.6);">${c.premio||'—'} · <span style="color:var(--oro)">${c.costo||0} PTS</span> · <span style="color:rgba(255,255,255,0.3)">${c.estado||'Pendiente'}</span></div>`;
         });
         const r = e.caracterizacion_respuestas || {};
         const pct = Math.min(100, ((e.puntos||0)/1000)*100);
@@ -2560,7 +2570,7 @@ window.verDetalleEstudiante = async function(uid) {
                 talleresHTML = '<div class="section-box"><p class="section-box-title">📝 Formularios Respondidos</p>';
                 tSnap.forEach(d => {
                     const tr = d.data();
-                    talleresHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(240,244,248,0.6);">${tr.formNombre||d.id} · <span style="color:var(--teal)">${tr.puntaje||0} PTS</span> · ${tr.correcto||0}/${tr.total||0} correctas</div>`;
+                    talleresHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(255,255,255,0.6);">${tr.formNombre||d.id} · <span style="color:var(--teal)">${tr.puntaje||0} PTS</span> · ${tr.correcto||0}/${tr.total||0} correctas</div>`;
                 });
                 talleresHTML += '</div>';
             }
@@ -2573,15 +2583,15 @@ window.verDetalleEstudiante = async function(uid) {
                 <p class="section-box-title">👤 Datos del Usuario</p>
                 ${e.fotoUrl?`<img src="${e.fotoUrl}" style="width:80px;height:80px;object-fit:cover;border:2px solid rgba(255,94,0,0.4);margin-bottom:1rem;">`:'' }
                 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:1rem;">
-                    ${[['Nombre',e.nombre],['Correo',e.correo],['Rol',e.rol],['Colegio',e.colegio],['Grado',e.grado],['Municipio',e.municipio],['Estrato',e.estrato],['Puntos',e.puntos||0],['Premios/Mes',e.premiosMes||0],['Ficha',e.fichaCompleta?'✅ Sí':'❌ No'],['WhatsApp',e.contacto||'—'],['Acudiente',e.acudiente||'—']].map(([k,v])=>`<div><p style="font-family:var(--fuente-t);font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35);">${k}</p><p style="font-size:0.82rem;color:var(--blanco);word-break:break-word;">${v??'—'}</p></div>`).join('')}
+                    ${[['Nombre',e.nombre],['Correo',e.correo],['Rol',e.rol],['Colegio',e.colegio],['Grado',e.grado],['Municipio',e.municipio],['Estrato',e.estrato],['Puntos',e.puntos||0],['Premios/Mes',e.premiosMes||0],['Ficha',e.fichaCompleta?'✅ Sí':'❌ No'],['WhatsApp',e.contacto||'—'],['Acudiente',e.acudiente||'—']].map(([k,v])=>`<div><p style="font-family:var(--fuente-t);font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);">${k}</p><p style="font-size:0.82rem;color:var(--blanco);word-break:break-word;">${v??'—'}</p></div>`).join('')}
                 </div>
-                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.35);margin-bottom:0.3rem;">Progreso global</p>
+                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.35);margin-bottom:0.3rem;">Progreso global</p>
                 <div class="progress-mini" style="height:8px;"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
-                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.25);margin-top:0.25rem;">${e.puntos||0} / 1000 PTS</p>
+                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:0.25rem;">${e.puntos||0} / 1000 PTS</p>
             </div>
             ${e.fichaCompleta && r.p1?`<div class="section-box"><p class="section-box-title">📋 Datos de Caracterización</p>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;font-size:0.78rem;color:rgba(240,244,248,0.6);">
-                    ${Object.entries({p1:'Nombre',p2:'Municipio',p3:'Barrio',p4:'Estrato',p5:'Vivienda',p9:'Personas hogar',p19:'Internet',p20:'Equipo',p22:'Institución',p23:'Grado',p24:'Dificultad',p25:'Interés U',p26:'Primer prof.'}).map(([k,label])=>r[k]?`<div><p style="font-family:var(--fuente-t);font-size:0.5rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,244,248,0.3);">${label}</p><p style="color:var(--blanco);">${r[k]}</p></div>`:''    ).join('')}
+                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;font-size:0.78rem;color:rgba(255,255,255,0.6);">
+                    ${Object.entries({p1:'Nombre',p2:'Municipio',p3:'Barrio',p4:'Estrato',p5:'Vivienda',p9:'Personas hogar',p19:'Internet',p20:'Equipo',p22:'Institución',p23:'Grado',p24:'Dificultad',p25:'Interés U',p26:'Primer prof.'}).map(([k,label])=>r[k]?`<div><p style="font-family:var(--fuente-t);font-size:0.5rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">${label}</p><p style="color:var(--blanco);">${r[k]}</p></div>`:''    ).join('')}
                 </div>
             </div>`:''}
             ${talleresHTML}
@@ -2611,10 +2621,10 @@ function cargarPretestData() {
                 <td style="font-size:0.75rem;color:#86efac">${(r.fortalezas||[]).join(', ')||'—'}</td>
                 <td style="font-size:0.75rem;color:#fca5a5">${(r.falencias||[]).join(', ')||'—'}</td>
                 <td><span class="badge ${r.registrado?'verde':'amarillo'}">${r.registrado?'Sí':'No'}</span></td>
-                <td style="font-size:0.7rem;color:rgba(240,244,248,0.4)">${fecha}</td>
+                <td style="font-size:0.7rem;color:rgba(255,255,255,0.4)">${fecha}</td>
             </tr>`);
         });
-        if (!total) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin datos aún.</td></tr>';
+        if (!total) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Sin datos aún.</td></tr>';
         document.getElementById('pt-total').textContent = total;
         document.getElementById('pt-prom').textContent = total ? Math.round(sumPct/total)+'%' : '0%';
         document.getElementById('pt-colegios').textContent = colegios.size;
@@ -2735,7 +2745,7 @@ function _areaDeHoja(hoja) {
 async function cargarResultadosICFES() {
     const tbody = document.getElementById('ri-tbody');
     const stats = document.getElementById('ri-stats');
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Cargando datos…</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Cargando datos…</td></tr>`;
     stats.innerHTML = '';
     try {
         // Cargar ambas colecciones en paralelo
@@ -2747,7 +2757,7 @@ async function cargarResultadosICFES() {
         _riTalleres = snapTall.docs.map(d => ({ id:d.id, ...d.data() }));
 
         if (!_riDatos.length) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin datos. Ejecuta la sincronización del Apps Script.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin datos. Ejecuta la sincronización del Apps Script.</td></tr>`;
             return;
         }
 
@@ -2766,12 +2776,12 @@ async function cargarResultadosICFES() {
         if (mapeoBody) {
             const mapeo = getHojaMapeo();
             mapeoBody.innerHTML = sinMatch.length ? `
-                <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.4);margin-bottom:.6rem;">
+                <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.4);margin-bottom:.6rem;">
                     Estas pestañas no tienen taller asociado. Asígnales un área manualmente:
                 </p>
                 ${sinMatch.map(h=>`
                 <div style="display:grid;grid-template-columns:1.5fr 1fr auto;gap:.5rem;align-items:center;margin-bottom:.4rem;">
-                    <span style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${h}">${h}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${h}">${h}</span>
                     <input type="text" id="mapeo-${CSS.escape(h)}" placeholder="Ej: Física, Matemáticas…"
                         value="${mapeo[h]||''}"
                         style="font-family:var(--fuente-t);font-size:.62rem;background:#0a1e32;border:1px solid rgba(255,255,255,.12);color:#e8f0f8;border-radius:4px;padding:.3rem .5rem;">
@@ -2779,7 +2789,7 @@ async function cargarResultadosICFES() {
                         style="font-family:var(--fuente-t);font-size:.55rem;background:var(--teal);color:#000;border:none;border-radius:4px;padding:.3rem .6rem;cursor:pointer;font-weight:700;">✓</button>
                 </div>`).join('')}
                 <button onclick="guardarTodoMapeo()" style="font-family:var(--fuente-t);font-size:.6rem;background:var(--naranja);color:#fff;border:none;border-radius:5px;padding:.4rem 1rem;cursor:pointer;font-weight:700;margin-top:.4rem;">💾 Guardar todo</button>`
-            : `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);">✅ Todos los formularios tienen área asignada desde los talleres.</p>`;
+            : `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);">✅ Todos los formularios tienen área asignada desde los talleres.</p>`;
         }
 
         renderResultadosICFES();
@@ -2844,7 +2854,7 @@ function renderResultadosICFES() {
     ].map(([ic,lb,val])=>`
         <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:.8rem 1rem;text-align:center;">
             <div style="font-size:1.3rem;">${ic}</div>
-            <div style="font-family:var(--fuente-t);font-size:.55rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(240,244,248,.4);margin:.2rem 0;">${lb}</div>
+            <div style="font-family:var(--fuente-t);font-size:.55rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin:.2rem 0;">${lb}</div>
             <div style="font-family:var(--fuente-t);font-size:1.1rem;font-weight:900;color:var(--teal);">${val}</div>
         </div>`).join('');
 
@@ -2869,7 +2879,7 @@ function renderResultadosICFES() {
     // Tabla agrupada por estudiante
     const tbody = document.getElementById('ri-tbody');
     if (!estudiantes.length) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);padding:2rem;">Sin resultados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin resultados.</td></tr>`;
         document.getElementById('ri-count').textContent = '';
         return;
     }
@@ -2896,7 +2906,7 @@ function renderResultadosICFES() {
                     <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${_pcolor(p)};text-align:center;">${f.pts}</span>
                     <span style="font-family:var(--fuente-t);font-size:.6rem;color:#86efac;text-align:center;">✅ ${correctas}</span>
                     <span style="font-family:var(--fuente-t);font-size:.6rem;color:#fca5a5;text-align:center;">❌ ${incorrectas}</span>
-                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);white-space:nowrap;">${String(f.fecha).slice(0,10)}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);white-space:nowrap;">${String(f.fecha).slice(0,10)}</span>
                 </div>`;
             }).join('');
 
@@ -2906,18 +2916,18 @@ function renderResultadosICFES() {
             <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.68rem;font-weight:900;color:#e8f0f8;">
                 👤 ${e.nombre !== '—' ? e.nombre : e.email}
             </td>
-            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">
+            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">
                 ${e.tipoId ? `<span style="font-size:.48rem;font-weight:700;background:rgba(56,189,248,.15);color:var(--teal);border-radius:3px;padding:.1rem .3rem;margin-right:.3rem;vertical-align:middle;">${e.tipoId}</span>` : ''}${e.cedula}
             </td>
-            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.email}</td>
+            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.email}</td>
             <td style="padding:.5rem .7rem;text-align:center;">
                 <span style="font-family:var(--fuente-t);font-size:.75rem;font-weight:900;color:${promColor};">${promStr}</span>
-                <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.3);margin-left:.3rem;">${e.formularios.length} form${e.formularios.length!==1?'s':''}</span>
+                <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.3);margin-left:.3rem;">${e.formularios.length} form${e.formularios.length!==1?'s':''}</span>
             </td>
         </tr>
         <tr id="${detId}" style="display:none;background:rgba(255,94,0,.03);">
             <td colspan="4" style="padding:.5rem .8rem .7rem;border-bottom:2px solid rgba(255,94,0,.12);">
-                <div style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(240,244,248,.3);margin-bottom:.4rem;">
+                <div style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.4rem;">
                     📧 ${e.email} · 🪪 ${e.tipoId ? e.tipoId+' ' : ''}${e.cedula}
                 </div>
                 <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:.4rem;padding:.2rem .6rem;margin-bottom:.3rem;opacity:.4;">
@@ -2975,7 +2985,7 @@ window.renderRetosAdmin = function() {
     const filterArea = document.getElementById('ra-filter-area')?.value || '';
     const filtered = RETOS_ADMIN_DATA.filter(r => !filterArea || r.area === filterArea);
     if (!filtered.length) {
-        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.25);text-align:center;padding:1.5rem;">Sin retos creados aún.</p>';
+        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Sin retos creados aún.</p>';
         return;
     }
     lista.innerHTML = filtered.map(r => {
@@ -2985,7 +2995,7 @@ window.renderRetosAdmin = function() {
             <div style="display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;">
                 <div style="flex:1;min-width:0;">
                     <p style="font-family:var(--fuente-t);font-size:.68rem;font-weight:700;color:#e8f0f8;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${titulo}</p>
-                    <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.35);margin:0;">${r.area||'General'} · ${r.puntos||10} pts · ⏰ ${deadline}</p>
+                    <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.35);margin:0;">${r.area||'General'} · ${r.puntos||10} pts · ⏰ ${deadline}</p>
                 </div>
                 <button class="btn-table" onclick="verCompletadosReto('${r.id}')" style="padding:.25rem .5rem;font-size:.6rem;color:#86efac;">👥</button>
                 <button class="btn-table" onclick="editarRetoAdmin('${r.id}')" style="padding:.25rem .5rem;font-size:.6rem;">✏️</button>
@@ -3049,15 +3059,15 @@ window.verCompletadosReto = async function(retoId) {
     if (!lista) return;
     if (lista.style.display !== 'none' && lista.innerHTML) { lista.style.display='none'; return; }
     lista.style.display='block';
-    lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);padding:.4rem;">Cargando…</p>';
+    lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);padding:.4rem;">Cargando…</p>';
     const snap = await getDocs(query(collection(db,'retos_completados'), where('retoId','==',retoId)));
-    if (snap.empty) { lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.25);padding:.4rem 0;">Nadie ha completado este reto aún.</p>'; return; }
+    if (snap.empty) { lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.25);padding:.4rem 0;">Nadie ha completado este reto aún.</p>'; return; }
     lista.innerHTML = snap.docs.map(d => {
         const r=d.data();
         const fecha = r.completadoEn?new Date(r.completadoEn.toDate()).toLocaleDateString('es-CO'):'—';
         return `<div style="display:flex;justify-content:space-between;padding:.3rem .5rem;background:rgba(16,185,129,.06);border-radius:4px;margin-bottom:.25rem;">
-            <div><p style="font-family:var(--fuente-t);font-size:.65rem;color:#86efac;font-weight:700;margin:0;">${r.nombre||r.email||'—'}</p><p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${r.colegio||''}${r.grado?' · Grado '+r.grado:''}</p></div>
-            <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.3);">${fecha}</span>
+            <div><p style="font-family:var(--fuente-t);font-size:.65rem;color:#86efac;font-weight:700;margin:0;">${r.nombre||r.email||'—'}</p><p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.35);margin:0;">${r.colegio||''}${r.grado?' · Grado '+r.grado:''}</p></div>
+            <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.3);">${fecha}</span>
         </div>`;
     }).join('');
 };
@@ -3140,11 +3150,11 @@ window.cargarTalleresAdmin = async function() {
 window.cargarResumenEntregasICFES = async function() {
     const cont = document.getElementById('ti-entregas-resumen');
     if (!cont) return;
-    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.3);text-align:center;padding:1rem;">Cargando entregas…</p>';
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);text-align:center;padding:1rem;">Cargando entregas…</p>';
     try {
         const snap = await getDocs(collection(db,'diagnostico_colegios'));
         if (snap.empty) {
-            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(240,244,248,.2);text-align:center;padding:1rem;">Sin entregas en diagnostico_colegios aún.</p>';
+            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.2);text-align:center;padding:1rem;">Sin entregas en diagnostico_colegios aún.</p>';
             return;
         }
 
@@ -3218,11 +3228,11 @@ window.cargarResumenEntregasICFES = async function() {
                         const pctStr = pct!=null ? `(${pct}%)` : '';
                         return `<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:.4rem;align-items:center;
                                     padding:.35rem .6rem;background:rgba(255,255,255,.02);border-radius:4px;margin-bottom:.2rem;">
-                            <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${hoja}">📄 ${hoja}</span>
+                            <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${hoja}">📄 ${hoja}</span>
                             <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${color};text-align:center;">${scoreStr} ${pctStr}</span>
                             <span style="font-family:var(--fuente-t);font-size:.6rem;color:#86efac;text-align:center;">✅ ${pts?.correctas??'—'}</span>
                             <span style="font-family:var(--fuente-t);font-size:.6rem;color:#fca5a5;text-align:center;">❌ ${inco}</span>
-                            <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);white-space:nowrap;">${fecha}</span>
+                            <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);white-space:nowrap;">${fecha}</span>
                         </div>`;
                     }).join('');
 
@@ -3240,12 +3250,12 @@ window.cargarResumenEntregasICFES = async function() {
                                 👤 ${est.nombre !== '—' ? est.nombre : est.email}
                                 ${promedioDisplay}
                             </p>
-                            <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:.15rem 0 0;">
+                            <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.35);margin:.15rem 0 0;">
                                 CC: ${est.cedula} · ${est.email} · ${est.respuestas.length} formulario${est.respuestas.length!==1?'s':''}
                                 ${ptsData.length&&ptsData[0].total ? ` · ✅ ${Math.round(totalCorrectas)} correctas / ❌ ${Math.round(totalIncorrectas)} incorrectas` : ''}
                             </p>
                         </div>
-                        <span style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(240,244,248,.2);flex-shrink:0;">▼</span>
+                        <span style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(255,255,255,.2);flex-shrink:0;">▼</span>
                     </div>
                     <!-- detalle -->
                     <div id="${cardId}" style="display:none;padding:.4rem .6rem .55rem;border-top:1px solid rgba(255,255,255,.05);">
@@ -3262,7 +3272,7 @@ window.cargarResumenEntregasICFES = async function() {
             }).join('');
 
         cont.innerHTML = `
-            <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin-bottom:.6rem;">
+            <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.3);margin-bottom:.6rem;">
                 <strong style="color:var(--naranja);">${totalEstudiantes}</strong> estudiantes ·
                 <strong style="color:var(--teal);">${snap.size}</strong> respuestas en total.
                 Haz clic en un estudiante para ver sus resultados por formulario.
@@ -3291,7 +3301,7 @@ window.renderTalleresAdmin = function() {
         (!filterGrupo || t.grupo === filterGrupo)
     );
     if (!filtered.length) {
-        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:1.5rem;">Sin talleres. ¿Ya cargaste los 54?</p>';
+        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;padding:1.5rem;">Sin talleres. ¿Ya cargaste los 54?</p>';
         return;
     }
     const AREA_COLOR = {'Lectura Crítica':'#7c3aed','Química':'#059669','Inglés':'#0369a1','Matemáticas':'#d97706','Geometría':'#0891b2','Biología':'#16a34a','Sociales':'#dc2626'};
@@ -3316,7 +3326,7 @@ window.renderTalleresAdmin = function() {
         return `<div style="box-sizing:border-box;width:100%;min-height:44px;margin-bottom:6px;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${bColor};border-radius:6px;opacity:${habilitado?1:.65};display:table;table-layout:fixed;">
             <div style="display:table-cell;vertical-align:middle;padding:8px 10px;width:100%;">
                 <div style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;font-weight:700;color:#e8f0f8;line-height:17px;">${titulo} ${badgeHtml}</div>
-                <div style="font-size:9px;color:rgba(240,244,248,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}</div>
             </div>
             <div style="display:table-cell;vertical-align:middle;padding:8px 10px;white-space:nowrap;width:1%;">
                 <button class="btn-table" onclick="toggleHabilitadoTaller('${safeId}',${!habilitado})" style="padding:3px 7px;font-size:9px;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
@@ -3472,7 +3482,7 @@ window.verCompletadosTaller = async function(tallerId, titulo) {
     if (!lista) return;
     if (lista.style.display !== 'none' && lista.innerHTML.trim() && !lista.innerHTML.includes('Cargando')) { lista.style.display='none'; return; }
     lista.style.display='block';
-    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.3);padding:.4rem;">Cargando…</p>';
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);padding:.4rem;">Cargando…</p>';
     try {
         // 1) Registros manuales en talleres_completados
         const snapManual = await getDocs(query(collection(db,'talleres_completados'), where('tallerId','==',tallerId)));
@@ -3483,9 +3493,9 @@ window.verCompletadosTaller = async function(tallerId, titulo) {
             filas.push(`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:rgba(16,185,129,.06);border-radius:4px;margin-bottom:.2rem;">
                 <div>
                     <p style="font-family:var(--fuente-t);font-size:.65rem;color:#86efac;font-weight:700;margin:0;">${r.nombre||r.email||'—'}</p>
-                    <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${r.colegio||''} ${r.grado?'· Grado '+r.grado:''}</p>
+                    <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.35);margin:0;">${r.colegio||''} ${r.grado?'· Grado '+r.grado:''}</p>
                 </div>
-                <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.3);">${fecha} · marcado</span>
+                <span style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.3);">${fecha} · marcado</span>
             </div>`);
         });
 
@@ -3516,11 +3526,11 @@ window.verCompletadosTaller = async function(tallerId, titulo) {
             filas.push(`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem .5rem;background:rgba(56,189,248,.05);border-radius:4px;margin-bottom:.2rem;border-left:2px solid rgba(56,189,248,.3);">
                     <div>
                         <p style="font-family:var(--fuente-t);font-size:.65rem;color:#93c5fd;font-weight:700;margin:0;">${nombre!=='—'?nombre:email}</p>
-                        <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.35);margin:0;">${cedula!=='—'?'CC: '+cedula:''} · ${etiqueta}</p>
+                        <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.35);margin:0;">${cedula!=='—'?'CC: '+cedula:''} · ${etiqueta}</p>
                     </div>
                     <div style="text-align:right;">
                         ${pts!=='—'?`<p style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${ptsColor};margin:0;">${pts}</p>`:''}
-                        <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(240,244,248,.25);">${String(fecha).slice(0,10)}</span>
+                        <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);">${String(fecha).slice(0,10)}</span>
                     </div>
                 </div>`);
             });
@@ -3528,15 +3538,15 @@ window.verCompletadosTaller = async function(tallerId, titulo) {
         if (!usarDocs.length && snapAll.size > 0) {
             filas.push(`<div style="padding:.4rem .5rem;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);border-radius:4px;">
                 <p style="font-family:var(--fuente-t);font-size:.6rem;color:#fde68a;margin:0;">⚠️ No se encontró una hoja de Google Forms con el nombre exacto de este taller.</p>
-                <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(240,244,248,.3);margin:.25rem 0 0;">Ver todas las entregas en la sección <strong style="color:var(--teal);">📊 Entregas reales de Google Forms</strong> más abajo ↓</p>
+                <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.3);margin:.25rem 0 0;">Ver todas las entregas en la sección <strong style="color:var(--teal);">📊 Entregas reales de Google Forms</strong> más abajo ↓</p>
             </div>`);
         }
 
         if (!filas.length) {
-            lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.25);padding:.4rem 0;">Ningún estudiante ha completado este taller aún.</p>';
+            lista.innerHTML='<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.25);padding:.4rem 0;">Ningún estudiante ha completado este taller aún.</p>';
             return;
         }
-        lista.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(240,244,248,.25);margin-bottom:.4rem;padding:0 .2rem;">🟢 marcado manual · 🔵 respuesta Google Form · Total: ${filas.length}</p>` + filas.join('');
+        lista.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.25);margin-bottom:.4rem;padding:0 .2rem;">🟢 marcado manual · 🔵 respuesta Google Form · Total: ${filas.length}</p>` + filas.join('');
     } catch(e) { lista.innerHTML=`<p style="color:#f87171;font-size:.6rem;">${e.message}</p>`; }
 };
 
@@ -3544,7 +3554,7 @@ window.verCompletadosTaller = async function(tallerId, titulo) {
 function cargarPremiosAdmin() {
     getDocs(query(collection(db,"premios_reclamados"), orderBy("timestamp","desc"))).then(snap => {
         const tbody = document.getElementById('premios-tbody'); tbody.innerHTML = '';
-        if (snap.empty) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin premios reclamados.</td></tr>'; return; }
+        if (snap.empty) { tbody.innerHTML='<tr><td colspan="6" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Sin premios reclamados.</td></tr>'; return; }
         snap.forEach(d => {
             const r = d.data();
             const fecha = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString() : '—';
@@ -3553,7 +3563,7 @@ function cargarPremiosAdmin() {
                 <td><span class="name-cell">${r.nombre||'—'}</span></td>
                 <td>${r.premio||'—'}</td>
                 <td><span class="pts-cell">${r.costo||0} PTS</span></td>
-                <td style="font-size:0.7rem;color:rgba(240,244,248,0.4)">${fecha}</td>
+                <td style="font-size:0.7rem;color:rgba(255,255,255,0.4)">${fecha}</td>
                 <td><span class="${estadoClass}">${r.estado||'Pendiente'}</span></td>
                 <td><button class="btn-table" onclick="cambiarEstadoPremio('${d.id}','${r.uid||''}','${r.nombre||''}','${r.premio||''}')">Marcar Entregado</button></td>
             </tr>`);
@@ -3609,12 +3619,12 @@ let _productoEditandoId = null;
 window.cargarGestionTienda = async function() {
     const lista = document.getElementById('gestion-tienda-lista');
     if (!lista) return;
-    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:24px;">Cargando…</p>';
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;padding:24px;">Cargando…</p>';
     try {
         const snap = await getDocs(collection(db,'productos'));
         if (snap.empty) {
             lista.innerHTML = `<div style="text-align:center;padding:24px 16px;">
-                <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);margin-bottom:12px;">Sin productos. Carga los iniciales:</p>
+                <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);margin-bottom:12px;">Sin productos. Carga los iniciales:</p>
                 <button id="btn-seed-productos" class="btn-add" style="font-size:.65rem;padding:.5rem 1rem;" onclick="seedProductosTienda()">📥 Cargar 7 productos iniciales</button>
             </div>`;
             return;
@@ -3626,10 +3636,10 @@ window.cargarGestionTienda = async function() {
             const safeId = p.id;
             return `<div style="position:relative;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${borde};border-radius:6px;margin-bottom:8px;padding:12px 180px 12px 14px;min-height:56px;opacity:${disp?1:0.7};">
                 <div style="font-size:12px;font-weight:700;color:#e8f0f8;line-height:18px;">${p.emoji||'🎁'} ${p.nombre}</div>
-                <div style="font-size:10px;color:rgba(240,244,248,0.45);line-height:15px;margin-top:3px;">${p.pts} PTS &nbsp;·&nbsp; ${disp?'<span style="color:#86efac;font-weight:700;">✅ Disponible</span>':'<span style="color:#fca5a5;font-weight:700;">🔒 Bloqueado</span>'}</div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.45);line-height:15px;margin-top:3px;">${p.pts} PTS &nbsp;·&nbsp; ${disp?'<span style="color:#86efac;font-weight:700;">✅ Disponible</span>':'<span style="color:#fca5a5;font-weight:700;">🔒 Bloqueado</span>'}</div>
                 <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;gap:5px;align-items:center;">
                     <button onclick="toggleDisponibleProducto('${safeId}',${disp},this)" style="font-family:var(--fuente-t);font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:5px 10px;background:${disp?'rgba(239,68,68,0.12)':'rgba(34,197,94,0.12)'};border:1px solid ${disp?'rgba(239,68,68,0.35)':'rgba(34,197,94,0.35)'};color:${disp?'#fca5a5':'#86efac'};border-radius:4px;cursor:pointer;white-space:nowrap;">${disp?'🔒 Bloquear':'✅ Activar'}</button>
-                    <button onclick="editarProductoAdmin('${safeId}')" style="font-family:var(--fuente-t);font-size:9px;padding:5px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(240,244,248,0.5);border-radius:4px;cursor:pointer;">✏️</button>
+                    <button onclick="editarProductoAdmin('${safeId}')" style="font-family:var(--fuente-t);font-size:9px;padding:5px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);border-radius:4px;cursor:pointer;">✏️</button>
                     <button onclick="eliminarProductoAdmin('${safeId}')" style="font-family:var(--fuente-t);font-size:9px;padding:5px 8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:4px;cursor:pointer;">🗑</button>
                 </div>
             </div>`;
@@ -3767,11 +3777,11 @@ window.guardarClaveDocente = async function() {
 function cargarPedidosTienda() {
     const tbody = document.getElementById('pedidos-tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Cargando...</td></tr>';
     getDocs(query(collection(db,"pedidos"), orderBy("creadoEn","desc"))).then(snap => {
         tbody.innerHTML = '';
         let total=0, pend=0, prep=0, env=0;
-        if (snap.empty) { tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);padding:2rem;">Sin pedidos aún.</td></tr>'; return; }
+        if (snap.empty) { tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Sin pedidos aún.</td></tr>'; return; }
         snap.forEach(d => {
             const p = d.data(); total++;
             if (p.estado==='pendiente_pago') pend++;
@@ -3782,11 +3792,11 @@ function cargarPedidosTienda() {
             const estadoMap = {pendiente_pago:'<span class="badge amarillo">Pendiente Pago</span>',en_preparacion:'<span class="badge cyan">En Preparación</span>',enviado:'<span class="badge verde">Enviado</span>',entregado:'<span class="badge verde">Entregado</span>'};
             const estadoHtml = estadoMap[p.estado] || `<span class="badge">${p.estado||'—'}</span>`;
             tbody.insertAdjacentHTML('beforeend',`<tr>
-                <td><span class="name-cell" style="font-size:0.7rem;color:var(--naranja)">${p.numeroPedido||d.id.slice(-6)}</span><br><span style="font-size:0.65rem;color:rgba(240,244,248,0.3)">${fecha}</span></td>
-                <td><span class="name-cell">${p.nombre||'—'}</span><br><span style="font-size:0.65rem;color:rgba(240,244,248,0.4)">${p.telefono||''}</span></td>
+                <td><span class="name-cell" style="font-size:0.7rem;color:var(--naranja)">${p.numeroPedido||d.id.slice(-6)}</span><br><span style="font-size:0.65rem;color:rgba(255,255,255,0.3)">${fecha}</span></td>
+                <td><span class="name-cell">${p.nombre||'—'}</span><br><span style="font-size:0.65rem;color:rgba(255,255,255,0.4)">${p.telefono||''}</span></td>
                 <td style="font-size:0.72rem">${p.ciudad||'—'}</td>
                 <td><span class="pts-cell">$${(p.total||0).toLocaleString('es-CO')}</span></td>
-                <td style="font-size:0.68rem;color:rgba(240,244,248,0.55);max-width:180px;white-space:normal">${items}</td>
+                <td style="font-size:0.68rem;color:rgba(255,255,255,0.55);max-width:180px;white-space:normal">${items}</td>
                 <td>${estadoHtml}</td>
                 <td>
                     <select onchange="cambiarEstadoPedido('${d.id}',this.value,${JSON.stringify(p.nombre||'').replace(/"/g,"'")})" style="background:#021a36;border:1px solid rgba(255,255,255,0.12);color:var(--blanco);font-family:var(--fuente-t);font-size:0.65rem;padding:0.3rem">
@@ -3800,7 +3810,7 @@ function cargarPedidosTienda() {
             </tr>`);
         });
         if (document.getElementById('pk-total')) { document.getElementById('pk-total').textContent=total; document.getElementById('pk-pendientes').textContent=pend; document.getElementById('pk-preparacion').textContent=prep; document.getElementById('pk-enviados').textContent=env; }
-    }).catch(e=>{ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-size:0.7rem;color:rgba(240,244,248,0.3);padding:2rem;">Error al cargar pedidos.</td></tr>'; console.warn(e); });
+    }).catch(e=>{ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;font-size:0.7rem;color:rgba(255,255,255,0.3);padding:2rem;">Error al cargar pedidos.</td></tr>'; console.warn(e); });
 }
 
 window.cambiarEstadoPedido = async function(pedidoId, nuevoEstado, clienteNombre) {
@@ -3841,7 +3851,7 @@ window.agregarPreguntaReto = function() {
     div.id = `retoq-${n}`;
     div.style.cssText = 'background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);padding:1rem;margin-bottom:0.75rem;border-radius:4px;';
     div.innerHTML = `
-        <p style="font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;color:rgba(240,244,248,0.4);margin-bottom:0.75rem;">PREGUNTA ${n}</p>
+        <p style="font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-bottom:0.75rem;">PREGUNTA ${n}</p>
         <div class="fa-group"><label>Enunciado</label><input type="text" id="rq${n}-q" placeholder="¿Cuál es la pregunta?"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin:0.5rem 0;">
             <div class="fa-group"><label>A</label><input type="text" id="rq${n}-a" placeholder="Opción A"></div>
@@ -3890,7 +3900,7 @@ window.publicarReto = async function() {
     notif('Reto publicado',`"${nombre}" con ${preguntas.length} preguntas publicado. +30 PTS 🎉`,'✅','success');
     ['reto-nombre','reto-area','reto-desc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('reto-pts').value='10';
-    document.getElementById('reto-preguntas-builder').innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p>';
+    document.getElementById('reto-preguntas-builder').innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Agrega preguntas usando el botón de abajo.</p>';
     contadorPreguntasReto=0;
     cargarRetosDocente();
 };
@@ -3994,7 +4004,7 @@ window.publicarFormulario = async function() {
     notif('Formulario publicado',`"${nombre}" con ${preguntas.length} preguntas ya está disponible.`,'✅','success');
     ['form-nombre','form-area','form-desc'].forEach(id => document.getElementById(id).value='');
     document.getElementById('form-pts-preg').value='10';
-    document.getElementById('preguntas-builder').innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Agrega preguntas usando el botón de abajo.</p>';
+    document.getElementById('preguntas-builder').innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Agrega preguntas usando el botón de abajo.</p>';
     contadorPreguntas = 0;
     cargarTalleresPublicados();
 };
@@ -4023,7 +4033,7 @@ function cargarTalleresPublicados() {
     if (_unsubPlaneacion) { _unsubPlaneacion(); _unsubPlaneacion = null; }
     _unsubPlaneacion = onSnapshot(collection(db,"talleres"), snap => {
         const cont = document.getElementById('talleres-publicados-list'); cont.innerHTML='';
-        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin talleres publicados aún.</p>'; return; }
+        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Sin talleres publicados aún.</p>'; return; }
         snap.forEach(d => {
             const t = d.data();
             const esMio = t.autorUid === currentUser.uid || currentUser.rol==='admin';
@@ -4053,7 +4063,7 @@ window.verCompletadosTallerPlaneacion = async function(tallerId, titulo) {
     if (!lista) return;
     if (lista.style.display !== 'none' && lista.innerHTML.trim() && !lista.innerHTML.includes('Cargando')) { lista.style.display='none'; return; }
     lista.style.display='block';
-    lista.innerHTML = '<p style="color:rgba(240,244,248,.3);padding:.3rem;">Cargando…</p>';
+    lista.innerHTML = '<p style="color:rgba(255,255,255,.3);padding:.3rem;">Cargando…</p>';
     // Reusa la misma lógica que verCompletadosTaller pero escribe en este div
     try {
         const snapManual = await getDocs(query(collection(db,'talleres_completados'), where('tallerId','==',tallerId)));
@@ -4063,7 +4073,7 @@ window.verCompletadosTallerPlaneacion = async function(tallerId, titulo) {
             const fecha = r.completadoEn ? new Date(r.completadoEn.toDate()).toLocaleDateString('es-CO') : '—';
             filas.push(`<div style="display:flex;justify-content:space-between;padding:.25rem .3rem;background:rgba(16,185,129,.05);border-radius:3px;margin-bottom:.2rem;">
                 <span style="color:#86efac;font-weight:700;">${r.nombre||r.email||'—'}</span>
-                <span style="color:rgba(240,244,248,.3);">${fecha}</span>
+                <span style="color:rgba(255,255,255,.3);">${fecha}</span>
             </div>`);
         });
         if (titulo) {
@@ -4074,13 +4084,13 @@ window.verCompletadosTallerPlaneacion = async function(tallerId, titulo) {
                 const pts = r['Puntuación'] || '';
                 filas.push(`<div style="display:flex;justify-content:space-between;padding:.25rem .3rem;background:rgba(56,189,248,.04);border-left:2px solid rgba(56,189,248,.25);border-radius:3px;margin-bottom:.2rem;">
                     <span style="color:#93c5fd;">${email}</span>
-                    ${pts?`<span style="color:#fbbf24;">${pts} pts</span>`:'<span style="color:rgba(240,244,248,.2);">Google Form</span>'}
+                    ${pts?`<span style="color:#fbbf24;">${pts} pts</span>`:'<span style="color:rgba(255,255,255,.2);">Google Form</span>'}
                 </div>`);
             });
         }
         lista.innerHTML = filas.length
-            ? `<p style="color:rgba(240,244,248,.25);margin-bottom:.3rem;">Total: ${filas.length} entrega(s)</p>` + filas.join('')
-            : '<p style="color:rgba(240,244,248,.2);padding:.2rem 0;">Sin entregas aún.</p>';
+            ? `<p style="color:rgba(255,255,255,.25);margin-bottom:.3rem;">Total: ${filas.length} entrega(s)</p>` + filas.join('')
+            : '<p style="color:rgba(255,255,255,.2);padding:.2rem 0;">Sin entregas aún.</p>';
     } catch(e) { lista.innerHTML = `<p style="color:#f87171;">${e.message}</p>`; }
 };
 
@@ -4178,9 +4188,9 @@ function cargarCapacitaciones() {
         if (headingEl)  headingEl.innerHTML = 'Solicitudes de <em>Capacitación</em>';
         if (descEl)     descEl.textContent  = 'Revisa y acepta solicitudes de capacitación. Se notificará al estudiante por WhatsApp.';
         if (secTitleEl) secTitleEl.textContent = 'Solicitudes Pendientes';
-        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando solicitudes…</p>';
+        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando solicitudes…</p>';
         getDocs(collection(db,"solicitudes_capacitacion")).then(snap => {
-            if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No hay solicitudes pendientes.</p>'; return; }
+            if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">No hay solicitudes pendientes.</p>'; return; }
             cont.innerHTML='';
             snap.forEach(d => {
                 const s = d.data();
@@ -4189,12 +4199,12 @@ function cargarCapacitaciones() {
                         <div class="cap-info">
                             <p class="cap-nombre">📋 ${s.tema||'Capacitación General'}</p>
                             <p class="cap-meta">Solicitó: ${s.nombre||'—'} · ${s.colegio||'—'} · ${s.horario||'—'}</p>
-                            ${s.comentario?`<p style="font-size:0.78rem;color:rgba(240,244,248,0.45);margin-top:0.3rem;">${s.comentario}</p>`:''}
+                            ${s.comentario?`<p style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:0.3rem;">${s.comentario}</p>`:''}
                         </div>
                         <button class="btn-aceptar" onclick="aceptarCapacitacion('${s.nombre}','${s.contacto||''}','${s.tema||''}')">✅ Aceptar y Notificar</button>
                     </div>`);
             });
-        }).catch(()=>{ cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin solicitudes.</p>'; });
+        }).catch(()=>{ cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Sin solicitudes.</p>'; });
     }
 }
 
@@ -4250,7 +4260,7 @@ function cargarPerfilDocente() {
     }).catch(()=>{});
     getDocs(collection(db,"docentes",currentUser.uid,"calificaciones")).then(snap => {
         const cont = document.getElementById('mis-calificaciones-list');
-        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Aún no tienes calificaciones.</p>'; return; }
+        if (snap.empty) { cont.innerHTML='<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Aún no tienes calificaciones.</p>'; return; }
         cont.innerHTML=''; let total=0, sum=0;
         snap.forEach(d => {
             const r=d.data(); sum+=(r.estrellas||0); total++;
@@ -4342,10 +4352,10 @@ let inboxChatUid = null, inboxChatId = null;
 
 async function cargarInbox() {
     const cont = document.getElementById('inbox-threads-list');
-    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Buscando conversaciones...</p>';
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Buscando conversaciones...</p>';
     try {
         const snap = await getDocs(query(collection(db,"chats_privados"), where("participantes","array-contains", currentUser.uid)));
-        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin mensajes privados aún. Usa el foro para iniciar una conversación.</p>'; return; }
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Sin mensajes privados aún. Usa el foro para iniciar una conversación.</p>'; return; }
         cont.innerHTML = '';
         snap.forEach(d => {
             const c = d.data();
@@ -4436,12 +4446,12 @@ window.buscarUsuarioChat = async function() {
     const q = document.getElementById('inbox-buscar-input').value.trim().toLowerCase();
     const cont = document.getElementById('inbox-buscar-resultados');
     if (!q) return;
-    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);">Buscando...</p>';
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.3);">Buscando...</p>';
     try {
         const usuarios = await _obtenerUsuariosChat();
         const resultados = usuarios.filter(u => (u.nombre||'').toLowerCase().includes(q));
         cont.innerHTML = '';
-        if (!resultados.length) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Sin resultados para "'+q+'".</p>'; return; }
+        if (!resultados.length) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Sin resultados para "'+q+'".</p>'; return; }
         resultados.forEach(u => {
             const esc = s => (s||'').replace(/'/g,"\\'");
             cont.insertAdjacentHTML('beforeend',`
@@ -4449,7 +4459,7 @@ window.buscarUsuarioChat = async function() {
                     <div style="width:32px;height:32px;background:rgba(255,94,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;color:var(--naranja);flex-shrink:0;">${(u.nombre||'?')[0].toUpperCase()}</div>
                     <div>
                         <p style="font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:700;color:var(--blanco);margin:0;">${u.nombre||'—'}</p>
-                        <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:rgba(240,244,248,0.35);margin:0;">${u.rol||'—'}</p>
+                        <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:0;">${u.rol||'—'}</p>
                     </div>
                 </div>`);
         });
@@ -4504,7 +4514,7 @@ async function cargarResenasRecibidas() {
     try {
         const snap = await getDocs(query(collection(db,"usuarios",currentUser.uid,"resenas_recibidas"), orderBy("timestamp","desc")));
         if (snap.empty) {
-            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);text-align:center;padding:1rem;">Aún no tienes reseñas de mentores. ¡Sigue participando!</p>';
+            cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);text-align:center;padding:1rem;">Aún no tienes reseñas de mentores. ¡Sigue participando!</p>';
             return;
         }
         cont.innerHTML = '';
@@ -4516,13 +4526,13 @@ async function cargarResenasRecibidas() {
                 <div style="background:rgba(255,255,255,0.03);border-left:3px solid var(--teal);padding:0.9rem 1rem;margin-bottom:0.75rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;flex-wrap:wrap;gap:0.5rem;">
                         <span style="color:var(--oro);font-size:1.1rem;letter-spacing:2px;">${estrellas}</span>
-                        <span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(240,244,248,0.3);">🔒 Anónimo · ${fecha}</span>
+                        <span style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.3);">🔒 Anónimo · ${fecha}</span>
                     </div>
-                    ${r.comentario?`<p style="font-size:0.82rem;color:rgba(240,244,248,0.7);line-height:1.5;">"${r.comentario}"</p>`:''}
+                    ${r.comentario?`<p style="font-size:0.82rem;color:rgba(255,255,255,0.7);line-height:1.5;">"${r.comentario}"</p>`:''}
                 </div>`);
         });
     } catch(e) {
-        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No se pudieron cargar las reseñas.</p>';
+        cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">No se pudieron cargar las reseñas.</p>';
     }
 }
 
@@ -4543,10 +4553,10 @@ async function cargarMentorHome() {
 // ===================== RETOS DOCENTE =====================
 async function cargarRetosDocente() {
     const cont = document.getElementById('retos-docente-list');
-    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">Cargando...</p>';
+    cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando...</p>';
     try {
         const snap = await getDocs(query(collection(db,"talleres"), where("autorUid","==",currentUser.uid)));
-        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);">No has publicado talleres o retos aún.</p>'; return; }
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">No has publicado talleres o retos aún.</p>'; return; }
         cont.innerHTML = '';
         for (const d of snap.docs) {
             const t = d.data();
@@ -4593,7 +4603,7 @@ function initProductosMentor() {
             const r = d.data();
             const fecha = r.timestamp ? new Date(r.timestamp.toDate()).toLocaleDateString('es-CO') : '—';
             const sc = r.estado === 'Entregado' ? 'estado-entregado' : 'estado-pendiente';
-            list.insertAdjacentHTML('beforeend',`<div class="canje-item"><div><p class="canje-nombre">${r.premio||'—'}</p><p style="font-size:0.7rem;color:rgba(240,244,248,0.3);">${fecha} · ${r.costo||0} PTS</p></div><span class="canje-estado ${sc}">${r.estado||'Pendiente'}</span></div>`);
+            list.insertAdjacentHTML('beforeend',`<div class="canje-item"><div><p class="canje-nombre">${r.premio||'—'}</p><p style="font-size:0.7rem;color:rgba(255,255,255,0.3);">${fecha} · ${r.costo||0} PTS</p></div><span class="canje-estado ${sc}">${r.estado||'Pendiente'}</span></div>`);
         });
     }).catch(()=>{});
 }
