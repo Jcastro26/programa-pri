@@ -1292,11 +1292,17 @@ const firebaseConfig = {
     measurementId:"G-0FWJS3BX0B"
 };
 const app = initializeApp(firebaseConfig);
-// Caché local persistente: los datos ya leídos se sirven desde IndexedDB
-// en recargas y re-visitas, sin consumir cuota de Firestore.
-const db = initializeFirestore(app, {
-    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
-});
+// Caché local persistente — con fallback para navegadores móviles que
+// no soportan IndexedDB (Safari privado, algunos Android).
+let db;
+try {
+    db = initializeFirestore(app, {
+        localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+    });
+} catch(e) {
+    console.warn('persistentLocalCache no disponible, usando Firestore sin caché:', e.message);
+    db = getFirestore(app);
+}
 const auth = getAuth(app);
 
 let currentUser = null;
