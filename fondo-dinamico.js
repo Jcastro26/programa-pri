@@ -255,6 +255,9 @@
         .footer-industrial button {
             border-radius: 0 !important;
         }
+        .footer-nav-list a:hover {
+            color: #FF5E00 !important;
+        }
     `;
     document.head.appendChild(css);
 
