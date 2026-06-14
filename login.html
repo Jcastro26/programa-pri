@@ -144,6 +144,10 @@
                         </select>
                     </div>
                     <div class="field-group">
+                        <label>Número de cédula o TI *</label>
+                        <input type="text" id="reg-cedula" placeholder="Ej: 1087122753 (solo números)">
+                    </div>
+                    <div class="field-group">
                         <label>Colegio / Institución *</label>
                         <input type="text" id="reg-colegio" placeholder="Nombre del colegio">
                     </div>
@@ -305,6 +309,7 @@
                 const cred = await createUserWithEmailAndPassword(auth, email, pass);
                 const datos = {
                     uid: cred.user.uid, nombre, correo: email, rol, fotoUrl,
+                    cedula: document.getElementById('reg-cedula').value.trim().replace(/\D/g,''),
                     colegio: document.getElementById('reg-colegio').value.trim(),
                     grado: document.getElementById('reg-grado').value,
                     estrato: document.getElementById('reg-estrato').value,

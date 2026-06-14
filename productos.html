@@ -83,6 +83,18 @@
         /* LOCK OVERLAY para visitante */
         .prod-lock { position: absolute; inset: 0; background: rgba(2,26,54,0.6); backdrop-filter: blur(2px); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 1.5rem; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
         .prod-card:hover .prod-lock { opacity: 1; }
+        /* WATERMARK no disponible */
+        .prod-no-disponible { position:absolute;inset:0;background:rgba(2,18,38,0.82);backdrop-filter:blur(4px);z-index:10;display:flex;align-items:center;justify-content:center;border-radius:inherit; }
+        .prod-nd-stamp { font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:4px;color:rgba(239,68,68,0.9);border:2px solid rgba(239,68,68,0.55);padding:.45rem 1.2rem;transform:rotate(-18deg);text-shadow:0 0 16px rgba(239,68,68,0.4);box-shadow:0 0 24px rgba(239,68,68,0.08);white-space:nowrap; }
+        /* ADMIN panel inline */
+        .admin-prod-panel { background:rgba(255,94,0,0.04);border:1.5px solid rgba(255,94,0,0.2);padding:1.5rem 2rem;margin:0 2rem 2rem; }
+        .admin-prod-panel h3 { font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,94,0,0.9);margin-bottom:1rem; }
+        .admin-prod-field { display:flex;flex-direction:column;gap:.3rem;margin-bottom:.75rem; }
+        .admin-prod-field label { font-family:'Montserrat',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(240,244,248,0.35); }
+        .admin-prod-field input,.admin-prod-field textarea { background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:#f0f4f8;font-family:'Lora',serif;font-size:.85rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box; }
+        .admin-prod-field input:focus,.admin-prod-field textarea:focus { border-color:var(--naranja); }
+        .admin-prod-grid { display:grid;grid-template-columns:80px 1fr 120px;gap:.75rem; }
+        .btn-admin-save { font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;padding:.65rem 1.4rem;cursor:pointer;margin-top:.5rem; }
         .lock-msg { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(240,244,248,0.7); text-align: center; }
 
         .btn-canjear { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; padding: 0.65rem 1.2rem; cursor: pointer; transition: background 0.2s ease, transform 0.15s ease; white-space: nowrap; }
@@ -210,115 +222,29 @@
         <p id="hero-sub">Canjea los puntos acumulados en pre-tests, talleres y capacitaciones por material académico, herramientas y premios reales.</p>
     </div>
 
+    <!-- PANEL ADMIN: Agregar producto (visible solo para admin) -->
+    <div id="admin-prod-panel" class="admin-prod-panel" style="display:none;">
+        <h3>➕ Agregar Nuevo Producto</h3>
+        <div class="admin-prod-grid">
+            <div class="admin-prod-field"><label>Emoji</label><input type="text" id="ap-emoji" placeholder="🎁" maxlength="4"></div>
+            <div class="admin-prod-field"><label>Nombre del Producto</label><input type="text" id="ap-nombre" placeholder="Ej: Kit Escolar Tumaco"></div>
+            <div class="admin-prod-field"><label>Puntos</label><input type="number" id="ap-pts" placeholder="500" min="1"></div>
+        </div>
+        <div class="admin-prod-field"><label>Badge / Etiqueta</label><input type="text" id="ap-badge" placeholder="Ej: Premio Principal"></div>
+        <div class="admin-prod-field"><label>Descripción</label><textarea id="ap-desc" rows="2" placeholder="Descripción para los estudiantes…"></textarea></div>
+        <div class="admin-prod-field">
+            <label>Imagen del Producto <span style="font-weight:400;opacity:.5;">(opcional, max ~300 KB)</span></label>
+            <input type="file" id="ap-img" accept="image/*" onchange="previsualizarImgProductos(this)" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#e8f0f8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:4px;padding:.4rem;width:100%;cursor:pointer;">
+            <img id="ap-img-preview" style="display:none;width:90px;height:90px;object-fit:cover;border-radius:6px;margin-top:.5rem;border:1px solid rgba(255,255,255,0.12);" alt="Preview">
+        </div>
+        <button class="btn-admin-save" onclick="agregarProductoDesdeProductosHtml()">💾 Guardar Producto</button>
+        <span id="ap-status" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#86efac;margin-left:1rem;display:none;"></span>
+    </div>
+
     <!-- PRODUCTOS -->
     <section class="productos-section">
         <div class="grid-productos" id="grid-productos">
-
-            <div class="prod-card" data-nombre="Mercado Familiar $200.000" data-costo="800" data-badge="badge-verde" data-badge-txt="Premio Principal">
-                <div class="prod-img"><div class="prod-img-icon">🛒</div></div>
-                <div class="prod-body">
-                    <span class="prod-badge badge-verde">Premio Principal</span>
-                    <h3>Mercado Familiar $200.000</h3>
-                    <p>Vale redimible en supermercado local por $200.000 pesos. El premio más valorado por las familias del programa.</p>
-                </div>
-                <div class="prod-footer">
-                    <div class="prod-price">800 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Mercado Familiar $200.000" data-costo="800">Canjear</button>
-                </div>
-            </div>
-
-            <!-- ── VITRINA LIBRETAS REALES ── -->
-            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
-                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
-                    <span class="prod-badge badge-gold">Edición Limitada</span>
-                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Libretas Oficiales PRI</h3>
-                    <p style="font-size:0.82rem;opacity:0.8">Diseños exclusivos impresos, papel cuadriculado, marca de agua institucional. ¡Colecciónalas!</p>
-                </div>
-                <div class="libretas-vitrina">
-                    <div class="libreta-preview">
-                        <img src="libretas/libreta_01_morro.svg" alt="Libreta El Morro" loading="lazy"/>
-                        <span class="lib-label">El Morro</span>
-                    </div>
-                    <div class="libreta-preview">
-                        <img src="libretas/libreta_05_atardecer.svg" alt="Libreta Atardecer" loading="lazy"/>
-                        <span class="lib-label">Atardecer</span>
-                    </div>
-                </div>
-                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
-                    <div class="prod-price">200 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Libreta Corporativa PRI" data-costo="200">Canjear puntos</button>
-                    <a href="tienda.html" class="btn-tienda-libreta">
-                        <span class="btn-pulse-ring"></span>
-                        🛒 Ver en Tienda PRI
-                    </a>
-                </div>
-            </div>
-
-            <div class="prod-card" data-nombre="Kit de Geometría Descriptiva" data-costo="350">
-                <div class="prod-img"><div class="prod-img-icon">📐</div></div>
-                <div class="prod-body">
-                    <span class="prod-badge badge-gold">Recompensa Académica</span>
-                    <h3>Kit de Geometría Descriptiva</h3>
-                    <p>Escuadras profesionales, compás micrométrico y portaminas industrial calibrado para planos de ingeniería.</p>
-                </div>
-                <div class="prod-footer">
-                    <div class="prod-price">350 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Kit de Geometría Descriptiva" data-costo="350">Canjear</button>
-                </div>
-            </div>
-
-            <div class="prod-card" data-nombre="Formulario Físico-Matemático PRI" data-costo="150">
-                <div class="prod-img"><div class="prod-img-icon">📗</div></div>
-                <div class="prod-body">
-                    <span class="prod-badge badge-gold">Material Didáctico</span>
-                    <h3>Formulario Físico-Matemático PRI</h3>
-                    <p>Compendio impreso de bolsillo: leyes de física, identidades trigonométricas y cálculo vectorial rápido.</p>
-                </div>
-                <div class="prod-footer">
-                    <div class="prod-price">150 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Formulario Físico-Matemático PRI" data-costo="150">Canjear</button>
-                </div>
-            </div>
-
-            <div class="prod-card" data-nombre="Kit de Laboratorio Básico" data-costo="400">
-                <div class="prod-img"><div class="prod-img-icon">🧪</div></div>
-                <div class="prod-body">
-                    <span class="prod-badge badge-verde">Kit Lab</span>
-                    <h3>Kit de Laboratorio Básico</h3>
-                    <p>Materiales para experimentos de física y química elemental: tubos de ensayo, soporte, reactivos seguros.</p>
-                </div>
-                <div class="prod-footer">
-                    <div class="prod-price">400 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Kit de Laboratorio Básico" data-costo="400">Canjear</button>
-                </div>
-            </div>
-
-            <div class="prod-card" data-nombre="Licencia Simulador Técnico Integral" data-costo="500">
-                <div class="prod-img"><div class="prod-img-icon">💻</div></div>
-                <div class="prod-body">
-                    <span class="prod-badge badge-teal">Acceso Premium</span>
-                    <h3>Licencia Simulador Técnico Integral</h3>
-                    <p>Suscripción trimestral al motor de cálculo numérico interactivo y simulacros tipo examen de admisión.</p>
-                </div>
-                <div class="prod-footer">
-                    <div class="prod-price">500 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Licencia Simulador Técnico Integral" data-costo="500">Canjear</button>
-                </div>
-            </div>
-
-            <div class="prod-card" data-nombre="Sesión de Mentoría Personal (1h)" data-costo="600">
-                <div class="prod-img"><div class="prod-img-icon">🤝</div></div>
-                <div class="prod-body">
-                    <span class="prod-badge badge-teal">Mentoría</span>
-                    <h3>Sesión de Mentoría Personal (1h)</h3>
-                    <p>Una hora personalizada con un mentor universitario del programa para orientación ICFES o vocacional.</p>
-                </div>
-                <div class="prod-footer">
-                    <div class="prod-price">600 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Sesión de Mentoría Personal (1h)" data-costo="600">Canjear</button>
-                </div>
-            </div>
-
+        <!-- Cards cargadas dinámicamente desde Firestore -->
         </div>
     </section>
 
@@ -392,6 +318,7 @@ import {
     getFirestore, doc, getDoc, updateDoc, collection,
     addDoc, getDocs, query, where, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
@@ -403,10 +330,151 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db  = getFirestore(app);
+const auth = getAuth(app);
 
 const sesionRaw = localStorage.getItem('usuario_sesion_activa');
 let usuario = sesionRaw ? JSON.parse(sesionRaw) : null;
+
+// ── CARGAR PRODUCTOS DESDE FIRESTORE ─────────────────────────
+async function cargarProductos() {
+    const grid = document.getElementById('grid-productos');
+    grid.innerHTML = '<div style="color:rgba(255,255,255,0.35);font-family:Montserrat,sans-serif;font-size:.8rem;padding:2rem;text-align:center;grid-column:1/-1;">Cargando productos…</div>';
+
+    try {
+        const snap = await getDocs(collection(db, 'productos'));
+        if (snap.empty) {
+            grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);text-align:center;padding:2rem;grid-column:1/-1;">No hay productos disponibles.</p>';
+            return;
+        }
+        const prods = [];
+        snap.forEach(d => prods.push({ id: d.id, ...d.data() }));
+        prods.sort((a, b) => (a.orden || 99) - (b.orden || 99));
+
+        const renderCard = p => {
+            const disp = p.disponible !== false;
+            const badgeClass = p.badgeClass || 'badge-gold';
+            const watermark = !disp ? `
+                <div class="prod-no-disponible">
+                    <div class="prod-nd-stamp">NO DISPONIBLE</div>
+                </div>` : '';
+            const btnHtml = disp
+                ? `<button class="btn-canjear" data-nombre="${p.nombre}" data-costo="${p.pts}">Canjear</button>`
+                : '';
+            const imgHtml = p.imagen
+                ? `<img src="${p.imagen}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" loading="lazy">`
+                : `<div class="prod-img-icon">${p.emoji || '🎁'}</div>`;
+            return `
+                <div class="prod-card" data-nombre="${p.nombre}" data-costo="${p.pts}" style="position:relative;${!disp?'opacity:0.85;':''}">
+                    ${watermark}
+                    <div class="prod-img">${imgHtml}</div>
+                    <div class="prod-body">
+                        <span class="prod-badge ${badgeClass}">${p.badge || ''}</span>
+                        <h3>${p.nombre}</h3>
+                        <p>${p.descripcion || ''}</p>
+                    </div>
+                    <div class="prod-footer">
+                        <div class="prod-price">${p.pts} <sup>PTS</sup></div>
+                        ${btnHtml}
+                    </div>
+                </div>`;
+        };
+
+        // Card especial de vitrina de libretas (siempre visible, posición 2)
+        const libretasCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-gold">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Libretas Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Diseños exclusivos impresos, papel cuadriculado, marca de agua institucional. ¡Colecciónalas!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="libretas/libreta_01_morro.svg" alt="Libreta El Morro" loading="lazy"/>
+                        <span class="lib-label">El Morro</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="libretas/libreta_05_atardecer.svg" alt="Libreta Atardecer" loading="lazy"/>
+                        <span class="lib-label">Atardecer</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">200 <sup>PTS</sup></div>
+                    <button class="btn-canjear" data-nombre="Libreta Corporativa PRI" data-costo="200">Canjear puntos</button>
+                    <a href="tienda.html" class="btn-tienda-libreta">
+                        <span class="btn-pulse-ring"></span>
+                        🛒 Ver en Tienda PRI
+                    </a>
+                </div>
+            </div>`;
+
+        // Card especial de vitrina de tazas (siempre visible, posición 4)
+        const tazasCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-teal">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Tazas Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Diseños exclusivos con motivos del Pacífico y la UNAL. Perfectas para el café del estudio. ¡Colecciónalas!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="tazas/taza_01.svg" alt="Taza PRI 01" loading="lazy"/>
+                        <span class="lib-label">Diseño 01</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="tazas/taza_02.svg" alt="Taza PRI 02" loading="lazy"/>
+                        <span class="lib-label">Diseño 02</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">250 <sup>PTS</sup></div>
+                    <button class="btn-canjear" data-nombre="Taza Oficial PRI" data-costo="250">Canjear puntos</button>
+                    <a href="tienda.html" class="btn-tienda-libreta">
+                        <span class="btn-pulse-ring"></span>
+                        ☕ Ver en Tienda PRI
+                    </a>
+                </div>
+            </div>`;
+
+        // Card especial de vitrina de totebags (siempre visible, posición 7)
+        const totebagsCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-verde">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Totebags Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Bolsas de tela con diseños únicos del Pacífico. Resistentes, ecológicas y con identidad PRI. ¡Lleva el programa contigo!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="totebags/totebag_01.svg" alt="Totebag PRI 01" loading="lazy"/>
+                        <span class="lib-label">Diseño 01</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="totebags/totebag_02.svg" alt="Totebag PRI 02" loading="lazy"/>
+                        <span class="lib-label">Diseño 02</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">300 <sup>PTS</sup></div>
+                    <button class="btn-canjear" data-nombre="Totebag Oficial PRI" data-costo="300">Canjear puntos</button>
+                    <a href="tienda.html" class="btn-tienda-libreta">
+                        <span class="btn-pulse-ring"></span>
+                        🛍️ Ver en Tienda PRI
+                    </a>
+                </div>
+            </div>`;
+
+        // Insertar: libretas en pos 2, tazas en pos 4, totebags en pos 7
+        const cards = prods.map(renderCard);
+        cards.splice(1, 0, libretasCard);
+        cards.splice(4, 0, tazasCard);
+        cards.splice(7, 0, totebagsCard);
+        grid.innerHTML = cards.join('');
+    } catch (e) {
+        grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);text-align:center;padding:2rem;grid-column:1/-1;">Error al cargar productos.</p>';
+        console.error('cargarProductos:', e);
+    }
+}
 
 // ── TOAST ────────────────────────────────────────────────
 function toast(titulo, msg, icono = '✅', tipo = 'success') {
@@ -428,34 +496,97 @@ window.mostrarInfo = function(titulo, msg, icono = 'ℹ️') {
 };
 window.cerrarModalInfo = function() { document.getElementById('modal-info').classList.remove('open'); };
 
-// ── MODO VISITANTE ────────────────────────────────────────────────
-if (!usuario) {
-    document.getElementById('banner-visitante').style.display = 'flex';
-    document.getElementById('header-saldo-area').innerHTML = `<a href="login.html" class="btn-unirse" style="font-size:0.6rem;padding:0.5rem 1rem;">Iniciar Sesión</a>`;
+// ── INICIAR: mostrar panel admin, cargar productos, luego configurar sesión ─────
+const esAdmin = usuario?.uid === 'admin-jcastrogo' || usuario?.rol === 'admin';
+if (esAdmin) document.getElementById('admin-prod-panel').style.display = 'block';
 
-    // Botones de ver solo (no canjeables)
-    document.querySelectorAll('.btn-canjear').forEach(btn => {
-        const nuevo = document.createElement('a');
-        nuevo.href = 'login.html';
-        nuevo.className = 'btn-ver-solo';
-        nuevo.textContent = 'Regístrate para ganar';
-        btn.replaceWith(nuevo);
-    });
-} else {
-    // ── MODO ESTUDIANTE (o cualquier rol con sesión) ────────────────────────────────────────────────
-    // Refrescar desde Firestore
-    if (usuario.uid && usuario.uid !== 'admin-jcastrogo') {
-        getDoc(doc(db, "usuarios", usuario.uid)).then(snap => {
-            if (snap.exists()) {
-                usuario = { ...usuario, ...snap.data() };
-                localStorage.setItem('usuario_sesion_activa', JSON.stringify(usuario));
-            }
-            iniciarVistaEstudiante();
-        }).catch(() => iniciarVistaEstudiante());
+signInAnonymously(auth).catch(() => {}).finally(() => { cargarProductos().then(() => {
+    if (!usuario) {
+        // ── MODO VISITANTE ──────────────────────────────────────────
+        document.getElementById('banner-visitante').style.display = 'flex';
+        document.getElementById('header-saldo-area').innerHTML = `<a href="login.html" class="btn-unirse" style="font-size:0.6rem;padding:0.5rem 1rem;">Iniciar Sesión</a>`;
+        document.querySelectorAll('.btn-canjear').forEach(btn => {
+            const nuevo = document.createElement('a');
+            nuevo.href = 'login.html';
+            nuevo.className = 'btn-ver-solo';
+            nuevo.textContent = 'Regístrate para ganar';
+            btn.replaceWith(nuevo);
+        });
     } else {
-        iniciarVistaEstudiante();
+        // ── MODO SESIÓN (estudiante / admin) ───────────────────────
+        if (usuario.uid && usuario.uid !== 'admin-jcastrogo') {
+            getDoc(doc(db, "usuarios", usuario.uid)).then(snap => {
+                if (snap.exists()) {
+                    usuario = { ...usuario, ...snap.data() };
+                    localStorage.setItem('usuario_sesion_activa', JSON.stringify(usuario));
+                }
+                iniciarVistaEstudiante();
+            }).catch(() => iniciarVistaEstudiante());
+        } else {
+            iniciarVistaEstudiante();
+        }
     }
-}
+}); }); // cargarProductos / signInAnonymously
+
+// ── AGREGAR PRODUCTO DESDE PRODUCTOS.HTML (solo admin) ─────────────────
+// Preview de imagen en productos.html
+window.previsualizarImgProductos = function(input) {
+    const file = input.files[0];
+    const prev = document.getElementById('ap-img-preview');
+    if (!file) { prev.style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+    reader.readAsDataURL(file);
+};
+
+window.agregarProductoDesdeProductosHtml = async function() {
+    const emoji   = document.getElementById('ap-emoji').value.trim() || '🎁';
+    const nombre  = document.getElementById('ap-nombre').value.trim();
+    const pts     = parseInt(document.getElementById('ap-pts').value);
+    const badge   = document.getElementById('ap-badge').value.trim();
+    const desc    = document.getElementById('ap-desc').value.trim();
+
+    if (!nombre || !pts) {
+        toast('Campos requeridos', 'Nombre y puntos son obligatorios.', '⚠️', 'warn');
+        return;
+    }
+
+    // Leer imagen como base64 si se seleccionó
+    let imagen = '';
+    const imgInput = document.getElementById('ap-img');
+    if (imgInput.files[0]) {
+        imagen = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload  = e => resolve(e.target.result);
+            reader.onerror = () => reject(new Error('No se pudo leer la imagen'));
+            reader.readAsDataURL(imgInput.files[0]);
+        });
+    }
+
+    const status = document.getElementById('ap-status');
+    status.textContent = 'Guardando…'; status.style.display = 'inline';
+
+    try {
+        await addDoc(collection(db, 'productos'), {
+            emoji, nombre, pts, badge,
+            badgeClass: 'badge-gold',
+            descripcion: desc,
+            disponible: true,
+            imagen,
+            orden: 99
+        });
+        status.textContent = '✅ Producto agregado';
+        ['ap-emoji','ap-nombre','ap-pts','ap-badge','ap-desc'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        imgInput.value = '';
+        document.getElementById('ap-img-preview').style.display = 'none';
+        await cargarProductos();
+        setTimeout(() => { status.style.display = 'none'; }, 3000);
+    } catch(err) {
+        status.textContent = '❌ Error: ' + err.message;
+    }
+};
 
 function iniciarVistaEstudiante() {
     const pts = usuario.puntos || 0;

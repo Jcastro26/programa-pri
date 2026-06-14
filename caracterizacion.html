@@ -312,22 +312,25 @@
                 </div>
             </div>
 
-            <div class="p-6 bg-slate-950/60 border border-slate-800 rounded-2xl space-y-4">
-                <h3 class="text-xs font-black text-orange-400 uppercase tracking-widest flex items-center gap-2">
+            <!-- Separador visual -->
+            <div style="border-top:1px solid rgba(255,94,0,0.15);margin-top:1rem;"></div>
+
+            <div style="background:rgba(255,94,0,0.05);border:1.5px solid rgba(255,94,0,0.25);border-radius:12px;padding:1.5rem 1.75rem;">
+                <h3 class="text-xs font-black text-orange-400 uppercase tracking-widest flex items-center gap-2" style="margin-bottom:0.75rem;">
                     🔒 29. Acuerdo de Confidencialidad y Uso de Imagen (Tratamiento Ley 1581)
                 </h3>
-                <p class="text-xs text-slate-400 leading-relaxed">
+                <p class="text-xs text-slate-400 leading-relaxed" style="margin-bottom:1rem;">
                     Al enviar este formulario, manifiesto mi consentimiento explícito e informado para que el <b>PROGRAMA-PRI</b> realice el tratamiento de mis datos personales, métricas de progreso académico y registros multimedia (fotografía/video de actividades formativas). Entiendo que mis datos de avance serán estudiados con fines científicos, académicos y de visibilidad institucional pública para el desarrollo regional del Pacífico.
                 </p>
-                <div class="flex items-start gap-3">
-                    <input type="checkbox" id="p29_check" required class="mt-1 w-4 h-4 accent-orange-500 rounded border-slate-700">
-                    <label for="p29_check" class="text-xs text-slate-300 font-bold cursor-pointer selection:bg-transparent">
+                <div style="display:flex;align-items:flex-start;gap:0.75rem;background:rgba(255,255,255,0.04);border-radius:8px;padding:0.9rem 1rem;">
+                    <input type="checkbox" id="p29_check" required class="mt-0.5 w-4 h-4 accent-orange-500" style="flex-shrink:0;margin-top:2px;">
+                    <label for="p29_check" class="text-xs text-slate-200 font-bold cursor-pointer" style="line-height:1.6;">
                         Acepto los términos de confidencialidad, compartición de mi progreso y uso de imagen dentro del programa.
                     </label>
                 </div>
             </div>
 
-            <div class="pt-4 flex items-center justify-between">
+            <div class="pt-2 flex items-center justify-between">
                 <a href="dashboard.html" class="text-xs text-slate-400 hover:text-white transition-all">← Cancelar y salir</a>
                 <button type="submit" id="btn-submit" class="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-amber-500 text-white font-black px-8 py-3.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-orange-600/10 transition-all active:scale-95">
                     💾 Consolidar Ficha y Reclamar +250 PTS
@@ -443,7 +446,7 @@
         });
     </script>
 
-<footer class="footer-industrial" style="margin-top:2rem;">
+<footer class="footer-industrial" style="margin-top:2rem;width:100%;align-self:stretch;">
     <div class="footer-container">
         <div class="footer-brand-panel">
             <h2 class="massive-footer-text">PROGRAMA<span class="outline-text-footer">-PRI</span></h2>

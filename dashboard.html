@@ -115,6 +115,10 @@
         .foro-messages{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:0.6rem;padding:1rem;background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);margin-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--naranja) transparent;}
         .foro-messages::-webkit-scrollbar{width:4px;}
         .foro-messages::-webkit-scrollbar-thumb{background:var(--naranja);}
+        #ti-lista::-webkit-scrollbar{width:4px;}
+        #ti-lista::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);border-radius:2px;}
+        #ti-lista::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.4);border-radius:2px;}
+        #ti-lista::-webkit-scrollbar-thumb:hover{background:rgba(56,189,248,0.7);}
         .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(255,255,255,0.1);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;}
         .msg-item.mine{border-left-color:var(--naranja);}
         .msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;color:var(--azul-deep);overflow:hidden;}
@@ -673,6 +677,48 @@
             </div>
         </div>
 
+        <!-- PANEL: GESTIÓN TIENDA (ADMIN) -->
+        <div class="panel" id="panel-gestion-tienda">
+            <p class="panel-title">Tienda PRI</p>
+            <h2 class="panel-heading">Gestión de <em>Productos</em></h2>
+            <p class="panel-desc">Agrega, edita, activa o bloquea productos. Los bloqueados muestran marca de agua "No disponible" en la tienda.</p>
+            <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+                <a href="productos.html" target="_blank" class="btn-add" style="text-decoration:none;font-size:.6rem;padding:.4rem .9rem;background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);">🛍️ Ver Catálogo de Productos</a>
+            </div>
+
+            <!-- Formulario agregar/editar -->
+            <div class="section-box" style="border:1.5px solid rgba(255,94,0,0.25);background:rgba(255,94,0,0.03);overflow:visible;">
+                <p class="section-box-title">➕ Agregar / Editar Producto</p>
+                <div class="form-add" style="grid-template-columns:1fr 1fr 1fr;">
+                    <div class="fa-group"><label>Emoji</label><input type="text" id="prod-emoji" placeholder="🎁" maxlength="4" style="font-size:1.2rem;"></div>
+                    <div class="fa-group" style="grid-column:span 2;"><label>Nombre del producto</label><input type="text" id="prod-nombre" placeholder="Ej: Mercado Familiar $200.000"></div>
+                    <div class="fa-group"><label>Puntos (PTS)</label><input type="number" id="prod-pts" placeholder="800" min="1"></div>
+                    <div class="fa-group"><label>Badge / etiqueta</label><input type="text" id="prod-badge" placeholder="Ej: Premio Principal"></div>
+                    <div class="fa-group" style="grid-column:span 3;"><label>Descripción</label><textarea id="prod-desc" placeholder="Descripción del premio para los estudiantes…" style="min-height:60px;"></textarea></div>
+                    <div class="fa-group" style="grid-column:span 2;">
+                        <label>Imagen <span style="font-weight:400;opacity:.5;">(opcional, max ~300 KB)</span></label>
+                        <input type="file" id="prod-img" accept="image/*" onchange="previsualizarImgAdmin(this)" style="font-family:var(--fuente-t);font-size:.6rem;color:#e8f0f8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:.4rem;width:100%;cursor:pointer;">
+                    </div>
+                    <div class="fa-group" style="display:flex;align-items:center;">
+                        <img id="prod-img-preview" style="display:none;width:72px;height:72px;object-fit:cover;border-radius:6px;border:1px solid rgba(255,255,255,0.1);" alt="Preview">
+                    </div>
+                </div>
+                <p id="prod-edit-label" style="font-family:var(--fuente-t);font-size:0.6rem;color:#fbbf24;margin:.4rem 0;display:none;">✏️ Editando producto existente</p>
+                <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem;">
+                    <button class="btn-add" onclick="guardarProductoAdmin()">💾 Guardar Producto</button>
+                    <button class="btn-add" style="background:rgba(255,255,255,0.06);" onclick="cancelarEdicionProducto()">✕ Cancelar</button>
+                </div>
+            </div>
+
+            <!-- Lista de productos -->
+            <div class="section-box" style="overflow:visible;">
+                <p class="section-box-title">🛒 Productos del Catálogo</p>
+                <div id="gestion-tienda-lista" style="max-height:65vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(255,94,0,0.3) rgba(255,255,255,0.05);">
+                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:24px;">Cargando…</p>
+                </div>
+            </div>
+        </div>
+
         <!-- PANEL: ADMIN AGREGAR CONTENIDO -->
         <div class="panel" id="panel-admin-add">
             <p class="panel-title">Gestión de Contenido</p>
@@ -753,7 +799,7 @@
                 </div>
                 <p id="ti-edit-label" style="font-family:var(--fuente-t);font-size:0.6rem;color:#fbbf24;margin-top:.4rem;display:none;">✏️ Editando taller existente</p>
             </div>
-            <div class="section-box">
+            <div class="section-box" style="overflow:visible;">
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
                     <p class="section-box-title" style="margin:0;">📋 Talleres en Firebase</p>
                     <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
@@ -768,8 +814,8 @@
                         </select>
                     </div>
                 </div>
-                <div id="ti-lista" style="display:flex;flex-direction:column;gap:.4rem;max-height:420px;overflow-y:auto;">
-                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:1.5rem;">Cargando…</p>
+                <div id="ti-lista" style="max-height:62vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,0.35) rgba(255,255,255,0.05);">
+                    <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:24px;">Cargando…</p>
                 </div>
             </div>
 
@@ -861,6 +907,7 @@
                         <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">Buscar (nombre, cédula o email)</label>
                         <input type="text" id="ri-buscar" oninput="renderResultadosICFES()" placeholder="Buscar..." style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;width:200px;">
                     </div>
+                    <button class="btn-add secondary" style="height:2rem;font-size:.65rem;" onclick="cargarResultadosICFES()">🔄 Recargar</button>
                     <button class="btn-add" style="height:2rem;font-size:.65rem;" onclick="exportarResultadosCSV()">📥 Exportar CSV</button>
                 </div>
             </div>
@@ -1145,6 +1192,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
     getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
     collection, onSnapshot, addDoc, getDocs, setDoc, deleteDoc,
@@ -1179,6 +1227,7 @@ const app = initializeApp(firebaseConfig);
 const db = initializeFirestore(app, {
     localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
 });
+const auth = getAuth(app);
 
 let currentUser = null;
 let ratingDocId = null, ratingSeleccionado = 0;
@@ -1240,6 +1289,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const sesion = localStorage.getItem('usuario_sesion_activa');
     if (!sesion) { window.location.href = "login.html"; return; }
     currentUser = JSON.parse(sesion);
+
+    // ── Garantizar que request.auth != null en reglas de Firestore ──────────
+    // El login del admin usa bypass hardcodeado (sin Firebase Auth).
+    // Si no hay sesión de Firebase Auth, iniciamos sesión anónima para
+    // que request.auth no sea null y las reglas de Firestore funcionen.
+    await new Promise(resolve => {
+        const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+            unsub();
+            if (!firebaseUser) {
+                try { await signInAnonymously(auth); } catch(e) { console.warn('signInAnonymously:', e.message); }
+            }
+            resolve();
+        });
+    });
 
     // Verificar timeout de 4 horas (excepto admin por email o rol)
     const SESSION_MAX_MS = 4 * 60 * 60 * 1000; // 4 horas
@@ -1334,8 +1397,9 @@ function construirMenu(rol) {
             {label:'📚 Talleres ICFES', fn:()=>{activarPanel('panel-talleres-icfes');cargarTalleresAdmin();}},
             {label:'📊 Resultados ICFES', fn:()=>{activarPanel('panel-resultados-icfes');cargarResultadosICFES();}},
             {label:'🛡️ Retos', fn:()=>{activarPanel('panel-retos-admin');cargarRetosAdmin();}},
-            {label:'🎨 Catálogo', fn:()=>window.open('catalogo.html','_blank')},
+            {label:'🎨 Catálogo', fn:()=>{ localStorage.setItem('_pri_back','dashboard.html'); window.location.href='catalogo.html'; }},
             {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-admin');cargarPremiosAdmin();}},
+            {label:'🛒 Tienda', fn:()=>{activarPanel('panel-gestion-tienda');cargarGestionTienda();}},
             {label:'➕ Contenido', fn:()=>activarPanel('panel-admin-add')},
             {label:'💬 Foro Global', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
             {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
@@ -1949,6 +2013,7 @@ function cargarForo() {
         const cont = document.getElementById('forum-messages');
         if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;">Sé el primero en escribir.</p>'; return; }
         cont.innerHTML = '';
+
         snap.forEach(d => {
             const m = d.data();
             if (m.privado) return; // no mostrar mensajes privados en el foro público
@@ -1965,6 +2030,12 @@ function cargarForo() {
             cont.appendChild(div);
         });
         cont.scrollTop = cont.scrollHeight;
+    }, err => {
+        const cont = document.getElementById('forum-messages');
+        cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#fca5a5;text-align:center;margin:auto;padding:2rem;">
+            ❌ ${err.message.includes('permission') ? 'Sin permiso para leer el foro — actualiza las reglas de Firestore.' : err.message}
+        </p>`;
+        console.error('cargarForo:', err);
     });
 }
 
@@ -2017,25 +2088,32 @@ window.enviarMensajeForo = async function() {
     const inp = document.getElementById('forum-input');
     const msg = inp.value.trim(); if (!msg) return;
     inp.value = '';
-    if (chatPrivadoCon) {
-        const chatId = [currentUser.uid, chatPrivadoCon.uid].sort().join('_');
-        await setDoc(doc(db,"chats_privados",chatId), {
-            participantes:[currentUser.uid, chatPrivadoCon.uid],
-            ultimoAutorUid: currentUser.uid,  // desnormalizado para badge sin N+1
-            ultimoMensaje: msg.slice(0,80),
-            ultimoTimestamp: serverTimestamp()
-        }, {merge:true});
-        await addDoc(collection(db,"chats_privados",chatId,"mensajes"), {
-            autor: currentUser.nombre||'Anónimo', autorUid: currentUser.uid,
-            autorFoto: currentUser.fotoUrl||'',
-            mensaje: msg, timestamp: serverTimestamp()
-        });
-    } else {
-        await addDoc(collection(db,"foro_comunitario"), {
-            autor: currentUser.nombre||'Anónimo', autorUid: currentUser.uid,
-            autorFoto: currentUser.fotoUrl||'',
-            mensaje: msg, timestamp: serverTimestamp()
-        });
+    try {
+        if (chatPrivadoCon) {
+            const chatId = [currentUser.uid, chatPrivadoCon.uid].sort().join('_');
+            await setDoc(doc(db,"chats_privados",chatId), {
+                participantes:[currentUser.uid, chatPrivadoCon.uid],
+                ultimoAutorUid: currentUser.uid,
+                ultimoAutorNombre: currentUser.nombre || 'Usuario',
+                ultimoMensaje: msg.slice(0,80),
+                ultimoTimestamp: serverTimestamp()
+            }, {merge:true});
+            await addDoc(collection(db,"chats_privados",chatId,"mensajes"), {
+                autor: currentUser.nombre||'Anónimo', autorUid: currentUser.uid,
+                autorFoto: currentUser.fotoUrl||'',
+                mensaje: msg, timestamp: serverTimestamp()
+            });
+        } else {
+            await addDoc(collection(db,"foro_comunitario"), {
+                autor: currentUser.nombre||'Anónimo', autorUid: currentUser.uid,
+                autorFoto: currentUser.fotoUrl||'',
+                mensaje: msg, timestamp: serverTimestamp()
+            });
+        }
+    } catch(err) {
+        inp.value = msg; // restaurar mensaje
+        notif('Error al enviar', err.message.includes('permission') ? 'Sin permiso — revisa las reglas de Firestore.' : err.message, '❌', 'error');
+        console.error('enviarMensajeForo:', err);
     }
 };
 
@@ -2047,6 +2125,7 @@ function cargarForoAdmin() {
     _unsubForoAdmin = onSnapshot(q, snap => {
         const cont = document.getElementById('forum-messages-admin');
         cont.innerHTML = '';
+        if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;margin:auto;padding:2rem;">Sé el primero en escribir.</p>'; return; }
         snap.forEach(d => {
             const m = d.data();
             if (m.privado) return;
@@ -2063,6 +2142,12 @@ function cargarForoAdmin() {
             cont.appendChild(divAdm);
         });
         cont.scrollTop = cont.scrollHeight;
+    }, err => {
+        const cont = document.getElementById('forum-messages-admin');
+        cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#fca5a5;text-align:center;margin:auto;padding:2rem;">
+            ❌ Error al cargar el foro: ${err.message.includes('permission') ? 'Sin permiso — actualiza las reglas de Firestore.' : err.message}
+        </p>`;
+        console.error('cargarForoAdmin:', err);
     });
 }
 
@@ -2090,26 +2175,33 @@ window.enviarMensajeAdmin = async function() {
     const msg = inp.value.trim(); if (!msg) return;
     inp.value = '';
     const privUid = inp.dataset.privUid;
-    if (privUid) {
-        const chatId = [currentUser.uid, privUid].sort().join('_');
-        await setDoc(doc(db,"chats_privados",chatId),{
-            participantes:[currentUser.uid,privUid],
-            ultimoAutorUid: currentUser.uid,
-            ultimoMensaje: msg.slice(0,80),
-            ultimoTimestamp: serverTimestamp()
-        },{merge:true});
-        await addDoc(collection(db,"chats_privados",chatId,"mensajes"),{
-            autor:currentUser.nombre||'🛡️ Admin PRI', autorUid:currentUser.uid,
-            mensaje:msg, timestamp:serverTimestamp()
-        });
-        notif('Mensaje privado enviado','','💬','info');
-        window.cancelarReplyAdmin();
-    } else {
-        await addDoc(collection(db,"foro_comunitario"),{
-            autor:`🛡️ ${currentUser.nombre||'Admin PRI'}`, autorUid:currentUser.uid,
-            autorFoto: currentUser.fotoUrl||'',
-            mensaje:msg, timestamp:serverTimestamp()
-        });
+    try {
+        if (privUid) {
+            const chatId = [currentUser.uid, privUid].sort().join('_');
+            await setDoc(doc(db,"chats_privados",chatId),{
+                participantes:[currentUser.uid,privUid],
+                ultimoAutorUid: currentUser.uid,
+                ultimoAutorNombre: currentUser.nombre || '🛡️ Admin PRI',
+                ultimoMensaje: msg.slice(0,80),
+                ultimoTimestamp: serverTimestamp()
+            },{merge:true});
+            await addDoc(collection(db,"chats_privados",chatId,"mensajes"),{
+                autor:currentUser.nombre||'🛡️ Admin PRI', autorUid:currentUser.uid,
+                mensaje:msg, timestamp:serverTimestamp()
+            });
+            notif('Mensaje privado enviado','','💬','info');
+            window.cancelarReplyAdmin();
+        } else {
+            await addDoc(collection(db,"foro_comunitario"),{
+                autor:`🛡️ ${currentUser.nombre||'Admin PRI'}`, autorUid:currentUser.uid,
+                autorFoto: currentUser.fotoUrl||'',
+                mensaje:msg, timestamp:serverTimestamp()
+            });
+        }
+    } catch(err) {
+        inp.value = msg;
+        notif('Error al enviar', err.message.includes('permission') ? 'Sin permiso — revisa las reglas de Firestore.' : err.message, '❌', 'error');
+        console.error('enviarMensajeAdmin:', err);
     }
 };
 
@@ -2418,25 +2510,45 @@ const _pct = raw => { if(!raw) return NaN; const s=String(raw).trim(); const m=s
 const _pcolor = p => isNaN(p)?'rgba(240,244,248,.4)':p>=70?'#86efac':p>=40?'#fbbf24':'#fca5a5';
 
 function _extraerEstudiante(r) {
-    const cedula = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula'));
-    const email  = _px(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email');
-    const nombre = _px(r,'nombre_completo','columna_3','Columna 3','NOMBRE COMPLETO','nombre');
-    const fecha  = _px(r,'marca_temporal','_timestamp_envio','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
-    const pts    = _px(r,'Puntuación','puntuacion','PUNTUACION','Puntaje');
-    return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—' };
+    const cedula  = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula'));
+    const email   = _px(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email');
+    const nombre  = _px(r,'nombre_completo','columna_3','Columna 3','NOMBRE COMPLETO','nombre');
+    const fecha   = _px(r,'marca_temporal','_timestamp_envio','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
+    const pts     = _px(r,'Puntuación','puntuacion','PUNTUACION','Puntaje');
+    const tipoId  = _px(r,'tipo_de_identificacion','tipo_de_documento','tipo_id','Tipo de Identificación','TIPO DE IDENTIFICACION') || '';
+    return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—', tipoId };
 }
 
 // Devuelve el área del taller que tiene ese _hoja como título, o el mapeo manual
+const _AREA_KEYWORDS = {
+    'Lectura Crítica':      ['lectura','critica','critico','comprension','comprensión','texto','lector'],
+    'Matemáticas':          ['matematica','matemática','calculo','álgebra','algebra','aritmetica','aritmética','numeracion','numeración'],
+    'Geometría':            ['geometria','geometría','trigonometria','trigonometría','figuras','espacial'],
+    'Ciencias Naturales':   ['ciencias naturales','natural','naturales'],
+    'Biología':             ['biologia','biología','ecologia','ecología','celula','célula','genetica','genética'],
+    'Química':              ['quimica','química','elemento','molecula','molécula','reaccion','reacción'],
+    'Física':               ['fisica','física','cinematica','cinemática','fuerza','movimiento','energia','energía'],
+    'Ciencias Sociales':    ['sociales','historia','geografia','geografía','social','politica','política','economia','economía'],
+    'Inglés':               ['ingles','inglés','english','reading','writing'],
+    'Filosofía':            ['filosofia','filosofía','etica','ética','logica','lógica'],
+    'Lenguaje':             ['lenguaje','lengua','comunicacion','comunicación','ortografia','ortografía'],
+};
 function _areaDeHoja(hoja) {
     if (!hoja) return null;
     // 1. match exacto por título en talleres
     const t = _riTalleres.find(t => (t.titulo||'').toLowerCase() === hoja.toLowerCase());
     if (t?.area) return t.area;
-    // 2. match parcial
+    // 2. match parcial en talleres
     const t2 = _riTalleres.find(t => hoja.toLowerCase().includes((t.titulo||'').toLowerCase().slice(0,8)) && t.titulo.length > 4);
     if (t2?.area) return t2.area;
     // 3. mapeo manual
-    return getHojaMapeo()[hoja] || null;
+    if (getHojaMapeo()[hoja]) return getHojaMapeo()[hoja];
+    // 4. auto-detección por palabras clave en el nombre de la hoja
+    const hojaL = hoja.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    for (const [area, kws] of Object.entries(_AREA_KEYWORDS)) {
+        if (kws.some(k => hojaL.includes(k.normalize('NFD').replace(/[̀-ͯ]/g,'')))) return area;
+    }
+    return null;
 }
 
 async function cargarResultadosICFES() {
@@ -2458,9 +2570,9 @@ async function cargarResultadosICFES() {
             return;
         }
 
-        // Poblar selector de áreas únicas
+        // Poblar selector de áreas únicas (incluye auto-detectadas)
         const areasSet = new Set();
-        _riDatos.forEach(r => { const a = _areaDeHoja(r._hoja); if(a) areasSet.add(a); });
+        _riDatos.forEach(r => { const a = _areaDeHoja(r._hoja); areasSet.add(a || '(sin área)'); });
         const sel = document.getElementById('ri-filtro-hoja');
         sel.innerHTML = '<option value="">Todas las áreas</option>';
         [...areasSet].sort().forEach(a => {
@@ -2517,7 +2629,8 @@ function renderResultadosICFES() {
     _riDatos.forEach(r => {
         const e = _extraerEstudiante(r);
         const clave = e.cedula !== '—' ? e.cedula : (e.email !== '—' ? e.email : 'anon-'+Math.random());
-        const area = _areaDeHoja(r._hoja) || '(sin área)';
+        const areaRaw = _areaDeHoja(r._hoja);
+        const area = areaRaw || '(sin área)';
         if (filtroArea && area !== filtroArea) return;
         if (!mapaEst[clave]) mapaEst[clave] = { ...e, formularios:[] };
         if (e.nombre !== '—' && mapaEst[clave].nombre === '—') mapaEst[clave].nombre = e.nombre;
@@ -2612,7 +2725,9 @@ function renderResultadosICFES() {
             <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.68rem;font-weight:900;color:#e8f0f8;">
                 👤 ${e.nombre !== '—' ? e.nombre : e.email}
             </td>
-            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">${e.cedula}</td>
+            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);">
+                ${e.tipoId ? `<span style="font-size:.48rem;font-weight:700;background:rgba(56,189,248,.15);color:var(--teal);border-radius:3px;padding:.1rem .3rem;margin-right:.3rem;vertical-align:middle;">${e.tipoId}</span>` : ''}${e.cedula}
+            </td>
             <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(240,244,248,.5);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.email}</td>
             <td style="padding:.5rem .7rem;text-align:center;">
                 <span style="font-family:var(--fuente-t);font-size:.75rem;font-weight:900;color:${promColor};">${promStr}</span>
@@ -2622,7 +2737,7 @@ function renderResultadosICFES() {
         <tr id="${detId}" style="display:none;background:rgba(255,94,0,.03);">
             <td colspan="4" style="padding:.5rem .8rem .7rem;border-bottom:2px solid rgba(255,94,0,.12);">
                 <div style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(240,244,248,.3);margin-bottom:.4rem;">
-                    📧 ${e.email} · 🪪 ${e.cedula}
+                    📧 ${e.email} · 🪪 ${e.tipoId ? e.tipoId+' ' : ''}${e.cedula}
                 </div>
                 <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:.4rem;padding:.2rem .6rem;margin-bottom:.3rem;opacity:.4;">
                     <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Área</span>
@@ -2646,11 +2761,13 @@ window.sortResultados = function(col) {
 
 window.exportarResultadosCSV = function() {
     if (!_riDatos.length) return;
-    let csv = 'Nombre,Cédula,Email,Área,Puntaje,Fecha\n';
+    let csv = '﻿'; // BOM para Excel
+    csv += 'Nombre,Tipo ID,Cédula/TI,Email,Formulario/Hoja,Área,Puntaje,Fecha\n';
     _riDatos.forEach(r => {
-        const e = _extraerEstudiante(r);
-        const area = _areaDeHoja(r._hoja)||'';
-        csv += `"${e.nombre}","${e.cedula}","${e.email}","${area}","${e.pts}","${e.fecha}"\n`;
+        const e    = _extraerEstudiante(r);
+        const area = _areaDeHoja(r._hoja) || '(sin área)';
+        const hoja = (r._hoja || '').replace(/"/g,'""');
+        csv += `"${e.nombre}","${e.tipoId}","${e.cedula}","${e.email}","${hoja}","${area}","${e.pts}","${String(e.fecha).slice(0,10)}"\n`;
     });
     descargarCSV(csv,'resultados_icfes.csv');
 };
@@ -3001,36 +3118,34 @@ window.renderTalleresAdmin = function() {
         const color = AREA_COLOR[t.area] || '#FF5E00';
         const titulo = t.titulo || t.nombre || 'Sin título';
         const tieneForm = t.formId || t.formUrl;
-        const habilitado = t.habilitado !== false; // default true for legacy docs
+        const habilitado = t.habilitado !== false;
         const fechaLimite = t.fechaLimite || null;
         const expirado = fechaLimite && new Date(fechaLimite) < new Date();
-        const bloqueado = expirado && !habilitado;
-        const estadoBadge = bloqueado
-            ? `<span style="font-family:var(--fuente-t);font-size:.5rem;background:rgba(239,68,68,.12);color:#fca5a5;border:1px solid rgba(239,68,68,.25);border-radius:3px;padding:.1rem .35rem;letter-spacing:.5px;">🔒 VENCIDO</span>`
-            : expirado && habilitado
-                ? `<span style="font-family:var(--fuente-t);font-size:.5rem;background:rgba(251,191,36,.1);color:#fde68a;border:1px solid rgba(251,191,36,.25);border-radius:3px;padding:.1rem .35rem;letter-spacing:.5px;">⚠️ VENCIDO/ACTIVO</span>`
+        const bColor = expirado && !habilitado ? '#ef4444' : color;
+        const badgeHtml = (expirado && !habilitado)
+            ? `<span style="display:inline-block;font-size:9px;background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3);border-radius:3px;padding:1px 5px;">🔒 VENCIDO</span>`
+            : (expirado && habilitado)
+                ? `<span style="display:inline-block;font-size:9px;background:rgba(251,191,36,.12);color:#fde68a;border:1px solid rgba(251,191,36,.3);border-radius:3px;padding:1px 5px;">⚠️ VENCIDO/ACTIVO</span>`
                 : fechaLimite
-                    ? `<span style="font-family:var(--fuente-t);font-size:.5rem;background:rgba(16,185,129,.08);color:#86efac;border:1px solid rgba(16,185,129,.2);border-radius:3px;padding:.1rem .35rem;letter-spacing:.5px;">📅 ${new Date(fechaLimite).toLocaleDateString('es-CO',{day:'2-digit',month:'short'})}</span>`
+                    ? `<span style="display:inline-block;font-size:9px;background:rgba(16,185,129,.1);color:#86efac;border:1px solid rgba(16,185,129,.25);border-radius:3px;padding:1px 5px;">📅 ${new Date(fechaLimite).toLocaleDateString('es-CO',{day:'2-digit',month:'short'})}</span>`
                     : '';
-        return `<div style="background:#0a1e32;border:1px solid rgba(255,255,255,0.07);border-left:3px solid ${expirado&&!habilitado?'#ef4444':color};border-radius:6px;overflow:hidden;opacity:${habilitado?1:.7};">
-            <div style="display:flex;align-items:center;gap:.5rem;padding:.55rem .7rem;flex-wrap:wrap;">
-                <div style="flex:1;min-width:0;">
-                    <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;">
-                        <p style="font-family:var(--fuente-t);font-size:0.68rem;font-weight:700;color:#e8f0f8;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${titulo}</p>
-                        ${estadoBadge}
-                    </div>
-                    <p style="font-family:var(--fuente-t);font-size:0.58rem;color:rgba(240,244,248,0.35);margin:.1rem 0 0;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}</p>
-                </div>
-                <div style="display:flex;gap:.3rem;align-items:center;">
-                    <button class="btn-table" onclick="toggleHabilitadoTaller('${t.id}',${!habilitado})" style="padding:.25rem .5rem;font-size:.6rem;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
-                    <button class="btn-table" onclick="verCompletadosTaller('${t.id}',${JSON.stringify(titulo)})" style="padding:.25rem .5rem;font-size:.6rem;color:#93c5fd;" title="Ver entregas">👥</button>
-                    ${tieneForm ? `<button class="btn-table" onclick="previsualizarTaller(${JSON.stringify(t.formId||'')})" style="padding:.25rem .5rem;font-size:.6rem;" title="Previsualizar formulario">👁</button>` : ''}
-                    <button class="btn-table" onclick="editarTallerAdmin('${t.id}')" style="padding:.25rem .5rem;font-size:.6rem;" title="Editar">✏️</button>
-                    <button class="btn-table" onclick="eliminarTallerAdmin('${t.id}')" style="padding:.25rem .5rem;font-size:.6rem;color:#f87171;" title="Eliminar">🗑</button>
-                </div>
+        const safeId = t.id;
+        const safeTitulo = JSON.stringify(titulo).replace(/"/g,'&quot;');
+        const safeFormId = JSON.stringify(t.formId||'').replace(/"/g,'&quot;');
+        return `<div style="box-sizing:border-box;width:100%;min-height:44px;margin-bottom:6px;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${bColor};border-radius:6px;opacity:${habilitado?1:.65};display:table;table-layout:fixed;">
+            <div style="display:table-cell;vertical-align:middle;padding:8px 10px;width:100%;">
+                <div style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;font-weight:700;color:#e8f0f8;line-height:17px;">${titulo} ${badgeHtml}</div>
+                <div style="font-size:9px;color:rgba(240,244,248,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}</div>
             </div>
-            <div id="completados-${t.id}" style="display:none;padding:.4rem .7rem .5rem;border-top:1px solid rgba(255,255,255,.05);max-height:220px;overflow-y:auto;"></div>
-        </div>`;
+            <div style="display:table-cell;vertical-align:middle;padding:8px 10px;white-space:nowrap;width:1%;">
+                <button class="btn-table" onclick="toggleHabilitadoTaller('${safeId}',${!habilitado})" style="padding:3px 7px;font-size:9px;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
+                <button class="btn-table" onclick="verCompletadosTaller('${safeId}',${safeTitulo})" style="padding:3px 7px;font-size:9px;color:#93c5fd;" title="Ver entregas">👥</button>
+                ${tieneForm ? `<button class="btn-table" onclick="previsualizarTaller(${safeFormId})" style="padding:3px 7px;font-size:9px;" title="Previsualizar">👁</button>` : ''}
+                <button class="btn-table" onclick="editarTallerAdmin('${safeId}')" style="padding:3px 7px;font-size:9px;" title="Editar">✏️</button>
+                <button class="btn-table" onclick="eliminarTallerAdmin('${safeId}')" style="padding:3px 7px;font-size:9px;color:#f87171;" title="Eliminar">🗑</button>
+            </div>
+        </div>
+        <div id="completados-${safeId}" style="display:none;padding:6px 10px 8px;border-top:1px solid rgba(255,255,255,.05);max-height:220px;overflow-y:auto;margin-bottom:6px;background:#0a1e32;border-radius:0 0 6px 6px;"></div>`;
     }).join('');
 };
 
@@ -3284,6 +3399,161 @@ window.cambiarEstadoPremio = async function(premioId, uid, estudianteNombre, pre
 };
 
 // ===================== PEDIDOS TIENDA (admin) =====================
+// ── GESTIÓN TIENDA (ADMIN) ─────────────────────────────────────────────────────
+// ── SEED inicial de productos ──────────────────────────────────────────────────
+const _PRODUCTOS_SEED = [
+    {nombre:'Mercado Familiar $200.000', emoji:'🛒', pts:800, descripcion:'Vale redimible en supermercado local por $200.000 pesos. El premio más valorado por las familias del programa.', badge:'Premio Principal', badgeClass:'badge-verde', disponible:true, orden:1},
+    {nombre:'Libreta Corporativa PRI',   emoji:'📓', pts:200, descripcion:'Diseños exclusivos impresos, papel cuadriculado, marca de agua institucional. ¡Colecciónalas!',               badge:'Edición Limitada',  badgeClass:'badge-gold',  disponible:true, orden:2},
+    {nombre:'Kit de Geometría Descriptiva', emoji:'📐', pts:350, descripcion:'Escuadras profesionales, compás micrométrico y portaminas industrial calibrado para planos de ingeniería.', badge:'Recompensa Académica', badgeClass:'badge-gold', disponible:true, orden:3},
+    {nombre:'Formulario Físico-Matemático PRI', emoji:'📗', pts:150, descripcion:'Compendio impreso de bolsillo: leyes de física, identidades trigonométricas y cálculo vectorial rápido.', badge:'Material Didáctico', badgeClass:'badge-gold', disponible:true, orden:4},
+    {nombre:'Kit de Laboratorio Básico', emoji:'🧪', pts:400, descripcion:'Materiales para experimentos de física y química elemental: tubos de ensayo, soporte, reactivos seguros.', badge:'Kit Lab', badgeClass:'badge-verde', disponible:true, orden:5},
+    {nombre:'Licencia Simulador Técnico Integral', emoji:'💻', pts:500, descripcion:'Suscripción trimestral al motor de cálculo numérico interactivo y simulacros tipo examen de admisión.', badge:'Acceso Premium', badgeClass:'badge-teal', disponible:true, orden:6},
+    {nombre:'Sesión de Mentoría Personal (1h)', emoji:'🤝', pts:600, descripcion:'Una hora personalizada con un mentor universitario del programa para orientación ICFES o vocacional.', badge:'Mentoría', badgeClass:'badge-teal', disponible:true, orden:7},
+];
+
+window.seedProductosTienda = async function() {
+    const btn = document.getElementById('btn-seed-productos');
+    if (btn) { btn.disabled = true; btn.textContent = 'Cargando…'; }
+    let ok = 0;
+    for (const p of _PRODUCTOS_SEED) {
+        try { await addDoc(collection(db,'productos'), {...p, creadoEn: serverTimestamp()}); ok++; } catch(e) {}
+    }
+    notif(`✅ ${ok} productos cargados`, 'Seed completado', '🛒', 'success');
+    if (btn) { btn.textContent = '✅ Listo'; }
+    cargarGestionTienda();
+};
+
+let _productoEditandoId = null;
+
+window.cargarGestionTienda = async function() {
+    const lista = document.getElementById('gestion-tienda-lista');
+    if (!lista) return;
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.25);text-align:center;padding:24px;">Cargando…</p>';
+    try {
+        const snap = await getDocs(collection(db,'productos'));
+        if (snap.empty) {
+            lista.innerHTML = `<div style="text-align:center;padding:24px 16px;">
+                <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(240,244,248,0.3);margin-bottom:12px;">Sin productos. Carga los iniciales:</p>
+                <button id="btn-seed-productos" class="btn-add" style="font-size:.65rem;padding:.5rem 1rem;" onclick="seedProductosTienda()">📥 Cargar 7 productos iniciales</button>
+            </div>`;
+            return;
+        }
+        const prods = snap.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>(a.orden||99)-(b.orden||99));
+        lista.innerHTML = prods.map(p => {
+            const disp = p.disponible !== false;
+            const borde = disp ? '#22c55e' : '#ef4444';
+            const safeId = p.id;
+            return `<div style="position:relative;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${borde};border-radius:6px;margin-bottom:8px;padding:12px 180px 12px 14px;min-height:56px;opacity:${disp?1:0.7};">
+                <div style="font-size:12px;font-weight:700;color:#e8f0f8;line-height:18px;">${p.emoji||'🎁'} ${p.nombre}</div>
+                <div style="font-size:10px;color:rgba(240,244,248,0.45);line-height:15px;margin-top:3px;">${p.pts} PTS &nbsp;·&nbsp; ${disp?'<span style="color:#86efac;font-weight:700;">✅ Disponible</span>':'<span style="color:#fca5a5;font-weight:700;">🔒 Bloqueado</span>'}</div>
+                <div style="position:absolute;right:10px;top:50%;transform:translateY(-50%);display:flex;gap:5px;align-items:center;">
+                    <button onclick="toggleDisponibleProducto('${safeId}',${disp},this)" style="font-family:var(--fuente-t);font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:5px 10px;background:${disp?'rgba(239,68,68,0.12)':'rgba(34,197,94,0.12)'};border:1px solid ${disp?'rgba(239,68,68,0.35)':'rgba(34,197,94,0.35)'};color:${disp?'#fca5a5':'#86efac'};border-radius:4px;cursor:pointer;white-space:nowrap;">${disp?'🔒 Bloquear':'✅ Activar'}</button>
+                    <button onclick="editarProductoAdmin('${safeId}')" style="font-family:var(--fuente-t);font-size:9px;padding:5px 8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:rgba(240,244,248,0.5);border-radius:4px;cursor:pointer;">✏️</button>
+                    <button onclick="eliminarProductoAdmin('${safeId}')" style="font-family:var(--fuente-t);font-size:9px;padding:5px 8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#f87171;border-radius:4px;cursor:pointer;">🗑</button>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        lista.innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#f87171;padding:16px;">Error: ${e.message}</p>`;
+    }
+};
+
+window.toggleDisponibleProducto = async function(id, estaDisponible, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    try {
+        await updateDoc(doc(db,'productos',id), { disponible: !estaDisponible });
+        notif(estaDisponible ? '🔒 Bloqueado' : '✅ Activado', 'Producto actualizado', estaDisponible?'🔒':'✅', estaDisponible?'warn':'success');
+        cargarGestionTienda();
+    } catch(e) {
+        notif('Error', e.message, '❌', 'error');
+        if (btn) { btn.disabled = false; }
+    }
+};
+
+window.editarProductoAdmin = async function(id) {
+    const snap = await getDoc(doc(db,'productos',id));
+    if (!snap.exists()) return;
+    const p = snap.data();
+    document.getElementById('prod-emoji').value   = p.emoji    || '';
+    document.getElementById('prod-nombre').value  = p.nombre   || '';
+    document.getElementById('prod-pts').value     = p.pts      || '';
+    document.getElementById('prod-desc').value    = p.descripcion || '';
+    document.getElementById('prod-badge').value   = p.badge    || '';
+    // Mostrar preview de imagen existente
+    const pp = document.getElementById('prod-img-preview');
+    if (pp && p.imagen) { pp.src = p.imagen; pp.style.display = 'block'; }
+    else if (pp) { pp.style.display = 'none'; }
+    _productoEditandoId = id;
+    document.getElementById('prod-edit-label').style.display = 'block';
+    document.getElementById('prod-emoji').scrollIntoView({behavior:'smooth', block:'center'});
+};
+
+// Preview de imagen en dashboard
+window.previsualizarImgAdmin = function(input) {
+    const file = input.files[0];
+    const prev = document.getElementById('prod-img-preview');
+    if (!file) { prev.style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+    reader.readAsDataURL(file);
+};
+
+window.cancelarEdicionProducto = function() {
+    _productoEditandoId = null;
+    ['prod-emoji','prod-nombre','prod-pts','prod-desc','prod-badge'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+    const pi = document.getElementById('prod-img'); if(pi) pi.value='';
+    const pp = document.getElementById('prod-img-preview'); if(pp) pp.style.display='none';
+    document.getElementById('prod-edit-label').style.display = 'none';
+};
+
+window.guardarProductoAdmin = async function() {
+    const emoji  = document.getElementById('prod-emoji').value.trim()  || '🎁';
+    const nombre = document.getElementById('prod-nombre').value.trim();
+    const pts    = parseInt(document.getElementById('prod-pts').value)  || 0;
+    const desc   = document.getElementById('prod-desc').value.trim();
+    const badge  = document.getElementById('prod-badge').value.trim();
+    if (!nombre || !pts) { notif('Faltan datos','Nombre y puntos son obligatorios','⚠️','warn'); return; }
+
+    // Leer imagen si se seleccionó una nueva
+    let imagen = undefined;
+    const imgInput = document.getElementById('prod-img');
+    if (imgInput && imgInput.files[0]) {
+        imagen = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload  = e => resolve(e.target.result);
+            reader.onerror = () => reject(new Error('Error al leer imagen'));
+            reader.readAsDataURL(imgInput.files[0]);
+        });
+    }
+
+    const data = { emoji, nombre, pts, descripcion: desc, badge, badgeClass:'badge-gold', disponible: true, creadoEn: serverTimestamp() };
+    if (imagen !== undefined) data.imagen = imagen;
+
+    try {
+        if (_productoEditandoId) {
+            await updateDoc(doc(db,'productos',_productoEditandoId), {...data});
+            notif('✅ Producto actualizado', nombre, '✅', 'success');
+        } else {
+            const all = await getDocs(collection(db,'productos'));
+            data.orden = all.size + 1;
+            if (imagen === undefined) data.imagen = '';
+            await addDoc(collection(db,'productos'), data);
+            notif('✅ Producto creado', nombre, '✅', 'success');
+        }
+        cancelarEdicionProducto();
+        cargarGestionTienda();
+    } catch(e) { notif('Error', e.message, '❌', 'error'); }
+};
+
+window.eliminarProductoAdmin = async function(id) {
+    if (!confirm('¿Eliminar este producto permanentemente?')) return;
+    try {
+        await deleteDoc(doc(db,'productos',id));
+        notif('🗑 Producto eliminado','','🗑','warn');
+        cargarGestionTienda();
+    } catch(e) { notif('Error', e.message, '❌', 'error'); }
+};
+
 function cargarPedidosTienda() {
     const tbody = document.getElementById('pedidos-tbody');
     if (!tbody) return;
@@ -3556,7 +3826,7 @@ function cargarTalleresPublicados() {
                             <p class="module-item-meta">${t.area||'General'} · ${t.tipo||'taller'} · Por: ${t.creadoPor||'—'}</p>
                         </div>
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
-                            <button class="btn-module" style="color:#93c5fd;border-color:rgba(56,189,248,.25);background:rgba(56,189,248,.06);" onclick="verCompletadosTallerPlaneacion('${d.id}',${JSON.stringify(titulo)})">👥 Entregas</button>
+                            <button class="btn-module" style="color:#93c5fd;border-color:rgba(56,189,248,.25);background:rgba(56,189,248,.06);" onclick="verCompletadosTallerPlaneacion('${d.id}',${JSON.stringify(titulo).replace(/"/g,'&quot;')})">👥 Entregas</button>
                             ${t.link?`<a href="${t.link}" target="_blank" class="btn-module">Ver →</a>`:''}
                             ${esMio?`<button class="btn-module secondary" onclick="editarTaller('${d.id}','${(t.nombre||titulo).replace(/'/g,"\\'")}','${(t.area||'').replace(/'/g,"\\'")}','${(t.descripcion||'').replace(/'/g,"\\'").replace(/\n/g,' ')}','${(t.link||'').replace(/'/g,"\\'")}')">✏️</button>`:''}
                             ${esMio?`<button class="btn-module" style="background:rgba(239,68,68,0.15);color:#fca5a5;border-color:rgba(239,68,68,0.3);" onclick="eliminarTaller('${d.id}')">✕</button>`:''}

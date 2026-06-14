@@ -223,7 +223,7 @@
   </div>
   <div class="cat-nav-right">
     <span id="admin-badge" class="cat-admin-badge" style="display:none;">⚙ ADMIN</span>
-    <a href="index.html" class="cat-back-btn">← Inicio</a>
+    <a href="javascript:void(0)" class="cat-back-btn" onclick="history.length>1?history.back():window.location.href=(localStorage.getItem('_pri_back')||'dashboard.html')">← Volver</a>
   </div>
 </nav>
 
