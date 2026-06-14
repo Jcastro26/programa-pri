@@ -5373,16 +5373,9 @@ button:hover ~ .cursor-ring,
         padding: 1.5rem !important;
     }
 
-    /* 6. Fix Navbar Móvil */
+    /* 6. Fix Navbar Móvil — sólo flex-direction; el drawer usa sus propias reglas (top:0, right:0, transform) */
     .nav-links {
         flex-direction: column;
-        background: rgba(4, 24, 48, 0.98);
-        backdrop-filter: blur(15px);
-        position: fixed;
-        top: 70px; left: 0; right: 0;
-        padding: 2rem 1rem;
-        gap: 1.5rem;
-        border-bottom: 2px solid var(--naranja);
     }
 }
 
@@ -5719,22 +5712,23 @@ button:hover ~ .cursor-ring,
         min-width: 0;
         overflow: hidden;
     }
-    /* Nav sigue visible para que el drawer JS funcione,
-       pero sin ancho en el flujo flex (nav-links está fixed) */
+    /* Nav: sin margen automático en móvil (lo maneja el pill) */
     .navbar nav {
-        width: 0 !important;
-        overflow: visible !important;
-        flex-shrink: 0 !important;
+        margin-left: 0 !important;
     }
-    /* Pill empuja todo el grupo pill+menú al extremo derecho */
+    /* Pill empuja el grupo pill+menú al extremo derecho */
     #mobile-user-pill {
         margin-left: auto !important;
+        flex-shrink: 0;
     }
-    /* Botón menú: pequeño, sin margen derecho */
+    /* Botón menú: pequeño, pegado al borde */
     .menu-toggle {
-        margin-left: 0.4rem !important;
+        margin-left: 0.35rem !important;
         margin-right: 0 !important;
+        flex-shrink: 0 !important;
         min-width: 34px !important;
+        min-height: unset !important;
+        height: auto !important;
         padding: 3px 5px 2px !important;
         gap: 3px !important;
         border-radius: 3px !important;
