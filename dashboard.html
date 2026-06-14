@@ -351,6 +351,30 @@
             .site-header{padding:.6rem .75rem;}
         }
         .footer-minimal{background:rgba(2,26,54,0.95);border-top:1px solid rgba(255,255,255,0.07);padding:1.5rem 2rem;text-align:center;font-family:var(--fuente-t);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);position:relative;z-index:1;flex-shrink:0;}
+
+        /* ── Footer industrial (mismo estilo que index.html) ── */
+        .footer-industrial{background-color:#010c17!important;border-top:3px solid #1f7a8c!important;padding:1rem 5%;position:relative;width:100%;z-index:1;flex-shrink:0;box-shadow:0 -10px 30px rgba(31,122,140,0.1);}
+        .footer-industrial *{font-family:var(--fuente-t)!important;background:transparent!important;border-radius:0!important;box-shadow:none!important;color:rgba(255,255,255,0.82)!important;}
+        .footer-container{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1.5rem;}
+        .footer-brand-panel{display:flex;align-items:center;}
+        .massive-footer-text{font-size:1.1rem!important;font-weight:900!important;letter-spacing:-.5px!important;margin:0!important;}
+        .outline-text-footer{color:transparent!important;-webkit-text-stroke:1px rgba(255,255,255,0.82);}
+        .footer-links-panel h3{display:none!important;}
+        .footer-nav-list{list-style:none;display:flex;gap:1.5rem;margin:0;padding:0;flex-wrap:wrap;}
+        .footer-nav-list a{font-size:.8rem!important;color:#94a3b8!important;text-decoration:none;transition:color .2s;}
+        .footer-nav-list a:hover{color:var(--naranja)!important;}
+        .footer-info-panel h3{display:none!important;}
+        .contacto-datos-premium{display:flex;gap:1.5rem;font-size:.8rem!important;flex-wrap:wrap;}
+        .contacto-datos-premium p{margin:0;display:flex;align-items:center;gap:.4rem;}
+        .contacto-datos-premium a{color:#cbd5e1!important;text-decoration:none;}
+        .contacto-datos-premium a:hover{color:var(--naranja)!important;}
+        .footer-bottom-bar{border-top:1px solid rgba(255,255,255,0.03);margin-top:.6rem;padding-top:.6rem;display:flex;justify-content:center;}
+        .copyright{font-size:.7rem!important;color:#475569!important;}
+        @media(max-width:992px){
+            .footer-container{flex-direction:column;text-align:center;gap:.8rem;}
+            .footer-nav-list{justify-content:center;gap:1rem;}
+            .contacto-datos-premium{flex-direction:column;gap:.3rem;align-items:center;}
+        }
         /* Overflow fix */
         tbody td{overflow-wrap:break-word;word-break:break-word;}
         .module-item-name,.taller-title,.canje-nombre{overflow-wrap:break-word;word-break:break-word;}
