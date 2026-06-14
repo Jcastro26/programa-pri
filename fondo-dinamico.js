@@ -19,7 +19,8 @@
     const wrap = document.createElement('div');
     wrap.id = 'fondo-din';
     wrap.style.cssText =
-        'position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;';
+        'position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;' +
+        'background:linear-gradient(160deg,#021a36 0%,#010c17 60%,#020810 100%);';
     document.body.insertBefore(wrap, document.body.firstChild);
 
     /* ── CSS: secciones oscuras con overlay MUY translúcido ── */
@@ -262,31 +263,107 @@
     document.head.appendChild(css);
 
     /* ══════════════════════════════════════════════════════════════
-       ATARDECER — Video fondo_pacifico.mp4
+       ATARDECER — Canvas animado (naranja · lila · blanco)
     ══════════════════════════════════════════════════════════════ */
     if (esAtardecer) {
-        const vid = document.createElement('video');
-        vid.setAttribute('autoplay', '');
-        vid.setAttribute('loop', '');
-        vid.setAttribute('muted', '');
-        vid.setAttribute('playsinline', '');
-        vid.style.cssText =
-            'position:absolute;inset:0;width:100%;height:100%;' +
-            'object-fit:cover;transform:scale(1.06);opacity:0.94;';
-        const src = document.createElement('source');
-        src.src  = 'fondo_pacifico.mp4';
-        src.type = 'video/mp4';
-        vid.appendChild(src);
-        wrap.appendChild(vid);
-        vid.play().catch(() => {});
-        const ov = document.createElement('div');
-        ov.style.cssText =
-            'position:absolute;inset:0;' +
-            'background:linear-gradient(to bottom,' +
-            '  rgba(2,8,23,0.08) 0%,' +
-            '  rgba(2,8,23,0.02) 35%,' +
-            '  rgba(2,8,23,0.40) 100%);';
-        wrap.appendChild(ov);
+        const cv = document.createElement('canvas');
+        cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;';
+        wrap.appendChild(cv);
+        let cW = cv.width  = window.innerWidth;
+        let cH = cv.height = window.innerHeight;
+        const cx = cv.getContext('2d');
+        window.addEventListener('resize', () => {
+            cW = cv.width  = window.innerWidth;
+            cH = cv.height = window.innerHeight;
+        });
+
+        // Pinceladas horizontales: cada una tiene posición Y, ancho, color y fase
+        const pinceladas = [
+            { yF:0.18, wF:0.85, col:'200,180,255', base:0.13, amp:0.06, spd:0.41, ph:0.0  }, // lila alto
+            { yF:0.32, wF:1.0,  col:'255,255,255', base:0.07, amp:0.04, spd:0.28, ph:1.2  }, // blanco medio-alto
+            { yF:0.47, wF:0.92, col:'210,160,255', base:0.11, amp:0.05, spd:0.35, ph:2.5  }, // lila medio
+            { yF:0.61, wF:1.0,  col:'255,240,255', base:0.08, amp:0.03, spd:0.22, ph:0.8  }, // blanco-lila
+            { yF:0.74, wF:0.78, col:'180,130,240', base:0.09, amp:0.04, spd:0.48, ph:3.1  }, // lila bajo
+            { yF:0.85, wF:1.0,  col:'255,255,255', base:0.05, amp:0.03, spd:0.19, ph:1.7  }, // blanco suave
+        ];
+
+        let t = 0;
+        (function draw() {
+            requestAnimationFrame(draw);
+            t += 0.007;
+
+            // ── Gradiente base (naranja atardecer vertical) ──────────
+            const bg = cx.createLinearGradient(0, 0, 0, cH);
+            const r0 = 8  + Math.sin(t * 0.5) * 4;
+            const r1 = 55 + Math.sin(t * 0.4) * 12;
+            const r2 = 175 + Math.sin(t * 0.35) * 18;
+            const r3 = 215 + Math.sin(t * 0.3) * 12;
+            bg.addColorStop(0,   `rgba(${r0},12,35,1)`);
+            bg.addColorStop(0.28,`rgba(${r1},22,8,1)`);
+            bg.addColorStop(0.58,`rgba(${r2},65,18,1)`);
+            bg.addColorStop(0.82,`rgba(${r3},105,38,1)`);
+            bg.addColorStop(1,   `rgba(${r3+10},130,55,1)`);
+            cx.fillStyle = bg;
+            cx.fillRect(0, 0, cW, cH);
+
+            // ── Sol ──────────────────────────────────────────────────
+            const sx = cW * 0.68;
+            const sy = cH * (0.30 + Math.sin(t * 0.25) * 0.025);
+            const sg = cx.createRadialGradient(sx, sy, 0, sx, sy, cH * 0.40);
+            sg.addColorStop(0,    'rgba(255,245,190,0.98)');
+            sg.addColorStop(0.07, 'rgba(255,195,70,0.80)');
+            sg.addColorStop(0.22, 'rgba(255,110,25,0.35)');
+            sg.addColorStop(0.55, 'rgba(210,60,10,0.10)');
+            sg.addColorStop(1,    'rgba(180,40,0,0)');
+            cx.beginPath();
+            cx.arc(sx, sy, cH * 0.40, 0, Math.PI * 2);
+            cx.fillStyle = sg;
+            cx.fill();
+
+            // ── Pinceladas horizontales lilas/blancas difuminadas ────
+            cx.save();
+            pinceladas.forEach(p => {
+                const alpha = p.base + Math.sin(t * p.spd + p.ph) * p.amp;
+                const py    = cH * p.yF;
+                const pw    = cW * p.wF;
+                const px    = (cW - pw) * 0.5;
+                // altura de la pincelada: fina en bordes, gruesa en centro
+                const grosor = cH * (0.04 + Math.sin(t * p.spd * 0.7 + p.ph) * 0.012);
+
+                const pg = cx.createLinearGradient(px, 0, px + pw, 0);
+                pg.addColorStop(0,    `rgba(${p.col},0)`);
+                pg.addColorStop(0.12, `rgba(${p.col},${alpha})`);
+                pg.addColorStop(0.5,  `rgba(${p.col},${alpha * 1.25})`);
+                pg.addColorStop(0.88, `rgba(${p.col},${alpha})`);
+                pg.addColorStop(1,    `rgba(${p.col},0)`);
+
+                // difuminado vertical con gradiente
+                const vg = cx.createLinearGradient(0, py - grosor, 0, py + grosor);
+                vg.addColorStop(0,   'rgba(0,0,0,0)');
+                vg.addColorStop(0.5, 'rgba(255,255,255,1)');
+                vg.addColorStop(1,   'rgba(0,0,0,0)');
+
+                cx.globalCompositeOperation = 'screen';
+                cx.globalAlpha = alpha * 0.9;
+                cx.fillStyle = pg;
+                cx.beginPath();
+                cx.ellipse(px + pw * 0.5, py, pw * 0.5, grosor, 0, 0, Math.PI * 2);
+                cx.fill();
+            });
+            cx.globalCompositeOperation = 'source-over';
+            cx.globalAlpha = 1;
+            cx.restore();
+
+            // ── Overlay oscuro en bordes ─────────────────────────────
+            const ov = cx.createLinearGradient(0, 0, 0, cH);
+            ov.addColorStop(0,   'rgba(2,6,20,0.35)');
+            ov.addColorStop(0.4, 'rgba(2,6,20,0)');
+            ov.addColorStop(0.75,'rgba(2,6,20,0.15)');
+            ov.addColorStop(1,   'rgba(2,6,20,0.55)');
+            cx.fillStyle = ov;
+            cx.fillRect(0, 0, cW, cH);
+        }());
+
         return;
     }
 
