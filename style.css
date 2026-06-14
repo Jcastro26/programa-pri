@@ -5686,7 +5686,8 @@ button:hover ~ .cursor-ring,
 /* ── 1. NAVBAR: reducir altura en móvil ─────────────── */
 @media (max-width: 768px) {
     .navbar {
-        padding: 0.55rem 0.3rem 0.55rem 0.75rem;
+        padding: 0.55rem 0 0.55rem 0.75rem;
+        justify-content: flex-start !important;
     }
     /* Subtítulo: visible muy pequeño en móvil */
     .logo-container p {
