@@ -5701,19 +5701,22 @@ button:hover ~ .cursor-ring,
     }
     .logo-container h2 {
         font-size: 0.62rem;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 100px;
+        max-width: 160px;
     }
     .logo-container {
-        flex-shrink: 1;
+        flex-shrink: 0;
         min-width: 0;
         overflow: hidden;
     }
-    /* Nav: sin margen automático en móvil (lo maneja el pill) */
+    /* Nav: ancho 0 en flujo flex; overflow:visible para que el drawer fixed se vea */
     .navbar nav {
+        width: 0 !important;
+        flex-shrink: 0 !important;
+        overflow: visible !important;
         margin-left: 0 !important;
     }
     /* Pill empuja el grupo pill+menú al extremo derecho */
