@@ -5747,6 +5747,28 @@ button:hover ~ .cursor-ring,
     }
 }
 
+/* ── Logo text nuclear fix (ID specificity beats everything) ── */
+@media (max-width: 768px) {
+    #mainNav .logo-container,
+    #mainNav .logo-container .logo-link,
+    #mainNav .logo-container .logo-link > div {
+        overflow: visible !important;
+        max-width: none !important;
+        flex-shrink: 0 !important;
+    }
+    #mainNav .logo-container .logo-link > div {
+        width: auto !important;
+    }
+    #mainNav .logo-container h2 {
+        font-size: 0.62rem !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        max-width: none !important;
+        width: auto !important;
+    }
+}
+
 /* ── 2. HERO INDEX: ajuste mobile ───────────────────── */
 @media (max-width: 768px) {
     .hero-section {
