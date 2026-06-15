@@ -318,8 +318,11 @@
             .form-add .fa-group[style*="grid-column"]{grid-column:1 !important;}
 
             /* Tablas — scroll horizontal */
-            .admin-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-            table{min-width:520px;}
+            .section-box{overflow:visible !important;}
+            .admin-table-wrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;display:block;}
+            .admin-table-wrap table{min-width:560px !important;}
+            table:not(.no-scroll){display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;}
+            thead,tbody,tfoot{display:table;width:100%;}
             thead th,tbody td{padding:.6rem .65rem;font-size:.68rem;}
 
             /* Grids */
