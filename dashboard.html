@@ -139,8 +139,9 @@
         .btn-cerrar-chat{background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem;transition:color 0.2s;}
         .btn-cerrar-chat:hover{color:var(--blanco);}
         /* ADMIN TABLE */
-        /* Permite scroll horizontal en hijos aunque style.css ponga overflow-x:hidden en body (bug iOS Safari) */
-        html,body{overflow-x:auto;}
+        /* iOS Safari: override overflow-x:hidden del body para que los hijos puedan scrollear */
+        html{overflow-x:clip;}
+        body{overflow-x:clip;}
         .admin-table-wrap{overflow-x:auto;}
         table{width:100%;border-collapse:collapse;font-size:0.78rem;}
         thead tr{background:rgba(255,255,255,0.03);}
@@ -319,9 +320,16 @@
             .form-add{grid-template-columns:1fr !important;}
             .form-add .fa-group[style*="grid-column"]{grid-column:1 !important;}
 
-            /* Tablas — scroll horizontal */
+            /* Tablas — scroll horizontal en iOS */
             .section-box{overflow:visible !important;}
-            .admin-table-wrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch;width:100%;display:block;max-width:100%;}
+            .admin-table-wrap{
+                overflow-x:scroll !important;
+                -webkit-overflow-scrolling:touch !important;
+                transform:translateZ(0); /* fuerza capa de composición independiente en iOS */
+                width:100%;
+                display:block;
+                position:relative;
+            }
             .admin-table-wrap table{min-width:560px !important;width:auto !important;}
             thead th,tbody td{padding:.6rem .65rem;font-size:.68rem;}
             /* Evita que las celdas partan palabras verticalmente en móvil */
@@ -4701,17 +4709,19 @@ window.logoutSession = function() {
     document.addEventListener('mouseout',e=>{if(e.target.closest('button,a,input,select,table tr')){ring.style.transform='translate(-50%,-50%) scale(1)';}});
     window.addEventListener('scroll',()=>{const max=document.body.scrollHeight-window.innerHeight;document.getElementById('reading-bar').style.width=(window.scrollY/max*100)+'%';});
 
-    // ── Scroll horizontal en tablas móviles ──
+    // ── Scroll horizontal en tablas móviles (iOS Safari compatible) ──
     function fixTableScroll() {
         if (window.innerWidth > 900) return;
         document.querySelectorAll('.admin-table-wrap').forEach(wrap => {
-            wrap.style.overflowX = 'auto';
+            wrap.style.overflowX = 'scroll';          // 'scroll' siempre crea contexto en iOS
             wrap.style.webkitOverflowScrolling = 'touch';
             wrap.style.display = 'block';
             wrap.style.width = '100%';
+            wrap.style.position = 'relative';
+            wrap.style.transform = 'translateZ(0)';   // capa de composición iOS
             const tbl = wrap.querySelector('table');
             if (tbl) {
-                tbl.style.minWidth = '580px';
+                tbl.style.minWidth = '560px';
                 tbl.style.width = 'auto';
             }
         });
