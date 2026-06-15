@@ -5087,6 +5087,50 @@ button:hover ~ .cursor-ring,
         gap: 0.3rem;
     }
 }
+
+@media (max-width: 600px) {
+    .footer-industrial {
+        padding: 1.1rem 1.25rem 0.9rem;
+    }
+    .footer-container {
+        gap: 0.55rem;
+    }
+    .massive-footer-text {
+        font-size: 1.15rem;
+        letter-spacing: 0;
+    }
+    .footer-nav-list {
+        gap: 0.5rem 1rem;
+        justify-content: center;
+    }
+    .footer-nav-list a {
+        font-size: 0.68rem;
+        letter-spacing: 0.5px;
+    }
+    .contacto-datos-premium {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.35rem 1.1rem;
+        font-size: 0.68rem;
+    }
+    .contacto-datos-premium p {
+        font-size: 0.68rem;
+    }
+    .contacto-datos-premium a {
+        font-size: 0.68rem;
+        word-break: break-all;
+    }
+    .footer-bottom-bar {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+    }
+    .copyright {
+        font-size: 0.6rem;
+        text-align: center;
+        line-height: 1.5;
+    }
+}
 /* ==========================================================================
    COMPONENTES DE SIMULACIÓN DE BASE DE DATOS LOCAL
    ========================================================================== */

@@ -1053,7 +1053,7 @@
             <!-- Tabla de respuestas -->
             <div class="section-box">
                 <p class="section-box-title">📋 Respuestas individuales <span style="font-size:.55rem;font-weight:400;color:rgba(255,255,255,.35);">(clic en una fila para ver todos los datos)</span></p>
-                <div style="overflow-x:auto;">
+                <div class="admin-table-wrap" style="overflow-x:auto;">
                     <table style="width:100%;border-collapse:collapse;font-family:var(--fuente-t);font-size:.63rem;">
                         <thead>
                             <tr style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);text-align:left;">
@@ -2245,6 +2245,8 @@ window.enviarMensajeForo = async function() {
                 participantes:[currentUser.uid, chatPrivadoCon.uid],
                 ultimoAutorUid: currentUser.uid,
                 ultimoAutorNombre: currentUser.nombre || 'Usuario',
+                // Guardar nombre del otro para mostrarlo como título del hilo
+                otroNombre: chatPrivadoCon.nombre || 'Usuario',
                 ultimoMensaje: msg.slice(0,80),
                 ultimoTimestamp: serverTimestamp()
             }, {merge:true});
@@ -4379,8 +4381,12 @@ window.guardarFotoPerfil = async function() {
         // Actualizar sesión local
         currentUser.fotoUrl = url;
         localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        // Actualizar preview del panel
         const prev = document.getElementById('foto-perfil-preview');
         if (prev) { prev.src = url; prev.style.display = 'block'; }
+        // Actualizar pill del menú móvil inmediatamente
+        const dashPill = document.getElementById('dash-mobile-pill');
+        if (dashPill) dashPill.innerHTML = `<img src="${url}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
         fileInput.value = '';
         const msg = (rol === 'docente' || rol === 'voluntario') ? 'Tu foto ya aparece en la página de Docentes.' : 'Tu foto de perfil fue actualizada.';
         notif('Foto actualizada', msg, '📸','success');
@@ -4438,10 +4444,12 @@ async function cargarInbox() {
         cont.innerHTML = '';
         snap.forEach(d => {
             const c = d.data();
+            // Verificación defensiva: solo mostrar chats donde el usuario actual es participante
+            if (!(c.participantes||[]).includes(currentUser.uid)) return;
             const otroUid = (c.participantes||[]).find(u => u !== currentUser.uid) || '';
-            // Usar campos desnormalizados del doc raíz — sin N+1 a subcollección
+            // Mostrar nombre del OTRO participante (no del último emisor)
             const ultimoMsg    = c.ultimoMensaje || '—';
-            const ultimoAutor  = c.ultimoAutorNombre || 'Conversación';
+            const ultimoAutor  = c.otroNombre || c.ultimoAutorNombre || 'Conversación';
             const inicial = (ultimoAutor||'?')[0].toUpperCase();
             const esc = (s) => (s||'').replace(/'/g,"\\'");
             cont.insertAdjacentHTML('beforeend',`
