@@ -4706,35 +4706,15 @@ window.logoutSession = function() {
     // ── Scroll horizontal en tablas móviles ──
     function fixTableScroll() {
         if (window.innerWidth > 900) return;
-        document.querySelectorAll('table').forEach(tbl => {
-            // 1. Obtener o crear el wrapper scrolleable
-            let wrap = tbl.parentElement;
-            if (!wrap.classList.contains('admin-table-wrap') && !wrap.dataset.scrollFixed) {
-                const newWrap = document.createElement('div');
-                newWrap.dataset.scrollFixed = '1';
-                wrap.insertBefore(newWrap, tbl);
-                newWrap.appendChild(tbl);
-                wrap = newWrap;
-            }
-            // 2. Forzar scroll en el wrapper
+        document.querySelectorAll('.admin-table-wrap').forEach(wrap => {
             wrap.style.overflowX = 'auto';
             wrap.style.webkitOverflowScrolling = 'touch';
             wrap.style.display = 'block';
             wrap.style.width = '100%';
-            wrap.style.maxWidth = '100%';
-            // 3. Tabla más ancha que el wrapper para que haya scroll
-            tbl.style.minWidth = '580px';
-            tbl.style.width = 'auto';
-            tbl.style.tableLayout = 'auto';
-            // 4. Quitar overflow:hidden en TODOS los ancestros hasta .panel
-            let ancestor = wrap.parentElement;
-            while (ancestor && !ancestor.classList.contains('panel')) {
-                if (getComputedStyle(ancestor).overflow === 'hidden' ||
-                    ancestor.style.overflow === 'hidden') {
-                    ancestor.style.overflow = 'visible';
-                    ancestor.style.overflowX = 'visible';
-                }
-                ancestor = ancestor.parentElement;
+            const tbl = wrap.querySelector('table');
+            if (tbl) {
+                tbl.style.minWidth = '580px';
+                tbl.style.width = 'auto';
             }
         });
     }
