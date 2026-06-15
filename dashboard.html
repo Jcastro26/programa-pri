@@ -139,6 +139,8 @@
         .btn-cerrar-chat{background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem;transition:color 0.2s;}
         .btn-cerrar-chat:hover{color:var(--blanco);}
         /* ADMIN TABLE */
+        /* Permite scroll horizontal en hijos aunque style.css ponga overflow-x:hidden en body (bug iOS Safari) */
+        html,body{overflow-x:auto;}
         .admin-table-wrap{overflow-x:auto;}
         table{width:100%;border-collapse:collapse;font-size:0.78rem;}
         thead tr{background:rgba(255,255,255,0.03);}
@@ -319,9 +321,12 @@
 
             /* Tablas — scroll horizontal */
             .section-box{overflow:visible !important;}
-            .admin-table-wrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch;width:100%;display:block;}
+            .admin-table-wrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch;width:100%;display:block;max-width:100%;}
             .admin-table-wrap table{min-width:560px !important;width:auto !important;}
             thead th,tbody td{padding:.6rem .65rem;font-size:.68rem;}
+            /* Evita que las celdas partan palabras verticalmente en móvil */
+            .admin-table-wrap tbody td{white-space:nowrap;word-break:normal;overflow-wrap:normal;}
+            .admin-table-wrap .badge{white-space:nowrap;}
 
             /* Grids */
             .tutores-grid{grid-template-columns:1fr 1fr;}
@@ -407,7 +412,6 @@
         .contacto-datos-premium { flex-direction: column !important; gap: 0.25rem !important; }
         .contacto-datos-premium p { font-size: 0.75rem !important; }
         /* Overflow fix */
-        tbody td{overflow-wrap:break-word;word-break:break-word;}
         .module-item-name,.taller-title,.canje-nombre{overflow-wrap:break-word;word-break:break-word;}
         .foro-messages{overflow-y:auto;overflow-x:hidden;}
         .inbox-list{overflow-y:auto;}
