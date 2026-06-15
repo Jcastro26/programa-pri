@@ -5679,7 +5679,7 @@ button:hover ~ .cursor-ring,
 /* ── 1. NAVBAR: reducir altura en móvil ─────────────── */
 @media (max-width: 768px) {
     .navbar {
-        padding: 0.55rem 0 0.55rem 0.75rem;
+        padding: 0.55rem 0 0.55rem 0.75rem !important;
         justify-content: flex-start !important;
     }
     /* Subtítulo: visible muy pequeño en móvil */
@@ -5700,12 +5700,12 @@ button:hover ~ .cursor-ring,
         height: 26px;
     }
     .logo-container h2 {
-        font-size: 0.62rem;
-        letter-spacing: 0.5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 160px;
+        font-size: 0.62rem !important;
+        letter-spacing: 0.5px !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        max-width: none !important;
     }
     .logo-container {
         flex-shrink: 0;
