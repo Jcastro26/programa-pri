@@ -348,6 +348,40 @@
 
             /* Ocultar cursor decorativo */
             .cursor-dot,.cursor-ring{display:none;}
+
+            /* ── Modal taller: botones sin inflate de style.css ── */
+            #modal-form-icfes button {
+                min-height: unset !important;
+                height: auto !important;
+                padding: .3rem .6rem !important;
+                font-size: .62rem !important;
+                line-height: 1.2 !important;
+                white-space: nowrap !important;
+            }
+            /* La X en particular: más grande visualmente pero compacta */
+            #modal-form-icfes button[onclick*="cerrarFormModal"] {
+                font-size: 1.1rem !important;
+                padding: .1rem .45rem !important;
+            }
+            /* Header del modal: permite wrap en pantallas muy pequeñas */
+            #modal-form-icfes .modal-box > div:first-child {
+                flex-wrap: wrap !important;
+                gap: .4rem !important;
+                padding: .6rem .75rem !important;
+            }
+            #modal-form-icfes .modal-box > div:first-child > p {
+                max-width: 100% !important;
+                width: 100% !important;
+                font-size: .72rem !important;
+            }
+            /* Botones modales genéricos dentro del dashboard */
+            .modal-overlay .modal-box button.modal-close,
+            .modal-overlay .modal-box .btn-sm {
+                min-height: unset !important;
+                height: auto !important;
+                padding: .3rem .6rem !important;
+                font-size: .65rem !important;
+            }
         }
 
         @media(max-width:480px){
@@ -4673,27 +4707,39 @@ window.logoutSession = function() {
     function fixTableScroll() {
         if (window.innerWidth > 900) return;
         document.querySelectorAll('table').forEach(tbl => {
-            const parent = tbl.parentElement;
-            if (parent && parent.classList.contains('admin-table-wrap')) {
-                parent.style.overflowX = 'auto';
-                parent.style.webkitOverflowScrolling = 'touch';
-                parent.style.display = 'block';
-                parent.style.width = '100%';
-            } else if (parent && !parent.dataset.scrollFixed) {
-                const wrap = document.createElement('div');
-                wrap.style.cssText = 'overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;display:block;';
-                wrap.dataset.scrollFixed = '1';
-                parent.insertBefore(wrap, tbl);
-                wrap.appendChild(tbl);
+            // 1. Obtener o crear el wrapper scrolleable
+            let wrap = tbl.parentElement;
+            if (!wrap.classList.contains('admin-table-wrap') && !wrap.dataset.scrollFixed) {
+                const newWrap = document.createElement('div');
+                newWrap.dataset.scrollFixed = '1';
+                wrap.insertBefore(newWrap, tbl);
+                newWrap.appendChild(tbl);
+                wrap = newWrap;
             }
-            tbl.style.minWidth = '560px';
+            // 2. Forzar scroll en el wrapper
+            wrap.style.overflowX = 'auto';
+            wrap.style.webkitOverflowScrolling = 'touch';
+            wrap.style.display = 'block';
+            wrap.style.width = '100%';
+            wrap.style.maxWidth = '100%';
+            // 3. Tabla más ancha que el wrapper para que haya scroll
+            tbl.style.minWidth = '580px';
             tbl.style.width = 'auto';
+            tbl.style.tableLayout = 'auto';
+            // 4. Quitar overflow:hidden en TODOS los ancestros hasta .panel
+            let ancestor = wrap.parentElement;
+            while (ancestor && !ancestor.classList.contains('panel')) {
+                if (getComputedStyle(ancestor).overflow === 'hidden' ||
+                    ancestor.style.overflow === 'hidden') {
+                    ancestor.style.overflow = 'visible';
+                    ancestor.style.overflowX = 'visible';
+                }
+                ancestor = ancestor.parentElement;
+            }
         });
     }
-    // Espera a que los módulos ES6 terminen (DOMContentLoaded dispara después de ellos)
     document.addEventListener('DOMContentLoaded', () => {
         fixTableScroll();
-        // Engancha activarPanel para re-aplicar al cambiar de panel
         const _orig = window.activarPanel;
         if (typeof _orig === 'function') {
             window.activarPanel = function(...a) {
