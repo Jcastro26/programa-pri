@@ -1290,17 +1290,16 @@
             </a>
         <div class="footer-links-panel">
             <ul class="footer-nav-list">
-                <li><a href="ppri.html">Sobre PRI</a></li>
-                <li><a href="pre-test.html">Pre-Test</a></li>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pre-test.html">Simuladores</a></li>
                 <li><a href="productos.html">Recompensas</a></li>
                 <li><a href="docentes.html">Mentores</a></li>
-                <li><a href="dashboard.html">Métricas</a></li>
             </ul>
         </div>
         <div class="footer-info-panel">
             <div class="contacto-datos-premium">
-                <p><span>📍</span> Bogotá, Colombia</p>
-                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">programapri_bog@unal.edu.co</a></p>
+                <p><span>📍</span> Pacífico</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">Información General</a></p>
             </div>
         </div>
     </div>
@@ -2658,7 +2657,7 @@ window.verDetalleEstudiante = async function(uid) {
         } catch(e2){}
         document.getElementById('admin-perfil-contenido').innerHTML = `
             <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
-                <button class="btn-table" onclick="window.history.back();activarPanel('panel-admin-global');">← Volver</button>
+                <button class="btn-table" onclick="activarPanel('panel-admin-global');">← Volver</button>
             </div>
             <div class="section-box">
                 <p class="section-box-title">👤 Datos del Usuario</p>
@@ -4697,6 +4696,7 @@ function initProductosMentor() {
 
 window.logoutSession = function() {
     localStorage.removeItem('usuario_sesion_activa');
+    localStorage.removeItem('sesion_timestamp');
     window.location.href = "login.html";
 };
 </script>
