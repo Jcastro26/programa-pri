@@ -155,7 +155,7 @@
         .badge.verde{background:rgba(34,197,94,0.1);color:#86efac;}
         .badge.amarillo{background:rgba(234,179,8,0.1);color:#fde68a;}
         .badge.rojo{background:rgba(239,68,68,0.1);color:#fca5a5;}
-        .btn-table{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;}
+        .btn-table{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:0.35rem 0.75rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,94,0,0.15);}
         .btn-table:hover{background:rgba(255,94,0,0.1);border-color:rgba(255,94,0,0.3);color:var(--blanco);}
         .btn-table-danger{border-color:rgba(239,68,68,0.25);color:rgba(239,68,68,0.6);}
         .btn-table-danger:hover{background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.5);color:#f87171;}
@@ -168,7 +168,7 @@
         .fa-group input:focus,.fa-group select:focus,.fa-group textarea:focus{border-color:var(--naranja);}
         .fa-group textarea{resize:vertical;min-height:80px;}
         .fa-group select option{background:var(--azul-deep);}
-        .btn-add{font-family:var(--fuente-t);font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;border:3px solid var(--azul-deep);box-shadow:4px 4px 0 rgba(0,0,0,0.4);padding:0.7rem 1.5rem;cursor:pointer;transition:all 0.2s;margin-top:0.5rem;}
+        .btn-add{font-family:var(--fuente-t);font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;border:3px solid var(--azul-deep);box-shadow:4px 4px 0 rgba(0,0,0,0.4);padding:0.7rem 1.5rem;cursor:pointer;transition:all 0.2s;margin-top:0.5rem;touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,94,0,0.2);}
         .btn-add:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(0,0,0,0.4);}
         .btn-add.secondary{background:var(--teal);color:var(--azul-deep);}
         .btn-add.danger{background:var(--rojo);}
@@ -933,7 +933,7 @@
                         </select>
                     </div>
                 </div>
-                <div id="ti-lista" style="max-height:62vh;overflow-y:auto;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,0.35) rgba(255,255,255,0.05);">
+                <div id="ti-lista" style="max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,0.35) rgba(255,255,255,0.05);">
                     <p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;padding:24px;">Cargando…</p>
                 </div>
             </div>
@@ -3402,12 +3402,12 @@ window.renderTalleresAdmin = function() {
         const safeId = t.id;
         const safeTitulo = JSON.stringify(titulo).replace(/"/g,'&quot;');
         const safeFormId = JSON.stringify(t.formId||'').replace(/"/g,'&quot;');
-        return `<div style="box-sizing:border-box;width:100%;min-height:44px;margin-bottom:6px;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${bColor};border-radius:6px;opacity:${habilitado?1:.65};display:table;table-layout:fixed;">
-            <div style="display:table-cell;vertical-align:middle;padding:8px 10px;width:100%;">
+        return `<div style="box-sizing:border-box;width:100%;min-height:44px;margin-bottom:6px;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${bColor};border-radius:6px;opacity:${habilitado?1:.65};display:flex;align-items:center;">
+            <div style="flex:1;min-width:0;padding:8px 10px;">
                 <div style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;font-weight:700;color:#e8f0f8;line-height:17px;">${titulo} ${badgeHtml}</div>
                 <div style="font-size:9px;color:rgba(255,255,255,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}</div>
             </div>
-            <div style="display:table-cell;vertical-align:middle;padding:8px 10px;white-space:nowrap;width:1%;">
+            <div style="flex-shrink:0;padding:8px 10px;white-space:nowrap;">
                 <button class="btn-table" onclick="toggleHabilitadoTaller('${safeId}',${!habilitado})" style="padding:3px 7px;font-size:9px;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
                 <button class="btn-table" onclick="verCompletadosTaller('${safeId}',${safeTitulo})" style="padding:3px 7px;font-size:9px;color:#93c5fd;" title="Ver entregas">👥</button>
                 ${tieneForm ? `<button class="btn-table" onclick="previsualizarTaller(${safeFormId})" style="padding:3px 7px;font-size:9px;" title="Previsualizar">👁</button>` : ''}
