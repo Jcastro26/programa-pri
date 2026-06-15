@@ -319,10 +319,8 @@
 
             /* Tablas — scroll horizontal */
             .section-box{overflow:visible !important;}
-            .admin-table-wrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;display:block;}
-            .admin-table-wrap table{min-width:560px !important;}
-            table:not(.no-scroll){display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%;}
-            thead,tbody,tfoot{display:table;width:100%;}
+            .admin-table-wrap{overflow-x:auto !important;-webkit-overflow-scrolling:touch;width:100%;display:block;}
+            .admin-table-wrap table{min-width:560px !important;width:auto !important;}
             thead th,tbody td{padding:.6rem .65rem;font-size:.68rem;}
 
             /* Grids */
@@ -4670,6 +4668,40 @@ window.logoutSession = function() {
     document.addEventListener('mouseover',e=>{if(e.target.closest('button,a,input,select,table tr')){ring.style.transform='translate(-50%,-50%) scale(1.6)';}});
     document.addEventListener('mouseout',e=>{if(e.target.closest('button,a,input,select,table tr')){ring.style.transform='translate(-50%,-50%) scale(1)';}});
     window.addEventListener('scroll',()=>{const max=document.body.scrollHeight-window.innerHeight;document.getElementById('reading-bar').style.width=(window.scrollY/max*100)+'%';});
+
+    // ── Scroll horizontal en tablas móviles ──
+    function fixTableScroll() {
+        if (window.innerWidth > 900) return;
+        document.querySelectorAll('table').forEach(tbl => {
+            const parent = tbl.parentElement;
+            if (parent && parent.classList.contains('admin-table-wrap')) {
+                parent.style.overflowX = 'auto';
+                parent.style.webkitOverflowScrolling = 'touch';
+                parent.style.display = 'block';
+                parent.style.width = '100%';
+            } else if (parent && !parent.dataset.scrollFixed) {
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;display:block;';
+                wrap.dataset.scrollFixed = '1';
+                parent.insertBefore(wrap, tbl);
+                wrap.appendChild(tbl);
+            }
+            tbl.style.minWidth = '560px';
+            tbl.style.width = 'auto';
+        });
+    }
+    // Espera a que los módulos ES6 terminen (DOMContentLoaded dispara después de ellos)
+    document.addEventListener('DOMContentLoaded', () => {
+        fixTableScroll();
+        // Engancha activarPanel para re-aplicar al cambiar de panel
+        const _orig = window.activarPanel;
+        if (typeof _orig === 'function') {
+            window.activarPanel = function(...a) {
+                _orig.apply(this, a);
+                setTimeout(fixTableScroll, 150);
+            };
+        }
+    });
 </script>
 </body>
 </html>
