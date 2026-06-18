@@ -1,0 +1,40 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#0f2027" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Delfines saltando -->
+<path d="M45,85 Q55,60 70,55 Q80,52 85,60 Q88,68 80,75 Q65,85 45,85 Z" fill="#0891b2" opacity="0.85"/>
+<path d="M80,60 Q85,45 88,40 Q90,50 85,60 Z" fill="#0e7490" opacity="0.7"/>
+<circle cx="58" cy="68" r="2" fill="white" opacity="0.8"/>
+<path d="M115,72 Q125,48 140,43 Q150,40 155,48 Q158,56 150,63 Q135,73 115,72 Z" fill="#0e7490" opacity="0.8"/>
+<path d="M150,50 Q155,35 158,30 Q160,40 155,50 Z" fill="#0891b2" opacity="0.7"/>
+<circle cx="128" cy="56" r="2" fill="white" opacity="0.8"/>
+<path d="M30,90 Q100,82 170,88" stroke="#67e8f9" stroke-width="1.5" fill="none" opacity="0.5"/>
+<path d="M30,95 Q100,87 170,93" stroke="#a5f3fc" stroke-width="1" fill="none" opacity="0.4"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#0f2027" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#ccfbf1" opacity="0.95">"La ciencia es la</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#ccfbf1" opacity="0.95">mejor herramienta del futuro"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#2dd4bf" letter-spacing="1" opacity="0.9">— Stephen Hawking</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#2dd4bf" letter-spacing="2" opacity="1">DELFINES</text>
+</svg>

@@ -1,0 +1,54 @@
+<svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g10bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#021a40"/>
+      <stop offset="100%" stop-color="#063162"/>
+    </linearGradient>
+    <pattern id="g10grid" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(0,200,255,0.08)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="560" fill="url(#g10bg)"/>
+  <rect width="400" height="560" fill="url(#g10grid)"/>
+  <!-- Engranaje grande -->
+  <g transform="translate(200, 220)" opacity="0.85">
+    <circle r="70" fill="none" stroke="rgba(0,200,255,0.6)" stroke-width="3"/>
+    <circle r="50" fill="#042a5a" stroke="rgba(0,200,255,0.4)" stroke-width="2"/>
+    <circle r="15" fill="rgba(0,200,255,0.3)" stroke="rgba(0,200,255,0.7)" stroke-width="2"/>
+    <!-- Dientes del engranaje -->
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)"/>
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)" transform="rotate(45)"/>
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)" transform="rotate(90)"/>
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)" transform="rotate(135)"/>
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)" transform="rotate(180)"/>
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)" transform="rotate(225)"/>
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)" transform="rotate(270)"/>
+    <rect x="-8" y="-80" width="16" height="18" rx="2" fill="rgba(0,200,255,0.5)" transform="rotate(315)"/>
+    <!-- Líneas de radio -->
+    <line x1="-50" y1="0" x2="50" y2="0" stroke="rgba(0,200,255,0.3)" stroke-width="1.5"/>
+    <line x1="0" y1="-50" x2="0" y2="50" stroke="rgba(0,200,255,0.3)" stroke-width="1.5"/>
+    <line x1="-35" y1="-35" x2="35" y2="35" stroke="rgba(0,200,255,0.2)" stroke-width="1"/>
+    <line x1="35" y1="-35" x2="-35" y2="35" stroke="rgba(0,200,255,0.2)" stroke-width="1"/>
+  </g>
+  <!-- Engranaje pequeño -->
+  <g transform="translate(310, 140)" opacity="0.7">
+    <circle r="38" fill="none" stroke="rgba(255,94,0,0.5)" stroke-width="2"/>
+    <circle r="26" fill="#042a5a" stroke="rgba(255,94,0,0.3)" stroke-width="1.5"/>
+    <circle r="8" fill="rgba(255,94,0,0.3)"/>
+    <rect x="-5" y="-44" width="10" height="12" rx="2" fill="rgba(255,94,0,0.4)" transform="rotate(0)"/>
+    <rect x="-5" y="-44" width="10" height="12" rx="2" fill="rgba(255,94,0,0.4)" transform="rotate(60)"/>
+    <rect x="-5" y="-44" width="10" height="12" rx="2" fill="rgba(255,94,0,0.4)" transform="rotate(120)"/>
+    <rect x="-5" y="-44" width="10" height="12" rx="2" fill="rgba(255,94,0,0.4)" transform="rotate(180)"/>
+    <rect x="-5" y="-44" width="10" height="12" rx="2" fill="rgba(255,94,0,0.4)" transform="rotate(240)"/>
+    <rect x="-5" y="-44" width="10" height="12" rx="2" fill="rgba(255,94,0,0.4)" transform="rotate(300)"/>
+  </g>
+  <!-- Regla / escuadra decorativa -->
+  <rect x="30" y="100" width="80" height="10" rx="2" fill="rgba(255,200,0,0.3)" transform="rotate(-30 30 100)"/>
+  <!-- Texto -->
+  <text x="200" y="350" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="4">INGENIERÍA</text>
+  <text x="200" y="376" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="11" fill="rgba(0,200,255,0.7)" letter-spacing="5">PACÍFICO</text>
+  <line x1="100" y1="390" x2="300" y2="390" stroke="rgba(255,94,0,0.6)" stroke-width="1.5"/>
+  <!-- Fórmula decorativa -->
+  <text x="200" y="420" text-anchor="middle" font-family="monospace" font-size="13" fill="rgba(0,200,255,0.4)">F = ma · E = mc²</text>
+  <text x="200" y="480" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="2">PROGRAMA-PRI · TUMACO</text>
+</svg>

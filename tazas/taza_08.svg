@@ -1,0 +1,41 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#1c2a1c" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Tortuga marina -->
+<ellipse cx="100" cy="68" rx="30" ry="22" fill="#15803d" opacity="0.85"/>
+<ellipse cx="100" cy="68" rx="22" ry="16" fill="none" stroke="#4ade80" stroke-width="1" opacity="0.6"/>
+<path d="M82,58 Q78,50 72,52 Q70,60 78,64 Z" fill="#166534" opacity="0.8"/>
+<path d="M118,58 Q122,50 128,52 Q130,60 122,64 Z" fill="#166534" opacity="0.8"/>
+<path d="M82,78 Q78,88 72,86 Q74,78 80,74 Z" fill="#166534" opacity="0.75"/>
+<path d="M118,78 Q122,88 128,86 Q126,78 120,74 Z" fill="#166534" opacity="0.75"/>
+<ellipse cx="100" cy="52" rx="8" ry="6" fill="#14532d" opacity="0.9"/>
+<circle cx="97" cy="50" r="2" fill="white" opacity="0.8"/>
+<path d="M85,65 Q100,60 115,65 Q100,72 85,65 Z" fill="#86efac" opacity="0.3"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#1c2a1c" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#f0fdf4" opacity="0.95">"La perseverancia es</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#f0fdf4" opacity="0.95">la madre del éxito"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#86efac" letter-spacing="1" opacity="0.9">— Isaac Newton</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#86efac" letter-spacing="2" opacity="1">TORTUGA MARINA</text>
+</svg>

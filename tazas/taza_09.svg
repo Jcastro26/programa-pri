@@ -1,0 +1,38 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#3b1f00" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Atardecer sobre el Morro -->
+<path d="M30,90 Q80,55 130,58 Q155,60 170,70 L170,105 L30,105 Z" fill="#7c3aed" opacity="0.5"/>
+<circle cx="100" cy="68" r="20" fill="#f97316" opacity="0.85"/>
+<path d="M30,80 Q80,60 170,75 L170,90 L30,90 Z" fill="#ea580c" opacity="0.6"/>
+<path d="M30,88 Q80,70 170,82 L170,100 L30,100 Z" fill="#c2410c" opacity="0.5"/>
+<ellipse cx="100" cy="68" rx="20" ry="8" fill="#fbbf24" opacity="0.5"/>
+<path d="M85,80 Q88,70 90,75 Q92,68 95,72 Q97,66 100,70 Q103,66 105,72 Q108,68 110,75 Q112,70 115,80 Z" fill="#1a0a00" opacity="0.6"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#3b1f00" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#fff7ed" opacity="0.95">"Cada amanecer trae</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#fff7ed" opacity="0.95">una nueva oportunidad"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#fb923c" letter-spacing="1" opacity="0.9">— Ralph Waldo Emerson</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#fb923c" letter-spacing="2" opacity="1">ATARDECER</text>
+</svg>

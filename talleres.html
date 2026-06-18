@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talleres Pre-ICFES | Programa PRI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Lora:ital,wght@0,400;0,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --c-lc:   #7c3aed; --c-lc-bg:  #f5f0ff;
+  --c-qu:   #059669; --c-qu-bg:  #ecfdf5;
+  --c-in:   #0369a1; --c-in-bg:  #e0f2fe;
+  --c-ma:   #d97706; --c-ma-bg:  #fffbeb;
+  --c-ge:   #0891b2; --c-ge-bg:  #e0f7fa;
+  --c-bi:   #16a34a; --c-bi-bg:  #f0fdf4;
+  --c-so:   #dc2626; --c-so-bg:  #fef2f2;
+}
+
+/* ── PAGE LAYOUT ─────────────────────────────────────────── */
+body { background: #05111f; color: #e8f0f8; }
+.talleres-hero {
+  background: linear-gradient(135deg,#021226 0%,#0a2440 60%,#0d3558 100%);
+  padding: 7rem 2rem 3rem;
+  text-align: center;
+  border-bottom: 2px solid rgba(255,94,0,0.25);
+}
+.talleres-hero h1 {
+  font-family:'Montserrat',sans-serif; font-weight:900;
+  font-size: clamp(2rem,5vw,3.4rem);
+  color:#fff; margin-bottom:.6rem;
+}
+.talleres-hero h1 span { color:#FF5E00; }
+.talleres-hero p { font-size:1.1rem; color:#a8c4d8; max-width:620px; margin:0 auto; }
+
+/* ── FILTER BAR ──────────────────────────────────────────── */
+.filter-bar {
+  display:flex; flex-wrap:wrap; gap:.5rem;
+  padding:1.2rem 2rem; background:#071828;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  position:sticky; top:68px; z-index:100;
+}
+.filter-btn {
+  padding:.38rem .85rem; border-radius:20px; border:1.5px solid rgba(255,255,255,0.15);
+  background:transparent; color:#a8c4d8; font-size:.8rem; font-weight:700;
+  cursor:pointer; font-family:'Montserrat',sans-serif; transition:all .18s;
+  letter-spacing:.5px; text-transform:uppercase;
+}
+.filter-btn:hover, .filter-btn.active {
+  color:#fff; border-color:currentColor;
+}
+.filter-btn[data-area="Todos"]         { color:#FF5E00; }
+.filter-btn[data-area="Lectura Crítica"]{ color:var(--c-lc); }
+.filter-btn[data-area="Química"]        { color:var(--c-qu); }
+.filter-btn[data-area="Inglés"]         { color:var(--c-in); }
+.filter-btn[data-area="Matemáticas"]    { color:var(--c-ma); }
+.filter-btn[data-area="Geometría"]      { color:var(--c-ge); }
+.filter-btn[data-area="Biología"]       { color:var(--c-bi); }
+.filter-btn[data-area="Sociales"]       { color:var(--c-so); }
+.filter-btn.active { background:rgba(255,255,255,0.08); }
+
+.grupo-filter {
+  margin-left:auto; display:flex; gap:.4rem; align-items:center;
+}
+.grupo-btn {
+  padding:.32rem .7rem; border-radius:12px; border:1.5px solid rgba(255,255,255,0.12);
+  background:transparent; color:#7a9ab8; font-size:.75rem; font-weight:700;
+  cursor:pointer; font-family:'Montserrat',sans-serif; transition:all .18s;
+}
+.grupo-btn.active { background:rgba(255,255,255,0.1); color:#fff; border-color:#fff; }
+
+/* ── GRID ────────────────────────────────────────────────── */
+.talleres-main { padding:2rem; max-width:1400px; margin:0 auto; }
+
+.area-section { margin-bottom:3rem; }
+.area-title {
+  font-family:'Montserrat',sans-serif; font-weight:900;
+  font-size:1.1rem; letter-spacing:2px; text-transform:uppercase;
+  padding:.4rem 1rem; border-radius:4px;
+  margin-bottom:1rem; display:inline-block;
+}
+
+.talleres-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1rem;
+}
+
+/* ── TALLER CARD ─────────────────────────────────────────── */
+.taller-card {
+  background:#0a1e32; border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:10px; padding:1.2rem 1rem;
+  cursor:pointer; transition:transform .2s, box-shadow .2s, border-color .2s;
+  position:relative; overflow:hidden;
+}
+.taller-card:hover {
+  transform:translateY(-3px);
+  box-shadow:0 8px 30px rgba(0,0,0,0.5);
+}
+.taller-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+}
+.taller-card[data-area="Lectura Crítica"]::before { background:var(--c-lc); }
+.taller-card[data-area="Química"]::before         { background:var(--c-qu); }
+.taller-card[data-area="Inglés"]::before          { background:var(--c-in); }
+.taller-card[data-area="Matemáticas"]::before     { background:var(--c-ma); }
+.taller-card[data-area="Geometría"]::before       { background:var(--c-ge); }
+.taller-card[data-area="Biología"]::before        { background:var(--c-bi); }
+.taller-card[data-area="Sociales"]::before        { background:var(--c-so); }
+
+.taller-card:hover[data-area="Lectura Crítica"] { border-color:var(--c-lc); }
+.taller-card:hover[data-area="Química"]         { border-color:var(--c-qu); }
+.taller-card:hover[data-area="Inglés"]          { border-color:var(--c-in); }
+.taller-card:hover[data-area="Matemáticas"]     { border-color:var(--c-ma); }
+.taller-card:hover[data-area="Geometría"]       { border-color:var(--c-ge); }
+.taller-card:hover[data-area="Biología"]        { border-color:var(--c-bi); }
+.taller-card:hover[data-area="Sociales"]        { border-color:var(--c-so); }
+
+.card-area-badge {
+  font-size:.65rem; font-weight:900; letter-spacing:1.5px;
+  text-transform:uppercase; padding:.2rem .5rem; border-radius:3px;
+  margin-bottom:.6rem; display:inline-block;
+}
+[data-area="Lectura Crítica"] .card-area-badge { background:rgba(124,58,237,.2); color:var(--c-lc); }
+[data-area="Química"]         .card-area-badge { background:rgba(5,150,105,.2);  color:var(--c-qu); }
+[data-area="Inglés"]          .card-area-badge { background:rgba(3,105,161,.2);  color:var(--c-in); }
+[data-area="Matemáticas"]     .card-area-badge { background:rgba(217,119,6,.2);  color:var(--c-ma); }
+[data-area="Geometría"]       .card-area-badge { background:rgba(8,145,178,.2);  color:var(--c-ge); }
+[data-area="Biología"]        .card-area-badge { background:rgba(22,163,74,.2);  color:var(--c-bi); }
+[data-area="Sociales"]        .card-area-badge { background:rgba(220,38,38,.2);  color:var(--c-so); }
+
+.card-title {
+  font-family:'Montserrat',sans-serif; font-weight:700;
+  font-size:.9rem; color:#e8f0f8; margin-bottom:.5rem; line-height:1.3;
+}
+.card-meta { font-size:.75rem; color:#5a7a96; display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.8rem; }
+.card-meta span { background:rgba(255,255,255,0.06); padding:.15rem .4rem; border-radius:3px; }
+
+.card-btn {
+  width:100%; padding:.5rem; border:none; border-radius:6px;
+  font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:700;
+  letter-spacing:.5px; cursor:pointer; transition:all .18s;
+  background:#FF5E00; color:#fff;
+}
+.card-btn:hover { background:#e05200; transform:scale(1.02); }
+
+/* Admin actions on card */
+.card-admin-actions {
+  display:none; position:absolute; top:.5rem; right:.5rem; gap:.3rem;
+}
+body.is-admin .card-admin-actions { display:flex; }
+.card-admin-btn {
+  width:26px; height:26px; border:none; border-radius:4px;
+  cursor:pointer; font-size:.8rem; display:flex; align-items:center; justify-content:center;
+  transition:all .15s;
+}
+.card-admin-btn.edit-btn { background:rgba(255,180,0,.18); color:#FFD700; }
+.card-admin-btn.del-btn  { background:rgba(220,38,38,.18); color:#ff6b6b; }
+.card-admin-btn:hover { transform:scale(1.15); }
+
+/* ── MODAL FORM ──────────────────────────────────────────── */
+.form-modal-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.85); z-index:5000;
+  align-items:center; justify-content:center;
+}
+.form-modal-overlay.open { display:flex; }
+
+.form-modal-box {
+  background:#071828; border-radius:12px;
+  border:1.5px solid rgba(255,255,255,0.12);
+  width:min(820px, 96vw); height:min(90vh,780px);
+  display:flex; flex-direction:column;
+  box-shadow:0 20px 80px rgba(0,0,0,0.8);
+  overflow:hidden;
+}
+.form-modal-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.8rem 1.2rem; border-bottom:1px solid rgba(255,255,255,0.08);
+  gap:1rem; flex-shrink:0;
+}
+.form-modal-header h3 {
+  font-family:'Montserrat',sans-serif; font-weight:700; font-size:1rem; color:#fff;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.form-modal-actions { display:flex; gap:.5rem; flex-shrink:0; }
+.modal-open-btn {
+  padding:.4rem .9rem; border-radius:6px; border:none;
+  background:rgba(255,94,0,.18); color:#FF5E00; font-size:.78rem; font-weight:700;
+  cursor:pointer; font-family:'Montserrat',sans-serif; white-space:nowrap;
+}
+.modal-close-btn {
+  width:32px; height:32px; border-radius:6px; border:none;
+  background:rgba(255,255,255,.08); color:#a8c4d8;
+  font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.modal-close-btn:hover { background:rgba(255,255,255,.15); color:#fff; }
+.form-modal-iframe {
+  flex:1; border:none; width:100%; background:#fff;
+}
+.form-modal-loading {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  color:#5a7a96; font-family:'Montserrat',sans-serif; font-size:.9rem;
+  flex-direction:column; gap:1rem;
+}
+.form-modal-loading::before {
+  content:''; width:36px; height:36px; border-radius:50%;
+  border:3px solid rgba(255,94,0,.3); border-top-color:#FF5E00;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── ADMIN PANEL ─────────────────────────────────────────── */
+.admin-panel {
+  display:none; background:#040f1c;
+  border-top:2px solid rgba(255,94,0,.3);
+  padding:1.5rem 2rem;
+}
+body.is-admin .admin-panel { display:block; }
+
+.admin-panel h2 {
+  font-family:'Montserrat',sans-serif; font-weight:900;
+  font-size:1rem; color:#FF5E00; letter-spacing:2px;
+  text-transform:uppercase; margin-bottom:1.2rem;
+}
+.admin-toolbar { display:flex; gap:.8rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+.admin-action-btn {
+  padding:.5rem 1.2rem; border-radius:6px; border:none;
+  font-family:'Montserrat',sans-serif; font-size:.8rem; font-weight:700;
+  cursor:pointer; transition:all .18s; letter-spacing:.5px;
+}
+.btn-add-taller { background:#FF5E00; color:#fff; }
+.btn-seed      { background:rgba(255,215,0,.15); color:#FFD700; border:1.5px solid rgba(255,215,0,.3); }
+.btn-seed:hover { background:rgba(255,215,0,.25); }
+.btn-add-taller:hover { background:#e05200; }
+
+/* Add/Edit taller form */
+.taller-form-wrap {
+  display:none; background:#071828; border-radius:10px;
+  border:1px solid rgba(255,255,255,.1); padding:1.5rem; margin-bottom:1.5rem;
+}
+.taller-form-wrap.open { display:block; }
+.taller-form-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;
+}
+.taller-field { display:flex; flex-direction:column; gap:.3rem; }
+.taller-field label { font-size:.75rem; font-weight:700; color:#7a9ab8; text-transform:uppercase; letter-spacing:.5px; }
+.taller-field input, .taller-field select {
+  padding:.5rem .7rem; border-radius:6px;
+  border:1.5px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.05); color:#e8f0f8;
+  font-size:.88rem; font-family:'Montserrat',sans-serif;
+}
+.taller-field input:focus, .taller-field select:focus {
+  outline:none; border-color:#FF5E00;
+}
+.taller-field.full { grid-column:1/-1; }
+.taller-form-actions { display:flex; gap:.8rem; margin-top:1rem; }
+.btn-save-taller { background:#FF5E00; color:#fff; padding:.5rem 1.4rem; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.85rem; cursor:pointer; }
+.btn-cancel-taller { background:rgba(255,255,255,.06); color:#a8c4d8; padding:.5rem 1.2rem; border-radius:6px; border:none; font-family:'Montserrat',sans-serif; font-weight:700; font-size:.85rem; cursor:pointer; }
+#seed-status { color:#FFD700; font-size:.85rem; margin-top:.5rem; display:none; }
+
+/* ── EMPTY STATE ─────────────────────────────────────────── */
+.empty-state {
+  text-align:center; padding:4rem 2rem; color:#3a5a74;
+  font-family:'Montserrat',sans-serif;
+}
+.empty-state span { font-size:3rem; display:block; margin-bottom:1rem; }
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+@media(max-width:600px){
+  .talleres-hero { padding:5rem 1rem 2rem; }
+  .talleres-main { padding:1rem; }
+  .filter-bar { padding:.8rem 1rem; gap:.4rem; }
+  .grupo-filter { margin-left:0; }
+  .admin-panel { padding:1rem; }
+  .taller-form-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR (igual que otras páginas) ─────────────────── -->
+<nav class="navbar" id="main-navbar">
+  <div class="logo-container">
+    <a href="index.html"><img src="logo.png" alt="PRI" style="height:38px;" onerror="this.style.display='none'"></a>
+  </div>
+  <ul class="nav-links" id="nav-links-menu">
+    <li><a href="index.html">Inicio</a></li>
+    <li><a href="ppri.html">Sobre PRI</a></li>
+    <li><a href="preicfes.html">Pre-ICFES</a></li>
+    <li><a href="talleres.html" class="active">Talleres</a></li>
+    <li><a href="pre-test.html">Pre-Test</a></li>
+    <li><a href="docentes.html">Docentes</a></li>
+    <li><a href="tienda.html">Productos</a></li>
+    <li><a href="acceso.html" class="btn-login" id="nav-login-btn">Inicia Sesión</a></li>
+  </ul>
+  <div class="menu-toggle" id="mobile-menu">
+    <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+  </div>
+</nav>
+<div id="nav-backdrop"></div>
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<div class="talleres-hero">
+  <h1>Talleres <span>Pre-ICFES</span></h1>
+  <p>Practica por área antes del examen. Cada taller sigue el formato oficial del ICFES y registra tu puntaje automáticamente.</p>
+</div>
+
+<!-- ── FILTER BAR ────────────────────────────────────────── -->
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" data-area="Todos">Todos</button>
+  <button class="filter-btn" data-area="Lectura Crítica">Lectura Crítica</button>
+  <button class="filter-btn" data-area="Matemáticas">Matemáticas</button>
+  <button class="filter-btn" data-area="Inglés">Inglés</button>
+  <button class="filter-btn" data-area="Biología">Biología</button>
+  <button class="filter-btn" data-area="Química">Química</button>
+  <button class="filter-btn" data-area="Sociales">Sociales</button>
+  <button class="filter-btn" data-area="Geometría">Geometría</button>
+  <div class="grupo-filter">
+    <button class="grupo-btn active" data-grupo="Todos">Todos</button>
+    <button class="grupo-btn" data-grupo="G1">G1</button>
+    <button class="grupo-btn" data-grupo="G2">G2</button>
+    <button class="grupo-btn" data-grupo="Rehabilitación">Rehab</button>
+  </div>
+</div>
+
+<!-- ── MAIN GRID ──────────────────────────────────────────── -->
+<main class="talleres-main" id="talleresMain">
+  <div class="empty-state" id="loadingState">
+    <span>📚</span>
+    Cargando talleres…
+  </div>
+</main>
+
+<!-- ── ADMIN PANEL ────────────────────────────────────────── -->
+<section class="admin-panel">
+  <h2>⚙ Panel Admin — Talleres</h2>
+  <div class="admin-toolbar">
+    <button class="admin-action-btn btn-add-taller" onclick="abrirFormTaller()">+ Agregar Taller</button>
+    <button class="admin-action-btn btn-seed" onclick="seedTalleres()">📥 Cargar 54 talleres iniciales</button>
+  </div>
+  <div id="seed-status"></div>
+
+  <!-- Formulario añadir/editar -->
+  <div class="taller-form-wrap" id="tallerFormWrap">
+    <h3 style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:.95rem;color:#FF5E00;margin-bottom:1rem;" id="tallerFormTitle">Nuevo Taller</h3>
+    <div class="taller-form-grid">
+      <div class="taller-field full">
+        <label>Título del taller</label>
+        <input type="text" id="tf-titulo" placeholder="ej: Sesión 2 - Lectura Crítica G1">
+      </div>
+      <div class="taller-field">
+        <label>Área</label>
+        <select id="tf-area">
+          <option>Lectura Crítica</option>
+          <option>Matemáticas</option>
+          <option>Inglés</option>
+          <option>Biología</option>
+          <option>Química</option>
+          <option>Sociales</option>
+          <option>Geometría</option>
+        </select>
+      </div>
+      <div class="taller-field">
+        <label>Grupo</label>
+        <select id="tf-grupo">
+          <option>General</option>
+          <option>G1</option>
+          <option>G2</option>
+          <option>Rehabilitación</option>
+        </select>
+      </div>
+      <div class="taller-field">
+        <label>Sesión #</label>
+        <input type="number" id="tf-sesion" min="1" max="20" placeholder="1">
+      </div>
+      <div class="taller-field">
+        <label>Módulo</label>
+        <input type="text" id="tf-modulo" placeholder="ej: 1B">
+      </div>
+      <div class="taller-field full">
+        <label>URL del formulario Google</label>
+        <input type="url" id="tf-url" placeholder="https://docs.google.com/forms/d/e/.../viewform">
+      </div>
+    </div>
+    <div class="taller-form-actions">
+      <button class="btn-save-taller" onclick="guardarTaller()">Guardar</button>
+      <button class="btn-cancel-taller" onclick="cerrarFormTaller()">Cancelar</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── MODAL FORM ─────────────────────────────────────────── -->
+<div class="form-modal-overlay" id="formModal" onclick="cerrarModal(event)">
+  <div class="form-modal-box">
+    <div class="form-modal-header">
+      <h3 id="modalTitle">Cargando…</h3>
+      <div class="form-modal-actions">
+        <button class="modal-open-btn" id="modalOpenBtn" onclick="abrirEnNuevaPestana()">↗ Abrir en pestaña</button>
+        <button class="modal-close-btn" onclick="cerrarModalBtn()">✕</button>
+      </div>
+    </div>
+    <div class="form-modal-loading" id="modalLoading">Cargando formulario…</div>
+    <iframe class="form-modal-iframe" id="modalIframe" style="display:none"
+      onload="this.style.display='block';document.getElementById('modalLoading').style.display='none'">
+    </iframe>
+  </div>
+</div>
+
+<!-- ── FIREBASE + LÓGICA ──────────────────────────────────── -->
+<script type="module">
+import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc,
+  query, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const FB = { apiKey:"AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+  authDomain:"programa-pri-2d395.firebaseapp.com",
+  projectId:"programa-pri-2d395",
+  appId:"1:854011964095:web:6e075f73a385bb804e5356" };
+const app  = initializeApp(FB);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ─── SEED DATA (54 formularios únicos) ───────────────────────
+const SEED = [
+  { titulo:"Sesión 1 - Lectura Crítica", area:"Lectura Crítica", grupo:"General", sesion:1, modulo:"1B", formId:"1FAIpQLSfM6a6xw0oqb8NZ4jcpoNx7q1Dg1CjPe7hCQVxdbsUvIaKKJg" },
+  { titulo:"Sesión 2 - Lectura Crítica G1", area:"Lectura Crítica", grupo:"G1", sesion:2, modulo:"2", formId:"1FAIpQLSeAbN91c0EZeGVRByUcLM0wZda3JiS_vz7SNmTcKghaZa33bg" },
+  { titulo:"Sesión 2 - Lectura Crítica G2", area:"Lectura Crítica", grupo:"G2", sesion:2, modulo:"2", formId:"1FAIpQLSfcKy5nfGCyKYd4obuQ2Ror8dZwRLje58gIdj6FlnMvRtPnpw" },
+  { titulo:"Lectura Crítica - Sesión 1 G1 A1", area:"Lectura Crítica", grupo:"G1", sesion:1, modulo:"1B", formId:"1FAIpQLSezdpy5qbUhjKl1Dqgl6AKBwXnMhXjQz6CWCS3HoNlDXimF1g" },
+  { titulo:"Lectura Crítica - Sesión 1 G2 A1", area:"Lectura Crítica", grupo:"G2", sesion:1, modulo:"1B", formId:"1FAIpQLSd3rD41NwzNcFSNzSEs3gbztXIG_wlc2MsEQpzt5xJf6u3Q-g" },
+  { titulo:"Sesión 1B - Lectura Crítica", area:"Lectura Crítica", grupo:"General", sesion:1, modulo:"1B", formId:"1FAIpQLSedknr_BBc0cw30_EMV3qVsUK8bxhVFbpNJOBbiBFHOB2Q1hQ" },
+  { titulo:"Sesión 2 - Lectura Crítica G1 (alt)", area:"Lectura Crítica", grupo:"G1", sesion:2, modulo:"2", formId:"1FAIpQLScSaO_7bkAhRrdBXB-xIeqg6W03bMgomBdJvqrqLZeNywe16g" },
+  { titulo:"Sesión 3 - Lectura Crítica", area:"Lectura Crítica", grupo:"General", sesion:3, modulo:"3", formId:"1FAIpQLSdG5QiOk9qvCt2TBldUivZ_3DYxvIIc3TWKZ0xAADLRN71VtQ" },
+  { titulo:"Sesión 3 - Lectura Crítica G2", area:"Lectura Crítica", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLScm81xq--WSueeSdd_YSbYMfAQBKn9K2TBh9N8-ZcL-5TFaxQ" },
+  { titulo:"Sesión 3 - Lectura Crítica Rehabilitación", area:"Lectura Crítica", grupo:"Rehabilitación", sesion:3, modulo:"3", formId:"1FAIpQLScUVrQ2GpQaJuz5jmrWC3duXt43OON_aoNTcAM8lImrEKlucA" },
+  { titulo:"Sesión 1 - Química", area:"Química", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLSe7p2V669CmVLIYo18rW-6hCSW5wZJxEhzw356hw6tGlHBqKQ" },
+  { titulo:"Sesión 2 - Química", area:"Química", grupo:"General", sesion:2, modulo:"2", formId:"1FAIpQLSeDPF7hGUBStfHv0aCqiWS5DqpXKGl0TMfBq7oZJvCARDuu1Q" },
+  { titulo:"Sesión 2 - Química G1", area:"Química", grupo:"G1", sesion:2, modulo:"2", formId:"1FAIpQLSc3_FNitNMkUDfWzqLtEybO_M2yFFu3G5aazfzitJOpCZ1LSA" },
+  { titulo:"Sesión 1 - Química G2", area:"Química", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLScPk5Og62f8hqi4GGYnzutXC4Tp8YvpwUiY7jrEqkzMNzrdnA" },
+  { titulo:"Sesión 1 - Química G1", area:"Química", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSfkliR0cosKDA09dJ2GkMVPazGgvmC_chKuFhyy2tJeM0qs2w" },
+  { titulo:"Sesión 1 - Inglés", area:"Inglés", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLSd05mh8Kh2Z9IOfpfAOFHtatCBAsWry2YaNMjm7tP30OIpIaA" },
+  { titulo:"Sesión 1 - Inglés G1", area:"Inglés", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSciGTjER23f6LpjfbO63-qDqG_BVGOS1lJEapxgP-BQ7SQfag" },
+  { titulo:"Sesión 1 - Inglés G2", area:"Inglés", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSfCNGtv0pJ1xT7sGdMqpun8nGncb1oc1KlrTToTHR7I3i5NOA" },
+  { titulo:"Sesión 2 - Inglés", area:"Inglés", grupo:"General", sesion:2, modulo:"2", formId:"1FAIpQLSdAFrc-UOggoM_XXhfQbvCmljeizB2q1S1CoP0Cg8hDPd1-Fg" },
+  { titulo:"Sesión 2 - Inglés G1", area:"Inglés", grupo:"G1", sesion:2, modulo:"1", formId:"1FAIpQLSfq83eYgE3J56jbvvF1q7GeryvW3P45839ICBDITiQ1ItRnJQ" },
+  { titulo:"Sesión 2 - Inglés G2", area:"Inglés", grupo:"G2", sesion:2, modulo:"2", formId:"1FAIpQLSceWw-pTtnlU64FX4W_10jDo-jLqOr10uCfmWYXpVYYTF85RA" },
+  { titulo:"Sesión 3 - Inglés G1", area:"Inglés", grupo:"G1", sesion:3, modulo:"3", formId:"1FAIpQLSc6JgJ0bTHk0G3cbIf2pTicUSPANxxier1socSuglfR8sE_OQ" },
+  { titulo:"Sesión 3 - Inglés G2", area:"Inglés", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLSdw35vCsHR9RyqaT6ajnxvqvrOZ83jnrlk7CdKVOTQQ8-pvew" },
+  { titulo:"Sesión 3 - Inglés G1 (alt)", area:"Inglés", grupo:"G1", sesion:3, modulo:"3", formId:"1FAIpQLSdJdGIfcYnaUBPto29g_G5VVRbM2VBMWv33yVCOkD057oBFPQ" },
+  { titulo:"Sesión 4 - Inglés", area:"Inglés", grupo:"General", sesion:4, modulo:"4", formId:"1FAIpQLSfP5ELyfumN8KmFrKjclSPc6b_uIFIN2JJKI3ryljZAIlOudg" },
+  { titulo:"Sesión 3 - Inglés (alt)", area:"Inglés", grupo:"General", sesion:3, modulo:"3", formId:"1FAIpQLSe4VXd1N-TyCW7acoYSXfVMr6XEcj6JM69zpmtNx68OcNlv7Q" },
+  { titulo:"Aritmética S1 - G1", area:"Matemáticas", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSeJa5nGqUVrbz5YHrdtutLvGwVK4es9nor7sojhyUar7B5mmA" },
+  { titulo:"Aritmética S1 - G2", area:"Matemáticas", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSf_AZ2AiHoa3Pov9c-Bw3o71vsSP-xSfui-hOmP_0hHKa2KaQ" },
+  { titulo:"Aritmética S4", area:"Matemáticas", grupo:"General", sesion:4, modulo:"2", formId:"", formUrl:"https://forms.gle/5iHe6hkLJxy88q19A" },
+  { titulo:"Sesión 3 - Matemáticas", area:"Matemáticas", grupo:"General", sesion:3, modulo:"2", formId:"1FAIpQLSe5nSzlmt4WLseydt2FlqCioL0kVr7qB64pObiZe3VhNR0b4g" },
+  { titulo:"Sesión 3 - Matemáticas G1", area:"Matemáticas", grupo:"G1", sesion:3, modulo:"3", formId:"1FAIpQLSeJz6tfLHAIG6FQKDnd82LTBJqxk5ANTVCIOrrdy9foaWoJpA" },
+  { titulo:"Sesión 3 - Matemáticas G2", area:"Matemáticas", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLSeeQ_8XO1ZoVV1xfFe9Hz2pJqghNMz47BWP9MfIjeXsIYx4gw" },
+  { titulo:"Geometría S1 - G1", area:"Geometría", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSfvKbd91V8xsP7JrgJV_1AzzuWI0kdjeKD-acfNQHrne5k5Rg" },
+  { titulo:"Geometría S1 - G2", area:"Geometría", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSfoBkKrBeFlHT4i4IariTaI5oJ2XvbB5AZSJXixDSFD_0PVFg" },
+  { titulo:"Sesión 1 - Biología", area:"Biología", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLScHDJZpOcGEr_Cmg4gcUryoW34kMrANt1QXBQZvOKyOVk3jVA" },
+  { titulo:"Sesión 1 - Biología (alt)", area:"Biología", grupo:"General", sesion:1, modulo:"1", formId:"1FAIpQLSdgauY0OUrRzgTw6yhpMihNgpJ_jXtkih2Fna8A5mIYAkOghw" },
+  { titulo:"Sesión 1 - Biología G1 A1", area:"Biología", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSdtWq6VvraLuByDeEiHTzK-AYmkCwAxPXFSIOoBHsPm8MGBYQ" },
+  { titulo:"Sesión 1 - Biología G2 A1", area:"Biología", grupo:"G2", sesion:1, modulo:"1", formId:"1FAIpQLSej59qDlOMJTy-iRbPnv_CzcrTxkRl3wbOc6WQSCrgcYb1LYw" },
+  { titulo:"Sesión 2 - Biología G1", area:"Biología", grupo:"G1", sesion:2, modulo:"1", formId:"1FAIpQLSfjMiQLNKNAhNNdZpcYWLQIJbr5svWU6Y722dwO1VlLXN5uyw" },
+  { titulo:"Sesión 2 - Biología G2", area:"Biología", grupo:"G2", sesion:2, modulo:"1", formId:"1FAIpQLSfD3lo2xcmou6hC2YXFX9aS9rJvRR1o1rPo589qq39ZgKxC5w" },
+  { titulo:"Sesión 2 - Biología G2 (alt)", area:"Biología", grupo:"G2", sesion:2, modulo:"1", formId:"1FAIpQLScZMrOMEp9qv3pcZXMKPOXH66r6gZGGRi-M1ov7KsJ8yx9ReA" },
+  { titulo:"Sesión 2 - Biología G2 (B)", area:"Biología", grupo:"G2", sesion:2, modulo:"1", formId:"1FAIpQLScpxDbCPwoKtxK_A4SWCo78UIShlZ7ocwBBBb-oW7BZnAfc7Q" },
+  { titulo:"Sesión 1 - Sociales G1", area:"Sociales", grupo:"G1", sesion:1, modulo:"1", formId:"1FAIpQLSfRGtpB0WUSbDyTZOPdsaw06lg1osQeWcgA90Q3IjfB9k4q7g" },
+  { titulo:"Sesión 3 - Sociales G2", area:"Sociales", grupo:"G2", sesion:3, modulo:"3", formId:"1FAIpQLSfxM5Fch8c7uiZwuag8rTM60nO-9mmVCKTkK_O-lAflrED1Ag" },
+  { titulo:"Sesión 3 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:3, modulo:"3", formId:"1FAIpQLSd_svkXf4cpirdYblfFzlXJq2G5OxjwZ9BGCWVml4aQK1AtSw" },
+  { titulo:"Sesión 4 - Sociales G1", area:"Sociales", grupo:"G1", sesion:4, modulo:"4", formId:"1FAIpQLSc4eTVK2eHLZAXDJKC1ztwRAb-6Yuwf7GZ1ScXBnGCpTiax7Q" },
+  { titulo:"Sesión 4 - Sociales G2", area:"Sociales", grupo:"G2", sesion:4, modulo:"4", formId:"1FAIpQLSdbZtMmDNnQdYwLm402kf1AfmTr7298JOou3Ixfpi0K8q08Iw" },
+  { titulo:"Sesión 4 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:4, modulo:"4", formId:"1FAIpQLSd0ffX2lE4YOAEY32SPuyZpAwiH6D-PmYkOXiKJbIzwWStHDw" },
+  { titulo:"Sesión 5 - Sociales G1", area:"Sociales", grupo:"G1", sesion:5, modulo:"5", formId:"1FAIpQLSc0fjWasuNmHo2CkeU1L58xYgALiW7VI-Rb-baPZqM7tbqgTw" },
+  { titulo:"Sesión 5 - Sociales G2", area:"Sociales", grupo:"G2", sesion:5, modulo:"5", formId:"1FAIpQLSc4vIX3LSTs4yjszZQnjyMdMJxYhypd-4cwTXcSabOVYbt3ig" },
+  { titulo:"Sesión 5 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:5, modulo:"5", formId:"1FAIpQLSdna-CmRihF2vtUt1zmgTcmOUhhn4umDrlFU-lTmvlXXNYjvA" },
+  { titulo:"Sesión 6 - Sociales G1", area:"Sociales", grupo:"G1", sesion:6, modulo:"5", formId:"1FAIpQLSdeaEY96pbeo0OaEyCbWyJfodWcCUJsoqheJEXMp8i6XgcjjA" },
+  { titulo:"Sesión 6 - Sociales G2", area:"Sociales", grupo:"G2", sesion:6, modulo:"5", formId:"1FAIpQLSfc118Emv4IzScTuzM1fZX_qfk_ouT0pFXvVgQILJ789d9CGA" },
+  { titulo:"Sesión 6 - Sociales Rehabilitación", area:"Sociales", grupo:"Rehabilitación", sesion:6, modulo:"5", formId:"1FAIpQLScUKwDQyqQJdY1mX2Fo7iecoCiDF5ulbo6CoE6FAuurjFM1eg" },
+];
+
+// ─── STATE ───────────────────────────────────────────────────
+let TALLERES = [];
+let editingId = null;
+let currentFormUrl = '';
+const ADMIN_EMAIL = 'jcastrogo@unal.edu.co';
+
+function formUrl(t) {
+  if (t.formUrl) return t.formUrl;
+  if (t.formId) return `https://docs.google.com/forms/d/e/${t.formId}/viewform`;
+  return '';
+}
+function embedUrl(t) {
+  if (t.formId) return `https://docs.google.com/forms/d/e/${t.formId}/viewform?embedded=true`;
+  return formUrl(t); // fallback: open in new tab
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  const isAdmin = user && user.email === ADMIN_EMAIL;
+  if (isAdmin) document.body.classList.add('is-admin');
+  else document.body.classList.remove('is-admin');
+  // Update login button
+  const btn = document.getElementById('nav-login-btn');
+  if (btn) btn.textContent = user ? (isAdmin ? '⚙ Admin' : user.displayName || 'Mi perfil') : 'Inicia Sesión';
+  cargarTalleres();
+});
+
+// ─── LOAD FROM FIRESTORE ──────────────────────────────────────
+async function cargarTalleres() {
+  try {
+    const snap = await getDocs(query(collection(db,'talleres'), orderBy('area'), orderBy('sesion')));
+    TALLERES = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+    renderTalleres();
+  } catch(e) {
+    document.getElementById('loadingState').innerHTML = '<span>⚠️</span>Error cargando talleres. Recarga la página.';
+  }
+}
+
+// ─── RENDER ───────────────────────────────────────────────────
+let activeArea = 'Todos', activeGrupo = 'Todos';
+
+function renderTalleres() {
+  const main = document.getElementById('talleresMain');
+  const filtered = TALLERES.filter(t =>
+    (activeArea  === 'Todos' || t.area  === activeArea) &&
+    (activeGrupo === 'Todos' || t.grupo === activeGrupo || (activeGrupo !== 'Todos' && t.grupo === 'General'))
+  );
+
+  if (!filtered.length) {
+    main.innerHTML = '<div class="empty-state"><span>📋</span>No hay talleres para este filtro.</div>';
+    return;
+  }
+
+  // Group by area
+  const byArea = {};
+  filtered.forEach(t => { (byArea[t.area] = byArea[t.area] || []).push(t); });
+
+  main.innerHTML = Object.entries(byArea).map(([area, items]) => `
+    <div class="area-section" data-section="${area}">
+      <div class="area-title" style="${areaStyle(area)}">${area}</div>
+      <div class="talleres-grid">
+        ${items.map(t => cardHTML(t)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function areaStyle(a) {
+  const map = {
+    'Lectura Crítica': 'background:rgba(124,58,237,.18);color:#a78bfa;',
+    'Química':         'background:rgba(5,150,105,.18);color:#34d399;',
+    'Inglés':          'background:rgba(3,105,161,.18);color:#38bdf8;',
+    'Matemáticas':     'background:rgba(217,119,6,.18);color:#fbbf24;',
+    'Geometría':       'background:rgba(8,145,178,.18);color:#22d3ee;',
+    'Biología':        'background:rgba(22,163,74,.18);color:#4ade80;',
+    'Sociales':        'background:rgba(220,38,38,.18);color:#f87171;',
+  };
+  return map[a] || 'background:rgba(255,255,255,.08);color:#e8f0f8;';
+}
+
+function cardHTML(t) {
+  return `
+  <div class="taller-card" data-area="${t.area}" data-id="${t.id}"
+       onclick="abrirTaller('${t.id}')">
+    <div class="card-admin-actions">
+      <button class="card-admin-btn edit-btn" onclick="editarTaller('${t.id}',event)" title="Editar">✏</button>
+      <button class="card-admin-btn del-btn"  onclick="eliminarTaller('${t.id}',event)" title="Eliminar">🗑</button>
+    </div>
+    <div class="card-area-badge">${t.area}</div>
+    <div class="card-title">${t.titulo}</div>
+    <div class="card-meta">
+      <span>Sesión ${t.sesion}</span>
+      ${t.modulo ? `<span>Módulo ${t.modulo}</span>` : ''}
+      <span>${t.grupo}</span>
+    </div>
+    <button class="card-btn">▶ Iniciar taller</button>
+  </div>`;
+}
+
+// ─── MODAL ────────────────────────────────────────────────────
+window.abrirTaller = function(id) {
+  const t = TALLERES.find(x => x.id === id);
+  if (!t) return;
+  const url = embedUrl(t);
+  currentFormUrl = formUrl(t);
+  document.getElementById('modalTitle').textContent = t.titulo;
+  const iframe = document.getElementById('modalIframe');
+  const loading = document.getElementById('modalLoading');
+  iframe.style.display = 'none';
+  loading.style.display = 'flex';
+  loading.textContent = 'Cargando formulario…';
+  if (t.formId) {
+    iframe.src = url;
+  } else {
+    // Short URL — open directly in new tab
+    loading.textContent = 'Abriendo en nueva pestaña…';
+    setTimeout(() => { window.open(currentFormUrl,'_blank'); cerrarModalBtn(); }, 600);
+    return;
+  }
+  document.getElementById('formModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+window.cerrarModal = function(e) {
+  if (e.target === document.getElementById('formModal')) cerrarModalBtn();
+};
+window.cerrarModalBtn = function() {
+  document.getElementById('formModal').classList.remove('open');
+  document.getElementById('modalIframe').src = '';
+  document.body.style.overflow = '';
+};
+window.abrirEnNuevaPestana = function() {
+  if (currentFormUrl) window.open(currentFormUrl, '_blank');
+};
+
+// ─── FILTERS ─────────────────────────────────────────────────
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeArea = btn.dataset.area;
+    renderTalleres();
+  });
+});
+document.querySelectorAll('.grupo-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.grupo-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeGrupo = btn.dataset.grupo;
+    renderTalleres();
+  });
+});
+
+// ─── ADMIN CRUD ───────────────────────────────────────────────
+window.abrirFormTaller = function() {
+  editingId = null;
+  document.getElementById('tallerFormTitle').textContent = 'Nuevo Taller';
+  ['titulo','sesion','modulo','url'].forEach(f => document.getElementById('tf-'+f).value = '');
+  document.getElementById('tf-area').value  = 'Lectura Crítica';
+  document.getElementById('tf-grupo').value = 'General';
+  document.getElementById('tallerFormWrap').classList.add('open');
+  document.getElementById('tallerFormWrap').scrollIntoView({ behavior:'smooth' });
+};
+
+window.cerrarFormTaller = function() {
+  document.getElementById('tallerFormWrap').classList.remove('open');
+  editingId = null;
+};
+
+window.guardarTaller = async function() {
+  const titulo  = document.getElementById('tf-titulo').value.trim();
+  const area    = document.getElementById('tf-area').value;
+  const grupo   = document.getElementById('tf-grupo').value;
+  const sesion  = parseInt(document.getElementById('tf-sesion').value) || 1;
+  const modulo  = document.getElementById('tf-modulo').value.trim();
+  const rawUrl  = document.getElementById('tf-url').value.trim();
+  if (!titulo || !rawUrl) { alert('Completa título y URL del formulario.'); return; }
+
+  // Extraer formId de la URL si es posible
+  const match = rawUrl.match(/\/forms\/d\/e\/([\w-]+)\//);
+  const formId = match ? match[1] : '';
+
+  const data = { titulo, area, grupo, sesion, modulo, formId, formUrl: formId ? '' : rawUrl,
+                 activo:true, _actualizado: serverTimestamp() };
+  try {
+    if (editingId) {
+      await updateDoc(doc(db,'talleres',editingId), data);
+    } else {
+      await addDoc(collection(db,'talleres'), { ...data, _creado: serverTimestamp() });
+    }
+    cerrarFormTaller();
+    await cargarTalleres();
+  } catch(e) { alert('Error guardando: '+e.message); }
+};
+
+window.editarTaller = function(id, e) {
+  e.stopPropagation();
+  const t = TALLERES.find(x => x.id === id);
+  if (!t) return;
+  editingId = id;
+  document.getElementById('tallerFormTitle').textContent = 'Editar Taller';
+  document.getElementById('tf-titulo').value  = t.titulo;
+  document.getElementById('tf-area').value    = t.area;
+  document.getElementById('tf-grupo').value   = t.grupo;
+  document.getElementById('tf-sesion').value  = t.sesion;
+  document.getElementById('tf-modulo').value  = t.modulo || '';
+  document.getElementById('tf-url').value     = t.formId
+    ? `https://docs.google.com/forms/d/e/${t.formId}/viewform`
+    : (t.formUrl || '');
+  document.getElementById('tallerFormWrap').classList.add('open');
+  document.querySelector('.admin-panel').scrollIntoView({ behavior:'smooth' });
+};
+
+window.eliminarTaller = async function(id, e) {
+  e.stopPropagation();
+  if (!confirm('¿Eliminar este taller?')) return;
+  await deleteDoc(doc(db,'talleres',id));
+  await cargarTalleres();
+};
+
+// ─── SEED ─────────────────────────────────────────────────────
+window.seedTalleres = async function() {
+  const status = document.getElementById('seed-status');
+  status.style.display = 'block';
+  status.textContent = '⏳ Cargando talleres… (puede tomar 30 seg)';
+  let count = 0;
+  for (const t of SEED) {
+    try {
+      await addDoc(collection(db,'talleres'), { ...t, activo:true, _creado: serverTimestamp() });
+      count++;
+      status.textContent = `⏳ Guardados ${count}/${SEED.length}…`;
+    } catch(e) { console.error(e); }
+  }
+  status.textContent = `✅ ${count} talleres cargados. Recarga la página.`;
+  await cargarTalleres();
+};
+
+// ─── NAVBAR MOBILE ────────────────────────────────────────────
+const toggle = document.getElementById('mobile-menu');
+const navLinks = document.querySelector('.nav-links');
+const backdrop = document.getElementById('nav-backdrop');
+toggle?.addEventListener('click', () => {
+  const open = toggle.classList.toggle('is-active');
+  navLinks.classList.toggle('active', open);
+  backdrop.classList.toggle('active', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+});
+backdrop?.addEventListener('click', () => {
+  toggle.classList.remove('is-active');
+  navLinks.classList.remove('active');
+  backdrop.classList.remove('active');
+  document.body.style.overflow = '';
+});
+</script>
+</body>
+</html>

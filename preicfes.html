@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRE-ICFES | PROGRAMA-PRI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+<style>
+/* ===== PRE-ICFES PAGE STYLES ===== */
+.reveal { opacity:0; transform:translateY(30px); transition:opacity 0.7s ease,transform 0.7s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* Hero Pre-ICFES */
+.hero-icfes {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #010c1a 0%, #021a36 40%, #031428 70%, #04182e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 5% 5rem;
+    position: relative;
+    overflow: hidden;
+}
+.hero-icfes::before {
+    content: 'ICFES';
+    position: absolute;
+    right: -3%;
+    bottom: -5%;
+    font-family: var(--fuente-titulos);
+    font-size: 30vw;
+    font-weight: 900;
+    color: rgba(255,94,0,0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+}
+/* Cuadrícula de puntos */
+.hero-icfes::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle, rgba(255,94,0,0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+}
+.hero-icfes-inner {
+    max-width: 900px;
+    text-align: center;
+    position: relative; z-index: 1;
+}
+.icfes-eyebrow {
+    display: inline-block;
+    background: rgba(255,94,0,0.15);
+    border: 1px solid rgba(255,94,0,0.4);
+    color: var(--naranja-atardecer);
+    padding: 0.5rem 1.5rem;
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: block;
+    width: fit-content;
+    margin: 0 auto 2rem;
+    border-radius: 0.5rem;
+}
+.hero-icfes h1 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 0.95;
+    color: var(--blanco-espuma);
+    margin-bottom: 2rem;
+    text-shadow: 6px 6px 0 rgba(0,0,0,0.4);
+}
+.hero-icfes h1 .accent { color: var(--naranja-atardecer); -webkit-text-stroke: 1px rgba(255,215,0,0.4); }
+.hero-icfes p {
+    font-family: var(--fuente-textos);
+    font-size: 1.25rem;
+    color: #94a3b8;
+    max-width: 650px;
+    margin: 0 auto 3rem;
+    line-height: 1.7;
+}
+.hero-icfes-btns { display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap; }
+
+/* Contador regresivo */
+.countdown-bar {
+    background: rgba(2,12,30,0.72);
+    backdrop-filter: blur(18px) saturate(1.3);
+    -webkit-backdrop-filter: blur(18px) saturate(1.3);
+    border: 1px solid rgba(255,94,0,0.35);
+    border-radius: 1.1rem;
+    padding: 2rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    flex-wrap: wrap;
+    margin-top: 4rem;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.09);
+}
+.countdown-unit { text-align: center; }
+.countdown-num {
+    font-family: var(--fuente-titulos);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--naranja-atardecer);
+    line-height: 1;
+    display: block;
+    -webkit-text-stroke: 1px rgba(255,215,0,0.2);
+}
+.countdown-label {
+    font-family: var(--fuente-titulos);
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+}
+.countdown-sep {
+    font-family: var(--fuente-titulos);
+    font-size: 3rem;
+    color: rgba(255,94,0,0.7);
+    padding-bottom: 1rem;
+}
+
+/* Sección de módulos */
+.modulos-section {
+    background: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    padding: 7rem 5%;
+}
+.modulos-header { text-align:center; margin-bottom:5rem; }
+.modulos-header h2 { font-family:var(--fuente-titulos); font-size:clamp(2rem,4vw,3rem); margin-bottom:1rem; }
+.modulos-header p { font-family:var(--fuente-textos); color:#64748b; font-size:1.1rem; }
+.modulos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.modulo-card {
+    background: var(--azul-deep-tumaco);
+    color: var(--blanco-espuma);
+    padding: 2.5rem 2rem;
+    border: 2px solid var(--azul-deep-tumaco);
+    box-shadow: 5px 5px 0 #000;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: all 0.3s ease;
+}
+.modulo-card::before {
+    content: '';
+    position: absolute; top:0; left:0;
+    width: 4px; height: 100%;
+    background: var(--naranja-atardecer);
+    transition: width 0.3s ease;
+}
+.modulo-card:hover::before { width: 100%; opacity: 0.08; }
+.modulo-card:hover { transform: translate(-3px,-3px); box-shadow: 8px 8px 0 var(--naranja-atardecer); }
+.modulo-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+.modulo-area {
+    font-family: var(--fuente-titulos);
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: var(--naranja-atardecer);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+.modulo-card h3 { font-family:var(--fuente-titulos); font-size:1.3rem; margin-bottom:0.8rem; }
+.modulo-card p { font-family:var(--fuente-textos); font-size:0.95rem; color:#94a3b8; line-height:1.5; }
+.modulo-puntaje {
+    margin-top:1.2rem;
+    display:flex; align-items:center; gap:0.7rem;
+}
+.puntaje-bar { flex:1; height:5px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
+.puntaje-fill { height:100%; background:linear-gradient(90deg,var(--naranja-atardecer),var(--oro-sol)); border-radius:2px; }
+.puntaje-val { font-family:var(--fuente-titulos); font-size:0.8rem; color:var(--oro-sol); }
+
+/* Etapas del programa */
+.etapas-section {
+    background: linear-gradient(135deg, #021a36 0%, #010d1a 100%);
+    padding: 7rem 5%;
+}
+.etapas-inner { max-width: 1100px; margin: 0 auto; }
+.etapas-header { text-align:center; margin-bottom:5rem; }
+.etapas-header h2 { font-family:var(--fuente-titulos); font-size:clamp(2rem,4vw,3rem); color:var(--blanco-espuma); margin-bottom:1rem; }
+.etapas-header p { font-family:var(--fuente-textos); color:#94a3b8; font-size:1.1rem; }
+.etapas-grid { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; }
+.etapa-card {
+    padding: 3rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.3s ease;
+}
+.etapa-card:hover { border-color:rgba(255,94,0,0.3); }
+.etapa-card.primary { border-left: 5px solid var(--naranja-atardecer); background: rgba(255,94,0,0.05); }
+.etapa-card.secondary { border-left: 5px solid var(--azul-superficie-teal); background: rgba(31,122,140,0.05); }
+.etapa-tag {
+    font-family:var(--fuente-titulos); font-size:0.7rem; letter-spacing:3px;
+    text-transform:uppercase; margin-bottom:1rem; display:block;
+}
+.etapa-card.primary .etapa-tag { color:var(--naranja-atardecer); }
+.etapa-card.secondary .etapa-tag { color:var(--azul-superficie-teal); }
+.etapa-card h3 { font-family:var(--fuente-titulos); font-size:1.6rem; color:var(--blanco-espuma); margin-bottom:0.5rem; }
+.etapa-fechas { font-family:var(--fuente-textos); font-style:italic; color:#64748b; font-size:0.95rem; margin-bottom:1.5rem; }
+.etapa-card p { font-family:var(--fuente-textos); color:#94a3b8; font-size:1.05rem; line-height:1.7; }
+.etapa-items { list-style:none; margin-top:1.5rem; }
+.etapa-items li {
+    font-family:var(--fuente-textos); font-size:0.95rem; color:#94a3b8;
+    padding: 0.5rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    display:flex; gap:0.8rem; align-items:flex-start;
+}
+.etapa-items li::before { content:'→'; color:var(--naranja-atardecer); flex-shrink:0; }
+
+/* Simulacros section */
+.simulacros-section {
+    background: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    padding: 7rem 5%;
+}
+.simulacros-inner { max-width:1100px; margin:0 auto; }
+.simulacros-grid {
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    margin-top: 2rem;
+}
+.sim-visual {
+    background: var(--azul-deep-tumaco);
+    padding: 3rem;
+    box-shadow: 12px 12px 0 #000;
+    position: relative;
+}
+.sim-score-big {
+    font-family:var(--fuente-titulos);
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--naranja-atardecer);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+.sim-score-label { font-family:var(--fuente-titulos); font-size:0.8rem; letter-spacing:3px; color:#94a3b8; text-transform:uppercase; margin-bottom:2rem; }
+.sim-bars { display:flex; flex-direction:column; gap:1rem; }
+.sim-bar-row { display:flex; align-items:center; gap:1rem; }
+.sim-bar-area { font-family:var(--fuente-titulos); font-size:0.8rem; color:#cbd5e1; width:110px; flex-shrink:0; }
+.sim-bar-bg { flex:1; height:6px; background:rgba(255,255,255,0.06); border-radius:3px; }
+.sim-bar-fill { height:100%; border-radius:3px; }
+.sim-bar-val { font-family:var(--fuente-titulos); font-size:0.8rem; color:var(--oro-sol); width:35px; text-align:right; flex-shrink:0; }
+.sim-text-side h2 { font-family:var(--fuente-titulos); font-size:clamp(2rem,3.5vw,2.8rem); margin-bottom:1.5rem; }
+.sim-text-side p { font-family:var(--fuente-textos); font-size:1.1rem; color:#334155; line-height:1.7; margin-bottom:1.2rem; }
+
+/* CTA bottom */
+.icfes-cta {
+    background: linear-gradient(135deg, #010c1a 0%, #021a36 100%) !important;
+    padding: 6rem 5%;
+    text-align: center;
+    border-top: 3px solid var(--naranja-atardecer);
+    position: relative;
+    z-index: 1;
+}
+.icfes-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(1, 8, 20, 0.75);
+    z-index: 0;
+    pointer-events: none;
+}
+.icfes-cta > * { position: relative; z-index: 1; }
+.icfes-cta h2 { font-family:var(--fuente-titulos); font-size:clamp(2rem,5vw,4rem); color:#ffffff; margin-bottom:1rem; }
+.icfes-cta p { font-family:var(--fuente-textos); color:rgba(255,255,255,0.82); font-size:1.15rem; margin-bottom:3rem; }
+.icfes-cta-btns { display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap; }
+
+@media(max-width:900px){
+    .etapas-grid { grid-template-columns:1fr; }
+    .simulacros-grid { grid-template-columns:1fr; }
+}
+@media(max-width:600px){
+    .countdown-bar { gap:1.2rem; padding:1.5rem 1rem; }
+    .countdown-num { font-size:2.4rem; }
+    .countdown-sep { font-size:2rem; }
+    .countdown-bar > div[style*="border-left"] { border-left:none !important; padding-left:0 !important; border-top:1px solid rgba(255,94,0,0.2); padding-top:1rem; width:100%; text-align:center; }
+}
+</style>
+<script src="pri-modal.js"></script>
+</head>
+<body class="page-preicfes">
+<div class="scroll-progress" id="scroll-progress"></div>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+<!-- NAVBAR -->
+<header class="navbar" id="mainNav">
+    <div class="logo-container">
+        <a href="index.html" class="logo-link">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+            <div><h2>PROGRAMA-PRI</h2><p>El Pacífico Renaciendo con Ingeniería</p></div>
+        </a>
+    </div>
+    <div class="menu-toggle" id="mobile-menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="ppri.html">Sobre PRI</a></li>
+            <li><a href="preicfes.html" class="active">PRE-ICFES</a></li>
+            <li><a href="pre-test.html">PRE-TEST</a></li>
+            <li><a href="docentes.html">Docentes</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="login.html" class="btn-login">Inicia Sesión</a></li>
+        </ul>
+    </nav>
+    <div id="nav-backdrop"></div>
+</header>
+
+<!-- HERO -->
+<section class="hero-icfes">
+    <div class="hero-icfes-inner">
+        <span class="icfes-eyebrow">Preparación de Alta Exigencia</span>
+        <h1>
+            DOMINA EL<br>
+            <span class="accent">SABER 11</span>
+        </h1>
+        <p>Un programa de preparación estratégica y técnica para la prueba de Estado más importante de tu vida académica — diseñado desde y para Tumaco.</p>
+        <div class="hero-icfes-btns">
+            <a href="pre-test.html" class="btn-primary" style="display:inline-block;padding:1.2rem 2.5rem;text-decoration:none;font-family:var(--fuente-titulos);font-weight:900;font-size:1.1rem;text-transform:uppercase;">Hacer Simulacro</a>
+            <a href="#modulos" class="btn-secondary" style="display:inline-block;padding:1.2rem 2.5rem;text-decoration:none;font-family:var(--fuente-titulos);font-weight:900;font-size:1.1rem;text-transform:uppercase;">Ver Módulos ↓</a>
+        </div>
+
+        <!-- Cuenta regresiva al ICFES (objetivo noviembre 2026) -->
+        <div class="countdown-bar" id="countdown">
+            <div class="countdown-unit"><span class="countdown-num" id="cd-dias">--</span><span class="countdown-label">Días</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-horas">--</span><span class="countdown-label">Horas</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-min">--</span><span class="countdown-label">Minutos</span></div>
+            <span class="countdown-sep">:</span>
+            <div class="countdown-unit"><span class="countdown-num" id="cd-seg">--</span><span class="countdown-label">Segundos</span></div>
+            <div style="text-align:left;padding-left:2rem;border-left:1px solid rgba(255,94,0,0.2);">
+                <div style="font-family:var(--fuente-titulos);font-size:0.7rem;letter-spacing:3px;color:#64748b;margin-bottom:0.3rem;">OBJETIVO</div>
+                <div style="font-family:var(--fuente-titulos);font-size:1.1rem;color:var(--blanco-espuma);">Saber 11</div>
+                <div style="font-family:var(--fuente-textos);font-size:0.85rem;color:var(--naranja-atardecer);">Nov 2026</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MÓDULOS TEMÁTICOS -->
+<section class="modulos-section" id="modulos">
+    <div class="modulos-header reveal">
+        <div style="display:inline-block;background:var(--naranja-atardecer);color:white;padding:0.4rem 1rem;font-family:var(--fuente-titulos);font-size:0.8rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;margin-bottom:1.5rem;box-shadow:3px 3px 0 #000;border-radius:0.5rem;">Áreas del Saber 11</div>
+        <h2>Las 5 Competencias que Dominarás</h2>
+        <p>Cubrimos cada componente de la prueba con estrategia, profundidad y métricas de progreso individualizadas.</p>
+    </div>
+    <div class="modulos-grid">
+        <div class="modulo-card reveal">
+            <span class="modulo-icon">📐</span>
+            <div class="modulo-area">Matemáticas</div>
+            <h3>Razonamiento Cuantitativo</h3>
+            <p>Álgebra, funciones, geometría analítica, estadística y cálculo introductorio. Enfoque en velocidad táctica de resolución.</p>
+            <div class="modulo-puntaje">
+                <div class="puntaje-bar"><div class="puntaje-fill" style="width:88%"></div></div>
+                <span class="puntaje-val">88/100</span>
+            </div>
+        </div>
+        <div class="modulo-card reveal" style="transition-delay:0.1s">
+            <span class="modulo-icon">📚</span>
+            <div class="modulo-area">Lenguaje</div>
+            <h3>Lectura Crítica</h3>
+            <p>Comprensión de textos continuos y discontinuos. Identificación de argumentos, premisas e implicaciones en contextos académicos.</p>
+            <div class="modulo-puntaje">
+                <div class="puntaje-bar"><div class="puntaje-fill" style="width:75%;background:linear-gradient(90deg,#1f7a8c,#00c8e0)"></div></div>
+                <span class="puntaje-val">75/100</span>
+            </div>
+        </div>
+        <div class="modulo-card reveal" style="transition-delay:0.2s">
+            <span class="modulo-icon">⚗️</span>
+            <div class="modulo-area">Ciencias Naturales</div>
+            <h3>Física, Química y Biología</h3>
+            <p>Mecánica, termodinámica, química orgánica e inorgánica, biología celular. Con énfasis en aplicación a contextos reales del Pacífico.</p>
+            <div class="modulo-puntaje">
+                <div class="puntaje-bar"><div class="puntaje-fill" style="width:70%;background:linear-gradient(90deg,#2e8038,#5ab85e)"></div></div>
+                <span class="puntaje-val">70/100</span>
+            </div>
+        </div>
+        <div class="modulo-card reveal" style="transition-delay:0.3s">
+            <span class="modulo-icon">🌎</span>
+            <div class="modulo-area">Ciencias Sociales</div>
+            <h3>Historia, Geografía y Constitución</h3>
+            <p>Análisis de procesos históricos, geopolítica colombiana y derechos ciudadanos con enfoque en el Pacífico como territorio en disputa.</p>
+            <div class="modulo-puntaje">
+                <div class="puntaje-bar"><div class="puntaje-fill" style="width:82%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
+                <span class="puntaje-val">82/100</span>
+            </div>
+        </div>
+        <div class="modulo-card reveal" style="transition-delay:0.4s">
+            <span class="modulo-icon">🌐</span>
+            <div class="modulo-area">Inglés</div>
+            <h3>Competencia Comunicativa</h3>
+            <p>Comprensión lectora en inglés B1–B2. Vocabulario técnico científico y estrategias de descarte para preguntas de selección múltiple.</p>
+            <div class="modulo-puntaje">
+                <div class="puntaje-bar"><div class="puntaje-fill" style="width:60%;background:linear-gradient(90deg,#c44700,#ff8c40)"></div></div>
+                <span class="puntaje-val">60/100</span>
+            </div>
+        </div>
+        <div class="modulo-card reveal" style="transition-delay:0.5s;background:rgba(255,94,0,0.08);border-color:var(--naranja-atardecer);">
+            <span class="modulo-icon">🧠</span>
+            <div class="modulo-area">Psicoemocional</div>
+            <h3>Control Mental bajo Presión</h3>
+            <p>Técnicas de manejo de ansiedad, atención sostenida y toma de decisiones bajo límite de tiempo. El componente que marca la diferencia.</p>
+            <div class="modulo-puntaje">
+                <div class="puntaje-bar"><div class="puntaje-fill" style="width:95%"></div></div>
+                <span class="puntaje-val">Clave</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ETAPAS DEL PROGRAMA -->
+<section class="etapas-section">
+    <div class="etapas-inner">
+        <div class="etapas-header reveal">
+            <div style="display:inline-block;background:rgba(255,94,0,0.15);border:1px solid rgba(255,94,0,0.4);color:var(--naranja-atardecer);padding:0.4rem 1rem;font-family:var(--fuente-titulos);font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:1.5rem;border-radius:0.5rem;">Plan de Acción</div>
+            <h2>La Hoja de Ruta Táctica</h2>
+            <p>Dos etapas consecutivas que transforman un puntaje promedio en un resultado de élite.</p>
+        </div>
+        <div class="etapas-grid">
+            <div class="etapa-card primary reveal">
+                <span class="etapa-tag">Etapa 1 · Resistencia</span>
+                <h3>Formación Continua</h3>
+                <p class="etapa-fechas">Enero — Agosto 2026</p>
+                <p>Un proceso sistemático de refuerzo a largo plazo. Nivelación de vacíos conceptuales históricos y construcción de hábitos analíticos sólidos.</p>
+                <ul class="etapa-items">
+                    <li>Sesiones de nivelación por área cada fin de semana</li>
+                    <li>Simulacros mensuales con retroalimentación individual</li>
+                    <li>Acceso asincrónico al ecosistema de Pre-Test digital</li>
+                    <li>Clínicas de refuerzo temático (física, matemáticas, lectura)</li>
+                    <li>Seguimiento de progreso con panel de métricas en tiempo real</li>
+                </ul>
+            </div>
+            <div class="etapa-card secondary reveal" style="transition-delay:0.2s">
+                <span class="etapa-tag">Etapa 2 · Choque Final</span>
+                <h3>Las 4 Semanas Inmersivas</h3>
+                <p class="etapa-fechas">Septiembre — Octubre 2026</p>
+                <p>Aislamiento académico de máxima exigencia. Cuatro semanas de intensidad total para optimizar el rendimiento el día del examen.</p>
+                <ul class="etapa-items">
+                    <li>Simulacros diarios con control estricto de tiempo</li>
+                    <li>Clínicas de errores conceptuales repetitivos</li>
+                    <li>Talleres de control psicoemocional y velocidad de descarte</li>
+                    <li>Estrategia de puntaje: cómo distribuir el tiempo por área</li>
+                    <li>Ensayos con el formato oficial del ICFES (cuadernillo real)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SIMULACROS - VISUAL DE PROGRESO -->
+<section class="simulacros-section">
+    <div class="simulacros-inner">
+        <div class="simulacros-grid">
+            <div class="sim-visual reveal-left">
+                <div class="sim-score-big">315</div>
+                <div class="sim-score-label">Promedio actual PRI</div>
+                <div class="sim-bars">
+                    <div class="sim-bar-row">
+                        <span class="sim-bar-area">Matemáticas</span>
+                        <div class="sim-bar-bg"><div class="sim-bar-fill" style="width:76%;background:linear-gradient(90deg,var(--naranja-atardecer),var(--oro-sol))"></div></div>
+                        <span class="sim-bar-val">76</span>
+                    </div>
+                    <div class="sim-bar-row">
+                        <span class="sim-bar-area">Lectura Crítica</span>
+                        <div class="sim-bar-bg"><div class="sim-bar-fill" style="width:68%;background:linear-gradient(90deg,#1f7a8c,#00c8e0)"></div></div>
+                        <span class="sim-bar-val">68</span>
+                    </div>
+                    <div class="sim-bar-row">
+                        <span class="sim-bar-area">C. Naturales</span>
+                        <div class="sim-bar-bg"><div class="sim-bar-fill" style="width:62%;background:linear-gradient(90deg,#2e8038,#5ab85e)"></div></div>
+                        <span class="sim-bar-val">62</span>
+                    </div>
+                    <div class="sim-bar-row">
+                        <span class="sim-bar-area">C. Sociales</span>
+                        <div class="sim-bar-bg"><div class="sim-bar-fill" style="width:71%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div>
+                        <span class="sim-bar-val">71</span>
+                    </div>
+                    <div class="sim-bar-row">
+                        <span class="sim-bar-area">Inglés</span>
+                        <div class="sim-bar-bg"><div class="sim-bar-fill" style="width:38%;background:linear-gradient(90deg,#c44700,#ff8c40)"></div></div>
+                        <span class="sim-bar-val">38</span>
+                    </div>
+                </div>
+                <div style="margin-top:2rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1);">
+                    <div style="font-family:var(--fuente-titulos);font-size:0.7rem;letter-spacing:3px;color:#64748b;margin-bottom:0.5rem;">META PROGRAMA PRI 2026</div>
+                    <div style="font-family:var(--fuente-titulos);font-size:2rem;color:var(--oro-sol);">≥ 400 puntos</div>
+                </div>
+            </div>
+            <div class="sim-text-side reveal-right">
+                <div style="display:inline-block;background:var(--naranja-atardecer);color:white;padding:0.4rem 1rem;font-family:var(--fuente-titulos);font-size:0.8rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;margin-bottom:1.5rem;box-shadow:3px 3px 0 #000;border-radius:0.5rem;">Resultado Real</div>
+                <h2>Del 202 al 400 — La Brecha que Cerramos</h2>
+                <p>Al inicio del programa, el promedio regional en Tumaco es de 202 puntos. Con el sistema PRI, ya llevamos a nuestros estudiantes a 315. La meta: superar los 400 puntos antes del examen de noviembre.</p>
+                <p>Cada simulacro genera datos individuales. Identificamos debilidades específicas y dirigimos el refuerzo exactamente donde más se necesita — sin desperdicio de tiempo.</p>
+                <div style="margin-top:2.5rem;display:flex;flex-direction:column;gap:1rem;">
+                    <a href="pre-test.html" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>Hacer mi Diagnóstico Ahora</a>
+                    <a href="#metricas-programa" style="display:inline-block;color:var(--azul-deep-tumaco);font-family:var(--fuente-titulos);font-weight:800;font-size:0.9rem;text-decoration:none;transition:all 0.2s ease;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Ver métricas del programa →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="icfes-cta">
+    <div style="display:inline-block;background:rgba(255,94,0,0.15);border:1px solid rgba(255,94,0,0.4);color:var(--naranja-atardecer);padding:0.4rem 1rem;font-family:var(--fuente-titulos);font-size:0.8rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:1.5rem;border-radius:0.5rem;" class="reveal">¿Listo?</div>
+    <h2 class="reveal">ENTRENA. MIDE. <br><span style="color:var(--naranja-atardecer)">SUPERA.</span></h2>
+    <p class="reveal">El Saber 11 no es el techo — es la puerta. PRI te da las llaves.</p>
+    <div class="icfes-cta-btns reveal">
+        <a href="pre-test.html" class="btn-primary" style="display:inline-block;padding:1.2rem 2.5rem;text-decoration:none;font-family:var(--fuente-titulos);font-weight:900;font-size:1.1rem;text-transform:uppercase;border-radius:0.65rem;">Comenzar Simulacro</a>
+        <a href="https://wa.me/573183553653?text=Hola!%20Quiero%20información%20sobre%20el%20Pre-ICFES%20del%20Programa%20PRI" target="_blank" style="display:inline-block;background:transparent;color:var(--blanco-espuma);padding:1.2rem 2.5rem;font-family:var(--fuente-titulos);font-weight:900;font-size:1.1rem;text-transform:uppercase;text-decoration:none;border:2px solid rgba(255,255,255,0.4);box-shadow:5px 5px 0 rgba(0,0,0,0.3);border-radius:0.65rem;transition:all 0.3s ease;" onmouseover="this.style.transform='translate(-2px,-2px)'" onmouseout="this.style.transform=''">📲 Hablar con un Mentor</a>
+    </div>
+</section>
+
+<!-- ==================== MÉTRICAS DEL PROGRAMA ==================== -->
+<section id="metricas-programa" style="padding:5rem 2rem;background:linear-gradient(180deg,#021226 0%,#062040 60%,#021226 100%);border-top:1px solid rgba(255,255,255,0.06);">
+<div style="max-width:1100px;margin:0 auto;">
+
+  <!-- Encabezado -->
+  <div style="text-align:center;margin-bottom:3.5rem;">
+    <span style="display:inline-block;font-size:0.6rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#FF5E00;background:rgba(255,94,0,0.12);border:1px solid rgba(255,94,0,0.3);padding:0.35rem 1rem;margin-bottom:1rem;border-radius:0.5rem;">Datos Reales · Entregable 2025</span>
+    <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;text-transform:uppercase;letter-spacing:2px;margin-bottom:0.75rem;">Métricas del <span style="color:#FF5E00;">Programa PRI</span></h2>
+    <p style="color:rgba(255,255,255,0.7);font-size:0.9rem;max-width:560px;margin:0 auto;">Cifras reales del diagnóstico educativo de Tumaco y los resultados del modelo de intervención PRI.</p>
+  </div>
+
+  <!-- Diagnóstico: el problema -->
+  <div style="margin-bottom:3rem;">
+    <p style="font-size:0.62rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#38bdf8;margin-bottom:1.2rem;">· El Problema ·</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;">
+
+      <div style="background:rgba(255,94,0,0.07);border:1px solid rgba(255,94,0,0.25);padding:1.8rem 1.5rem;border-top:3px solid #FF5E00;border-radius:1rem;">
+        <div style="font-size:2.8rem;font-weight:900;color:#FF5E00;line-height:1;margin-bottom:0.5rem;">36%</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:0.4rem;">Acceso a educación superior</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);">Del total de estudiantes de Tumaco en 2024 lograron ingresar a la universidad.</div>
+      </div>
+
+      <div style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);padding:1.8rem 1.5rem;border-top:3px solid #38bdf8;border-radius:1rem;">
+        <div style="font-size:2.8rem;font-weight:900;color:#38bdf8;line-height:1;margin-bottom:0.5rem;">202</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:0.4rem;">Puntos promedio Saber 11</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);">Promedio local en pruebas Saber 11 — insuficiente para el estándar universitario.</div>
+      </div>
+
+      <div style="background:rgba(255,94,0,0.07);border:1px solid rgba(255,94,0,0.25);padding:1.8rem 1.5rem;border-top:3px solid #FF5E00;border-radius:1rem;">
+        <div style="font-size:2.8rem;font-weight:900;color:#FF5E00;line-height:1;margin-bottom:0.5rem;">51%</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:0.4rem;">Deserción universitaria</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);">Promedio de abandono en primeros semestres del programa PEAMA (UNAL): entre 45% y 56%.</div>
+      </div>
+
+      <div style="background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.2);padding:1.8rem 1.5rem;border-top:3px solid #38bdf8;border-radius:1rem;">
+        <div style="font-size:2.8rem;font-weight:900;color:#38bdf8;line-height:1;margin-bottom:0.5rem;">35%</div>
+        <div style="font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.95);margin-bottom:0.4rem;">Alcance estratégico</div>
+        <div style="font-size:0.7rem;color:rgba(255,255,255,0.7);">Del estudiantado de Tumaco (grados 8°–11°) en zona urbana con mayor vulnerabilidad socioeconómica.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Divisor -->
+  <div style="border-top:1px solid rgba(255,255,255,0.06);margin-bottom:3rem;"></div>
+
+  <!-- Modelo de impacto: metas -->
+  <div style="margin-bottom:3rem;">
+    <p style="font-size:0.62rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#ffd700;margin-bottom:1.2rem;">· Modelo de Impacto (6–24 meses) ·</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;">
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;border-radius:1rem;">
+        <div style="font-size:1.8rem;flex-shrink:0;">🎯</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Meta 2028 · Acceso Universitario</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);">Escalar del 36% actual al <strong style="color:#ffd700;">50%</strong> de tránsito a la universidad — de 773 a <strong style="color:#ffd700;">1.006 personas</strong> preparadas.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;border-radius:1rem;">
+        <div style="font-size:1.8rem;flex-shrink:0;">📈</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Meta · Puntaje ICFES</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);"><strong style="color:#ffd700;">25% de incremento</strong> en puntajes ICFES medido con pre-test y post-test de intervención del programa.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;border-radius:1rem;">
+        <div style="font-size:1.8rem;flex-shrink:0;">🎓</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Alcance por Cohorte</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);"><strong style="color:#ffd700;">30 estudiantes</strong> por grado escolar · 90 estudiantes en total · 4 niveles · 8 ciclos de formación.</div>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1.8rem 1.5rem;display:flex;gap:1.2rem;align-items:flex-start;border-radius:1rem;">
+        <div style="font-size:1.8rem;flex-shrink:0;">💰</div>
+        <div>
+          <div style="font-size:0.75rem;font-weight:900;letter-spacing:1px;color:#ffd700;margin-bottom:0.4rem;">Presupuesto Anual</div>
+          <div style="font-size:0.8rem;color:rgba(255,255,255,0.85);">Entre <strong style="color:#ffd700;">$30 y $40 millones</strong> anuales para cubrir 2 cohortes completas (RSE, subsidios públicos y cooperación).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barra de progreso: 202 → 315 → 400 -->
+  <div style="background:rgba(6,49,98,0.3);border:1px solid rgba(255,255,255,0.08);padding:2rem 2rem 1.5rem;border-radius:1.1rem;">
+    <p style="font-size:0.62rem;font-weight:900;letter-spacing:4px;text-transform:uppercase;color:#38bdf8;margin-bottom:1.5rem;">· Progresión de Puntajes Saber 11 ·</p>
+    <div style="position:relative;margin-bottom:1.2rem;">
+      <div style="height:12px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;">
+        <div style="height:100%;width:56%;background:linear-gradient(90deg,#FF5E00,#ffd700);border-radius:6px;"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:0.6rem;font-size:0.68rem;color:rgba(255,255,255,0.7);flex-wrap:wrap;gap:0.25rem;">
+        <span>202 pts · Inicio</span>
+        <span style="color:#ffd700;font-weight:900;">315 pts · PRI actual</span>
+        <span>400 pts · Meta</span>
+        <span>500+ pts · Excelencia</span>
+      </div>
+    </div>
+    <p style="font-size:0.75rem;color:rgba(255,255,255,0.55);text-align:center;">Escala orientativa. El progreso real se mide con pre-test y post-test individuales en la plataforma.</p>
+  </div>
+
+  <!-- CTA -->
+  <div style="text-align:center;margin-top:3rem;">
+    <a href="pre-test.html" style="display:inline-flex;align-items:center;gap:10px;background:#FF5E00;color:white;padding:1rem 2.5rem;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:2px solid #FF5E00;box-shadow:5px 5px 0 rgba(255,94,0,0.4);transition:all 0.25s;border-radius:0.65rem;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='8px 8px 0 rgba(255,94,0,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 rgba(255,94,0,0.4)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Hacer mi Diagnóstico Gratis
+    </a>
+  </div>
+
+</div>
+</section>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">EVALUACIÓN-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pre-test.html">Simuladores</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Pacífico</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">Información General</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Simulador Predictivo en Tiempo Real.</p>
+    </div>
+</footer>
+
+<script>
+// Menú móvil — cajón lateral con backdrop
+(function(){
+    const toggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const backdrop = document.getElementById('nav-backdrop');
+    if (!toggle || !navLinks) return;
+    function openMenu(){ toggle.classList.add('is-active'); navLinks.classList.add('active'); if(backdrop) backdrop.classList.add('active'); document.body.style.overflow='hidden'; }
+    function closeMenu(){ toggle.classList.remove('is-active'); navLinks.classList.remove('active'); if(backdrop) backdrop.classList.remove('active'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', () => navLinks.classList.contains('active') ? closeMenu() : openMenu());
+    if(backdrop) backdrop.addEventListener('click', closeMenu);
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+})();
+
+// Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// Navbar scroll
+window.addEventListener('scroll', () => {
+    const nav = document.getElementById('mainNav');
+    if(window.scrollY > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+});
+
+// Cuenta regresiva — objetivo: 15 noviembre 2026
+function updateCountdown() {
+    const target = new Date('2026-11-15T08:00:00');
+    const now = new Date();
+    const diff = target - now;
+    if(diff <= 0) return;
+    const dias = Math.floor(diff / (1000*60*60*24));
+    const horas = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    const min = Math.floor((diff % (1000*60*60)) / (1000*60));
+    const seg = Math.floor((diff % (1000*60)) / 1000);
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('cd-dias').textContent = pad(dias);
+    document.getElementById('cd-horas').textContent = pad(horas);
+    document.getElementById('cd-min').textContent = pad(min);
+    document.getElementById('cd-seg').textContent = pad(seg);
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+// Navbar scrolled style
+const style = document.createElement('style');
+style.textContent = `.navbar.scrolled{padding:0.6rem 5%;box-shadow:0 4px 30px rgba(0,0,0,0.5)}`;
+document.head.appendChild(style);
+</script>
+<script>
+    // 1. Barra de progreso que se llena al bajar
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        const progressBar = document.getElementById('scroll-progress');
+        if(progressBar) progressBar.style.width = scrolled + '%';
+    });
+
+    // 2. Menú Móvil
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    if(mobileMenu && navLinks) {
+        // Clonamos el botón para evitar que se dupliquen eventos viejos
+        const newMobileMenu = mobileMenu.cloneNode(true);
+        mobileMenu.parentNode.replaceChild(newMobileMenu, mobileMenu);
+        newMobileMenu.addEventListener('click', () => {
+            newMobileMenu.classList.toggle('is-active');
+            navLinks.classList.toggle('active');
+        });
+    }
+
+    // 3. Cursor Personalizado
+    const dot = document.querySelector('.cursor-dot');
+    const ring = document.querySelector('.cursor-ring');
+    if(dot && ring) {
+        document.addEventListener('mousemove', (e) => {
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            ring.style.left = e.clientX + 'px';
+            ring.style.top = e.clientY + 'px';
+        });
+
+        // 4. Hacer que el cursor crezca al tocar botones, enlaces y tarjetas
+        const clickables = document.querySelectorAll('a, button, .menu-toggle, .fase-card, .mini-prod-card, .docente-card, .prod-card, input');
+        clickables.forEach(item => {
+            item.addEventListener('mouseenter', () => { ring.style.transform = 'translate(-50%, -50%) scale(1.6)'; });
+            item.addEventListener('mouseleave', () => { ring.style.transform = 'translate(-50%, -50%) scale(1)'; });
+        });
+    }
+</script>
+<script>
+/* ── Sesión activa: pill desktop + avatar móvil + IR A PLATAFORMA ── */
+(function(){
+    const raw = localStorage.getItem('usuario_sesion_activa');
+    if (!raw) return;
+    try {
+        const u = JSON.parse(raw);
+        if (u.sesionExpira && Date.now() > u.sesionExpira) {
+            localStorage.removeItem('usuario_sesion_activa'); return;
+        }
+        const primeros = (u.nombre || '').trim().split(/\s+/).slice(0,2).join(' ');
+        const inicial = (primeros[0] || '?').toUpperCase();
+        const avatarStyle = (size, fs) =>
+            u.fotoUrl
+                ? `<img src="${u.fotoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:2px solid #ff5e00;flex-shrink:0;">`
+                : `<div style="width:${size}px;height:${size}px;border-radius:50%;background:#ff5e00;display:flex;align-items:center;justify-content:center;font-size:${fs}px;font-weight:900;color:#fff;flex-shrink:0;">${inicial}</div>`;
+        const btn = document.querySelector('a.btn-login');
+        if (btn) {
+            btn.href = 'dashboard.html';
+            btn.style.cssText = 'display:flex;align-items:center;gap:7px;padding:3px 14px 3px 3px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fafafa;text-decoration:none;';
+            btn.innerHTML = `${avatarStyle(28,11)}<span>${primeros}</span>`;
+        }
+        const toggle = document.getElementById('mobile-menu');
+        if (toggle) {
+            const pill = document.createElement('div');
+            pill.id = 'mobile-user-pill';
+            pill.style.cssText = 'display:none;align-items:center;z-index:3001;cursor:pointer;';
+            pill.innerHTML = avatarStyle(34,13);
+            pill.addEventListener('click', () => { window.location.href='dashboard.html'; });
+            toggle.parentNode.insertBefore(pill, toggle);
+            const mq = window.matchMedia('(max-width:768px)');
+            const setVis = m => { pill.style.display = m.matches ? 'flex' : 'none'; };
+            setVis(mq); mq.addEventListener('change', setVis);
+        }
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) {
+            const li = document.createElement('li');
+            li.className = 'nav-ir-plataforma';
+            li.innerHTML = `<a href="dashboard.html" style="display:block;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:3px;text-decoration:none;text-align:center;">🚀 IR A PLATAFORMA</a>`;
+            navLinks.insertBefore(li, navLinks.firstChild);
+            const s = document.createElement('style');
+            s.textContent = '@media(min-width:769px){.nav-ir-plataforma{display:none!important;}} .nav-ir-plataforma a{font-size:.72rem!important;border-bottom:none!important;transform:none!important;padding:.65rem 1.3rem!important;letter-spacing:2px!important;width:100%!important;box-sizing:border-box;}';
+            document.head.appendChild(s);
+        }
+    } catch(e) {}
+})();
+</script>
+<script src="fondo-dinamico.js"></script>
+</body>
+</html>

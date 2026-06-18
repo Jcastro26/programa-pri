@@ -1,0 +1,43 @@
+<svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g6sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d2137"/>
+      <stop offset="55%" stop-color="#1a4a6e"/>
+      <stop offset="100%" stop-color="#2a7a9e"/>
+    </linearGradient>
+    <linearGradient id="g6sea" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0e3d5c"/>
+      <stop offset="100%" stop-color="#051828"/>
+    </linearGradient>
+  </defs>
+  <!-- Cielo -->
+  <rect width="400" height="560" fill="url(#g6sky)"/>
+  <!-- Líneas horizontales de oleaje -->
+  <path d="M0,340 Q50,330 100,340 Q150,350 200,340 Q250,330 300,340 Q350,350 400,340 L400,560 L0,560 Z" fill="url(#g6sea)" opacity="0.95"/>
+  <path d="M0,360 Q40,352 80,360 Q120,368 160,360 Q200,352 240,360 Q280,368 320,360 Q360,352 400,360" fill="none" stroke="rgba(100,180,220,0.4)" stroke-width="1.5"/>
+  <path d="M0,375 Q50,368 100,375 Q150,382 200,375 Q250,368 300,375 Q350,382 400,375" fill="none" stroke="rgba(100,180,220,0.25)" stroke-width="1"/>
+  <!-- Canoa / piragua -->
+  <ellipse cx="200" cy="335" rx="90" ry="12" fill="#8B4513"/>
+  <path d="M110,335 Q200,318 290,335" fill="#a0522d" stroke="#6b3410" stroke-width="1.5"/>
+  <!-- Pescador silueta -->
+  <ellipse cx="195" cy="318" rx="8" ry="8" fill="#1a0a00"/>
+  <rect x="191" y="326" width="8" height="14" fill="#1a0a00"/>
+  <line x1="202" y1="319" x2="220" y2="290" stroke="#1a0a00" stroke-width="2"/>
+  <line x1="220" y1="290" x2="225" y2="310" stroke="#1a0a00" stroke-width="1.5"/>
+  <!-- Luna reflejada -->
+  <circle cx="200" cy="80" r="32" fill="rgba(255,248,200,0.95)"/>
+  <ellipse cx="200" cy="380" rx="25" ry="8" fill="rgba(255,248,200,0.15)"/>
+  <!-- Estrellas -->
+  <circle cx="80" cy="50" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="140" cy="30" r="1" fill="white" opacity="0.7"/>
+  <circle cx="300" cy="45" r="1.5" fill="white" opacity="0.8"/>
+  <circle cx="350" cy="70" r="1" fill="white" opacity="0.6"/>
+  <circle cx="40" cy="100" r="1.2" fill="white" opacity="0.7"/>
+  <circle cx="320" cy="110" r="1" fill="white" opacity="0.6"/>
+  <circle cx="260" cy="60" r="1.3" fill="white" opacity="0.75"/>
+  <!-- Texto -->
+  <text x="200" y="460" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="3">PESCA</text>
+  <text x="200" y="488" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="11" fill="rgba(180,220,255,0.7)" letter-spacing="5">DEL PACÍFICO</text>
+  <line x1="100" y1="502" x2="300" y2="502" stroke="rgba(255,94,0,0.6)" stroke-width="1.5"/>
+  <text x="200" y="520" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="2">PROGRAMA-PRI · TUMACO</text>
+</svg>

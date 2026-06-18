@@ -1,0 +1,39 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#2d1515" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Cóndor andino -->
+<path d="M60,75 Q50,55 65,45 Q80,38 95,50 Q105,45 120,40 Q140,42 148,58 Q155,70 145,78 Q130,88 100,82 Q75,85 60,75 Z" fill="#1f2937" opacity="0.85"/>
+<path d="M95,50 Q100,40 100,32" stroke="#4b5563" stroke-width="2" fill="none"/>
+<ellipse cx="100" cy="30" rx="6" ry="8" fill="#dc2626" opacity="0.8"/>
+<circle cx="97" cy="27" r="2" fill="white" opacity="0.9"/>
+<path d="M60,75 Q45,80 35,75 Q42,65 60,72 Z" fill="#374151" opacity="0.7"/>
+<path d="M148,58 Q160,53 165,60 Q158,68 148,65 Z" fill="#374151" opacity="0.7"/>
+<path d="M80,80 Q100,75 120,80 Q100,88 80,80 Z" fill="#f9fafb" opacity="0.7"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#2d1515" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#fee2e2" opacity="0.95">"La educación es la</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#fee2e2" opacity="0.95">llave de la libertad"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#f87171" letter-spacing="1" opacity="0.9">— Nelson Mandela</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#f87171" letter-spacing="2" opacity="1">CÓNDOR ANDINO</text>
+</svg>

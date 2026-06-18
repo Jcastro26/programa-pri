@@ -1,0 +1,37 @@
+<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="220" fill="#0d2b4e" opacity="0.1"/>
+
+  <!-- Ilustración -->
+  <g transform="scale(0.85) translate(12,10)">
+    <!-- Ballena jorobada grande -->
+<path d="M50,145 Q70,100 110,92 Q145,88 165,110 Q170,128 158,140 Q130,155 95,150 Q62,152 50,145 Z" fill="#1d4ed8" opacity="0.85"/>
+<path d="M158,112 Q185,88 195,100 Q185,122 162,125 Z" fill="#2563eb" opacity="0.75"/>
+<circle cx="90" cy="118" r="4" fill="white" opacity="0.9"/>
+<path d="M60,148 Q90,160 120,155 Q140,150 160,148" stroke="#93c5fd" stroke-width="2" fill="none" opacity="0.5"/>
+<path d="M60,120 Q80,105 100,110" stroke="#bfdbfe" stroke-width="1.5" fill="none" opacity="0.4"/>
+<ellipse cx="45" cy="135" rx="12" ry="4" fill="#60a5fa" opacity="0.4" transform="rotate(-20,45,135)"/>
+  </g>
+
+  <!-- Logo PRI -->
+  <image href="../logo.png" x="168" y="6" width="26" height="26"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior -->
+  <rect x="0" y="162" width="200" height="58" fill="#0d2b4e" opacity="0.55"/>
+
+  <!-- Programa PRI -->
+  <text x="100" y="175" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="8"
+        fill="#60a5fa" letter-spacing="2" opacity="0.8">PROGRAMA PRI</text>
+  <text x="100" y="186" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="7" font-weight="600"
+        fill="#dbeafe" letter-spacing="1" opacity="0.8">EL PACÍFICO RENACIENDO CON INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="100" y="202" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="13"
+        fill="#60a5fa" letter-spacing="2" opacity="1">BALLENAS DEL PACÍFICO</text>
+  <text x="100" y="214" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="8" font-weight="600"
+        fill="#dbeafe" letter-spacing="1" opacity="0.85">Mar colombiano</text>
+</svg>

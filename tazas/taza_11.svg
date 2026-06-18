@@ -1,0 +1,41 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#1a0533" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Orquídeas -->
+<path d="M100,95 L100,50" stroke="#6b21a8" stroke-width="2" opacity="0.7"/>
+<path d="M100,70 Q82,58 78,45 M100,70 Q118,58 122,45" stroke="#7e22ce" stroke-width="1.5" fill="none" opacity="0.6"/>
+<ellipse cx="100" cy="42" rx="10" ry="14" fill="#c084fc" opacity="0.8" transform="rotate(-10,100,42)"/>
+<ellipse cx="100" cy="42" rx="8" ry="12" fill="#e9d5ff" opacity="0.6" transform="rotate(10,100,42)"/>
+<circle cx="100" cy="44" r="4" fill="#f5d0fe" opacity="0.9"/>
+<ellipse cx="80" cy="58" rx="8" ry="11" fill="#a855f7" opacity="0.7" transform="rotate(20,80,58)"/>
+<ellipse cx="120" cy="56" rx="8" ry="11" fill="#a855f7" opacity="0.7" transform="rotate(-20,120,56)"/>
+<circle cx="80" cy="60" r="3" fill="#fae8ff" opacity="0.8"/>
+<circle cx="120" cy="58" r="3" fill="#fae8ff" opacity="0.8"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#1a0533" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#f3e8ff" opacity="0.95">"Cultiva tu mente</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#f3e8ff" opacity="0.95">como cultivas un jardín"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#c084fc" letter-spacing="1" opacity="0.9">— Henry Ward Beecher</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#c084fc" letter-spacing="2" opacity="1">ORQUÍDEAS</text>
+</svg>

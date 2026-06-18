@@ -1,0 +1,33 @@
+<svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g13bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00112a"/>
+      <stop offset="100%" stop-color="#002244"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="560" fill="url(#g13bg)"/>
+  <!-- Ondas concéntricas abstractas -->
+  <circle cx="200" cy="220" r="170" fill="none" stroke="rgba(0,180,255,0.12)" stroke-width="1"/>
+  <circle cx="200" cy="220" r="140" fill="none" stroke="rgba(0,180,255,0.15)" stroke-width="1.5"/>
+  <circle cx="200" cy="220" r="110" fill="none" stroke="rgba(0,180,255,0.20)" stroke-width="1.5"/>
+  <circle cx="200" cy="220" r="80"  fill="none" stroke="rgba(0,180,255,0.28)" stroke-width="2"/>
+  <circle cx="200" cy="220" r="52"  fill="none" stroke="rgba(0,180,255,0.38)" stroke-width="2.5"/>
+  <circle cx="200" cy="220" r="28"  fill="none" stroke="rgba(0,180,255,0.55)" stroke-width="3"/>
+  <circle cx="200" cy="220" r="10"  fill="rgba(0,200,255,0.6)"/>
+  <!-- Ondas diagonales tipo océano -->
+  <path d="M-20,300 Q60,280 140,300 Q220,320 300,300 Q380,280 460,300" fill="none" stroke="rgba(0,160,255,0.35)" stroke-width="2.5"/>
+  <path d="M-20,316 Q60,296 140,316 Q220,336 300,316 Q380,296 460,316" fill="none" stroke="rgba(0,140,255,0.25)" stroke-width="2"/>
+  <path d="M-20,332 Q60,312 140,332 Q220,352 300,332 Q380,312 460,332" fill="none" stroke="rgba(0,120,255,0.18)" stroke-width="1.5"/>
+  <!-- Punto brillante en el centro -->
+  <circle cx="200" cy="220" r="6" fill="white" opacity="0.9"/>
+  <!-- Líneas radiales sutiles -->
+  <line x1="200" y1="50"  x2="200" y2="390" stroke="rgba(0,180,255,0.06)" stroke-width="1"/>
+  <line x1="30"  y1="220" x2="370" y2="220" stroke="rgba(0,180,255,0.06)" stroke-width="1"/>
+  <line x1="80"  y1="100" x2="320" y2="340" stroke="rgba(0,180,255,0.04)" stroke-width="1"/>
+  <line x1="320" y1="100" x2="80"  y2="340" stroke="rgba(0,180,255,0.04)" stroke-width="1"/>
+  <!-- Texto -->
+  <text x="200" y="438" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="4">ONDAS</text>
+  <text x="200" y="464" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="11" fill="rgba(0,200,255,0.7)" letter-spacing="5">DEL PACÍFICO</text>
+  <line x1="100" y1="478" x2="300" y2="478" stroke="rgba(255,94,0,0.6)" stroke-width="1.5"/>
+  <text x="200" y="498" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="2">PROGRAMA-PRI · TUMACO</text>
+</svg>

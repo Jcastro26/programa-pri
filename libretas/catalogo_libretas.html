@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Libretas PRI — 15 Diseños</title>
+<style>
+  :root { --azul:#063162; --naranja:#FF5E00; --blanco:#f0f4f8; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:#021226; color:var(--blanco); font-family:'Montserrat',sans-serif; }
+  header { background:rgba(2,18,38,0.95); padding:1.5rem 2rem; border-bottom:3px solid var(--naranja); display:flex; align-items:center; gap:1rem; }
+  header h1 { font-size:1.4rem; font-weight:900; letter-spacing:3px; }
+  header p { font-size:0.75rem; color:rgba(240,244,248,0.5); letter-spacing:2px; margin-top:0.25rem; }
+  .badge { background:var(--naranja); color:white; font-size:0.65rem; font-weight:900; letter-spacing:2px; padding:0.3rem 0.8rem; }
+  main { max-width:1400px; margin:0 auto; padding:2rem; }
+  .intro { text-align:center; padding:2rem 0; }
+  .intro h2 { font-size:2rem; font-weight:900; letter-spacing:4px; margin-bottom:0.5rem; }
+  .intro p { color:rgba(240,244,248,0.55); font-size:0.85rem; }
+  .libreta-section { margin:2.5rem 0; border:1px solid rgba(255,255,255,0.08); border-radius:12px; overflow:hidden; }
+  .libreta-header { background:rgba(6,49,98,0.4); padding:1rem 1.5rem; display:flex; align-items:center; justify-content:space-between; }
+  .libreta-header h3 { font-size:1rem; font-weight:900; letter-spacing:2px; }
+  .libreta-header .num { background:var(--naranja); color:white; font-size:0.7rem; font-weight:900; padding:0.25rem 0.6rem; letter-spacing:1px; }
+  .pages-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; padding:1.5rem; background:rgba(0,0,0,0.2); }
+  .page-card { position:relative; border-radius:8px; overflow:hidden; border:1px solid rgba(255,255,255,0.1); }
+  .page-card img, .page-card object { width:100%; height:auto; display:block; }
+  .page-label { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.75); padding:0.5rem; text-align:center; font-size:0.65rem; font-weight:700; letter-spacing:2px; color:rgba(240,244,248,0.7); }
+  .page-tag { display:inline-block; background:rgba(255,94,0,0.2); border:1px solid rgba(255,94,0,0.4); color:rgba(255,94,0,0.9); font-size:0.6rem; font-weight:700; letter-spacing:1.5px; padding:0.15rem 0.5rem; margin-bottom:0.4rem; }
+  .precios { background:rgba(6,49,98,0.2); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:1.5rem; margin:2rem 0; text-align:center; }
+  .precios h3 { font-size:1rem; font-weight:900; letter-spacing:3px; margin-bottom:1rem; }
+  .precio-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1rem; }
+  .precio-item { background:rgba(255,255,255,0.04); padding:1rem; border-radius:6px; border:1px solid rgba(255,255,255,0.06); }
+  .precio-item .price { font-size:1.5rem; font-weight:900; color:var(--naranja); }
+  .precio-item .label { font-size:0.7rem; color:rgba(240,244,248,0.5); letter-spacing:2px; margin-top:0.25rem; }
+  @media(max-width:768px){ .pages-row{ grid-template-columns:1fr; } }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+  <div>
+    <h1>LIBRETAS PRI</h1>
+    <p>15 DISEÑOS TUMAQUEÑOS · EDICIÓN 2025</p>
+  </div>
+  <span class="badge">PREVIEW</span>
+</header>
+<main>
+  <div class="intro">
+    <h2>COLECCIÓN COMPLETA</h2>
+    <p>Cada libreta tiene 3 páginas: portada, cuartilla cuadriculada con marca de agua, y contraportada con contacto.</p>
+  </div>
+
+  <!-- Precio referencia -->
+  <div class="precios">
+    <h3>💰 PRECIOS SUGERIDOS (COP)</h3>
+    <div class="precio-grid">
+      <div class="precio-item"><p class="price">$28.000</p><p class="label">Libreta estándar<br>80 hojas cuadriculadas</p></div>
+      <div class="precio-item"><p class="price">$34.000</p><p class="label">Libreta premium<br>100 hojas + portada gruesa</p></div>
+      <div class="precio-item"><p class="price">$75.000</p><p class="label">Pack x3 libretas<br>Elige 3 diseños</p></div>
+      <div class="precio-item"><p class="price">$140.000</p><p class="label">Colección completa<br>5 diseños distintos</p></div>
+    </div>
+  </div>
+
+  <!-- 15 libretass -->
+  <script>
+  const libretas = [
+    {id:'01',nombre:'El Morro',archivo:'libreta_01_morro'},
+    {id:'02',nombre:'Ballenas del Pacífico',archivo:'libreta_02_ballenas'},
+    {id:'03',nombre:'Manglar',archivo:'libreta_03_manglar'},
+    {id:'04',nombre:'Geometría Afropacífica',archivo:'libreta_04_geometria'},
+    {id:'05',nombre:'Atardecer Tumaqueño',archivo:'libreta_05_atardecer'},
+    {id:'06',nombre:'Pesca del Pacífico',archivo:'libreta_06_pesca'},
+    {id:'07',nombre:'Marimba',archivo:'libreta_07_marimba'},
+    {id:'08',nombre:'Flora Tropical',archivo:'libreta_08_flores'},
+    {id:'09',nombre:'Noche Tumaqueña',archivo:'libreta_09_noche_estrellada'},
+    {id:'10',nombre:'Ingeniería',archivo:'libreta_10_ingenieria'},
+    {id:'11',nombre:'Tortuga Marina',archivo:'libreta_11_tortuga'},
+    {id:'12',nombre:'Libertad',archivo:'libreta_12_aguila'},
+    {id:'13',nombre:'Ondas del Pacífico',archivo:'libreta_13_ondas'},
+    {id:'14',nombre:'Colibrí',archivo:'libreta_14_colibri'},
+    {id:'15',nombre:'Afropacífico',archivo:'libreta_15_afropacifico'},
+  ];
+  const main = document.querySelector('main');
+  libretas.forEach(l => {
+    const sec = document.createElement('div');
+    sec.className='libreta-section';
+    sec.innerHTML=`
+      <div class="libreta-header">
+        <div>
+          <span class="num">N° ${l.id}</span>
+          <h3 style="display:inline;margin-left:0.75rem;">${l.nombre}</h3>
+        </div>
+        <a href="${l.archivo}.svg" download style="font-family:Montserrat,sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;background:rgba(255,94,0,0.12);border:1px solid rgba(255,94,0,0.3);color:#FF5E00;padding:0.4rem 1rem;text-decoration:none;">↓ SVG</a>
+      </div>
+      <div class="pages-row">
+        <div class="page-card">
+          <span class="page-tag">PORTADA</span>
+          <img src="${l.archivo}.svg" alt="Portada ${l.nombre}" loading="lazy">
+          <div class="page-label">PORTADA</div>
+        </div>
+        <div class="page-card">
+          <span class="page-tag">CUARTILLA</span>
+          <img src="pagina_cuartilla.svg" alt="Cuartilla" loading="lazy">
+          <div class="page-label">PÁGINA INTERIOR</div>
+        </div>
+        <div class="page-card">
+          <span class="page-tag">CONTRAPORTADA</span>
+          <img src="pagina_contraportada.svg" alt="Contraportada" loading="lazy">
+          <div class="page-label">CONTRAPORTADA</div>
+        </div>
+      </div>
+    `;
+    main.appendChild(sec);
+  });
+  </script>
+
+  <div style="text-align:center;padding:3rem 0;color:rgba(240,244,248,0.3);font-size:0.75rem;letter-spacing:3px;">
+    PROGRAMA-PRI · TUMACO, NARIÑO · 2025
+  </div>
+</main>
+</body>
+</html>

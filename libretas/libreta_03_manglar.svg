@@ -1,0 +1,122 @@
+<svg viewBox="0 0 400 566" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF5E00"/>
+      <stop offset="40%" stop-color="#c44400"/>
+      <stop offset="100%" stop-color="#041e40"/>
+    </linearGradient>
+    <linearGradient id="agua3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00A896" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#063162" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="400" height="566" fill="url(#bg3)"/>
+
+  <!-- Textura puntos -->
+  <g fill="rgba(0,0,0,0.08)">
+    <circle cx="30" cy="30" r="80"/>
+    <circle cx="370" cy="80" r="60"/>
+    <circle cx="50" cy="300" r="100"/>
+    <circle cx="380" cy="400" r="90"/>
+  </g>
+
+  <!-- Agua baja -->
+  <rect x="0" y="400" width="400" height="166" fill="url(#agua3)"/>
+  <path d="M0 400 Q50 392 100 400 Q150 408 200 400 Q250 392 300 400 Q350 408 400 400 L400 420 L0 420Z" fill="rgba(0,168,150,0.25)"/>
+
+  <!-- Raíces del manglar — arcos característicos -->
+  <!-- Árbol 1 izquierda -->
+  <g stroke="#021228" stroke-width="2.5" fill="none" opacity="0.85">
+    <!-- Tronco -->
+    <line x1="70" y1="200" x2="65" y2="390"/>
+    <!-- Raíces arqueadas -->
+    <path d="M 70,280 C 45,300 30,340 35,380"/>
+    <path d="M 70,260 C 90,285 100,330 90,375"/>
+    <path d="M 65,300 C 40,315 25,355 30,395"/>
+    <path d="M 68,320 C 85,335 88,365 82,395"/>
+    <path d="M 66,290 C 55,310 52,350 55,390"/>
+    <!-- Rama izquierda -->
+    <path d="M 70,200 C 40,185 20,170 10,155"/>
+    <path d="M 70,200 C 55,180 50,162 55,148"/>
+    <path d="M 70,200 C 80,178 85,162 80,148"/>
+    <path d="M 70,200 C 100,185 115,170 120,155"/>
+  </g>
+  <!-- Hojas árbol 1 -->
+  <g fill="#0d6030" opacity="0.9">
+    <ellipse cx="10" cy="150" rx="18" ry="10" transform="rotate(-20,10,150)"/>
+    <ellipse cx="55" cy="143" rx="16" ry="9" transform="rotate(10,55,143)"/>
+    <ellipse cx="82" cy="143" rx="16" ry="9" transform="rotate(-5,82,143)"/>
+    <ellipse cx="122" cy="150" rx="18" ry="10" transform="rotate(15,122,150)"/>
+    <ellipse cx="35" cy="160" rx="14" ry="8" transform="rotate(-30,35,160)"/>
+    <ellipse cx="105" cy="158" rx="15" ry="9" transform="rotate(25,105,158)"/>
+  </g>
+
+  <!-- Árbol 2 derecha -->
+  <g stroke="#021228" stroke-width="2.5" fill="none" opacity="0.85">
+    <line x1="330" y1="220" x2="335" y2="390"/>
+    <path d="M 330,290 C 355,310 370,350 365,385"/>
+    <path d="M 330,270 C 310,292 305,335 315,378"/>
+    <path d="M 333,310 C 358,328 365,362 355,392"/>
+    <path d="M 331,330 C 315,348 312,375 320,398"/>
+    <path d="M 330,220 C 300,205 280,188 270,172"/>
+    <path d="M 330,220 C 315,198 310,180 315,165"/>
+    <path d="M 330,220 C 340,198 345,180 340,165"/>
+    <path d="M 330,220 C 360,205 378,190 388,175"/>
+  </g>
+  <g fill="#0d6030" opacity="0.9">
+    <ellipse cx="270" cy="167" rx="18" ry="10" transform="rotate(-15,270,167)"/>
+    <ellipse cx="314" cy="160" rx="16" ry="9" transform="rotate(8,314,160)"/>
+    <ellipse cx="342" cy="160" rx="16" ry="9" transform="rotate(-8,342,160)"/>
+    <ellipse cx="390" cy="170" rx="18" ry="10" transform="rotate(18,390,170)"/>
+  </g>
+
+  <!-- Árbol 3 centro pequeño -->
+  <g stroke="#041e40" stroke-width="2" fill="none" opacity="0.7">
+    <line x1="200" y1="250" x2="200" y2="400"/>
+    <path d="M 200,300 C 178,318 168,352 175,390"/>
+    <path d="M 200,310 C 222,330 228,360 220,395"/>
+    <path d="M 200,250 C 178,235 162,220 155,208"/>
+    <path d="M 200,250 C 215,232 220,216 216,203"/>
+    <path d="M 200,250 C 225,235 240,220 245,208"/>
+  </g>
+  <g fill="#1a8040" opacity="0.8">
+    <ellipse cx="154" cy="204" rx="14" ry="8" transform="rotate(-20,154,204)"/>
+    <ellipse cx="216" cy="198" rx="13" ry="7" transform="rotate(5,216,198)"/>
+    <ellipse cx="246" cy="204" rx="14" ry="8" transform="rotate(18,246,204)"/>
+  </g>
+
+  <!-- Reflejo en agua -->
+  <g opacity="0.15" transform="scale(1,-1) translate(0,-820)">
+    <line x1="70" y1="200" x2="65" y2="390" stroke="#021228" stroke-width="2"/>
+    <line x1="330" y1="220" x2="335" y2="390" stroke="#021228" stroke-width="2"/>
+  </g>
+
+  <!-- Bandas decorativas -->
+  <rect x="0" y="0" width="400" height="8" fill="#FFB300"/>
+  <rect x="0" y="8" width="400" height="2" fill="rgba(255,255,255,0.3)"/>
+  <rect x="0" y="556" width="400" height="10" fill="#FFB300"/>
+
+  <!-- Marco -->
+  <rect x="18" y="18" width="364" height="530" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+
+  <!-- Logo -->
+  <text x="200" y="78" text-anchor="middle" font-family="Montserrat, Arial Black, sans-serif" font-weight="900" font-size="11" fill="white" letter-spacing="4">PROGRAMA</text>
+  <text x="200" y="98" text-anchor="middle" font-family="Montserrat, Arial Black, sans-serif" font-weight="900" font-size="22" fill="white" letter-spacing="6">PRI</text>
+  <line x1="140" y1="110" x2="260" y2="110" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>
+  <text x="200" y="128" text-anchor="middle" font-family="Georgia, serif" font-size="9" fill="rgba(255,255,255,0.55)" letter-spacing="2">PACÍFICO · RENACIENDO · INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="200" y="462" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="16" fill="white" opacity="0.9">Manglar del Pacífico</text>
+  <line x1="100" y1="472" x2="300" y2="472" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/>
+  <text x="200" y="490" text-anchor="middle" font-family="Georgia, serif" font-size="8.5" fill="rgba(255,255,255,0.35)" letter-spacing="1.5">TUMACO · NARIÑO · COLOMBIA</text>
+
+  <!-- Líneas nombre -->
+  <g stroke="rgba(255,255,255,0.12)" stroke-width="0.8">
+    <line x1="40" y1="510" x2="360" y2="510"/>
+    <line x1="40" y1="528" x2="360" y2="528"/>
+    <line x1="40" y1="546" x2="360" y2="546"/>
+  </g>
+  <text x="200" y="508" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.2)" font-family="Arial, sans-serif">Nombre:</text>
+</svg>

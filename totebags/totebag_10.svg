@@ -1,0 +1,36 @@
+<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="220" fill="#0f3460" opacity="0.1"/>
+
+  <!-- Ilustración -->
+  <g transform="scale(0.85) translate(12,10)">
+    <!-- Ondas del Pacífico grande -->
+<path d="M20,88 Q52,70 84,88 Q116,106 148,88 Q164,79 180,84" stroke="#3b82f6" stroke-width="4" fill="none" opacity="0.85" stroke-linecap="round"/>
+<path d="M20,108 Q52,90 84,108 Q116,126 148,108 Q164,99 180,104" stroke="#60a5fa" stroke-width="3.5" fill="none" opacity="0.75" stroke-linecap="round"/>
+<path d="M20,128 Q52,110 84,128 Q116,146 148,128 Q164,119 180,124" stroke="#93c5fd" stroke-width="3" fill="none" opacity="0.65" stroke-linecap="round"/>
+<path d="M20,148 Q52,130 84,148 Q116,166 148,148 Q164,139 180,144" stroke="#bfdbfe" stroke-width="2.5" fill="none" opacity="0.55" stroke-linecap="round"/>
+<ellipse cx="100" cy="62" rx="28" ry="16" fill="#1d4ed8" opacity="0.35"/>
+  </g>
+
+  <!-- Logo PRI -->
+  <image href="../logo.png" x="168" y="6" width="26" height="26"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior -->
+  <rect x="0" y="162" width="200" height="58" fill="#0f3460" opacity="0.55"/>
+
+  <!-- Programa PRI -->
+  <text x="100" y="175" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="8"
+        fill="#60a5fa" letter-spacing="2" opacity="0.8">PROGRAMA PRI</text>
+  <text x="100" y="186" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="7" font-weight="600"
+        fill="#dbeafe" letter-spacing="1" opacity="0.8">EL PACÍFICO RENACIENDO CON INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="100" y="202" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="13"
+        fill="#60a5fa" letter-spacing="2" opacity="1">ONDAS DEL PACÍFICO</text>
+  <text x="100" y="214" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="8" font-weight="600"
+        fill="#dbeafe" letter-spacing="1" opacity="0.85">Mar infinito</text>
+</svg>

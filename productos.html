@@ -1,2 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Recompensas | PROGRAMA-PRI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --azul-deep: #021a36; --azul-panel: #062040; --azul-card: #041830;
+            --naranja: #ff5e00; --oro: #ffd700; --blanco: #f0f4f8; --teal: #38bdf8; --verde: #22c55e;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Lora', serif; background: var(--azul-deep); color: var(--blanco); min-height: 100vh; display: flex; flex-direction: column; }
+        body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(255,94,0,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,94,0,0.025) 1px, transparent 1px); background-size: 48px 48px; }
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; z-index: 9000; background: linear-gradient(90deg, var(--naranja), var(--oro)); width: 0%; transition: width 0.1s linear; }
+        .cursor-dot { width:8px;height:8px;background:var(--naranja);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%); }
+        .cursor-ring { width:32px;height:32px;border:2px solid rgba(255,94,0,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.18s ease; }
 
+        .main-wrapper { flex: 1; position: relative; z-index: 1; }
 
+        /* HEADER */
+        .tienda-header { position: sticky; top: 0; z-index: 500; background: rgba(2,26,54,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.07); padding: 0.9rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .header-brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
+        .header-brand img { height: 36px; width: auto; object-fit: contain; }
+        .header-brand h2 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--blanco); margin: 0; }
+        .header-saldo { display: flex; align-items: center; gap: 0.75rem; }
+        .saldo-badge { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; background: rgba(255,94,0,0.12); border: 1px solid rgba(255,94,0,0.3); padding: 0.45rem 1rem; color: var(--blanco); }
+        .saldo-badge span { color: var(--oro); font-size: 1rem; font-weight: 900; }
+        .header-user-info { display: flex; flex-direction: column; align-items: flex-end; }
+        .header-username { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: rgba(255,255,255,0.55); }
+        .header-canjes { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; color: rgba(255,255,255,0.35); letter-spacing: 1px; }
+        .btn-volver { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); background: none; border: 1px solid rgba(255,255,255,0.1); padding: 0.45rem 0.9rem; cursor: pointer; text-decoration: none; transition: all 0.2s ease; }
+        .btn-volver:hover { color: var(--blanco); border-color: rgba(255,255,255,0.25); }
+
+        /* BANNER VISITANTE */
+        .banner-visitante { background: linear-gradient(135deg, rgba(255,94,0,0.1), rgba(255,215,0,0.05)); border: 1px solid rgba(255,94,0,0.2); margin: 1.5rem 2rem; padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        .banner-visitante .bv-icono { font-size: 2.5rem; }
+        .banner-visitante .bv-texto { flex: 1; }
+        .banner-visitante h3 { font-family: 'Montserrat', sans-serif; font-size: 0.9rem; font-weight: 900; letter-spacing: 1px; color: var(--blanco); margin-bottom: 0.4rem; }
+        .banner-visitante p { font-size: 0.82rem; color: rgba(255,255,255,0.55); line-height: 1.5; }
+        .btn-unirse { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; padding: 0.75rem 1.5rem; cursor: pointer; transition: background 0.2s; white-space: nowrap; text-decoration: none; display: inline-block; }
+        .btn-unirse:hover { background: #e05200; }
+
+        /* BANNER ESTUDIANTE */
+        .banner-estudiante { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); margin: 1.5rem 2rem; padding: 1.2rem 2rem; display: none; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        .banner-estudiante.visible { display: flex; }
+        .sugerencia-txt { font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; color: rgba(34,197,94,0.9); }
+        .sugerencia-txt strong { color: var(--blanco); }
+
+        /* HERO */
+        .tienda-hero { text-align: center; padding: 3.5rem 2rem 2.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .tienda-hero .eyebrow { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.75rem; }
+        .tienda-hero h1 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.8rem,5vw,3rem); font-weight: 900; letter-spacing: 1px; text-transform: uppercase; line-height: 1.1; margin-bottom: 0.75rem; }
+        .tienda-hero h1 span { color: var(--naranja); }
+        .tienda-hero p { color: rgba(255,255,255,0.5); font-size: 0.9rem; max-width: 480px; margin: 0 auto; }
+
+        /* GRID */
+        .productos-section { padding: 3rem 2rem 5rem; }
+        .grid-productos { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+
+        /* PRODUCT CARD */
+        .prod-card { background: var(--azul-panel); border: 1px solid rgba(255,255,255,0.07); display: flex; flex-direction: column; transition: transform 0.25s ease, border-color 0.25s ease; position: relative; overflow: hidden; }
+        .prod-card:hover { transform: translateY(-4px); border-color: rgba(255,94,0,0.3); }
+        .prod-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--naranja), var(--oro)); transform: scaleX(0); transition: transform 0.3s ease; transform-origin: left; }
+        .prod-card:hover::before { transform: scaleX(1); }
+        .prod-img { width: 100%; height: 180px; overflow: hidden; background: var(--azul-card); display: flex; align-items: center; justify-content: center; }
+        .prod-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .prod-card:hover .prod-img img { transform: scale(1.04); }
+        .prod-img-icon { font-size: 3.5rem; opacity: 0.6; }
+        .prod-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .prod-badge { display: inline-block; font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 0.25rem 0.6rem; margin-bottom: 0.75rem; }
+        .badge-gold { background: rgba(255,215,0,0.08); color: var(--oro); }
+        .badge-teal { background: rgba(56,189,248,0.08); color: var(--teal); }
+        .badge-verde { background: rgba(34,197,94,0.08); color: var(--verde); }
+        .prod-body h3 { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 900; color: var(--blanco); margin-bottom: 0.6rem; line-height: 1.3; }
+        .prod-body p { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.55; flex: 1; }
+        .prod-footer { padding: 1rem 1.5rem 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+        .prod-price { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.4rem; color: var(--blanco); }
+        .prod-price sup { font-size: 0.65rem; color: var(--naranja); letter-spacing: 1px; font-weight: 700; }
+
+        /* LOCK OVERLAY para visitante */
+        .prod-lock { position: absolute; inset: 0; background: rgba(2,26,54,0.6); backdrop-filter: blur(2px); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 1.5rem; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; }
+        .prod-card:hover .prod-lock { opacity: 1; }
+        /* WATERMARK no disponible */
+        .prod-no-disponible { position:absolute;inset:0;background:rgba(2,18,38,0.82);backdrop-filter:blur(4px);z-index:10;display:flex;align-items:center;justify-content:center;border-radius:inherit; }
+        .prod-nd-stamp { font-family:'Montserrat',sans-serif;font-size:1.1rem;font-weight:900;letter-spacing:4px;color:rgba(239,68,68,0.9);border:2px solid rgba(239,68,68,0.55);padding:.45rem 1.2rem;transform:rotate(-18deg);text-shadow:0 0 16px rgba(239,68,68,0.4);box-shadow:0 0 24px rgba(239,68,68,0.08);white-space:nowrap; }
+        /* ADMIN panel inline */
+        .admin-prod-panel { background:rgba(255,94,0,0.04);border:1.5px solid rgba(255,94,0,0.2);padding:1.5rem 2rem;margin:0 2rem 2rem; }
+        .admin-prod-panel h3 { font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,94,0,0.9);margin-bottom:1rem; }
+        .admin-prod-field { display:flex;flex-direction:column;gap:.3rem;margin-bottom:.75rem; }
+        .admin-prod-field label { font-family:'Montserrat',sans-serif;font-size:.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35); }
+        .admin-prod-field input,.admin-prod-field textarea { background:rgba(2,26,54,0.8);border:1px solid rgba(255,255,255,0.1);color:#f0f4f8;font-family:'Lora',serif;font-size:.85rem;padding:.6rem .9rem;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box; }
+        .admin-prod-field input:focus,.admin-prod-field textarea:focus { border-color:var(--naranja); }
+        .admin-prod-grid { display:grid;grid-template-columns:80px 1fr 120px;gap:.75rem; }
+        .btn-admin-save { font-family:'Montserrat',sans-serif;font-size:.65rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja);color:#fff;border:none;padding:.65rem 1.4rem;cursor:pointer;margin-top:.5rem; }
+        .lock-msg { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.7); text-align: center; }
+
+        .btn-canjear { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; padding: 0.65rem 1.2rem; cursor: pointer; transition: background 0.2s ease, transform 0.15s ease; white-space: nowrap; border-radius: 0.65rem; }
+        .btn-canjear:hover { background: #e05200; transform: translateY(-1px); }
+        .btn-canjear:disabled { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.25); cursor: not-allowed; transform: none; }
+        .btn-canjear.locked { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.25); color: rgba(239,68,68,0.6); }
+        .btn-ver-solo { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; padding: 0.75rem 1rem; cursor: pointer; white-space: nowrap; text-decoration: none; display: block; text-align: center; width: 100%; transition: background 0.2s ease; border-radius: 0.65rem; }
+        .btn-ver-solo:hover { background: #e05200; }
+        /* Footer en modo visitante: precio arriba, botón abajo full-width */
+        .prod-footer:has(.btn-ver-solo) { flex-direction: column; align-items: stretch; gap: 0.6rem; padding: 1rem 1.5rem 1.2rem; }
+        .prod-footer:has(.btn-ver-solo) .prod-price { text-align: center; }
+
+        /* HISTORIAL */
+        .historial-section { padding: 0 2rem 4rem; }
+        .historial-section h2 { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-bottom: 1.5rem; }
+        .historial-list { max-width: 800px; margin: 0 auto; }
+        .historial-item { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        .hi-prod { color: var(--blanco); font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.8rem; }
+        .hi-fecha { color: rgba(255,255,255,0.3); font-size: 0.75rem; }
+        .hi-pts { color: var(--naranja); font-family: 'Montserrat', sans-serif; font-weight: 900; }
+        .hi-estado { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 1px; color: var(--teal); }
+
+        /* MODALES */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(2,26,54,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box { background: var(--azul-panel); border: 1px solid rgba(255,255,255,0.1); max-width: 440px; width: 100%; padding: 2.5rem; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.25s ease; }
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+        .modal-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--naranja), var(--oro)); }
+        .modal-box .m-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .modal-box h3 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 900; color: var(--blanco); margin-bottom: 0.5rem; }
+        .modal-box p { font-size: 0.85rem; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; line-height: 1.5; }
+        .modal-close-btn { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 1.2rem; cursor: pointer; }
+        .modal-close-btn:hover { color: var(--blanco); }
+        .modal-actions { display: flex; gap: 0.75rem; }
+        .btn-confirm { flex: 1; padding: 0.85rem; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; cursor: pointer; transition: background 0.2s; }
+        .btn-confirm:hover { background: #e05200; }
+        .btn-cancel { flex: 1; padding: 0.85rem; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s; }
+        .btn-cancel:hover { background: rgba(255,255,255,0.1); color: var(--blanco); }
+        .canje-detalle { background: rgba(255,94,0,0.07); border: 1px solid rgba(255,94,0,0.2); padding: 1rem; margin-bottom: 1.5rem; }
+        .canje-detalle .cd-nombre { font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--blanco); margin-bottom: 0.4rem; }
+        .canje-detalle .cd-costo { font-family: 'Montserrat', sans-serif; font-size: 0.8rem; color: var(--oro); font-weight: 700; }
+        .canje-detalle .cd-saldo { font-family: 'Montserrat', sans-serif; font-size: 0.75rem; color: rgba(255,255,255,0.4); margin-top: 0.3rem; }
+
+        /* TOAST */
+        #toast-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9000; display: flex; flex-direction: column; gap: 0.75rem; max-width: 360px; width: 100%; }
+        .toast { padding: 1.1rem 1.4rem; border-left: 4px solid; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; box-shadow: 6px 6px 0 rgba(0,0,0,0.4); transition: all 0.3s ease; transform: translateX(30px); opacity: 0; background: var(--azul-panel); position: relative; }
+        .toast.visible { transform: translateX(0); opacity: 1; }
+        .toast.success { border-color: #22c55e; color: #86efac; }
+        .toast.error { border-color: #ef4444; color: #fca5a5; }
+        .toast.info { border-color: var(--teal); color: var(--teal); }
+        .toast .t-titulo { font-size: 0.8rem; color: var(--blanco); margin-bottom: 0.2rem; }
+        .toast .t-icono { font-size: 1.2rem; display: block; margin-bottom: 0.2rem; }
+
+        /* ── Vitrina libretas ── */
+        .prod-card-libretas { background: linear-gradient(135deg,rgba(6,49,98,0.95),rgba(2,18,38,0.98)); border: 1px solid rgba(255,215,0,0.2); }
+        .libretas-vitrina { display: flex; justify-content: center; gap: 1.5rem; padding: 1rem 1.5rem 0.5rem; flex-wrap: wrap; }
+        .libreta-preview { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+        .libreta-preview img { width: 130px; height: auto; border-radius: 4px; box-shadow: 0 4px 18px rgba(0,0,0,0.5); transition: transform 0.25s ease; }
+        .libreta-preview img:hover { transform: scale(1.06) rotate(-1deg); }
+        .lib-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,215,0,0.65); }
+        /* Botón palpitante tienda */
+        .btn-tienda-libreta {
+            position: relative; display: inline-flex; align-items: center; gap: 0.4rem;
+            font-family: 'Montserrat', sans-serif; font-size: 0.68rem; font-weight: 900;
+            letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none;
+            background: linear-gradient(135deg, #FF5E00, #ff8c00);
+            color: #fff; padding: 0.65rem 1.3rem; border-radius: 2px;
+            animation: pulseBtn 2s ease-in-out infinite;
+            box-shadow: 0 0 0 0 rgba(255,94,0,0.5);
+        }
+        .btn-tienda-libreta:hover { animation: none; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,94,0,0.4); }
+        @keyframes pulseBtn {
+            0%   { box-shadow: 0 0 0 0 rgba(255,94,0,0.6); }
+            50%  { box-shadow: 0 0 0 10px rgba(255,94,0,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,94,0,0); }
+        }
+        @media (max-width: 640px) {
+            .tienda-header { flex-wrap: wrap; padding: 0.75rem 1rem; }
+            .grid-productos { grid-template-columns: repeat(2, 1fr); gap: .7rem; }
+            .banner-visitante { flex-direction: column; }
+            .prod-card-libretas { grid-column: span 2 !important; }
+            .libreta-preview img { width: 80px; }
+            .prod-img { height: 130px; }
+            .prod-body { padding: .9rem .9rem .5rem; }
+            .prod-footer { padding: .5rem .9rem .9rem; }
+        }
+        @media (max-width: 400px) {
+            .grid-productos { grid-template-columns: 1fr; }
+            .prod-card-libretas { grid-column: span 1 !important; }
+        }
+    </style>
+</head>
+<body>
+<div id="scroll-progress"></div>
+<div class="cursor-dot" id="cdot"></div>
+<div class="cursor-ring" id="cring"></div>
+<div id="toast-container"></div>
+
+<div class="main-wrapper">
+
+    <!-- HEADER DINÁMICO -->
+    <header class="tienda-header">
+        <a href="index.html" class="header-brand">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" style="width:42px;height:42px;object-fit:cover;border-radius:50%;flex-shrink:0" onerror="this.style.display='none'">
+            <div><h2 style="font-size:1rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:#f0f4f8;text-shadow:none;margin:0;line-height:1.2">PROGRAMA-PRI</h2><p style="font-size:0.55rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#38bdf8;margin:0">El Pacífico Renaciendo con Ingeniería</p></div>
+        </a>
+        <div class="header-saldo" id="header-saldo-area">
+            <!-- Se llena por JS -->
+        </div>
+    </header>
+
+    <!-- BANNER VISITANTE (se muestra si no hay sesión) -->
+    <div class="banner-visitante" id="banner-visitante" style="display:none;">
+        <div class="bv-icono"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#FF5E00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+        <div class="bv-texto">
+            <h3>Gana puntos y canjea premios reales</h3>
+            <p>Los estudiantes del Programa PRI acumulan puntos completando retos, talleres y capacitaciones. Pueden canjearlos por mercados de $200.000, libretas y material académico.</p>
+        </div>
+        <a href="login.html" class="btn-unirse">Únete al Programa</a>
+    </div>
+
+    <!-- BANNER ESTUDIANTE (saldo + sugerencia) -->
+    <div class="banner-estudiante" id="banner-estudiante">
+        <span style="display:flex;align-items:center;flex-shrink:0"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FFB300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg></span>
+        <div class="sugerencia-txt" id="sugerencia-txt">Cargando sugerencia...</div>
+    </div>
+
+    <!-- HERO -->
+    <div class="tienda-hero">
+        <span class="eyebrow">Economía de Puntos PRI</span>
+        <h1>Tienda de <span>Recompensas</span></h1>
+        <p id="hero-sub">Canjea los puntos acumulados en pre-tests, talleres y capacitaciones por material académico, herramientas y premios reales.</p>
+    </div>
+
+    <!-- PANEL ADMIN: Agregar producto (visible solo para admin) -->
+    <div id="admin-prod-panel" class="admin-prod-panel" style="display:none;">
+        <h3>➕ Agregar Nuevo Producto</h3>
+        <div class="admin-prod-grid">
+            <div class="admin-prod-field"><label>Emoji</label><input type="text" id="ap-emoji" placeholder="🎁" maxlength="4"></div>
+            <div class="admin-prod-field"><label>Nombre del Producto</label><input type="text" id="ap-nombre" placeholder="Ej: Kit Escolar Tumaco"></div>
+            <div class="admin-prod-field"><label>Puntos</label><input type="number" id="ap-pts" placeholder="500" min="1"></div>
+        </div>
+        <div class="admin-prod-field"><label>Badge / Etiqueta</label><input type="text" id="ap-badge" placeholder="Ej: Premio Principal"></div>
+        <div class="admin-prod-field"><label>Descripción</label><textarea id="ap-desc" rows="2" placeholder="Descripción para los estudiantes…"></textarea></div>
+        <div class="admin-prod-field">
+            <label>Imagen del Producto <span style="font-weight:400;opacity:.5;">(opcional, max ~300 KB)</span></label>
+            <input type="file" id="ap-img" accept="image/*" onchange="previsualizarImgProductos(this)" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#e8f0f8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:4px;padding:.4rem;width:100%;cursor:pointer;">
+            <img id="ap-img-preview" style="display:none;width:90px;height:90px;object-fit:cover;border-radius:6px;margin-top:.5rem;border:1px solid rgba(255,255,255,0.12);" alt="Preview">
+        </div>
+        <button class="btn-admin-save" onclick="agregarProductoDesdeProductosHtml()">💾 Guardar Producto</button>
+        <span id="ap-status" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#86efac;margin-left:1rem;display:none;"></span>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <section class="productos-section">
+        <div class="grid-productos" id="grid-productos">
+        <!-- Cards cargadas dinámicamente desde Firestore -->
+        </div>
+    </section>
+
+    <!-- HISTORIAL -->
+    <section class="historial-section" id="historial-section" style="display:none;">
+        <h2>Historial de Canjes</h2>
+        <div class="historial-list" id="historial-list"></div>
+    </section>
+
+</div>
+
+<!-- MODAL CONFIRMACIÓN CANJE -->
+<div class="modal-overlay" id="modal-confirm">
+    <div class="modal-box">
+        <button class="modal-close-btn" onclick="cerrarModal()">✕</button>
+        <div class="m-icon">🔄</div>
+        <h3>Confirmar canje</h3>
+        <div class="canje-detalle">
+            <div class="cd-nombre" id="modal-prod-nombre">—</div>
+            <div class="cd-costo" id="modal-prod-costo">— PTS</div>
+            <div class="cd-saldo" id="modal-saldo-rest">Saldo tras canje: —</div>
+        </div>
+        <p>Un coordinador del Programa PRI se comunicará contigo para coordinar la entrega. Límite: 2 canjes por mes.</p>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn-confirm" id="btn-confirmar-canje" onclick="ejecutarCanje()">Confirmar Canje</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL INFO -->
+<div class="modal-overlay" id="modal-info">
+    <div class="modal-box">
+        <button class="modal-close-btn" onclick="cerrarModalInfo()">✕</button>
+        <div class="m-icon" id="mi-icono">ℹ️</div>
+        <h3 id="mi-titulo">Información</h3>
+        <p id="mi-msg">—</p>
+        <div class="modal-actions">
+            <button class="btn-confirm" onclick="cerrarModalInfo()">Entendido</button>
+        </div>
+    </div>
+</div>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pre-test.html">Simuladores</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Pacífico</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">Información General</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 PROGRAMA-PRI — Universidad Nacional de Colombia.</p>
+    </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+    getFirestore, doc, getDoc, updateDoc, collection,
+    addDoc, getDocs, query, where, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+    authDomain: "programa-pri-2d395.firebaseapp.com",
+    projectId: "programa-pri-2d395",
+    storageBucket: "programa-pri-2d395.firebasestorage.app",
+    messagingSenderId: "854011964095",
+    appId: "1:854011964095:web:6e075f73a385bb804e5356"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const auth = getAuth(app);
+
+const sesionRaw = localStorage.getItem('usuario_sesion_activa');
+let usuario = sesionRaw ? JSON.parse(sesionRaw) : null;
+
+// ── CARGAR PRODUCTOS DESDE FIRESTORE ─────────────────────────
+async function cargarProductos() {
+    const grid = document.getElementById('grid-productos');
+    grid.innerHTML = '<div style="color:rgba(255,255,255,0.35);font-family:Montserrat,sans-serif;font-size:.8rem;padding:2rem;text-align:center;grid-column:1/-1;">Cargando productos…</div>';
+
+    try {
+        const snap = await getDocs(collection(db, 'productos'));
+        if (snap.empty) {
+            grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);text-align:center;padding:2rem;grid-column:1/-1;">No hay productos disponibles.</p>';
+            return;
+        }
+        const prods = [];
+        snap.forEach(d => prods.push({ id: d.id, ...d.data() }));
+        prods.sort((a, b) => (a.orden || 99) - (b.orden || 99));
+
+        const renderCard = p => {
+            const disp = p.disponible !== false;
+            const badgeClass = p.badgeClass || 'badge-gold';
+            const watermark = !disp ? `
+                <div class="prod-no-disponible">
+                    <div class="prod-nd-stamp">NO DISPONIBLE</div>
+                </div>` : '';
+            const btnHtml = disp
+                ? `<button class="btn-canjear" data-nombre="${p.nombre}" data-costo="${p.pts}">Canjear</button>`
+                : '';
+            const imgHtml = p.imagen
+                ? `<img src="${p.imagen}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" loading="lazy">`
+                : `<div class="prod-img-icon">${p.emoji || '🎁'}</div>`;
+            return `
+                <div class="prod-card" data-nombre="${p.nombre}" data-costo="${p.pts}" style="position:relative;${!disp?'opacity:0.85;':''}">
+                    ${watermark}
+                    <div class="prod-img">${imgHtml}</div>
+                    <div class="prod-body">
+                        <span class="prod-badge ${badgeClass}">${p.badge || ''}</span>
+                        <h3>${p.nombre}</h3>
+                        <p>${p.descripcion || ''}</p>
+                    </div>
+                    <div class="prod-footer">
+                        <div class="prod-price">${p.pts} <sup>PTS</sup></div>
+                        ${btnHtml}
+                    </div>
+                </div>`;
+        };
+
+        // Card especial de vitrina de libretas (siempre visible, posición 2)
+        const libretasCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-gold">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Libretas Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Diseños exclusivos impresos, papel cuadriculado, marca de agua institucional. ¡Colecciónalas!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="libretas/libreta_01_morro.svg" alt="Libreta El Morro" loading="lazy"/>
+                        <span class="lib-label">El Morro</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="libretas/libreta_05_atardecer.svg" alt="Libreta Atardecer" loading="lazy"/>
+                        <span class="lib-label">Atardecer</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">200 <sup>PTS</sup></div>
+                    <button class="btn-canjear" data-nombre="Libreta Corporativa PRI" data-costo="200">Canjear puntos</button>
+                    <a href="tienda.html" class="btn-tienda-libreta">
+                        <span class="btn-pulse-ring"></span>
+                        🛒 Ver en Tienda PRI
+                    </a>
+                </div>
+            </div>`;
+
+        // Card especial de vitrina de tazas (siempre visible, posición 4)
+        const tazasCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-teal">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Tazas Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Diseños exclusivos con motivos del Pacífico y la UNAL. Perfectas para el café del estudio. ¡Colecciónalas!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="tazas/taza_01.svg" alt="Taza PRI 01" loading="lazy"/>
+                        <span class="lib-label">Diseño 01</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="tazas/taza_02.svg" alt="Taza PRI 02" loading="lazy"/>
+                        <span class="lib-label">Diseño 02</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">250 <sup>PTS</sup></div>
+                    <button class="btn-canjear" data-nombre="Taza Oficial PRI" data-costo="250">Canjear puntos</button>
+                    <a href="tienda.html" class="btn-tienda-libreta">
+                        <span class="btn-pulse-ring"></span>
+                        ☕ Ver en Tienda PRI
+                    </a>
+                </div>
+            </div>`;
+
+        // Card especial de vitrina de totebags (siempre visible, posición 7)
+        const totebagsCard = `
+            <div class="prod-card prod-card-libretas" style="grid-column:span 2;">
+                <div class="prod-body" style="text-align:center;padding-bottom:0.3rem">
+                    <span class="prod-badge badge-verde">Edición Limitada</span>
+                    <h3 style="font-size:1.15rem;margin-bottom:0.3rem">Totebags Oficiales PRI</h3>
+                    <p style="font-size:0.82rem;opacity:0.8">Bolsas de tela con diseños únicos del Pacífico. Resistentes, ecológicas y con identidad PRI. ¡Lleva el programa contigo!</p>
+                </div>
+                <div class="libretas-vitrina">
+                    <div class="libreta-preview">
+                        <img src="totebags/totebag_01.svg" alt="Totebag PRI 01" loading="lazy"/>
+                        <span class="lib-label">Diseño 01</span>
+                    </div>
+                    <div class="libreta-preview">
+                        <img src="totebags/totebag_02.svg" alt="Totebag PRI 02" loading="lazy"/>
+                        <span class="lib-label">Diseño 02</span>
+                    </div>
+                </div>
+                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div class="prod-price">300 <sup>PTS</sup></div>
+                    <button class="btn-canjear" data-nombre="Totebag Oficial PRI" data-costo="300">Canjear puntos</button>
+                    <a href="tienda.html" class="btn-tienda-libreta">
+                        <span class="btn-pulse-ring"></span>
+                        🛍️ Ver en Tienda PRI
+                    </a>
+                </div>
+            </div>`;
+
+        // Insertar: libretas en pos 2, tazas en pos 4, totebags en pos 7
+        const cards = prods.map(renderCard);
+        cards.splice(1, 0, libretasCard);
+        cards.splice(4, 0, tazasCard);
+        cards.splice(7, 0, totebagsCard);
+        grid.innerHTML = cards.join('');
+    } catch (e) {
+        grid.innerHTML = '<p style="color:rgba(255,255,255,0.3);text-align:center;padding:2rem;grid-column:1/-1;">Error al cargar productos.</p>';
+        console.error('cargarProductos:', e);
+    }
+}
+
+// ── TOAST ────────────────────────────────────────────────
+function toast(titulo, msg, icono = '✅', tipo = 'success') {
+    const cont = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = `toast ${tipo}`;
+    el.innerHTML = `<span class="t-icono">${icono}</span><div class="t-titulo">${titulo}</div><div>${msg}</div>`;
+    cont.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), 10);
+    setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 300); }, 5000);
+}
+
+// ── MODAL INFO (reemplaza confirm/alert) ────────────────────────────────────────────────
+window.mostrarInfo = function(titulo, msg, icono = 'ℹ️') {
+    document.getElementById('mi-titulo').textContent = titulo;
+    document.getElementById('mi-msg').innerHTML = msg;
+    document.getElementById('mi-icono').textContent = icono;
+    document.getElementById('modal-info').classList.add('open');
+};
+window.cerrarModalInfo = function() { document.getElementById('modal-info').classList.remove('open'); };
+
+// ── INICIAR: mostrar panel admin, cargar productos, luego configurar sesión ─────
+const esAdmin = usuario?.uid === 'admin-jcastrogo' || usuario?.rol === 'admin';
+if (esAdmin) document.getElementById('admin-prod-panel').style.display = 'block';
+
+signInAnonymously(auth).catch(() => {}).finally(() => { cargarProductos().then(() => {
+    if (!usuario) {
+        // ── MODO VISITANTE ──────────────────────────────────────────
+        document.getElementById('banner-visitante').style.display = 'flex';
+        document.getElementById('header-saldo-area').innerHTML = `<a href="login.html" class="btn-unirse" style="font-size:0.6rem;padding:0.5rem 1rem;">Iniciar Sesión</a>`;
+        document.querySelectorAll('.btn-canjear').forEach(btn => {
+            const nuevo = document.createElement('a');
+            nuevo.href = 'login.html';
+            nuevo.className = 'btn-ver-solo';
+            nuevo.textContent = 'Regístrate para ganar';
+            btn.replaceWith(nuevo);
+        });
+    } else {
+        // ── MODO SESIÓN (estudiante / admin) ───────────────────────
+        if (usuario.uid && usuario.uid !== 'admin-jcastrogo') {
+            getDoc(doc(db, "usuarios", usuario.uid)).then(snap => {
+                if (snap.exists()) {
+                    usuario = { ...usuario, ...snap.data() };
+                    localStorage.setItem('usuario_sesion_activa', JSON.stringify(usuario));
+                }
+                iniciarVistaEstudiante();
+            }).catch(() => iniciarVistaEstudiante());
+        } else {
+            iniciarVistaEstudiante();
+        }
+    }
+}); }); // cargarProductos / signInAnonymously
+
+// ── AGREGAR PRODUCTO DESDE PRODUCTOS.HTML (solo admin) ─────────────────
+// Preview de imagen en productos.html
+window.previsualizarImgProductos = function(input) {
+    const file = input.files[0];
+    const prev = document.getElementById('ap-img-preview');
+    if (!file) { prev.style.display = 'none'; return; }
+    const reader = new FileReader();
+    reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+    reader.readAsDataURL(file);
+};
+
+window.agregarProductoDesdeProductosHtml = async function() {
+    const emoji   = document.getElementById('ap-emoji').value.trim() || '🎁';
+    const nombre  = document.getElementById('ap-nombre').value.trim();
+    const pts     = parseInt(document.getElementById('ap-pts').value);
+    const badge   = document.getElementById('ap-badge').value.trim();
+    const desc    = document.getElementById('ap-desc').value.trim();
+
+    if (!nombre || !pts) {
+        toast('Campos requeridos', 'Nombre y puntos son obligatorios.', '⚠️', 'warn');
+        return;
+    }
+
+    // Leer imagen como base64 si se seleccionó
+    let imagen = '';
+    const imgInput = document.getElementById('ap-img');
+    if (imgInput.files[0]) {
+        imagen = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload  = e => resolve(e.target.result);
+            reader.onerror = () => reject(new Error('No se pudo leer la imagen'));
+            reader.readAsDataURL(imgInput.files[0]);
+        });
+    }
+
+    const status = document.getElementById('ap-status');
+    status.textContent = 'Guardando…'; status.style.display = 'inline';
+
+    try {
+        await addDoc(collection(db, 'productos'), {
+            emoji, nombre, pts, badge,
+            badgeClass: 'badge-gold',
+            descripcion: desc,
+            disponible: true,
+            imagen,
+            orden: 99
+        });
+        status.textContent = '✅ Producto agregado';
+        ['ap-emoji','ap-nombre','ap-pts','ap-badge','ap-desc'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        imgInput.value = '';
+        document.getElementById('ap-img-preview').style.display = 'none';
+        await cargarProductos();
+        setTimeout(() => { status.style.display = 'none'; }, 3000);
+    } catch(err) {
+        status.textContent = '❌ Error: ' + err.message;
+    }
+};
+
+function iniciarVistaEstudiante() {
+    const pts = usuario.puntos || 0;
+    const canjesMes = usuario.premiosMes || 0;
+
+    // Header con info del usuario
+    document.getElementById('header-saldo-area').innerHTML = `
+        <div class="header-user-info">
+            <span class="header-username">${usuario.nombre || 'Estudiante'}</span>
+            <span class="header-canjes">Canjes este mes: ${canjesMes}/2</span>
+        </div>
+        <div class="saldo-badge">Saldo: <span>${pts}</span> PTS</div>
+        <a href="dashboard.html" class="btn-volver">← Panel</a>
+    `;
+
+    // Footer
+    if (document.getElementById('footer-nombre')) document.getElementById('footer-nombre').textContent = usuario.nombre || '—';
+    if (document.getElementById('footer-pts')) document.getElementById('footer-pts').textContent = pts;
+
+    // Sugerencia de canje
+    const banner = document.getElementById('banner-estudiante');
+    const sugerencia = document.getElementById('sugerencia-txt');
+    banner.classList.add('visible');
+    if (pts >= 800) {
+        sugerencia.innerHTML = `🏆 ¡Tienes <strong>${pts} PTS</strong>! Puedes canjear el <strong>Mercado Familiar $200.000</strong>. ¡Lo mereces!`;
+    } else if (pts >= 200) {
+        sugerencia.innerHTML = `💡 Tienes <strong>${pts} PTS</strong>. Te alcanza para una <strong>Libreta Corporativa PRI</strong> o el <strong>Formulario Físico-Matemático</strong>.`;
+    } else {
+        sugerencia.innerHTML = `🌱 Tienes <strong>${pts} PTS</strong>. Sigue completando retos y talleres para ganar más puntos y canjear premios.`;
+    }
+
+    // Configurar botones
+    document.querySelectorAll('.btn-canjear').forEach(btn => {
+        const costo = parseInt(btn.dataset.costo);
+        const nombre = btn.dataset.nombre;
+        if (pts < costo || canjesMes >= 2) {
+            btn.classList.add('locked');
+            btn.title = pts < costo ? `Te faltan ${costo - pts} PTS` : 'Límite mensual alcanzado';
+        }
+        btn.addEventListener('click', () => abrirModalCanje(nombre, costo));
+    });
+
+    cargarHistorial();
+}
+
+// ── CANJE ────────────────────────────────────────────────
+let canjeActual = { nombre: '', costo: 0 };
+
+function abrirModalCanje(nombre, costo) {
+    if (!usuario) { window.location.href = 'login.html'; return; }
+    const pts = usuario.puntos || 0;
+    const canjesMes = usuario.premiosMes || 0;
+
+    if (canjesMes >= 2) {
+        mostrarInfo('Límite mensual alcanzado', 'Ya canjeaste tus 2 recompensas este mes. ¡Sigue ganando puntos para el próximo mes!', '🔒');
+        return;
+    }
+    if (pts < costo) {
+        mostrarInfo('Puntos insuficientes', `Te faltan <strong>${costo - pts} PTS</strong> para este premio. Completa retos, talleres y capacitaciones para ganarlos.`, '💪');
+        return;
+    }
+    canjeActual = { nombre, costo };
+    document.getElementById('modal-prod-nombre').textContent = nombre;
+    document.getElementById('modal-prod-costo').textContent = `${costo} PTS`;
+    document.getElementById('modal-saldo-rest').textContent = `Saldo tras canje: ${pts - costo} PTS`;
+    document.getElementById('modal-confirm').classList.add('open');
+}
+
+window.cerrarModal = function() { document.getElementById('modal-confirm').classList.remove('open'); };
+
+window.ejecutarCanje = async function() {
+    const { nombre, costo } = canjeActual;
+    const ptsActuales = usuario.puntos || 0;
+    if (ptsActuales < costo) { cerrarModal(); return; }
+    const canjesMes = usuario.premiosMes || 0;
+    if (canjesMes >= 2) { cerrarModal(); return; }
+
+    const btn = document.getElementById('btn-confirmar-canje');
+    btn.textContent = 'Procesando...'; btn.disabled = true;
+
+    try {
+        const nuevoPts = ptsActuales - costo;
+        const nuevosCanjes = canjesMes + 1;
+
+        if (usuario.uid && usuario.uid !== 'admin-jcastrogo') {
+            await updateDoc(doc(db, "usuarios", usuario.uid), { puntos: nuevoPts, premiosMes: nuevosCanjes });
+        }
+
+        await addDoc(collection(db, "premios_reclamados"), {
+            uid_estudiante: usuario.uid || '',
+            nombre: usuario.nombre || '',
+            correo: usuario.correo || '',
+            contacto: usuario.contacto || usuario.tel || '',
+            premio: nombre,
+            costo,
+            puntos_antes: ptsActuales,
+            puntos_despues: nuevoPts,
+            fecha: new Date().toISOString(),
+            estado: 'Pendiente de Entrega',
+            timestamp: serverTimestamp()
+        });
+
+        usuario.puntos = nuevoPts;
+        usuario.premiosMes = nuevosCanjes;
+        localStorage.setItem('usuario_sesion_activa', JSON.stringify(usuario));
+
+        cerrarModal();
+        toast('¡Canje exitoso! 🎉', `Tu solicitud de "${nombre}" fue registrada. Te contactaremos pronto.`, '🎁', 'success');
+        setTimeout(() => location.reload(), 2000);
+    } catch (err) {
+        toast('Error al procesar', err.message, '❌', 'error');
+        btn.textContent = 'Confirmar Canje'; btn.disabled = false;
+    }
+};
+
+// ── HISTORIAL ────────────────────────────────────────────────
+async function cargarHistorial() {
+    if (!usuario || !usuario.uid) return;
+    try {
+        const q = query(collection(db, "premios_reclamados"), where("uid_estudiante", "==", usuario.uid), orderBy("fecha", "desc"));
+        const snap = await getDocs(q);
+        if (snap.empty) return;
+        document.getElementById('historial-section').style.display = 'block';
+        const list = document.getElementById('historial-list');
+        list.innerHTML = '';
+        snap.forEach(d => {
+            const c = d.data();
+            const fecha = c.fecha ? new Date(c.fecha).toLocaleDateString('es-CO') : '—';
+            list.innerHTML += `
+                <div class="historial-item">
+                    <div>
+                        <div class="hi-prod">${c.premio}</div>
+                        <div class="hi-fecha">${fecha}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div class="hi-pts">−${c.costo} PTS</div>
+                        <div class="hi-estado">${c.estado || 'En proceso'}</div>
+                    </div>
+                </div>`;
+        });
+    } catch(err) {
+        console.warn('Historial no disponible:', err.message);
+    }
+}
+
+document.getElementById('modal-confirm').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModal();
+});
+document.getElementById('modal-info').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModalInfo();
+});
+</script>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const max = document.body.scrollHeight - window.innerHeight;
+        document.getElementById('scroll-progress').style.width = (window.scrollY / max * 100) + '%';
+    });
+    const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
+    let rx=0,ry=0,mx=0,my=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function tick(){ if(dot){dot.style.left=mx+'px';dot.style.top=my+'px';} rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14; if(ring){ring.style.left=rx+'px';ring.style.top=ry+'px';} requestAnimationFrame(tick); })();
+    document.addEventListener('mouseover', e => { if(e.target.closest('a,button')) ring.style.transform='translate(-50%,-50%) scale(1.6)'; });
+    document.addEventListener('mouseout', e => { if(e.target.closest('a,button')) ring.style.transform='translate(-50%,-50%) scale(1)'; });
+</script>
+<script src="fondo-dinamico.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#1a3a2a" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Manglar con raíces -->
+<path d="M80,105 L80,60 M80,60 Q65,40 55,35 M80,60 Q90,38 100,32 M80,60 Q70,52 60,58 M80,60 Q92,50 102,55" stroke="#166534" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M55,35 Q48,28 42,25 M55,35 Q52,27 56,22" stroke="#15803d" stroke-width="2" fill="none"/>
+<path d="M100,32 Q105,24 110,22 M100,32 Q108,28 112,30" stroke="#15803d" stroke-width="2" fill="none"/>
+<path d="M60,105 Q65,90 70,100 Q75,88 80,105 Q85,88 90,100 Q95,90 100,105 Z" fill="#14532d" opacity="0.6"/>
+<ellipse cx="95" cy="50" rx="7" ry="5" fill="#4ade80" opacity="0.7"/>
+<ellipse cx="68" cy="44" rx="6" ry="4" fill="#86efac" opacity="0.6"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#1a3a2a" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#dcfce7" opacity="0.95">"En la naturaleza</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#dcfce7" opacity="0.95">está toda la sabiduría"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#4ade80" letter-spacing="1" opacity="0.9">— Leonardo Da Vinci</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#4ade80" letter-spacing="2" opacity="1">MANGLAR</text>
+</svg>

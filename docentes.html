@@ -4,101 +4,764 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mentores y Docentes | PROGRAMA-PRI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --azul-deep: #021a36; --azul-panel: #062040; --azul-card: #041830;
+            --naranja: #ff5e00; --oro: #ffd700; --blanco: #f0f4f8; --teal: #38bdf8; --verde: #22c55e;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+
+        .module-header {
+            padding-top: 100px; /* compensa navbar fijo */
+            padding-bottom: 3rem;
+            text-align: center;
+            background: var(--azul-deep, #021a36);
+            position: relative;
+            overflow: hidden;
+        }
+        .module-title h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--blanco, #fafafa);
+            letter-spacing: -1px;
+        }
+        .module-title p {
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+        .sky-background {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, #010c1a 0%, #021a36 100%);
+            z-index: 0;
+        }
+        .module-title { position: relative; z-index: 1; }
+        @media (max-width: 768px) {
+            .module-header { padding-top: 80px; padding-bottom: 2rem; }
+            .module-title h1 { font-size: clamp(1.6rem, 8vw, 2.5rem); }
+        }
+        .mentors-section { padding: 3rem 2rem 5rem; background: var(--azul-deep); }
+        .section-header { text-align: center; margin-bottom: 3rem; }
+        .section-header .eyebrow { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 4px; text-transform: uppercase; color: var(--teal); display: block; margin-bottom: 0.5rem; }
+        .section-header h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem,4vw,2.5rem); font-weight: 900; color: var(--blanco); margin-bottom: 0.75rem; }
+        .section-header p { color: rgba(255,255,255,0.5); font-size: 0.9rem; max-width: 500px; margin: 0 auto; }
+
+        .mentors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; max-width: 1200px; margin: 0 auto; }
+
+        /* FILTROS */
+        .filtros-bar { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; }
+        .filtro-btn {
+            font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            padding: 0.5rem 1.2rem; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.45);
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .filtro-btn.active, .filtro-btn:hover { background: rgba(255,94,0,0.12); border-color: rgba(255,94,0,0.4); color: var(--blanco); }
+
+        /* MENTOR CARD */
+        .mentor-card { background: var(--azul-panel); border: 1px solid rgba(255,255,255,0.07); overflow: hidden; transition: transform 0.25s ease, border-color 0.25s ease; position: relative; }
+        .mentor-card:hover { transform: translateY(-4px); border-color: rgba(255,94,0,0.4); }
+        .mentor-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--naranja), var(--oro)); opacity: 0; transition: opacity 0.25s ease; }
+        .mentor-card:hover::before { opacity: 1; }
+
+        /* Placa de rol */
+        .rol-placa {
+            position: absolute; top: 1rem; right: 1rem; z-index: 5;
+            font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+            padding: 0.3rem 0.75rem; border: 1px solid;
+        }
+        .placa-docente { background: rgba(255,94,0,0.15); border-color: rgba(255,94,0,0.5); color: var(--naranja); }
+        .placa-voluntario { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.4); color: var(--teal); }
+
+        .mentor-photo { width: 100%; height: 220px; overflow: hidden; position: relative; background: var(--azul-card); }
+        .mentor-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .mentor-card:hover .mentor-photo img { transform: scale(1.04); }
+        .mentor-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: 'Montserrat', sans-serif; font-size: 3rem; font-weight: 900; color: var(--naranja); background: var(--azul-card); }
+
+        .mentor-info { padding: 1.5rem; }
+        .mentor-career { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); }
+        .mentor-info h3 { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 900; color: var(--blanco); margin: 0.4rem 0 0.6rem; }
+        .mentor-info p { font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.55; margin-bottom: 1rem; }
+        .mentor-materias { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+        .materia-tag { font-family: 'Montserrat', sans-serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 0.2rem 0.6rem; background: rgba(255,215,0,0.07); border: 1px solid rgba(255,215,0,0.2); color: rgba(255,215,0,0.7); }
+
+        .rating-display { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+        .stars { color: var(--oro); font-size: 0.9rem; letter-spacing: 1px; }
+        .rating-num { font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,0.4); }
+
+        .btn-material { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--naranja); background: rgba(255,94,0,0.08); border: 1px solid rgba(255,94,0,0.3); padding: 0.5rem 1rem; cursor: pointer; transition: all 0.2s ease; width: 100%; }
+        .btn-material:hover { background: rgba(255,94,0,0.18); border-color: var(--naranja); }
+
+        .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; }
+        .empty-state svg { margin-bottom: 1rem; opacity: 0.2; }
+
+        /* MODAL RATING */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(2,26,54,0.94); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box { background: var(--azul-panel); border: 1px solid rgba(255,255,255,0.1); max-width: 440px; width: 100%; padding: 2rem; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.5); transform: translateY(20px); transition: transform 0.25s ease; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+        .modal-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--naranja), var(--oro)); }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.4); font-size: 1.2rem; cursor: pointer; transition: color 0.2s; }
+        .modal-close:hover { color: var(--blanco); }
+        .modal-title { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: var(--teal); margin-bottom: 0.4rem; }
+        .modal-mentor-name { font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 900; color: var(--blanco); margin-bottom: 1.5rem; }
+        .star-picker { display: flex; gap: 0.4rem; margin-bottom: 1.2rem; }
+        .star-btn { font-size: 1.8rem; background: none; border: none; cursor: pointer; color: rgba(255,255,255,0.15); transition: color 0.15s ease, transform 0.15s ease; line-height: 1; }
+        .star-btn.active, .star-btn:hover { color: var(--oro); transform: scale(1.15); }
+        .modal-textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--blanco); font-family: 'Lora', serif; font-size: 0.85rem; padding: 0.85rem; resize: none; height: 90px; margin-bottom: 1.2rem; outline: none; transition: border-color 0.2s ease; }
+        .modal-textarea:focus { border-color: rgba(255,94,0,0.5); }
+        .anonimo-label { font-family: 'Montserrat', sans-serif; font-size: 0.6rem; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 1rem; display: block; }
+        .btn-submit-rating { width: 100%; padding: 0.85rem; font-family: 'Montserrat', sans-serif; font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; background: var(--naranja); color: #fff; border: none; cursor: pointer; transition: background 0.2s ease; }
+        .btn-submit-rating:hover { background: #e05200; }
+        .btn-submit-rating:disabled { background: rgba(255,94,0,0.3); cursor: not-allowed; }
+
+        /* REVIEWS */
+        .reviews-panel { border-top: 1px solid rgba(255,255,255,0.06); padding: 0 1.5rem 1.5rem; display: none; }
+        .reviews-panel.visible { display: block; }
+        .review-item { padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .review-item:last-child { border-bottom: none; }
+        .review-author { font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.2rem; }
+        .review-stars { color: var(--oro); font-size: 0.75rem; margin-bottom: 0.25rem; }
+        .review-text { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+
+        /* MODAL REGISTRO ADMIN */
+        .field-group { margin-bottom: 1rem; }
+        .field-group label { display: block; font-family: 'Montserrat', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 0.4rem; }
+        .field-group input, .field-group select, .field-group textarea { width: 100%; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: var(--blanco); font-family: 'Lora', serif; font-size: 0.85rem; padding: 0.75rem; outline: none; transition: border-color 0.2s; }
+        .field-group input:focus, .field-group textarea:focus { border-color: rgba(255,94,0,0.5); }
+        .field-group select { cursor: pointer; } .field-group select option { background: var(--azul-panel); }
+        .photo-preview { width: 80px; height: 80px; object-fit: cover; border: 2px solid rgba(255,94,0,0.3); display: none; margin-top: 0.5rem; border-radius: 4px; }
+
+        /* FAB */
+        .fab-register { position: fixed; bottom: 2rem; right: 2rem; background: var(--naranja); color: #fff; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; border: none; padding: 1rem 1.5rem; box-shadow: 6px 6px 0 rgba(0,0,0,0.4); cursor: pointer; z-index: 500; transition: background 0.2s ease, transform 0.2s ease; display: none; }
+        .fab-register:hover { background: #e05200; transform: translate(-2px,-2px); box-shadow: 8px 8px 0 rgba(0,0,0,0.4); }
+
+        /* NOTIF PRI */
+        #notif-container { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9500; display: flex; flex-direction: column; gap: 0.75rem; max-width: 360px; width: 100%; }
+        .notif-pri { background: var(--azul-panel); border-left: 4px solid; padding: 1.1rem 1.4rem; font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700; box-shadow: 6px 6px 0 rgba(0,0,0,0.4); transition: all 0.3s ease; transform: translateX(30px); opacity: 0; position: relative; }
+        .notif-pri.visible { transform: translateX(0); opacity: 1; }
+        .notif-pri.success { border-color: #22c55e; color: #86efac; }
+        .notif-pri.error { border-color: #ef4444; color: #fca5a5; }
+        .notif-pri.info { border-color: var(--teal); color: var(--teal); }
+        .notif-icono { font-size: 1.3rem; display: block; margin-bottom: 0.25rem; }
+        .notif-titulo { font-size: 0.8rem; color: var(--blanco); margin-bottom: 0.2rem; }
+        .notif-cerrar { position: absolute; top: 0.5rem; right: 0.75rem; background: none; border: none; color: rgba(255,255,255,0.3); font-size: 1rem; cursor: pointer; }
+        .notif-cerrar:hover { color: var(--blanco); }
+
+        /* SPINNER */
+        .spinner-dots { display: inline-flex; gap: 4px; vertical-align: middle; }
+        .spinner-dots span { width: 5px; height: 5px; border-radius: 50%; background: #fff; animation: bounce 0.8s infinite alternate; }
+        .spinner-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .spinner-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes bounce { to { transform: translateY(-5px); opacity: 0.4; } }
+
+        #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; z-index: 9000; background: linear-gradient(90deg, var(--naranja), var(--oro)); width: 0%; transition: width 0.1s linear; }
+        .cursor-dot { width: 8px; height: 8px; background: var(--naranja); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+        .cursor-ring { width: 32px; height: 32px; border: 2px solid rgba(255,94,0,0.5); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: transform 0.18s ease; }
+
+        @media (max-width: 640px) { .mentors-grid { grid-template-columns: 1fr; } .fab-register { bottom: 1rem; right: 1rem; padding: 0.85rem 1.2rem; } }
+    </style>
 </head>
 <body class="page-docentes">
+<div id="scroll-progress"></div>
+<div class="cursor-dot" id="cdot"></div>
+<div class="cursor-ring" id="cring"></div>
+<div id="notif-container"></div>
 
-    <header class="navbar">
-        <div class="logo-container">
-            <a href="index.html" class="logo-link">
-                <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-                <h2>PROGRAMA-PRI</h2>
-            </a>
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="logo-container">
+        <a href="index.html" class="logo-link">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+            <div><h2>PROGRAMA-PRI</h2><p>El Pacífico Renaciendo con Ingeniería</p></div>
+        </a>
+    </div>
+    <div class="menu-toggle" id="mobile-menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="ppri.html">Sobre PRI</a></li>
+            <li><a href="preicfes.html">PRE-ICFES</a></li>
+            <li><a href="pre-test.html">PRE-TEST</a></li>
+            <li><a href="docentes.html" class="active">Docentes</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="login.html" class="btn-login">Inicia Sesión</a></li>
+        </ul>
+    </nav>
+    <div id="nav-backdrop"></div>
+</header>
+
+<!-- HERO -->
+<section class="module-header">
+    <div class="sky-background"></div>
+    <div class="module-title">
+        <h1>Nuestros <span class="highlight">Mentores</span></h1>
+        <p>Talento universitario construyendo la ingeniería del Pacífico.</p>
+    </div>
+</section>
+
+<!-- FILTROS -->
+<section class="mentors-section">
+    <div class="section-header">
+        <span class="eyebrow">Equipo Académico</span>
+        <h2>Conoce a tu mentor</h2>
+        <p>Estudiantes universitarios y profesionales que guían a los jóvenes de Tumaco hacia la educación superior.</p>
+    </div>
+
+    <div class="filtros-bar">
+        <button class="filtro-btn active" onclick="filtrarMentores('todos', this)">Todos</button>
+        <button class="filtro-btn" onclick="filtrarMentores('docente', this)">Docentes Pre-ICFES</button>
+        <button class="filtro-btn" onclick="filtrarMentores('voluntario', this)">Voluntarios</button>
+    </div>
+
+    <div class="mentors-grid" id="mentors-grid">
+        <div class="empty-state" id="loading-state">
+            <div class="spinner-dots"><span></span><span></span><span></span></div>
+            <p style="margin-top:1rem;">Cargando mentores...</p>
         </div>
+    </div>
+</section>
 
-        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
+<!-- FAB solo admin -->
+<button class="fab-register" id="fab-registro" onclick="abrirModalRegistro()">
+    + Registrar Mentor
+</button>
+
+<!-- MODAL: PERFIL COMPLETO + RESEÑAS -->
+<div class="modal-overlay" id="modal-perfil-docente">
+    <div class="modal-box" style="max-width:560px;max-height:85vh;overflow-y:auto;">
+        <button class="modal-close" onclick="document.getElementById('modal-perfil-docente').classList.remove('open')">✕</button>
+        <div id="perfil-doc-content" style="padding:0.5rem 0;"></div>
+    </div>
+</div>
+
+<!-- MODAL: CALIFICAR -->
+<div class="modal-overlay" id="modal-rating">
+    <div class="modal-box">
+        <button class="modal-close" onclick="cerrarModalRating()">✕</button>
+        <p class="modal-title">Evaluación Docente</p>
+        <h3 class="modal-mentor-name" id="rating-mentor-name">Mentor</h3>
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;">Tu calificación</p>
+        <div class="star-picker" id="star-picker">
+            <button class="star-btn" data-val="1" onclick="selectStar(1)">★</button>
+            <button class="star-btn" data-val="2" onclick="selectStar(2)">★</button>
+            <button class="star-btn" data-val="3" onclick="selectStar(3)">★</button>
+            <button class="star-btn" data-val="4" onclick="selectStar(4)">★</button>
+            <button class="star-btn" data-val="5" onclick="selectStar(5)">★</button>
         </div>
+        <textarea class="modal-textarea" id="rating-comment" placeholder="¿Qué aprendiste con este mentor? (opcional, tu identidad no se revelará)"></textarea>
+        <span class="anonimo-label">🔒 Tu evaluación es completamente anónima</span>
+        <button class="btn-submit-rating" id="btn-enviar-rating" onclick="enviarRating()">Enviar Calificación</button>
+    </div>
+</div>
 
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Inicio</a></li>
-                <li><a href="ppri.html">Sobre PRI</a></li>
-                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
-                <li><a href="pre-test.html">PRE-TEST</a></li>
-                <li><a href="docentes.html">Docentes</a></li>
-                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
+<!-- MODAL: REGISTRO DOCENTE (solo admin) -->
+<div class="modal-overlay" id="modal-registro">
+    <div class="modal-box" style="max-width:520px;">
+        <button class="modal-close" onclick="cerrarModalRegistro()">✕</button>
+        <p class="modal-title">Nuevo Mentor</p>
+        <h3 class="modal-mentor-name" style="font-size:1.1rem;margin-bottom:1.5rem;">Registrar perfil docente / voluntario</h3>
+
+        <div class="field-group">
+            <label>Nombre completo</label>
+            <input type="text" id="doc-nombre" placeholder="Ej: Carlos Quintero">
+        </div>
+        <div class="field-group">
+            <label>Rol</label>
+            <select id="doc-rol">
+                <option value="docente">Docente Pre-ICFES</option>
+                <option value="voluntario">Voluntario / Capacitador</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label>Carrera / Especialidad</label>
+            <select id="doc-carrera">
+                <option value="Ingeniería Informática">Ingeniería Informática</option>
+                <option value="Ingeniería Mecatrónica">Ingeniería Mecatrónica</option>
+                <option value="Ingeniería Civil">Ingeniería Civil</option>
+                <option value="Ingeniería Eléctrica">Ingeniería Eléctrica</option>
+                <option value="Trabajo Social">Trabajo Social</option>
+                <option value="Matemáticas">Matemáticas</option>
+                <option value="Física">Física</option>
+                <option value="Química">Química</option>
+                <option value="Biología">Biología</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </div>
+        <div class="field-group">
+            <label>Descripción corta</label>
+            <textarea id="doc-bio" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-family:'Lora',serif;font-size:0.85rem;padding:0.75rem;resize:none;height:80px;outline:none;" placeholder="Describe su enfoque académico y experiencia..."></textarea>
+        </div>
+        <div class="field-group">
+            <label>Foto de perfil (desde tu computador)</label>
+            <input type="file" id="doc-foto-file" accept="image/png,image/jpeg,image/jpg" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--blanco);font-size:0.78rem;padding:0.5rem;width:100%;" onchange="previewFotoFile(this)">
+            <img id="foto-preview" class="photo-preview" alt="Preview" style="display:none;">
+        </div>
+        <div class="field-group">
+            <label>Materias que dicta</label>
+            <input type="text" id="doc-materias" placeholder="Ej: Álgebra, Programación, Física">
+        </div>
+        <div class="field-group">
+            <label>URL material / recursos (opcional)</label>
+            <input type="url" id="doc-material" placeholder="Google Drive, GitHub, etc.">
+        </div>
+        <button class="btn-submit-rating" id="btn-guardar-docente" onclick="guardarDocente()">Guardar Perfil</button>
+    </div>
+</div>
+
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pre-test.html">Simuladores</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
             </ul>
-        </nav>
-    </header>
-
-    <section class="module-header">
-        <div class="sky-background"></div>
-        <div class="module-title">
-            <h1>Nuestros <span class="highlight">Mentores</span></h1>
-            <p>Conoce al talento universitario que está construyendo la ingeniería de Tumaco.</p>
         </div>
-    </section>
-
-    <section class="mentors-section">
-        <div class="mentors-grid">
-            
-            <div class="mentor-card">
-                <div class="mentor-photo">
-                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&auto=format&fit=crop" alt="Ana Lia Castro">
-                </div>
-                <div class="mentor-info">
-                    <span class="mentor-career">Ingeniería Informática</span>
-                    <h3>Ana Lia Castro</h3>
-                    <p>Especialista en lógica de programación y algoritmos. Enfocada en cerrar la brecha digital.</p>
-                    <button class="btn-material">Ver su Material</button>
-                </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Pacífico</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">Información General</a></p>
             </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Área Académica.</p>
+    </div>
+</footer>
 
-            <div class="mentor-card">
-                <div class="mentor-photo">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&auto=format&fit=crop" alt="Carlos Quintero">
-                </div>
-                <div class="mentor-info">
-                    <span class="mentor-career">Ingeniería Mecatrónica</span>
-                    <h3>Carlos Quintero</h3>
-                    <p>Mentor de física dinámica y matemáticas aplicadas. Convirtiendo la teoría en acción.</p>
-                    <button class="btn-material">Ver su Material</button>
-                </div>
-            </div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+    getFirestore, collection, addDoc, getDocs, doc, setDoc,
+    onSnapshot, query, orderBy, where, updateDoc, serverTimestamp, getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+// ── Cloudinary (modo Unsigned – NO enviar public_id) ──────────────
+async function subirImagenCloudinary(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', 'fotos_perfil');
+    const res = await fetch('https://api.cloudinary.com/v1_1/dmh5xpxcg/image/upload', { method:'POST', body:fd });
+    if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        console.error('Cloudinary error:', res.status, errData);
+        throw new Error(errData.error?.message || 'Cloudinary HTTP ' + res.status);
+    }
+    return (await res.json()).secure_url;
+}
 
-            <div class="mentor-card">
-                <div class="mentor-photo">
-                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop" alt="Lauryn Ramos">
-                </div>
-                <div class="mentor-info">
-                    <span class="mentor-career">Trabajo Social</span>
-                    <h3>Lauryn Ramos</h3>
-                    <p>Líder del componente psicoemocional. Fortaleciendo la confianza para el entorno universitario.</p>
-                    <button class="btn-material">Ver su Material</button>
-                </div>
-            </div>
+const firebaseConfig = {
+    apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+    authDomain: "programa-pri-2d395.firebaseapp.com",
+    projectId: "programa-pri-2d395",
+    storageBucket: "programa-pri-2d395.firebasestorage.app",
+    messagingSenderId: "854011964095",
+    appId: "1:854011964095:web:6e075f73a385bb804e5356"
+};
 
-            <div class="mentor-card">
-                <div class="mentor-photo">
-                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=400&auto=format&fit=crop" alt="Lauryn Ramos">
-                </div>
-                <div class="mentor-info">
-                    <span class="mentor-career">Trabajo Social</span>
-                    <h3>Lauryn Ramos</h3>
-                    <p>Líder del componente psicoemocional. Fortaleciendo la confianza para el entorno universitario.</p>
-                    <button class="btn-material">Ver su Material</button>
-                </div>
-            </div>
+const app = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
+const auth = getAuth(app);
 
-        mobileMenu.addEventListener('click', () => {
-            mobileMenu.classList.toggle('is-active'); /* Transforma la hamburguesa en X */
-            navLinks.classList.toggle('active');      /* Desliza el menú inmersivo */
+const sesion = localStorage.getItem('usuario_sesion_activa');
+const usuario = sesion ? JSON.parse(sesion) : null;
+const esAdmin = usuario && (usuario.rol === 'admin' || usuario.rol === 'Líder / Admin');
+const esEstudiantePRI = usuario && usuario.rol === 'estudiante';
+
+// Solo admin ve el FAB — siempre forzar estado correcto
+document.getElementById('fab-registro').style.display = esAdmin ? 'block' : 'none';
+
+let ratingDocId = null;
+let ratingSeleccionado = 0;
+let todosMentores = [];
+
+// ── NOTIF ────────────────────────────────────────────────
+function notif(titulo, msg, icono = '✅', tipo = 'success') {
+    const cont = document.getElementById('notif-container');
+    const el = document.createElement('div');
+    el.className = `notif-pri ${tipo}`;
+    el.innerHTML = `
+        <button class="notif-cerrar" onclick="this.parentElement.remove()">✕</button>
+        <span class="notif-icono">${icono}</span>
+        <div class="notif-titulo">${titulo}</div>
+        <div>${msg}</div>
+    `;
+    cont.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), 10);
+    setTimeout(() => { el.classList.remove('visible'); setTimeout(() => el.remove(), 300); }, 5000);
+}
+
+// ── CARGAR MENTORES ────────────────────────────────────────────────
+async function cargarMentores() {
+    const grid = document.getElementById('mentors-grid');
+    try {
+        // Cargar desde colección "docentes" Y desde "usuarios" con rol docente/voluntario
+        // para cubrir usuarios que no tienen entrada en la colección "docentes"
+        const [snapDocentes, snapUsuariosDoc, snapUsuariosVol] = await Promise.all([
+            getDocs(collection(db, "docentes")),
+            getDocs(query(collection(db, "usuarios"), where("rol","==","docente"))),
+            getDocs(query(collection(db, "usuarios"), where("rol","==","voluntario"))),
+        ]);
+
+        // Merge sin duplicados (el ID del documento es el uid en ambas colecciones)
+        const merged = new Map();
+        snapDocentes.docs.forEach(d => merged.set(d.id, { ...d.data(), _uid: d.id }));
+        snapUsuariosDoc.docs.forEach(d => {
+            if (!merged.has(d.id)) merged.set(d.id, { ...d.data(), _uid: d.id });
         });
-    </script>
+        snapUsuariosVol.docs.forEach(d => {
+            if (!merged.has(d.id)) merged.set(d.id, { ...d.data(), _uid: d.id });
+        });
+
+        const allEntries = [...merged.values()].sort((a,b) => (a.nombre||'').localeCompare(b.nombre||''));
+
+        if (allEntries.length === 0) {
+            grid.innerHTML = `<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><p>No hay mentores registrados aún.</p></div>`;
+            return;
+        }
+
+        todosMentores = [];
+        const cards = [];
+        for (const entry of allEntries) {
+            const d = entry;
+            const id = entry._uid;
+            if (!d.nombre) continue;
+            // Intentar calificaciones desde sub-colección de docentes (puede no existir)
+            let ratingsSnap;
+            try { ratingsSnap = await getDocs(collection(db, "docentes", id, "calificaciones")); }
+            catch(e) { ratingsSnap = { forEach: ()=>{} }; }
+                let totalStars = 0, countRatings = 0;
+                const reviews = [];
+                ratingsSnap.forEach(r => {
+                    const rd = r.data();
+                    totalStars += rd.estrellas || 0;
+                    countRatings++;
+                    reviews.push(rd);
+                });
+                const avg = countRatings > 0 ? (totalStars / countRatings).toFixed(1) : null;
+                const starsDisplay = avg ? renderStars(parseFloat(avg)) : '';
+
+                const inicial = (d.nombre || '?')[0].toUpperCase();
+                const svgAvatar = `<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100"><rect width="100" height="100" fill="#062040"/><circle cx="50" cy="38" r="20" fill="rgba(255,94,0,0.25)" stroke="rgba(255,94,0,0.5)" stroke-width="1.5"/><ellipse cx="50" cy="80" rx="28" ry="18" fill="rgba(255,94,0,0.15)" stroke="rgba(255,94,0,0.4)" stroke-width="1.5"/><text x="50" y="44" text-anchor="middle" dominant-baseline="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="22" fill="#ff5e00">${inicial}</text></svg>`;
+                // img + fallback sibling: evita el bug de comillas en onerror
+                const fotoHTML = d.fotoUrl
+                    ? `<img src="${d.fotoUrl}" alt="${d.nombre}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="mentor-photo-placeholder" style="display:none">${svgAvatar}</div>`
+                    : `<div class="mentor-photo-placeholder">${svgAvatar}</div>`;
+
+                const reviewsHTML = reviews.slice(0,3).map(rv => `
+                    <div class="review-item">
+                        <div class="review-author">Estudiante anónimo/a</div>
+                        <div class="review-stars">${renderStars(rv.estrellas)}</div>
+                        ${rv.comentario ? `<p class="review-text">"${rv.comentario}"</p>` : ''}
+                    </div>`).join('');
+
+                const rolLabel = d.rol === 'voluntario' ? 'voluntario' : 'docente';
+                const placaClass = rolLabel === 'voluntario' ? 'placa-voluntario' : 'placa-docente';
+                const placaText = rolLabel === 'voluntario' ? 'Voluntario' : 'Docente';
+
+                const materiasArr = d.materias ? d.materias.split(',').map(m => m.trim()).filter(Boolean) : [];
+                const materiasHTML = materiasArr.map(m => `<span class="materia-tag">${m}</span>`).join('');
+
+                const btnCalificar = esEstudiantePRI
+                    ? `<button class="btn-material" onclick="abrirModalRating('${id}','${d.nombre.replace(/'/g,"\\'")}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Calificar</button>`
+                    : '';
+                const btnMaterial = `<button class="btn-material" onclick="verPerfilCompleto('${id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Ver Perfil</button>`;
+
+                todosMentores.push({ id, rol: rolLabel, el: null });
+
+                const card = document.createElement('div');
+                card.className = 'mentor-card';
+                card.dataset.rol = rolLabel;
+                card.innerHTML = `
+                    <span class="rol-placa ${placaClass}">${placaText}</span>
+                    <div class="mentor-photo">${fotoHTML}</div>
+                    <div class="mentor-info">
+                        <span class="mentor-career">${d.carrera || 'Programa PRI'}</span>
+                        <h3>${d.nombre}</h3>
+                        <p>${d.bio || 'Mentor del programa PRI.'}</p>
+                        ${materiasHTML ? `<div class="mentor-materias">${materiasHTML}</div>` : ''}
+                        <div class="rating-display">
+                            <span class="stars">${starsDisplay || '☆☆☆☆☆'}</span>
+                            <span class="rating-num">${avg ? `${avg}/5 (${countRatings})` : 'Sin evaluaciones'}</span>
+                        </div>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+                            ${btnCalificar}${btnMaterial}
+                        </div>
+                        ${countRatings > 0 ? `<button onclick="toggleReviews(this)" style="background:none;border:none;color:rgba(255,255,255,0.4);font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;padding:0;margin-bottom:0.5rem;">Ver reseñas ▾</button>` : ''}
+                    </div>
+                    ${countRatings > 0 ? `<div class="reviews-panel">${reviewsHTML}</div>` : ''}
+                `;
+                cards.push(card);
+        }
+        grid.innerHTML = '';
+        cards.forEach(c => grid.appendChild(c));
+    } catch (err) {
+        grid.innerHTML = `<div class="empty-state"><p>Error cargando mentores: ${err.message}</p></div>`;
+    }
+}
+
+function renderStars(avg) {
+    let out = '';
+    for (let i = 1; i <= 5; i++) out += i <= Math.round(avg) ? '★' : '☆';
+    return out;
+}
+
+// FILTRO
+window.filtrarMentores = function(rol, btn) {
+    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.mentor-card').forEach(card => {
+        if (rol === 'todos' || card.dataset.rol === rol) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+};
+
+// ── MODAL RATING ──────────────────────────────────────────────────
+window.abrirModalRating = function(docId, nombre) {
+    if (!esEstudiantePRI) {
+        notif('Solo estudiantes del programa','Debes ser estudiante activo del Programa PRI para calificar.','🔒','info');
+        return;
+    }
+    ratingDocId = docId;
+    ratingSeleccionado = 0;
+    document.getElementById('rating-mentor-name').textContent = nombre;
+    document.getElementById('rating-comment').value = '';
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('modal-rating').classList.add('open');
+};
+
+window.cerrarModalRating = function() { document.getElementById('modal-rating').classList.remove('open'); };
+
+window.selectStar = function(val) {
+    ratingSeleccionado = val;
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val) <= val));
+};
+
+window.enviarRating = async function() {
+    if (!ratingSeleccionado) { notif('Selecciona estrellas','Elige de 1 a 5 estrellas antes de enviar.','⭐','info'); return; }
+    const btn = document.getElementById('btn-enviar-rating');
+    btn.textContent = 'Enviando...'; btn.disabled = true;
+    try {
+        await addDoc(collection(db, "docentes", ratingDocId, "calificaciones"), {
+            estrellas: ratingSeleccionado,
+            comentario: document.getElementById('rating-comment').value.trim(),
+            autor: 'Anónimo', // siempre anónimo
+            timestamp: serverTimestamp()
+        });
+        cerrarModalRating();
+        notif('¡Gracias!','Tu evaluación anónima fue enviada. Ayuda a mejorar el programa.','🙌','success');
+        setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+        notif('Error', err.message, '❌', 'error');
+        btn.textContent = 'Enviar Calificación'; btn.disabled = false;
+    }
+};
+
+// ── MODAL REGISTRO ADMIN ──────────────────────────────────────────────────
+window.abrirModalRegistro = function() { document.getElementById('modal-registro').classList.add('open'); };
+window.cerrarModalRegistro = function() { document.getElementById('modal-registro').classList.remove('open'); };
+
+window.previewFotoFile = function(input) {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const preview = document.getElementById('foto-preview');
+        preview.src = e.target.result; preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+};
+
+window.guardarDocente = async function() {
+    const nombre = document.getElementById('doc-nombre').value.trim();
+    const bio = document.getElementById('doc-bio').value.trim();
+    if (!nombre || !bio) { notif('Faltan datos','El nombre y la descripción son obligatorios.','⚠️','error'); return; }
+    const btn = document.getElementById('btn-guardar-docente');
+    btn.textContent = 'Guardando...'; btn.disabled = true;
+    try {
+        // Subir foto a Cloudinary si hay archivo
+        let fotoUrl = '';
+        const fileInput = document.getElementById('doc-foto-file');
+        if (fileInput.files && fileInput.files[0]) {
+            try {
+                fotoUrl = await subirImagenCloudinary(fileInput.files[0]);
+            } catch(storErr) {
+                notif('Aviso','No se pudo subir la foto. Verifica tu conexión.','⚠️','warn');
+                console.error('Cloudinary:', storErr);
+            }
+        }
+        await addDoc(collection(db, "docentes"), {
+            nombre,
+            rol: document.getElementById('doc-rol').value,
+            carrera: document.getElementById('doc-carrera').value,
+            bio,
+            fotoUrl,
+            materias: document.getElementById('doc-materias').value.trim(),
+            materialUrl: document.getElementById('doc-material').value.trim(),
+            creadoPor: usuario ? usuario.nombre : 'Admin',
+            creadoEn: serverTimestamp()
+        });
+        cerrarModalRegistro();
+        notif('Perfil registrado',`El perfil de ${nombre} ya aparece en la página de Docentes.`,'✅','success');
+        ['doc-nombre','doc-bio','doc-materias','doc-material'].forEach(id => document.getElementById(id).value = '');
+        fileInput.value = '';
+        document.getElementById('foto-preview').style.display = 'none';
+        btn.textContent = 'Guardar Perfil'; btn.disabled = false;
+    } catch (err) {
+        notif('Error', err.message, '❌', 'error');
+        btn.textContent = 'Guardar Perfil'; btn.disabled = false;
+    }
+};
+
+window.toggleReviews = function(btn) {
+    const panel = btn.closest('.mentor-info').nextElementSibling;
+    if (!panel) return;
+    const open = panel.classList.toggle('visible');
+    btn.textContent = open ? 'Ocultar reseñas ▴' : 'Ver reseñas ▾';
+};
+
+document.getElementById('modal-rating').addEventListener('click', e => { if (e.target === document.getElementById('modal-rating')) cerrarModalRating(); });
+document.getElementById('modal-registro').addEventListener('click', e => { if (e.target === document.getElementById('modal-registro')) cerrarModalRegistro(); });
+document.getElementById('modal-perfil-docente').addEventListener('click', e => { if (e.target === document.getElementById('modal-perfil-docente')) document.getElementById('modal-perfil-docente').classList.remove('open'); });
+
+// ── VER PERFIL COMPLETO + RESEÑAS ────────────────────────────────
+window.verPerfilCompleto = async function(docId) {
+    const cont = document.getElementById('perfil-doc-content');
+    cont.innerHTML = '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(255,255,255,0.35);text-align:center;padding:2rem;">Cargando perfil...</p>';
+    document.getElementById('modal-perfil-docente').classList.add('open');
+    try {
+        const snap = await getDoc(doc(db,"docentes",docId));
+        if (!snap.exists()) { cont.innerHTML = '<p style="color:#fca5a5;text-align:center;padding:2rem;">Perfil no encontrado.</p>'; return; }
+        const d = snap.data();
+        // Calificaciones estudiantiles
+        const calSnap = await getDocs(collection(db,"docentes",docId,"calificaciones"));
+        let totalStars = 0; let calHtml = '';
+        calSnap.forEach(r => {
+            const c = r.data();
+            totalStars += c.estrellas||0;
+            const strs = Array.from({length:5},(_, i) => i < (c.estrellas||0) ? '★' : '☆').join('');
+            calHtml += `<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);padding:0.75rem 1rem;margin-bottom:0.5rem;">
+                <p style="font-family:'Montserrat',sans-serif;font-size:0.7rem;color:#ffd700;margin-bottom:0.25rem;">${strs}</p>
+                ${c.comentario?`<p style="font-size:0.82rem;color:rgba(255,255,255,0.7);">${c.comentario}</p>`:''}
+                <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;color:rgba(255,255,255,0.25);margin-top:0.25rem;">— Reseña de estudiante (anónima)</p>
+            </div>`;
+        });
+        const avgCal = calSnap.size ? (totalStars/calSnap.size).toFixed(1) : null;
+        // Reseñas de docentes → estudiante (si las hay, como estudiante de la U)
+        const inicialModal = (d.nombre||'?')[0].toUpperCase();
+        const svgModal = `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" style="border:2px solid rgba(255,94,0,0.4);display:block;"><rect width="80" height="80" fill="#062040"/><circle cx="40" cy="30" r="16" fill="rgba(255,94,0,0.25)" stroke="rgba(255,94,0,0.5)" stroke-width="1.5"/><ellipse cx="40" cy="64" rx="22" ry="14" fill="rgba(255,94,0,0.15)" stroke="rgba(255,94,0,0.4)" stroke-width="1.5"/><text x="40" y="35" text-anchor="middle" dominant-baseline="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="18" fill="#ff5e00">${inicialModal}</text></svg>`;
+        let fotoHtml = d.fotoUrl
+            ? `<img src="${d.fotoUrl}" style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,94,0,0.4);flex-shrink:0;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">${svgModal.replace('display:block','display:none')}`
+            : svgModal;
+        const materiasArr = d.materias ? d.materias.split(',').map(m=>m.trim()).filter(Boolean) : [];
+        const matTagsHtml = materiasArr.map(m=>`<span style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:1px;padding:0.2rem 0.5rem;">${m}</span>`).join(' ');
+        cont.innerHTML = `
+            <div style="display:flex;gap:1rem;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;">
+                ${fotoHtml}
+                <div style="flex:1;min-width:160px;">
+                    <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--naranja,#ff5e00);margin-bottom:0.25rem;">${d.rol||'Mentor'}</p>
+                    <h3 style="font-family:'Montserrat',sans-serif;font-size:1.3rem;font-weight:900;color:#f0f4f8;margin-bottom:0.3rem;">${d.nombre||'—'}</h3>
+                    <p style="font-family:'Montserrat',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">${d.carrera||'Programa PRI'}</p>
+                    ${avgCal?`<p style="font-family:'Montserrat',sans-serif;font-size:0.8rem;color:#ffd700;">★ ${avgCal}/5 <span style="color:rgba(255,255,255,0.35);font-size:0.6rem;">(${calSnap.size} evaluaciones)</span></p>`:'<p style="font-family:\'Montserrat\',sans-serif;font-size:0.7rem;color:rgba(255,255,255,0.3);">Sin evaluaciones aún</p>'}
+                </div>
+            </div>
+            ${d.bio?`<p style="font-size:0.9rem;color:rgba(255,255,255,0.75);line-height:1.7;margin-bottom:1rem;">${d.bio}</p>`:''}
+            ${matTagsHtml?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:1rem;">${matTagsHtml}</div>`:''}
+            ${d.materialUrl?`<a href="${d.materialUrl}" target="_blank" style="display:inline-block;margin-bottom:1.5rem;padding:0.55rem 1.2rem;font-family:'Montserrat',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:rgba(56,189,248,0.12);color:#38bdf8;border:1px solid rgba(56,189,248,0.3);text-decoration:none;">📂 Ver Material</a>`:''}
+            <div style="margin-top:1rem;">
+                <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.75rem;">RESEÑAS DE ESTUDIANTES</p>
+                ${calHtml || '<p style="font-family:\'Montserrat\',sans-serif;font-size:0.65rem;color:rgba(255,255,255,0.25);">Ningún estudiante ha dejado una reseña aún.</p>'}
+            </div>`;
+    } catch(err) { cont.innerHTML = `<p style="color:#fca5a5;font-family:'Montserrat',sans-serif;font-size:0.7rem;">Error: ${err.message}</p>`; }
+};
+
+signInAnonymously(auth).catch(() => {}).finally(() => cargarMentores());
+</script>
+
+<script>
+    // Menú móvil — cajón lateral con backdrop
+    (function(){
+        const toggle = document.getElementById('mobile-menu');
+        const navLinks = document.querySelector('.nav-links');
+        const backdrop = document.getElementById('nav-backdrop');
+        if (!toggle || !navLinks) return;
+        function openMenu(){ toggle.classList.add('is-active'); navLinks.classList.add('active'); if(backdrop) backdrop.classList.add('active'); document.body.style.overflow='hidden'; }
+        function closeMenu(){ toggle.classList.remove('is-active'); navLinks.classList.remove('active'); if(backdrop) backdrop.classList.remove('active'); document.body.style.overflow=''; }
+        toggle.addEventListener('click', () => navLinks.classList.contains('active') ? closeMenu() : openMenu());
+        if(backdrop) backdrop.addEventListener('click', closeMenu);
+        navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    })();
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        document.getElementById('scroll-progress').style.width = (winScroll / height * 100) + '%';
+    });
+    const dot = document.getElementById('cdot'), ring = document.getElementById('cring');
+    let rx=0,ry=0,mx=0,my=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function tick(){ if(dot){dot.style.left=mx+'px';dot.style.top=my+'px';} rx+=(mx-rx)*0.14; ry+=(my-ry)*0.14; if(ring){ring.style.left=rx+'px';ring.style.top=ry+'px';} requestAnimationFrame(tick); })();
+    document.addEventListener('mouseover', e => { if(e.target.closest('a,button,input,select')) ring.style.transform='translate(-50%,-50%) scale(1.6)'; });
+    document.addEventListener('mouseout', e => { if(e.target.closest('a,button,input,select')) ring.style.transform='translate(-50%,-50%) scale(1)'; });
+</script>
+<script>
+/* ── Sesión activa: pill desktop + avatar móvil + IR A PLATAFORMA ── */
+(function(){
+    const raw = localStorage.getItem('usuario_sesion_activa');
+    if (!raw) return;
+    try {
+        const u = JSON.parse(raw);
+        if (u.sesionExpira && Date.now() > u.sesionExpira) {
+            localStorage.removeItem('usuario_sesion_activa'); return;
+        }
+        const primeros = (u.nombre || '').trim().split(/\s+/).slice(0,2).join(' ');
+        const inicial = (primeros[0] || '?').toUpperCase();
+        const avatarStyle = (size, fs) =>
+            u.fotoUrl
+                ? `<img src="${u.fotoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:2px solid #ff5e00;flex-shrink:0;">`
+                : `<div style="width:${size}px;height:${size}px;border-radius:50%;background:#ff5e00;display:flex;align-items:center;justify-content:center;font-size:${fs}px;font-weight:900;color:#fff;flex-shrink:0;">${inicial}</div>`;
+        const btn = document.querySelector('a.btn-login');
+        if (btn) {
+            btn.href = 'dashboard.html';
+            btn.style.cssText = 'display:flex;align-items:center;gap:7px;padding:3px 14px 3px 3px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fafafa;text-decoration:none;';
+            btn.innerHTML = `${avatarStyle(28,11)}<span>${primeros}</span>`;
+        }
+        const toggle = document.getElementById('mobile-menu');
+        if (toggle) {
+            const pill = document.createElement('div');
+            pill.id = 'mobile-user-pill';
+            pill.style.cssText = 'display:none;align-items:center;z-index:3001;cursor:pointer;';
+            pill.innerHTML = avatarStyle(34,13);
+            pill.addEventListener('click', () => { window.location.href='dashboard.html'; });
+            toggle.parentNode.insertBefore(pill, toggle);
+            const mq = window.matchMedia('(max-width:768px)');
+            const setVis = m => { pill.style.display = m.matches ? 'flex' : 'none'; };
+            setVis(mq); mq.addEventListener('change', setVis);
+        }
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) {
+            const li = document.createElement('li');
+            li.className = 'nav-ir-plataforma';
+            li.innerHTML = `<a href="dashboard.html" style="display:block;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:3px;text-decoration:none;text-align:center;">🚀 IR A PLATAFORMA</a>`;
+            navLinks.insertBefore(li, navLinks.firstChild);
+            const s = document.createElement('style');
+            s.textContent = '@media(min-width:769px){.nav-ir-plataforma{display:none!important;}} .nav-ir-plataforma a{font-size:.72rem!important;border-bottom:none!important;transform:none!important;padding:.65rem 1.3rem!important;letter-spacing:2px!important;width:100%!important;box-sizing:border-box;}';
+            document.head.appendChild(s);
+        }
+    } catch(e) {}
+})();
+</script>
+<script src="fondo-dinamico.js"></script>
+</body>
+</html>

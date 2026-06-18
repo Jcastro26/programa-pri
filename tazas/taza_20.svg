@@ -1,0 +1,37 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#0f3460" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Ondas del mar -->
+<path d="M30,58 Q50,48 70,58 Q90,68 110,58 Q130,48 150,58 Q165,65 170,62" stroke="#3b82f6" stroke-width="3" fill="none" opacity="0.8" stroke-linecap="round"/>
+<path d="M30,70 Q50,60 70,70 Q90,80 110,70 Q130,60 150,70 Q165,77 170,74" stroke="#60a5fa" stroke-width="2.5" fill="none" opacity="0.7" stroke-linecap="round"/>
+<path d="M30,82 Q50,72 70,82 Q90,92 110,82 Q130,72 150,82 Q165,89 170,86" stroke="#93c5fd" stroke-width="2" fill="none" opacity="0.6" stroke-linecap="round"/>
+<path d="M30,94 Q50,84 70,94 Q90,104 110,94 Q130,84 150,94 Q165,101 170,98" stroke="#bfdbfe" stroke-width="1.5" fill="none" opacity="0.5" stroke-linecap="round"/>
+<ellipse cx="100" cy="40" rx="18" ry="12" fill="#1d4ed8" opacity="0.3"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#0f3460" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#dbeafe" opacity="0.95">"Que la educación sea</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#dbeafe" opacity="0.95">el faro de tu camino"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#60a5fa" letter-spacing="1" opacity="0.9">— Programa PRI</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#60a5fa" letter-spacing="2" opacity="1">ONDAS DEL MAR</text>
+</svg>

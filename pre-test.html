@@ -3,98 +3,1391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrenamiento PRE-TEST | PROGRAMA-PRI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <title>Pre-Test Diagnóstico | PROGRAMA-PRI</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --azul-deep: #021a36;
+            --azul-panel: #062040;
+            --azul-card: #041830;
+            --naranja: #ff5e00;
+            --oro: #ffd700;
+            --blanco: #f0f4f8;
+            --teal: #38bdf8;
+            --verde: #22c55e;
+            --rojo: #ef4444;
+            --amarillo: #f59e0b;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--azul-deep);
+            background-image: radial-gradient(ellipse 100% 50% at 50% -5%, rgba(255,94,0,0.06) 0%, transparent 70%);
+            color: var(--blanco);
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: stretch;
+        }
+        .test-main { flex:1; display:flex; align-items:center; justify-content:center; padding:1.5rem; }
+        body::before {
+            content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,94,0,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,94,0,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        h1, h2, h3, h4, button, label, .mono { font-family: 'Montserrat', sans-serif; }
+
+        /* ===== WRAPPER ===== */
+        .test-wrapper {
+            width: 100%; max-width: 680px; position: relative; z-index: 1;
+        }
+
+        /* ===== CARD BASE ===== */
+        .card {
+            background: var(--azul-panel);
+            border: 1px solid rgba(255,255,255,0.07);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .card-accent { height: 3px; background: linear-gradient(90deg, var(--naranja), var(--oro), var(--teal)); }
+
+        /* ===== PANTALLA: BIENVENIDA ===== */
+        .screen { padding: 2.5rem; }
+        .screen.hidden { display: none; }
+
+        .brand-eyebrow {
+            font-size: 0.55rem; letter-spacing: 4px; text-transform: uppercase;
+            color: var(--teal); display: block; margin-bottom: 0.75rem;
+        }
+        .screen-title {
+            font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 900;
+            text-transform: uppercase; line-height: 1.1; margin-bottom: 0.6rem;
+        }
+        .screen-title span { color: var(--naranja); }
+        .screen-desc { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.6; margin-bottom: 2rem; }
+
+        /* Info chips */
+        .info-chips { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+        .chip {
+            display: flex; align-items: center; gap: 0.4rem;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+            padding: 0.4rem 0.8rem; font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5);
+        }
+        .chip .chip-icon { font-size: 0.9rem; }
+
+        /* ===== FORMULARIO REGISTRO ===== */
+        .reg-box {
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+            padding: 1.5rem; margin-bottom: 1.5rem;
+            border-radius: 1.1rem; overflow: visible;
+        }
+        .reg-box-title {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase;
+            color: var(--teal); margin-bottom: 1.2rem; display: block;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        @media(max-width:600px){
+            .form-row { grid-template-columns: 1fr !important; }
+            .field input, .field select { font-size: 0.9rem; width: 100%; max-width: 100%; }
+            .reg-box { padding: 1.1rem; }
+            .screen { padding: 1.25rem; }
+        }
+        .form-row.full { grid-template-columns: 1fr; }
+        .field { display: flex; flex-direction: column; gap: 0.3rem; }
+        .field label {
+            font-size: 0.55rem; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: rgba(255,255,255,0.4);
+        }
+        .field input, .field select {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--blanco); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+            padding: 0.7rem 0.9rem; outline: none; transition: border-color 0.2s ease;
+            width: 100%; box-sizing: border-box; border-radius: 10px;
+        }
+        .field input:focus, .field select:focus { border-color: rgba(255,94,0,0.5); }
+        .field select option { background: var(--azul-panel); }
+
+        /* ===== BOTONES ===== */
+        .btn-primary {
+            width: 100%; padding: 1rem 1.5rem; font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+            background: var(--naranja); color: #fff; border: none; border-radius: 100px;
+            cursor: pointer; transition: background 0.2s ease, transform 0.1s ease; display: flex;
+            align-items: center; justify-content: center; gap: 0.5rem;
+            box-sizing: border-box; touch-action: manipulation;
+        }
+        .btn-primary:hover { background: #e05200; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { background: rgba(255,94,0,0.25); cursor: not-allowed; }
+
+        .btn-secondary {
+            padding: 0.75rem 1.5rem; font-family: 'Montserrat', sans-serif;
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+            background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s ease;
+        }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); color: var(--blanco); }
+
+        /* ===== PANTALLA: QUIZ ===== */
+        /* Barra de progreso */
+        .progress-header {
+            padding: 1rem 2rem;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .progress-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.08); }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--naranja), var(--oro)); transition: width 0.5s ease; }
+        .progress-text { font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.35); white-space: nowrap; }
+
+        /* Timer */
+        .quiz-header {
+            padding: 1.5rem 2rem 0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .quiz-area-tag {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 700;
+        }
+        .area-mat { color: var(--teal); }
+        .area-cien { color: var(--verde); }
+        .area-lec { color: var(--oro); }
+        .area-soc { color: var(--amarillo); }
+
+        .timer {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.75rem; font-weight: 700; font-family: 'Montserrat', sans-serif;
+            color: rgba(255,255,255,0.4);
+        }
+        .timer.warning { color: var(--amarillo); }
+        .timer.danger { color: var(--rojo); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* Pregunta */
+        .quiz-body { padding: 1.5rem 2rem 2rem; }
+        .question-num {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase;
+            color: rgba(255,255,255,0.25); margin-bottom: 0.75rem;
+        }
+        .question-text {
+            font-size: 1rem; font-weight: 600; color: var(--blanco);
+            line-height: 1.65; margin-bottom: 1.5rem;
+        }
+
+        /* Opciones */
+        .options-grid { display: flex; flex-direction: column; gap: 0.65rem; }
+        .option-btn {
+            display: flex; align-items: flex-start; gap: 0.85rem;
+            width: 100%; text-align: left; padding: 0.9rem 1rem;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.65); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.2s ease; line-height: 1.45;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: rgba(255,94,0,0.07); border-color: rgba(255,94,0,0.3); color: var(--blanco);
+        }
+        .option-btn.selected { background: rgba(255,94,0,0.1); border-color: rgba(255,94,0,0.5); color: var(--blanco); }
+        .option-btn.correct { background: rgba(34,197,94,0.1); border-color: var(--verde); color: #86efac; }
+        .option-btn.wrong { background: rgba(239,68,68,0.08); border-color: var(--rojo); color: #fca5a5; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-letter {
+            min-width: 24px; height: 24px; border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 900;
+            flex-shrink: 0; margin-top: 0.05rem;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover:not(:disabled) .option-letter,
+        .option-btn.selected .option-letter { border-color: var(--naranja); background: rgba(255,94,0,0.15); color: var(--naranja); }
+        .option-btn.correct .option-letter { border-color: var(--verde); background: rgba(34,197,94,0.15); color: var(--verde); }
+        .option-btn.wrong .option-letter { border-color: var(--rojo); background: rgba(239,68,68,0.12); color: var(--rojo); }
+
+        /* Feedback */
+        .feedback-bar {
+            margin: 1rem 0 0; padding: 0.75rem 1rem; font-size: 0.8rem;
+            display: none; align-items: center; gap: 0.6rem; font-weight: 600;
+        }
+        .feedback-bar.correct { background: rgba(34,197,94,0.1); border-left: 3px solid var(--verde); color: #86efac; }
+        .feedback-bar.wrong { background: rgba(239,68,68,0.08); border-left: 3px solid var(--rojo); color: #fca5a5; }
+
+        .btn-next-wrap { padding: 0 2rem 2rem; }
+
+        /* ===== PANTALLA: RESULTADOS ===== */
+        .results-screen { padding: 2.5rem; }
+        .score-circle {
+            width: 100px; height: 100px; border-radius: 50%;
+            border: 4px solid;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 0 auto 2rem;
+        }
+        .score-circle.excelente { border-color: var(--verde); }
+        .score-circle.bien { border-color: var(--teal); }
+        .score-circle.regular { border-color: var(--amarillo); }
+        .score-circle.reforzar { border-color: var(--rojo); }
+        .score-num { font-size: 2rem; font-weight: 900; line-height: 1; }
+        .score-label { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+
+        .results-title { font-size: 1.4rem; font-weight: 900; text-align: center; margin-bottom: 0.4rem; text-transform: uppercase; }
+        .results-msg { font-size: 0.85rem; color: rgba(255,255,255,0.5); text-align: center; margin-bottom: 2rem; }
+
+        /* Breakdown por área */
+        .area-breakdown { margin-bottom: 2rem; }
+        .area-breakdown-title {
+            font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase;
+            color: rgba(255,255,255,0.3); margin-bottom: 1rem;
+        }
+        .area-row { margin-bottom: 0.85rem; }
+        .area-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+        .area-row-name { font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.7); }
+        .area-row-score { font-size: 0.7rem; font-weight: 900; }
+        .area-bar-bg { height: 4px; background: rgba(255,255,255,0.06); }
+        .area-bar-fill { height: 100%; transition: width 1s ease; }
+
+        /* Recompensa de puntos */
+        .puntos-ganados {
+            background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.2);
+            padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .puntos-ganados .label { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+        .puntos-ganados .valor { font-size: 1.4rem; font-weight: 900; color: var(--oro); }
+
+        .results-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+        /* ===== SPINNER ===== */
+        .spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Área-check para voluntario */
+        .area-check-item { display:flex;align-items:center;gap:0.6rem;cursor:pointer;padding:0.65rem 0.85rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);transition:all 0.15s;user-select:none; }
+        .area-check-item:hover { border-color:rgba(255,94,0,0.3); }
+        .area-check-item input[type=checkbox] { width:14px;height:14px;accent-color:var(--naranja);flex-shrink:0; }
+        .area-check-item span { font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;color:rgba(255,255,255,0.7); }
+
+        @media (max-width: 520px) {
+            .screen, .quiz-body { padding: 1.5rem; }
+            .progress-header { padding: 0.75rem 1.5rem; }
+            .quiz-header { padding: 1.25rem 1.5rem 0; }
+            .btn-next-wrap { padding: 0 1.5rem 1.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .results-screen { padding: 1.5rem; }
+        }
+                /* ===== OPTIMIZACIONES MOBILE-FIRST Y MICRO-INTERACCIONES ===== */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .screen { padding: 1.5rem; }
+            /* Convertimos la grilla a 1 sola columna en móviles para evitar scroll horizontal */
+            .form-row.full-mobile { grid-template-columns: 1fr; }
+            .screen-title { font-size: 1.5rem; }
+            /* Touch Targets accesibles (Mínimo 48px según estándares de Apple/Google) */
+            .btn-primary, .option-btn, .field input, .field select { 
+                min-height: 48px; 
+            }
+        }
+
+        /* Haptic Feedback Visual (El botón se "hunde" al tocarlo, da sensación de app nativa) */
+        .option-btn { transform: scale(1); transition: transform 0.1s ease, background 0.2s, border-color 0.2s; }
+        .option-btn:active { transform: scale(0.97); }
+
+        /* Estilo Premium para el CTA Final (Invitación) */
+        .cta-final {
+            margin-top: 2rem; 
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255,94,0,0.08), rgba(255,215,0,0.03));
+            border: 1px solid rgba(255,94,0,0.3);
+            border-radius: 12px; 
+            text-align: center;
+            box-shadow: inset 0 0 20px rgba(255,94,0,0.05);
+        }
+        .cta-final h3 { color: var(--blanco); margin-bottom: 0.5rem; font-size: 1.2rem;}
+        .cta-final p { color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 1.5rem; line-height: 1.6;}
+
+        /* ===== MODAL PROPIO (sustituye alert/confirm) ===== */
+        .pri-modal-overlay {
+            position: fixed; inset: 0; background: rgba(2,26,54,0.75);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 9999; backdrop-filter: blur(4px);
+            animation: fadeInModal 0.2s ease;
+        }
+        @keyframes fadeInModal { from { opacity: 0; } to { opacity: 1; } }
+        .pri-modal-box {
+            background: var(--azul-panel); border: 1px solid rgba(255,94,0,0.35);
+            border-radius: 12px; max-width: 360px; width: 90%; padding: 1.75rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            text-align: center; position: relative;
+        }
+        .pri-modal-box::before {
+            content: ''; display: block; height: 3px; width: 40px; margin: 0 auto 1rem;
+            background: linear-gradient(90deg, var(--naranja), var(--oro));
+        }
+        .pri-modal-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .pri-modal-title { font-family: 'Montserrat', sans-serif; font-weight: 900; color: var(--blanco); font-size: 1.05rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .pri-modal-msg { color: rgba(255,255,255,0.7); font-size: 0.85rem; line-height: 1.5; margin-bottom: 1.25rem; }
+        .pri-modal-btn {
+            background: var(--naranja); color: #fff; border: none; font-weight: 800;
+            padding: 0.65rem 1.5rem; border-radius: 6px; cursor: pointer; font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase;
+        }
+
+        /* ===== BARRA DATOS USUARIO (TOP del quiz) ===== */
+        .quiz-user-bar {
+            display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+            gap: 1rem; padding: 0.75rem 1.5rem;
+            background: linear-gradient(90deg, rgba(255,94,0,0.12), rgba(56,189,248,0.08));
+            border-bottom: 1px solid rgba(255,94,0,0.25);
+            font-family: 'Montserrat', sans-serif;
+        }
+        .quiz-user-chip {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+            color: rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+            padding: 0.3rem 0.75rem;
+        }
+        .quiz-user-chip .chip-label { color: rgba(255,255,255,0.4); font-weight: 400; margin-right: 0.2rem; }
+
+        /* ===== Fortalezas / Falencias ===== */
+        .fyf-grid { display: grid; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .fyf-box { padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.8rem; line-height: 1.5; }
+        .fyf-box.fuerte { background: rgba(34,197,94,0.07); border-left: 3px solid var(--verde); color: #c9f7d8; }
+        .fyf-box.falencia { background: rgba(239,68,68,0.07); border-left: 3px solid var(--rojo); color: #fcd6d6; }
+        .fyf-box b { color: var(--blanco); }
+            </style>
 </head>
-<body class="page-pre-test">
+<body>
+<div id="pri-modal-root"></div>
+<a href="index.html" style="position:fixed;top:1rem;left:1rem;z-index:999;display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;background:rgba(6,32,64,0.92);border:1px solid rgba(255,94,0,0.35);color:#f0f4f8;font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:0.55rem 1rem;border-radius:4px;backdrop-filter:blur(10px);transition:all 0.2s ease;" onmouseover="this.style.borderColor='#ff5e00';this.style.color='#ff5e00'" onmouseout="this.style.borderColor='rgba(255,94,0,0.35)';this.style.color='#f0f4f8'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Inicio
+</a>
+<main class="test-main"><div class="test-wrapper">
+<div class="card">
+<div class="card-accent"></div>
 
-    <header class="navbar">
-        <div class="logo-container">
-            <a href="index.html" class="logo-link">
-               <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-                <h2>PROGRAMA-PRI</h2>
-            </a>
-        </div>
-        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </div>
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Inicio</a></li>
-                <li><a href="ppri.html">Sobre PRI</a></li>
-                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
-                <li><a href="pre-test.html">PRE-TEST</a></li>
-                <li><a href="docentes.html">Docentes</a></li>
-                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
-            </ul>
-        </nav>
-    </header>
+<!-- ===================================================== -->
+<!-- PANTALLA 1: BIENVENIDA Y REGISTRO -->
+<!-- ===================================================== -->
+<div class="screen" id="pantalla-inicio">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:0.5rem;text-decoration:none;margin-bottom:1.5rem;">
+        <img src="logo.png" alt="PRI" style="width:42px;height:42px;object-fit:cover;border-radius:50%;" onerror="this.style.display='none'">
+        <div><span style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1rem;letter-spacing:2px;text-transform:uppercase;color:#f0f4f8;display:block;line-height:1.2">PROGRAMA-PRI</span><span style="font-family:'Montserrat',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#38bdf8">El Pacífico Renaciendo con Ingeniería</span></div>
+    </a>
+    <span class="brand-eyebrow">PROGRAMA-PRI • Registro y Diagnóstico de Ingreso</span>
+    <h1 class="screen-title">Únete al <span>Programa PRI</span></h1>
+    <p class="screen-desc">Completa tu registro y realiza el diagnóstico adaptado a tu perfil. Los datos nos ayudan a diseñar la mejor ruta de aprendizaje para ti.</p>
 
-    <section class="module-header">
-        <div class="sky-background"></div>
-        <div class="module-title">
-            <h1>Simulador <span class="highlight">STEM</span></h1>
-            <p>Pensamiento Crítico, Matemáticas y Física. Supera tus límites.</p>
-        </div>
-    </section>
+    <div class="info-chips">
+        <div class="chip"><span class="chip-icon">📋</span> Hasta 50 preguntas</div>
+        <div class="chip"><span class="chip-icon">⏱️</span> ~35 minutos</div>
+        <div class="chip"><span class="chip-icon">🏆</span> Gana hasta 250 PTS</div>
+        <div class="chip"><span class="chip-icon">📊</span> Retroalimentación inmediata</div>
+    </div>
 
-    <section class="gamification-hud">
-        <div class="hud-container">
-            <div class="stat-box">
-                <span class="stat-label">Nivel Actual</span>
-                <span class="stat-value">Fase 1: Piloto</span>
+<div class="reg-box">
+    <span class="reg-box-title">📋 Datos Personales</span>
+    <div class="form-row full-mobile">
+        <div class="field">
+            <label>Nombre Completo *</label>
+            <input type="text" id="aspirante-nombre" placeholder="Ej: Juan Pérez" required autocomplete="name">
+        </div>
+        <div class="field">
+            <label>Correo Electrónico *</label>
+            <input type="email" id="aspirante-correo" placeholder="tucorreo@ejemplo.com" required autocomplete="email">
+        </div>
+    </div>
+    <div class="form-row full-mobile">
+        <div class="field">
+            <label>WhatsApp *</label>
+            <input type="tel" id="aspirante-tel" placeholder="300 123 4567" required autocomplete="tel">
+        </div>
+        <div class="field">
+            <label>Ciudad</label>
+            <input type="text" id="aspirante-ciudad" value="Tumaco, Nariño" placeholder="Ciudad">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="field">
+            <label>Tipo de Documento</label>
+            <select id="aspirante-doc-tipo">
+                <option value="">Selecciona...</option>
+                <option>TARJETA DE IDENTIDAD</option>
+                <option>CEDULA</option>
+                <option>CEDULA DE EXTRANJERÍA</option>
+                <option>PASAPORTE</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Número de Documento</label>
+            <input type="text" id="aspirante-doc-num" placeholder="Número">
+        </div>
+    </div>
+</div>
+
+<div class="reg-box" style="margin-top:1rem;">
+    <span class="reg-box-title">🎯 Rol y Nivel</span>
+    <div class="form-row full-mobile">
+        <div class="field">
+            <label>¿Cómo deseas participar? *</label>
+            <select id="aspirante-rol" required onchange="actualizarCamposRol()">
+                <option value="" disabled selected>Selecciona tu rol</option>
+                <option value="ESTUDIANTE">Estudiante (quiero aprender)</option>
+                <option value="VOLUNTARIO">Voluntario universitario (quiero enseñar)</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Institución Educativa *</label>
+            <input type="text" id="aspirante-colegio" placeholder="Tu colegio o universidad" required>
+        </div>
+    </div>
+    <div class="form-row" id="campos-estudiante">
+        <div class="field">
+            <label>Grado Actual *</label>
+            <select id="aspirante-grado">
+                <option value="" disabled selected>Selecciona tu grado</option>
+                <option value="8">Octavo (8°)</option>
+                <option value="9">Noveno (9°)</option>
+                <option value="10">Décimo (10°)</option>
+                <option value="11">Undécimo (11°)</option>
+                <option value="Egresado">Egresado/Graduado</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Estrato Socioeconómico *</label>
+            <select id="aspirante-estrato">
+                <option value="" disabled selected>Selecciona tu estrato</option>
+                <option value="0">Estrato 0 (Sin clasificar)</option>
+                <option value="1">Estrato 1</option>
+                <option value="2">Estrato 2</option>
+                <option value="3">Estrato 3</option>
+                <option value="4">Estrato 4 o más</option>
+            </select>
+        </div>
+    </div>
+    <div id="campos-voluntario" style="display:none;">
+        <div class="form-row">
+            <div class="field">
+                <label>Semestre / Nivel universitario</label>
+                <select id="aspirante-semestre">
+                    <option value="">Selecciona...</option>
+                    <option value="Universitario (1er sem)">1er semestre</option>
+                    <option value="Universitario (2do sem)">2do semestre</option>
+                    <option value="Universitario (3er sem)">3er semestre</option>
+                    <option value="Universitario (4to sem)">4to semestre</option>
+                    <option value="Universitario (5to sem)">5to semestre</option>
+                    <option value="Universitario (6to sem+)">6to sem o más</option>
+                    <option value="Egresado/Graduado">Egresado/Graduado</option>
+                </select>
             </div>
-            <div class="stat-box timer-box">
-                <span class="stat-label">Tiempo Restante</span>
-                <span class="stat-value timer">45:00</span>
-            </div>
-            <div class="stat-box score-box">
-                <span class="stat-label">Puntos PRI</span>
-                <span class="stat-value score">1,250</span>
+            <div class="field">
+                <label>Estrato</label>
+                <select id="aspirante-estrato-vol">
+                    <option value="0">Estrato 0</option>
+                    <option value="1">Estrato 1</option>
+                    <option value="2">Estrato 2</option>
+                    <option value="3">Estrato 3</option>
+                    <option value="4">Estrato 4+</option>
+                </select>
             </div>
         </div>
-        
-        <div class="progress-container">
-            <div class="progress-bar" style="width: 35%;"></div>
-        </div>
-        <p class="progress-text">Pregunta 7 de 20</p>
-    </section>
+    </div>
+</div>
 
-    <section class="quiz-section">
-        <div class="quiz-container">
-            
-            <div class="question-card">
-                <span class="question-category">Física Dinámica</span>
-                <h3 class="question-text">Si un bloque de 5kg se desliza por un plano inclinado sin fricción, ¿cuál de las siguientes fuerzas NO realiza trabajo sobre el bloque?</h3>
-                
-                <div class="options-grid">
-                    <button class="option-btn">
-                        <span class="option-letter">A</span> La fuerza de gravedad.
-                    </button>
-                    <button class="option-btn">
-                        <span class="option-letter">B</span> La fuerza normal.
-                    </button>
-                    <button class="option-btn">
-                        <span class="option-letter">C</span> La componente paralela del peso.
-                    </button>
-                    <button class="option-btn">
-                        <span class="option-letter">D</span> Ninguna de las anteriores.
-                    </button>
+<button class="btn-primary" onclick="validarEIniciarTest()">
+    Continuar <span class="chip-icon">→</span>
+</button>
+
+</div>
+
+<!-- ===================================================== -->
+<!-- PANTALLA 1.5: ÁREAS PARA VOLUNTARIO -->
+<!-- ===================================================== -->
+<div class="screen hidden" id="pantalla-areas" style="padding:2.5rem;">
+    <span class="brand-eyebrow">Voluntario · Selección de Áreas</span>
+    <h2 class="screen-title" style="font-size:1.4rem;">¿En qué áreas quieres <span>enseñar</span>?</h2>
+    <p class="screen-desc">Selecciona mínimo 2 áreas. El diagnóstico evaluará tu dominio en esas áreas para analizar cómo puedes apoyar mejor a los estudiantes.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem;margin-bottom:2rem;" id="areas-checkboxes">
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="mat"><span>📐 Matemáticas Básicas</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="fis"><span>⚡ Física</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="qui"><span>⚗️ Química</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="cien"><span>🧬 Ciencias Naturales</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="lec"><span>📖 Lectura Crítica</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="ing"><span>🇬🇧 Inglés</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="soc"><span>🌍 Ciencias Sociales</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="fil"><span>🧠 Filosofía</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="pol"><span>🏛️ Política/Economía</span></label>
+        <label class="area-check-item"><input type="checkbox" name="vol-area" value="inf"><span>💻 Informática/Prog.</span></label>
+    </div>
+    <button class="btn-primary" onclick="iniciarTestVoluntario()">
+        Iniciar Diagnóstico <span class="chip-icon">⚡</span>
+    </button>
+</div>
+
+<!-- ===================================================== -->
+<!-- PANTALLA 2: QUIZ -->
+<!-- ===================================================== -->
+<div class="screen hidden" id="pantalla-quiz" style="padding:0;">
+
+    <!-- Barra datos usuario (TOP) -->
+    <div class="quiz-user-bar" id="quiz-user-bar">
+        <div class="quiz-user-chip"><span class="chip-label">👤</span><span id="ui-nombre">—</span></div>
+        <div class="quiz-user-chip"><span class="chip-label">🏫</span><span id="ui-colegio">—</span></div>
+        <div class="quiz-user-chip"><span class="chip-label">📚 Grado</span><span id="ui-grado">—</span></div>
+        <div class="quiz-user-chip"><span class="chip-label">🏠</span><span id="ui-estrato">—</span></div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="progress-header">
+        <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="barra-progreso" style="width:0%"></div>
+        </div>
+        <span class="progress-text" id="txt-progreso">1 / 25</span>
+    </div>
+
+    <!-- Header pregunta -->
+    <div class="quiz-header">
+        <span class="quiz-area-tag" id="quiz-area">Matemáticas</span>
+        <div class="timer" id="timer-display">⏱ 45s</div>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="quiz-body">
+        <p class="question-num" id="question-num">Pregunta 1 de 9</p>
+        <p class="question-text" id="quiz-enunciado">Cargando pregunta...</p>
+        <div class="options-grid" id="quiz-opciones"></div>
+        <div class="feedback-bar" id="feedback-bar"></div>
+    </div>
+
+    <div class="btn-next-wrap">
+        <button class="btn-primary hidden" id="btn-siguiente" onclick="siguientePregunta()">
+            Siguiente →
+        </button>
+    </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- PANTALLA 3: RESULTADOS -->
+<!-- ===================================================== -->
+<div class="screen hidden results-screen" id="pantalla-resultados">
+
+    <span class="brand-eyebrow">Evaluación completada</span>
+    <div class="score-circle" id="score-circle">
+        <span class="score-num" id="res-puntos">0/9</span>
+        <span class="score-label">Aciertos</span>
+    </div>
+
+    <h2 class="results-title" id="results-title">¡Buen trabajo!</h2>
+    <p class="results-msg" id="results-msg">Tu diagnóstico ha sido procesado.</p>
+
+    <!-- Desglose por área -->
+    <div class="area-breakdown">
+        <p class="area-breakdown-title">Desempeño por Área</p>
+        <div id="area-breakdown-container"></div>
+    </div>
+
+    <!-- Fortalezas y falencias -->
+    <div class="area-breakdown">
+        <p class="area-breakdown-title">Tu Diagnóstico Personalizado</p>
+        <div class="fyf-grid" id="fyf-container"></div>
+    </div>
+
+    <!-- Puntos ganados -->
+    <div class="puntos-ganados" id="puntos-ganados-box">
+        <div>
+            <div class="label">Puntos ganados en este test</div>
+            <div style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:2px;">Acumulados en tu perfil</div>
+        </div>
+        <div class="valor" id="puntos-ganados-val">+0 PTS</div>
+    </div>
+
+    <div class="results-actions">
+        <button class="btn-secondary" onclick="reiniciarTest()">🔄 Repetir</button>
+        <button class="btn-primary" style="flex:1" onclick="window.location.href='dashboard.html'">Ir al Panel →</button>
+    </div>
+</div>
+
+</div><!-- /.card -->
+</div><!-- /.test-wrapper --></div></main>
+
+<script type="module">
+  // =======================================================
+  // 1. INICIALIZACIÓN OFICIAL DE FIREBASE (ES MODULES CDN)
+  // =======================================================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  // Optimizamos agregando 'updateDoc', 'doc' e 'increment' para que tu bloque de usuarios registrados no falle nunca
+  import { getFirestore, collection, addDoc, serverTimestamp, updateDoc, doc, increment, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+  // Usamos exactamente tu configuración proveída
+  const firebaseConfig = {
+    apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+    authDomain: "programa-pri-2d395.firebaseapp.com",
+    projectId: "programa-pri-2d395",
+    storageBucket: "programa-pri-2d395.firebasestorage.app",
+    messagingSenderId: "854011964095",
+    appId: "1:854011964095:web:6e075f73a385bb804e5356",
+    measurementId: "G-BMD6293HG8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Variable global para guardar los datos temporalmente durante el test
+  window.datosAspiranteGlobal = {};
+  
+  // =======================================================
+  // 2. VALIDACIÓN Y ARRANQUE DEL TEST (COMPATIBILIDAD INTEGRAL)
+  // =======================================================
+  // Modal propio de PROGRAMA-PRI (reemplaza alert/confirm)
+  window.mostrarAvisoPRI = function(titulo, msg, icono = '⚠️') {
+      const root = document.getElementById('pri-modal-root');
+      root.innerHTML = `
+        <div class="pri-modal-overlay" onclick="if(event.target===this) this.remove()">
+          <div class="pri-modal-box">
+            <div class="pri-modal-icon">${icono}</div>
+            <div class="pri-modal-title">${titulo}</div>
+            <div class="pri-modal-msg">${msg}</div>
+            <button class="pri-modal-btn" onclick="this.closest('.pri-modal-overlay').remove()">Entendido</button>
+          </div>
+        </div>`;
+  };
+
+  // Mostrar/ocultar campos según rol
+  window.actualizarCamposRol = function() {
+      const rol = document.getElementById('aspirante-rol').value;
+      document.getElementById('campos-estudiante').style.display = rol === 'ESTUDIANTE' ? '' : 'none';
+      document.getElementById('campos-voluntario').style.display = rol === 'VOLUNTARIO' ? '' : 'none';
+  };
+
+  window.validarEIniciarTest = async function() {
+      const nombre = document.getElementById('aspirante-nombre').value.trim();
+      const correo = document.getElementById('aspirante-correo').value.trim();
+      const tel = document.getElementById('aspirante-tel').value.trim();
+      const colegio = document.getElementById('aspirante-colegio').value.trim();
+      const rol = document.getElementById('aspirante-rol').value;
+      const ciudad = document.getElementById('aspirante-ciudad').value.trim() || 'Tumaco, Nariño';
+      const docTipo = document.getElementById('aspirante-doc-tipo').value;
+      const docNum = document.getElementById('aspirante-doc-num').value.trim();
+
+      if (!nombre) { mostrarAvisoPRI('Falta el nombre', 'Por favor ingresa tu nombre completo.', '⚠️'); return; }
+      if (!colegio) { mostrarAvisoPRI('Falta la institución', 'Escribe el nombre de tu institución.', '⚠️'); return; }
+      if (!rol) { mostrarAvisoPRI('Selecciona tu rol', 'Indica si eres estudiante o voluntario.', '⚠️'); return; }
+
+      let grado = '', estrato = '', nivel = '';
+
+      if (rol === 'ESTUDIANTE') {
+          grado = document.getElementById('aspirante-grado').value;
+          estrato = document.getElementById('aspirante-estrato').value;
+          if (!grado) { mostrarAvisoPRI('Selecciona el grado', 'Indica en qué grado estás.', '⚠️'); return; }
+          if (!estrato) { mostrarAvisoPRI('Selecciona el estrato', 'Indica tu estrato socioeconómico.', '⚠️'); return; }
+          nivel = grado === 'Egresado' ? 'Egresado/Graduado' : `${grado}° grado`;
+      } else {
+          nivel = document.getElementById('aspirante-semestre').value || 'Universitario';
+          estrato = document.getElementById('aspirante-estrato-vol').value || '1';
+          grado = '11'; // Para voluntarios usamos banco G11 como base
+      }
+
+      window.datosAspiranteGlobal = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, docTipo, docNum, nivel };
+      datosAspirante = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, docTipo, docNum, nivel };
+
+      // Poblar barra superior del quiz
+      const setUI = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setUI('ui-nombre', nombre);
+      setUI('ui-colegio', colegio);
+      setUI('ui-grado', rol === 'VOLUNTARIO' ? nivel : (grado + '°'));
+      setUI('ui-estrato', 'Estrato ' + estrato);
+
+      if (rol === 'VOLUNTARIO') {
+          // Mostrar pantalla de selección de áreas
+          document.getElementById('pantalla-inicio').classList.add('hidden');
+          document.getElementById('pantalla-areas').classList.remove('hidden');
+          return;
+      }
+
+      // Estudiante: construir preguntas por grado y arrancar
+      await construirYArrancar(grado);
+  };
+
+  async function construirYArrancar(grado) {
+      PREGUNTAS = construirPreguntas(grado);
+      indice = 0;
+      respuestas = [];
+
+      // Cargar preguntas adicionales de Firebase banco_preguntas
+      try {
+          const gradoNum = grado.replace('Egresado','11');
+          const snap = await getDocs(query(collection(db,'banco_preguntas'), where('grado','==',gradoNum)));
+          snap.forEach(d => {
+              const p = d.data();
+              if (p.q && p.o && typeof p.a === 'number') {
+                  PREGUNTAS.push({
+                      q: p.q, o: p.o, a: p.a,
+                      tiempoCad: p.t || p.tiempoCad || 45,
+                      explicacion: p.e || p.explicacion || '',
+                      area: AREA_META[p.area] ? AREA_META[p.area].nombre : (p.area||'General'),
+                      areaKey: p.area||'mat',
+                      color: AREA_META[p.area] ? AREA_META[p.area].color : 'var(--teal)',
+                      numero: PREGUNTAS.length + 1
+                  });
+              }
+          });
+          PREGUNTAS.forEach((p, i) => p.numero = i + 1);
+      } catch(e) { /* continúa con banco estático */ }
+
+      document.getElementById('pantalla-inicio').classList.add('hidden');
+      document.getElementById('pantalla-areas').classList.add('hidden');
+      document.getElementById('pantalla-quiz').classList.remove('hidden');
+      cargarPregunta();
+  }
+
+  // Voluntario: construir preguntas filtradas por áreas elegidas
+  window.iniciarTestVoluntario = async function() {
+      const seleccionadas = Array.from(document.querySelectorAll('input[name="vol-area"]:checked')).map(c => c.value);
+      if (seleccionadas.length < 2) {
+          mostrarAvisoPRI('Selecciona más áreas', 'Elige al menos 2 áreas para el diagnóstico.', '⚠️');
+          return;
+      }
+
+      // Guardar áreas en datosAspirante
+      datosAspirante.areas_interes = seleccionadas;
+      window.datosAspiranteGlobal.areas_interes = seleccionadas;
+
+      // Construir banco con preguntas de BANCO_G11 filtradas por áreas elegidas
+      const todoBanco = [...BANCO_G11, ...BANCO_G10, ...BANCO_G9];
+      const filtrado = todoBanco.filter(p => seleccionadas.includes(p.area));
+      // Tomar hasta 10 preguntas por área seleccionada, mezcladas
+      const porArea = {};
+      seleccionadas.forEach(a => { porArea[a] = []; });
+      filtrado.forEach(p => { if (porArea[p.area] && porArea[p.area].length < 10) porArea[p.area].push(p); });
+      let bancoBuild = [];
+      seleccionadas.forEach(a => { bancoBuild = bancoBuild.concat(porArea[a].sort(() => Math.random()-0.5)); });
+      bancoBuild = bancoBuild.sort(() => Math.random() - 0.5).slice(0, 50);
+
+      PREGUNTAS = bancoBuild.map((p, idx) => ({
+          ...p,
+          tiempoCad: p.t || p.tiempoCad || 50,
+          explicacion: p.e || p.explicacion || '',
+          area: AREA_META[p.area] ? AREA_META[p.area].nombre : p.area,
+          areaKey: p.area,
+          color: AREA_META[p.area] ? AREA_META[p.area].color : 'var(--teal)',
+          numero: idx + 1
+      }));
+
+      indice = 0;
+      respuestas = [];
+      document.getElementById('pantalla-areas').classList.add('hidden');
+      document.getElementById('pantalla-quiz').classList.remove('hidden');
+      cargarPregunta();
+  };
+
+// ================================================================
+// METADATOS DE ÁREAS
+// ================================================================
+const AREA_META = {
+    mat:  { nombre: "Matemáticas",           icono: "📐", color: "var(--teal)" },
+    cien: { nombre: "Ciencias Naturales",     icono: "🧬", color: "var(--verde)" },
+    lec:  { nombre: "Lectura Crítica",        icono: "📖", color: "var(--oro)" },
+    soc:  { nombre: "Ciencias Sociales",      icono: "🌍", color: "var(--amarillo)" },
+    inf:  { nombre: "Informática",            icono: "💻", color: "#7ec8ff" },
+    qui:  { nombre: "Química",               icono: "⚗️", color: "#c084fc" },
+    fis:  { nombre: "Física",               icono: "⚡", color: "#f0abfc" },
+    ing:  { nombre: "Inglés",               icono: "🇬🇧", color: "#6ee7b7" },
+    fil:  { nombre: "Filosofía",            icono: "🧠", color: "#fda4af" },
+    pol:  { nombre: "C. Políticas y Económicas", icono: "🏛️", color: "#fdba74" }
+};
+
+// ================================================================
+// BANCO GRADO 8 — 50 preguntas (estilo ICFES, respuestas alternadas)
+// Áreas: Matemáticas, Lectura Crítica, Ciencias Naturales, Ciencias Sociales
+// ================================================================
+const BANCO_G8 = [
+  // MATEMÁTICAS (13) — respuestas: 0,1,2,3,0,1,2,3,0,1,2,3,0
+  {area:"mat",t:55,q:"Una empresa tiene 240 empleados. El 35% trabaja en producción y el 25% en ventas. ¿Cuántos empleados están en otros departamentos?",o:["96","84","60","108"],a:0,e:"Producción: 240×0.35=84. Ventas: 240×0.25=60. Otros: 240−84−60=96."},
+  {area:"mat",t:55,q:"Resuelve la inequación: 2x − 5 > x + 3",o:["x > 3","x > 8","x < 8","x > −2"],a:1,e:"Despejando x: 2x−x > 3+5 → x > 8."},
+  {area:"mat",t:55,q:"¿Cuánto es el MCD de 36 y 48?",o:["6","8","12","18"],a:2,e:"Factores de 36: 2²×3². Factores de 48: 2⁴×3. MCD = 2²×3 = 12."},
+  {area:"mat",t:55,q:"¿Cuál es la descomposición en factores primos de 84?",o:["2×42","4×21","2²×21","2²×3×7"],a:3,e:"84÷2=42÷2=21÷3=7. Entonces 84 = 2²×3×7."},
+  {area:"mat",t:55,q:"En un juego de 30 preguntas, Pedro responde bien el 70% y gana 5 pts por acierto y pierde 2 por error. ¿Cuántos puntos obtiene?",o:["87","105","96","75"],a:0,e:"Aciertos: 21; errores: 9. Puntaje: 21×5 − 9×2 = 105−18 = 87."},
+  {area:"mat",t:55,q:"Un polígono regular tiene 8 lados. ¿Cuánto mide cada ángulo interior?",o:["120°","135°","140°","150°"],a:1,e:"Ángulo interior = (n−2)×180°/n = (8−2)×180°/8 = 6×22.5° = 135°."},
+  {area:"mat",t:55,q:"Si 3/4 de un número es igual a 42, ¿cuánto es el 60% de ese número?",o:["28","33","33.6","36"],a:2,e:"Número = 42×4/3 = 56. El 60% de 56 = 33.6."},
+  {area:"mat",t:55,q:"Un precio sube 15% y luego baja 15%. Respecto al precio inicial, el artículo ahora cuesta:",o:["lo mismo","2.25% más","15% menos","2.25% menos"],a:3,e:"1.15×0.85 = 0.9775, o sea 97.75% del original: 2.25% menos."},
+  {area:"mat",t:55,q:"La media de 5 números es 14. Si se añaden 2 números cuya suma es 28, ¿cuál es la nueva media?",o:["14","13","15","16"],a:0,e:"Suma original: 70. Nueva suma: 70+28=98. Nueva media: 98÷7=14."},
+  {area:"mat",t:55,q:"¿Cuál es la factorización de x² − 9?",o:["(x−9)(x+1)","(x−3)(x+3)","(x−3)²","x(x−9)"],a:1,e:"Diferencia de cuadrados: a²−b² = (a−b)(a+b). Con a=x, b=3: (x−3)(x+3)."},
+  {area:"mat",t:55,q:"Si f(x) = 2x² − 3 y g(x) = x + 5, ¿cuánto es f(2) + g(3)?",o:["11","17","13","15"],a:2,e:"f(2)=2(4)−3=5. g(3)=3+5=8. Total=5+8=13."},
+  {area:"mat",t:55,q:"Una pelota sigue h(t) = −t² + 6t. ¿A cuántos segundos llega a su altura máxima?",o:["2 s","4 s","6 s","3 s"],a:3,e:"Máximo en t = −b/(2a) = −6/(2×−1) = 3 s."},
+  {area:"mat",t:55,q:"Si el triple de un número disminuido en 7 es igual al doble aumentado en 5, ¿cuál es el número?",o:["12","10","14","8"],a:0,e:"3x−7=2x+5 → x=12."},
+  // LECTURA CRÍTICA (12) — respuestas: 1,2,3,0,1,2,3,0,1,2,3,0
+  {area:"lec",t:55,q:"Lee: 'A pesar de que la pobreza aumentó, el gobierno redujo el gasto en programas sociales.' La postura implícita del autor es:",o:["Neutra, solo informa","Crítica hacia la política social del gobierno","A favor de las medidas de austeridad","Sin intención argumentativa"],a:1,e:"La contradicción entre aumento de pobreza y reducción del gasto sugiere una crítica implícita."},
+  {area:"lec",t:55,q:"La función del conector 'no obstante' en 'Los estudiantes protestaron; no obstante, la medida fue aprobada' es:",o:["Indicar causa","Agregar información","Contrastar dos ideas","Concluir el argumento"],a:2,e:"'No obstante' opone dos ideas: la protesta vs. la aprobación de la medida. Es adversativo."},
+  {area:"lec",t:55,q:"'La luna llora sobre el río' es un ejemplo de:",o:["Hipérbole","Símil","Antítesis","Personificación"],a:3,e:"Se atribuye al astro una acción humana (llorar). Eso es personificación o prosopopeya."},
+  {area:"lec",t:55,q:"Un texto en el que el narrador conoce los pensamientos de todos los personajes usa:",o:["Narrador omnisciente","Narrador en primera persona","Narrador testigo","Narrador protagonista"],a:0,e:"El narrador omnisciente tiene visión total: conoce pensamientos, sentimientos y acciones de todos."},
+  {area:"lec",t:55,q:"¿Cuál de estos textos tiene como propósito principal persuadir al lector?",o:["Una enciclopedia científica","Un editorial de opinión sobre derechos humanos","Un cuento infantil","Un informe estadístico"],a:1,e:"El editorial argumenta y defiende una postura para convencer. Los otros informan o narran."},
+  {area:"lec",t:55,q:"La palabra 'efímero' en el contexto 'su fama efímera no sobrevivió al olvido' significa:",o:["Eterno","Brillante","De corta duración","Injusto"],a:2,e:"Efímero: que dura muy poco tiempo. Lo contrario de permanente o eterno."},
+  {area:"lec",t:55,q:"En la oración pasiva 'El libro fue leído por los estudiantes', el sujeto gramatical es:",o:["Los estudiantes","Leído","Por los estudiantes","El libro"],a:3,e:"En voz pasiva, el sujeto gramatical recibe la acción. 'El libro' es el sujeto; 'los estudiantes' es el agente."},
+  {area:"lec",t:55,q:"Texto: 'Los ríos bajan su caudal. Las lluvias cayeron 30%. Los nevados se derriten.' La idea que unifica estas frases es:",o:["El cambio climático altera el ciclo del agua","Los ríos son fuente de vida","Las lluvias son impredecibles","Los nevados son importantes para el turismo"],a:0,e:"Todas las evidencias apuntan a que el cambio climático está alterando el ciclo hidrológico."},
+  {area:"lec",t:55,q:"Una falacia ad hominem ocurre cuando se:",o:["Apoya un argumento con datos erróneos","Ataca a la persona en vez de refutar su argumento","Exagera las consecuencias de algo","Generaliza sin evidencia suficiente"],a:1,e:"Ad hominem: desacreditar al emisor en lugar de refutar su argumento con razones."},
+  {area:"lec",t:55,q:"¿Cuál es la diferencia entre un texto expositivo y uno argumentativo?",o:["El expositivo convence; el argumentativo informa","Son equivalentes en propósito","El expositivo informa con objetividad; el argumentativo defiende una postura","El expositivo usa narradores; el argumentativo no"],a:2,e:"El texto expositivo presenta información neutral; el argumentativo toma partido y defiende una tesis."},
+  {area:"lec",t:55,q:"La intertextualidad se produce cuando:",o:["Un texto narra hechos históricos","Un texto usa palabras técnicas","Un texto explica fenómenos científicos","Un texto hace referencia a otro texto u obra cultural"],a:3,e:"La intertextualidad es el diálogo explícito o implícito que un texto establece con otros textos."},
+  {area:"lec",t:55,q:"El modo subjuntivo en 'Ojalá que llegues a tiempo' expresa:",o:["Deseo o esperanza sobre algo incierto","Una orden directa","Un hecho pasado","Una condición cumplida"],a:0,e:"El subjuntivo en 'ojalá' expresa un deseo respecto a algo que no se sabe si ocurrirá."},
+  // CIENCIAS NATURALES (12) — respuestas: 2,3,0,1,2,3,0,1,2,3,0,1
+  {area:"cien",t:55,q:"¿Cuál es la principal diferencia entre la mitosis y la meiosis?",o:["La mitosis divide células cancerosas","La mitosis ocurre solo en animales","La mitosis produce 2 células idénticas; la meiosis produce 4 con la mitad de cromosomas","La meiosis produce células somáticas"],a:2,e:"Mitosis: duplicación → 2 células iguales. Meiosis: reducción → 4 células haploides (gametos)."},
+  {area:"cien",t:55,q:"En un ecosistema, si se extingue el depredador tope (como el jaguar), lo más probable es que:",o:["La biodiversidad aumente inmediatamente","Los descomponedores proliferen","El ecosistema permanezca igual","Las poblaciones de sus presas aumenten descontroladamente"],a:3,e:"Sin depredador tope, las presas se reproducen sin control (efecto cascada trófica)."},
+  {area:"cien",t:55,q:"Una mezcla heterogénea se diferencia de una homogénea porque:",o:["Sus componentes se distinguen a simple vista y no tienen composición uniforme","No puede separarse por métodos físicos","Sus componentes siempre son gaseosos","Tiene temperatura de ebullición constante"],a:0,e:"En la mezcla heterogénea se distinguen los componentes; en la homogénea, no (apariencia uniforme)."},
+  {area:"cien",t:55,q:"El sistema nervioso central está formado por:",o:["El corazón y el sistema linfático","El encéfalo y la médula espinal","Los nervios periféricos y las neuronas","Los riñones y la vejiga"],a:1,e:"SNC = encéfalo (cerebro, cerebelo, tronco) + médula espinal. El SNP son los nervios que salen de ahí."},
+  {area:"cien",t:55,q:"Si un organismo tiene 46 cromosomas en sus células somáticas, ¿cuántos tendrá en sus gametos?",o:["46","92","23","24"],a:2,e:"La meiosis reduce a la mitad: 46÷2=23 cromosomas en óvulos o espermatozoides."},
+  {area:"cien",t:55,q:"¿Cuál de los siguientes es un ejemplo de cambio FÍSICO?",o:["La fermentación del azúcar en alcohol","La oxidación del hierro (herrumbre)","La combustión de madera","El doblamiento de un alambre de cobre"],a:3,e:"En el cambio físico no hay nuevas sustancias. Doblar el alambre cambia su forma, no su composición."},
+  {area:"cien",t:55,q:"El efecto de isla de calor urbana ocurre porque:",o:["Las superficies de asfalto y concreto absorben más calor que la vegetación","Las ciudades tienen más lluvia","Los edificios bloquean el viento","El ozono se destruye en las ciudades"],a:0,e:"Asfalto y concreto retienen más calor que los ecosistemas naturales, elevando la temperatura urbana."},
+  {area:"cien",t:55,q:"¿Por qué los antibióticos NO son efectivos contra infecciones virales?",o:["Los virus son demasiado grandes","Los antibióticos actúan sobre estructuras bacterianas que los virus no poseen","Los virus se destruyen solos","Los antibióticos solo funcionan en el tracto digestivo"],a:1,e:"Los antibióticos atacan estructuras como la pared celular bacteriana. Los virus carecen de estas estructuras."},
+  {area:"cien",t:55,q:"La reacción global de la fotosíntesis es:",o:["CO₂ + H₂O → glucosa (sin liberar O₂)","O₂ + glucosa → CO₂ + H₂O + energía","6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂","Aminoácidos + luz → proteínas + O₂"],a:2,e:"La fotosíntesis convierte CO₂ y H₂O en glucosa usando luz, liberando oxígeno como subproducto."},
+  {area:"cien",t:55,q:"La homeostasis en los seres vivos se refiere a:",o:["El proceso de reproducción celular","La capacidad de responder a estímulos externos","La producción de energía en la mitocondria","El mantenimiento de condiciones internas estables pese a cambios externos"],a:3,e:"Homeostasis: capacidad del organismo de mantener temperatura, pH, glucemia, etc. dentro de rangos estables."},
+  {area:"cien",t:55,q:"En una cadena: Alga→Zooplancton→Pez pequeño→Atún→Tiburón. Si muere el zooplancton por contaminación, el efecto más probable es:",o:["Disminuyen los peces pequeños y todo lo que depende de ellos","El atún aumenta porque no tiene competencia","El tiburón se adapta y sobrevive","Las algas desaparecen porque pierden sus consumidores"],a:0,e:"Sin zooplancton, los peces pequeños no tienen alimento → disminuyen → afectan a atún y tiburón."},
+  {area:"cien",t:55,q:"Los organismos del dominio Archaea se distinguen de las bacterias porque:",o:["Son multicelulares","Pueden vivir en condiciones extremas y tienen bioquímica diferente","Tienen núcleo celular","Realizan fotosíntesis con clorofila"],a:1,e:"Las arqueas viven en ambientes extremos (volcanes, sal, ácido) y tienen lípidos de membrana y ARN diferentes."},
+  // CIENCIAS SOCIALES (13) — respuestas: 3,0,1,2,3,0,1,2,3,0,1,2,3
+  {area:"soc",t:55,q:"¿Cuál es una de las principales causas de la pobreza histórica en el Pacífico colombiano?",o:["La sobrepoblación sin recursos","El conflicto con Ecuador","La escasez de recursos naturales","El abandono histórico del Estado y el conflicto armado"],a:3,e:"El Pacífico tiene riqueza natural pero ha sufrido exclusión histórica, falta de inversión y violencia."},
+  {area:"soc",t:55,q:"El Grito de Independencia del 20 de julio de 1810 resultó en:",o:["El establecimiento de la Junta Suprema de Gobierno en Santa Fe y el inicio del proceso independentista","La firma del Acta definitiva de Independencia","La batalla de Boyacá que selló la libertad","El decreto de Bolívar proclamando la República"],a:0,e:"El 20 de julio creó la Junta Suprema de Gobierno, marcando el inicio formal del proceso independentista."},
+  {area:"soc",t:55,q:"La tutela es un mecanismo constitucional que sirve para:",o:["Elegir alcaldes en municipios pequeños","Proteger derechos fundamentales cuando son violados o amenazados","Reformar la Constitución mediante el pueblo","Exigir pagos pendientes al Estado"],a:1,e:"La tutela (art. 86 C.N.) protege derechos fundamentales de forma inmediata y sumaria."},
+  {area:"soc",t:55,q:"La inflación afecta más a los sectores de menores ingresos porque:",o:["Ellos generan menos impuestos al Estado","Ahorran en dólares y no en pesos","Destinan mayor proporción de sus ingresos al consumo de bienes básicos cuyos precios suben","Tienen más deudas bancarias a tasa variable"],a:2,e:"Los hogares pobres gastan casi todo en alimentos y servicios básicos: cuando suben los precios, su poder adquisitivo cae más."},
+  {area:"soc",t:55,q:"Según la Constitución de 1991, Colombia es un Estado Social de Derecho, lo que implica:",o:["Poderes absolutos del presidente","Leyes que solo protegen ciudadanos ricos","Estado sin intervención en asuntos sociales","El Estado garantiza derechos fundamentales y la dignidad de todos"],a:3,e:"El Estado Social de Derecho combina democracia con protección de derechos fundamentales para todos."},
+  {area:"soc",t:55,q:"Durante la Colonia en el Pacífico colombiano, los africanos esclavizados fueron traídos principalmente para:",o:["Trabajar en las minas de oro que los españoles explotaban","Desarrollar agricultura de exportación masiva","Construir iglesias coloniales en las ciudades","Pelear en conflictos entre colonias rivales"],a:0,e:"El oro del Pacífico impulsó la trata esclavista desde el siglo XVI; los africanos suplantaron la mano de obra indígena."},
+  {area:"soc",t:55,q:"¿Cuál de estos países NO pertenece a América del Sur?",o:["Perú","México","Bolivia","Paraguay"],a:1,e:"México forma parte de América del Norte/Central. Perú, Bolivia y Paraguay son países sudamericanos."},
+  {area:"soc",t:55,q:"La identidad cultural del Pacífico colombiano se expresa principalmente a través de:",o:["La tradición minera industrial moderna","La arquitectura colonial española","La música (chirimía, marimba), la gastronomía y las tradiciones afrodescendientes","El folclor andino y el vallenato costeño"],a:2,e:"El Pacífico tiene un patrimonio cultural afrodescendiente único: marimba, chirimía, rituales, gastronomía."},
+  {area:"soc",t:55,q:"El principio de 'soberanía popular' en una democracia significa que:",o:["El presidente posee el poder soberano","El ejército decide las leyes","Los jueces tienen la última palabra en todo","El poder emana del pueblo y se ejerce a través de sus representantes elegidos"],a:3,e:"La soberanía popular (art. 3 C.N.) establece que el pueblo es la fuente del poder político."},
+  {area:"soc",t:55,q:"El calentamiento global afecta a Colombia principalmente mediante:",o:["Cambios en patrones de lluvia, derretimiento de nevados e intensificación de El Niño/La Niña","La destrucción de sus fábricas industriales","El aumento del turismo extranjero masivo","La reducción de exportaciones de carbón y petróleo"],a:0,e:"Colombia es muy vulnerable al cambio climático por depender de recursos hídricos y tener alta biodiversidad."},
+  {area:"soc",t:55,q:"El coeficiente de Gini es un indicador que mide:",o:["El PIB per cápita del país","La desigualdad en la distribución del ingreso","El nivel de deuda externa","El índice de precios al consumidor"],a:1,e:"El Gini va de 0 (perfecta igualdad) a 1 (máxima desigualdad). Colombia tiene uno de los más altos de LatAm."},
+  {area:"soc",t:55,q:"¿Qué fue el Frente Nacional en Colombia (1958-1974)?",o:["Una alianza militar contra guerrillas","Un acuerdo económico con Estados Unidos","Un pacto entre liberales y conservadores para alternarse el poder y superar la Violencia bipartidista","Una organización guerrillera de izquierda"],a:2,e:"El Frente Nacional alternó la presidencia entre liberales y conservadores para terminar la guerra bipartidista."},
+  {area:"soc",t:55,q:"La globalización ha generado en países como Colombia:",o:["Uniformidad cultural total y desaparición de tradiciones","Aislamiento económico e industrial","Industrialización completa y fin de la pobreza","Mayor interconexión comercial pero también riesgo de dependencia económica y pérdida cultural"],a:3,e:"La globalización conecta mercados y culturas, pero también puede generar dependencia y homogenización cultural."},
+];
+
+// ================================================================
+// BANCO GRADO 9 — 50 preguntas
+// Áreas: Matemáticas, Lengua, Ciencias Naturales+Física intro, Ciencias Sociales
+// ================================================================
+const BANCO_G9 = [
+  // MATEMÁTICAS (13) — respuestas rotadas: 0,1,2,3,0,1,2,3,0,1,2,3,0
+  {area:"mat",t:55,q:"Factoriza completamente: x² + 5x + 6",o:["(x+2)(x+3)","(x+1)(x+6)","(x−2)(x−3)","(x+5)(x+1)"],a:0,e:"Buscar dos números con producto 6 y suma 5: 2 y 3. Entonces (x+2)(x+3)."},
+  {area:"mat",t:55,q:"¿Cuál es la pendiente de la recta y = 3x − 4?",o:["−4","3","−3","4"],a:1,e:"En y = mx + b, la pendiente m = 3 y el intercepto b = −4."},
+  {area:"mat",t:55,q:"Resuelve el sistema: x + y = 10, x − y = 2",o:["x=4, y=6","x=5, y=5","x=6, y=4","x=8, y=2"],a:2,e:"Sumando ambas ecuaciones: 2x=12 → x=6. Luego y=10−6=4."},
+  {area:"mat",t:55,q:"¿Cuál es la función lineal que pasa por (0,3) y tiene pendiente 2?",o:["y=3x+2","y=2x−3","y=x+3","y=2x+3"],a:3,e:"y=mx+b con m=2 y b=3 (el intercepto en y cuando x=0 es 3)."},
+  {area:"mat",t:55,q:"El discriminante de x² − 4x + 4 = 0 es:",o:["0","8","−8","16"],a:0,e:"Δ = b²−4ac = 16−4(1)(4) = 0. Con Δ=0, hay una raíz doble."},
+  {area:"mat",t:55,q:"Si f(x) = x² − 2, ¿cuánto es f(3)?",o:["9","7","11","5"],a:1,e:"f(3) = 3² − 2 = 9 − 2 = 7."},
+  {area:"mat",t:55,q:"¿Cuánto es el 60% de 450?",o:["240","280","270","300"],a:2,e:"450 × 0.60 = 270."},
+  {area:"mat",t:55,q:"Un tren viaja a 80 km/h. ¿Cuánto tarda en recorrer 200 km?",o:["2 h","3 h","4 h","2.5 h"],a:3,e:"Tiempo = distancia ÷ velocidad = 200 ÷ 80 = 2.5 horas."},
+  {area:"mat",t:55,q:"Simplifica: (a³b²)/(ab)",o:["a²b","a³b","ab²","a²b²"],a:0,e:"a³/a = a² y b²/b = b¹. Resultado: a²b."},
+  {area:"mat",t:55,q:"¿Cuál es el área de un trapecio con bases 8 y 12 cm y altura 5 cm?",o:["40 cm²","50 cm²","60 cm²","100 cm²"],a:1,e:"Área = ½(B+b)×h = ½(8+12)×5 = ½×100 = 50 cm²."},
+  {area:"mat",t:55,q:"La ecuación x² − 5x + 6 = 0 tiene raíces:",o:["x=−2 y x=−3","x=1 y x=6","x=2 y x=3","x=5 y x=1"],a:2,e:"Factorizando: (x−2)(x−3)=0 → x=2 o x=3."},
+  {area:"mat",t:55,q:"En un triángulo, dos ángulos miden 60° y 80°. El tercero mide:",o:["50°","60°","70°","40°"],a:3,e:"180° − 60° − 80° = 40°."},
+  {area:"mat",t:55,q:"¿Cuál es el valor de √144?",o:["12","14","11","16"],a:0,e:"√144 = 12, porque 12² = 144."},
+  // LECTURA CRÍTICA (12) — respuestas: 1,2,3,0,1,2,3,0,1,2,3,0
+  {area:"lec",t:55,q:"'A pesar del esfuerzo, el proyecto no avanzó.' ¿Qué tipo de conector se usa?",o:["Consecutivo","Adversativo (contrasta ideas)","Causal","Aditivo"],a:1,e:"'A pesar de' opone dos ideas (esfuerzo vs. no avance). Es un conector adversativo."},
+  {area:"lec",t:55,q:"En un texto argumentativo, la 'tesis' es:",o:["El ejemplo que apoya la idea","La conclusión del texto","La postura del autor que se defiende","Un hecho histórico"],a:2,e:"La tesis es la afirmación central que el autor defiende con argumentos y evidencias a lo largo del texto."},
+  {area:"lec",t:55,q:"¿Cuál de estos textos es un ejemplo de texto discontinuo?",o:["Un cuento","Una carta","Un artículo de opinión","Un mapa"],a:3,e:"Los textos discontinuos no tienen lectura lineal: mapas, gráficas, tablas, infografías."},
+  {area:"lec",t:55,q:"El propósito de un texto expositivo es:",o:["Informar y explicar de forma objetiva","Convencer al lector de una postura","Narrar una aventura","Expresar sentimientos personales"],a:0,e:"El texto expositivo presenta hechos e información de manera clara y objetiva sin tomar partido."},
+  {area:"lec",t:55,q:"'El mar llora sal.' ¿Qué figura retórica identifica en esta frase?",o:["Hipérbole","Personificación","Metáfora","Aliteración"],a:1,e:"Atribuir al mar la acción humana de llorar es personificación (o prosopopeya)."},
+  {area:"lec",t:55,q:"¿Qué es una oración subordinada?",o:["Una que tiene sujeto y predicado completos","Una oración muy corta","Una que depende de otra para tener sentido pleno","Una oración exclamativa"],a:2,e:"La oración subordinada depende de la oración principal para tener sentido: 'cuando llegues a casa'."},
+  {area:"lec",t:55,q:"En 'Juan compró un libro', el sujeto de la oración es:",o:["compró","un libro","Juan compró","Juan"],a:3,e:"El sujeto es quien realiza la acción verbal. 'Juan' es quien ejecuta la acción 'compró'."},
+  {area:"lec",t:55,q:"La ironía literaria ocurre cuando:",o:["Se dice lo contrario de lo que se piensa","Se exagera algo extremadamente","Se repiten sonidos similares","Se omite el sujeto de la oración"],a:0,e:"La ironía dice lo opuesto a lo que realmente se quiere comunicar, generalmente con intención crítica o humorística."},
+  {area:"lec",t:55,q:"'La luz del sol bañaba las montañas de oro.' ¿Qué figura usa?",o:["Símil","Metáfora","Aliteración","Elipsis"],a:1,e:"'De oro' compara directamente sin usar 'como': es una metáfora sobre el color dorado de la luz."},
+  {area:"lec",t:55,q:"¿Cuál es la diferencia entre 'haber' (verbo) y 'a ver' (preposición + infinitivo)?",o:["Son sinónimos","Solo se distinguen por tildes","'Haber' es auxiliar verbal; 'a ver' es expresión de mirar","Son lo mismo en todos los contextos"],a:2,e:"'Haber' funciona como auxiliar o impersonal ('hay', 'hubo'). 'A ver' equivale a 'vamos a ver/mirar'."},
+  {area:"lec",t:55,q:"El narrador omnisciente se caracteriza por:",o:["Solo narrar lo que ve directamente","Ser un personaje que narra su propia historia","No participar en la historia como personaje","Conocer pensamientos, acciones y sentimientos de todos los personajes"],a:3,e:"El narrador omnisciente tiene visión total de la historia, incluyendo la psicología de todos los personajes."},
+  {area:"lec",t:55,q:"¿Qué es la intertextualidad?",o:["La relación de un texto con otros textos y obras culturales","La extensión adecuada de un texto","El número de personajes en una obra","La puntuación correcta de un texto"],a:0,e:"La intertextualidad es la referencia explícita o implícita que un texto hace a otros textos o expresiones culturales."},
+  // CIENCIAS NATURALES + FÍSICA (13) — respuestas: 1,2,3,0,1,2,3,0,1,2,3,0,1
+  {area:"cien",t:55,q:"La teoría de la evolución de las especies fue propuesta por:",o:["Gregor Mendel","Charles Darwin","Louis Pasteur","Isaac Newton"],a:1,e:"Darwin propuso la selección natural en 'El origen de las especies' (1859): los mejor adaptados sobreviven."},
+  {area:"cien",t:55,q:"¿Qué son los ecosistemas?",o:["Solo los seres vivos de un lugar","Solo el clima de una región","Conjunto de seres vivos e inorgánicos que interactúan en un espacio","El conjunto de ríos y montañas"],a:2,e:"Un ecosistema integra componentes bióticos (organismos) y abióticos (clima, suelo, agua) que interactúan."},
+  {area:"cien",t:55,q:"En la estructura atómica, los electrones se ubican en:",o:["El núcleo junto a protones","El interior del protón","Las capas del núcleo atómico","Orbitales alrededor del núcleo"],a:3,e:"Los electrones orbitan el núcleo en niveles de energía (orbitales); el núcleo contiene protones y neutrones."},
+  {area:"cien",t:55,q:"¿Qué fenómeno natural es la principal causa de los terremotos?",o:["El movimiento de las placas tectónicas","La rotación de la Tierra","Los cambios bruscos de temperatura","El flujo acelerado de los ríos"],a:0,e:"Las placas tectónicas se deslizan, chocan o separan; la energía liberada genera los sismos."},
+  {area:"cien",t:55,q:"La herencia genética se transmite de padres a hijos a través de:",o:["La sangre directamente","El ADN en los cromosomas de los gametos","El agua y los alimentos","La leche materna"],a:1,e:"El ADN contiene los genes que se transmiten mediante óvulo y espermatozoide en la reproducción sexual."},
+  {area:"cien",t:55,q:"¿A qué temperatura hierve el agua a nivel del mar (presión estándar)?",o:["90 °C","80 °C","100 °C","120 °C"],a:2,e:"El agua hierve a 100°C (373 K) a 1 atm. A mayor altitud, la presión baja y el punto de ebullición disminuye."},
+  {area:"fis",t:55,q:"¿Qué describe la Primera Ley de Newton (Ley de Inercia)?",o:["F = m × a","A toda acción hay una reacción igual y opuesta","La gravedad atrae los cuerpos hacia la Tierra","Un objeto en reposo permanece así a menos que actúe una fuerza neta"],a:3,e:"La inercia: los cuerpos mantienen su estado de reposo o movimiento rectilíneo uniforme sin fuerza externa."},
+  {area:"fis",t:55,q:"La fórmula correcta para la velocidad media es:",o:["v = d/t","v = d×t","v = t/d","v = d + t"],a:0,e:"Velocidad = distancia recorrida ÷ tiempo empleado. Unidad SI: m/s."},
+  {area:"fis",t:55,q:"La causa de la caída libre de los objetos es:",o:["El viento","La presión atmosférica","La gravedad terrestre (g ≈ 9.8 m/s²)","La temperatura del entorno"],a:2,e:"La fuerza gravitacional atrae todo cuerpo hacia el centro de la Tierra con aceleración g ≈ 9.8 m/s²."},
+  {area:"fis",t:55,q:"¿Qué es la energía cinética?",o:["La energía almacenada por posición","La energía del sol","La energía química almacenada","La energía de un objeto en movimiento"],a:3,e:"Ec = ½mv². La energía cinética depende de la masa y el cuadrado de la velocidad del objeto."},
+  {area:"fis",t:55,q:"Un carro recorre 150 km en 2 horas. ¿Cuál es su velocidad media?",o:["75 km/h","60 km/h","80 km/h","100 km/h"],a:0,e:"v = d/t = 150÷2 = 75 km/h."},
+  {area:"fis",t:55,q:"Las ondas sonoras se clasifican como:",o:["Ondas electromagnéticas transversales","Ondas mecánicas longitudinales","Ondas de luz visibles","Rayos gamma ionizantes"],a:1,e:"El sonido se propaga como compresiones y rarefacciones del medio material (onda mecánica longitudinal)."},
+  {area:"fis",t:55,q:"¿Cuál es la unidad de medida de la fuerza en el Sistema Internacional?",o:["Joule (J)","Watt (W)","Pascal (Pa)","Newton (N)"],a:3,e:"La fuerza se mide en Newtons (N). 1 N = 1 kg·m/s² (Segunda Ley de Newton)."},
+  // CIENCIAS SOCIALES (12) — respuestas: 2,3,0,1,2,3,0,1,2,3,0,1
+  {area:"soc",t:55,q:"La Segunda Guerra Mundial (1939-1945) enfrentó:",o:["Una guerra civil en Europa","Una disputa entre España y Portugal","Potencias del Eje (Alemania, Italia, Japón) vs. los Aliados (UK, URSS, EEUU)","Una revolución en América Latina"],a:2,e:"Fue el conflicto más devastador: Eje vs. Aliados, con más de 70 millones de muertos."},
+  {area:"soc",t:55,q:"La Declaración Universal de Derechos Humanos fue adoptada por la ONU en:",o:["1945","1919","1960","1948"],a:3,e:"La DUDH fue adoptada el 10 de diciembre de 1948, como respuesta a los horrores de la IIGM."},
+  {area:"soc",t:55,q:"El rol fundamental de la Constitución en un Estado democrático es:",o:["Ser la norma suprema que regula derechos y poderes del Estado","Ser un listado de leyes ordinarias","Ordenar directamente al ejército","Controlar el comercio exterior"],a:0,e:"La Constitución es la 'ley de leyes': establece derechos fundamentales y organiza los poderes del Estado."},
+  {area:"soc",t:55,q:"La pobreza extrema se mide internacionalmente con base en:",o:["El PIB total del país","La pobreza extrema como vivir con menos de $2.15 USD al día","El acceso a internet","La tasa de empleo formal"],a:1,e:"El Banco Mundial (2022) define la pobreza extrema como ingresos inferiores a $2.15 USD diarios."},
+  {area:"soc",t:55,q:"La principal causa del desplazamiento forzado en Colombia es:",o:["La búsqueda voluntaria de empleo","La contaminación ambiental","El conflicto armado y la violencia de grupos ilegales","Las crisis económicas globales"],a:2,e:"El conflicto armado con guerrillas, paramilitares y bandas criminales ha generado millones de desplazados."},
+  {area:"soc",t:55,q:"La inflación se define como:",o:["Disminución del valor del dólar","Reducción del empleo formal","Aumento del salario mínimo","Aumento generalizado y sostenido de los precios"],a:3,e:"Inflación = pérdida del poder adquisitivo porque los precios suben y el dinero vale menos."},
+  {area:"soc",t:55,q:"La ONU fue fundada en 1945 principalmente para:",o:["Promover la paz y la seguridad internacional tras la IIGM","Impulsar la Primera Guerra Mundial","Administrar la Guerra Fría","Crear el libre comercio global"],a:0,e:"La ONU nació en San Francisco (1945) para garantizar la paz y evitar otra guerra mundial."},
+  {area:"soc",t:55,q:"¿Cuál de estos países NO comparte frontera terrestre con Colombia?",o:["Venezuela","Argentina","Perú","Ecuador"],a:1,e:"Colombia limita con Venezuela, Brasil, Perú, Ecuador y Panamá. Argentina está en el extremo sur del continente."},
+  {area:"soc",t:55,q:"La Reforma Agraria busca principalmente:",o:["Industrializar el campo colombiano","Eliminar cultivos de uso ilícito","Redistribuir la tierra para reducir la desigualdad entre propietarios","Privatizar los recursos naturales"],a:2,e:"La Reforma Agraria redistribuye la tierra a quienes la trabajan, reduciendo el latifundismo y la pobreza rural."},
+  {area:"soc",t:55,q:"La soberanía de un Estado significa:",o:["La fuerza militar del país","El presupuesto nacional total","El número de ciudadanos","El poder supremo e independiente de gobernarse a sí mismo"],a:3,e:"Soberanía: capacidad de un Estado de autogobernarse sin interferencia externa, reconocida internacionalmente."},
+  {area:"soc",t:55,q:"El Acuerdo de Paz de 2016 fue firmado entre el gobierno de Colombia y:",o:["Las FARC-EP","El ELN","Los grupos paramilitares","El cartel del narcotráfico"],a:0,e:"El Acuerdo de La Habana (2016) fue firmado entre el gobierno de Juan Manuel Santos y las FARC-EP."},
+  {area:"soc",t:55,q:"La revolución de las TIC ha transformado principalmente:",o:["El clima global","La comunicación, el acceso a la información y la economía digital","Las riquezas mineras del planeta","La geografía física de los continentes"],a:1,e:"Internet y los dispositivos digitales han revolucionado la comunicación, la educación y el comercio global."},
+];
+
+// ================================================================
+// BANCO GRADO 10 — 50 preguntas
+// Áreas: Matemáticas (Trig), Física, Química, Filosofía, C. Políticas, Lengua, Inglés
+// ================================================================
+const BANCO_G10 = [
+  // MATEMÁTICAS - TRIGONOMETRÍA (8) — rotación: 0,1,2,3,0,1,2,3
+  {area:"mat",t:55,q:"En un triángulo rectángulo, el seno de un ángulo se define como:",o:["Cateto opuesto / Hipotenusa","Cateto adyacente / Hipotenusa","Cateto opuesto / Cateto adyacente","Hipotenusa / Cateto opuesto"],a:0,e:"sen(θ) = cateto opuesto ÷ hipotenusa. Mnemotécnico: SOH (S=O/H)."},
+  {area:"mat",t:55,q:"El coseno de 60° es igual a:",o:["0.866","0.5","1","0"],a:1,e:"cos(60°) = ½ = 0.5. Es uno de los valores trigonométricos exactos fundamentales."},
+  {area:"mat",t:50,q:"Si sen(θ) = 3/5, en un triángulo rectángulo, cos(θ) es:",o:["3/4","5/3","4/5","5/4"],a:2,e:"Por el Teorema de Pitágoras: si opuesto=3 e hipotenusa=5, adyacente=4. Cos(θ)=4/5."},
+  {area:"mat",t:55,q:"La tangente de 45° es igual a:",o:["0","√2","0.5","1"],a:3,e:"tan(45°) = sen(45°)/cos(45°) = (√2/2)/(√2/2) = 1."},
+  {area:"mat",t:60,q:"En un triángulo, el Teorema del Seno establece que:",o:["a/sen A = b/sen B = c/sen C","a² = b² + c²","a/b = sen C/sen A","sen A + sen B = 1"],a:0,e:"La Ley del Seno relaciona cada lado con el seno del ángulo opuesto en cualquier triángulo."},
+  {area:"mat",t:55,q:"¿Cuál es la identidad trigonométrica fundamental?",o:["sen θ + cos θ = 1","sen²θ + cos²θ = 1","sen θ × cos θ = 1","tan θ = 1"],a:1,e:"La identidad pitagórica es la base de la trigonometría: sen²θ + cos²θ = 1 siempre."},
+  {area:"mat",t:50,q:"La función y = 2sen(x) tiene amplitud:",o:["1","π","2","0.5"],a:2,e:"La amplitud de A·sen(x) es |A|. En y=2sen(x), A=2, amplitud=2."},
+  {area:"mat",t:60,q:"Si una escalera de 10 m forma un ángulo de 30° con el suelo, ¿a qué altura llega?",o:["8.66 m","10 m","7 m","5 m"],a:3,e:"Altura = 10 × sen(30°) = 10 × 0.5 = 5 m."},
+  // FÍSICA - MECÁNICA (7) — rotación continua: 0,1,2,3,0,1,2
+  {area:"fis",t:55,q:"La Segunda Ley de Newton establece que la fuerza es igual a:",o:["F = m × a","F = m / a","F = a / m","F = m + a"],a:0,e:"F = ma: la fuerza neta sobre un objeto es igual a su masa por su aceleración."},
+  {area:"fis",t:55,q:"Un objeto de 5 kg es sometido a una fuerza de 20 N. ¿Cuál es su aceleración?",o:["25 m/s²","4 m/s²","100 m/s²","15 m/s²"],a:1,e:"a = F/m = 20/5 = 4 m/s²."},
+  {area:"fis",t:55,q:"¿Qué es la energía potencial gravitacional?",o:["Energía del movimiento","Energía química almacenada","Energía que tiene un objeto por su posición en altura","Energía del calor"],a:2,e:"Ep = mgh. Depende de la masa (m), la gravedad (g) y la altura (h) sobre el suelo."},
+  {area:"fis",t:55,q:"La conservación de la energía mecánica implica que:",o:["La energía siempre aumenta","La energía cinética siempre es mayor","El trabajo es siempre positivo","La energía total (cinética + potencial) se mantiene constante"],a:3,e:"Sin fricción, la energía mecánica total E=Ec+Ep se conserva en cada instante."},
+  {area:"fis",t:60,q:"¿Cuál es la unidad de energía en el Sistema Internacional?",o:["Joule (J)","Newton (N)","Watt (W)","Pascal (Pa)"],a:0,e:"El Joule es la unidad de energía: 1 J = 1 N·m = 1 kg·m²/s²."},
+  {area:"fis",t:55,q:"Un proyectil lanzado horizontalmente sigue una trayectoria:",o:["Circular","Parabólica","Recta","Elíptica"],a:1,e:"La combinación de movimiento uniforme horizontal y caída libre vertical produce una parábola."},
+  {area:"fis",t:55,q:"La potencia se define como:",o:["P = F/m","P = E × t","P = W/t (trabajo por unidad de tiempo)","P = m × v"],a:2,e:"Potencia = trabajo realizado ÷ tiempo empleado. Unidad: Watt (W) = J/s."},
+  // QUÍMICA INORGÁNICA (7) — rotación continua: 3,0,1,2,3,0,1
+  {area:"qui",t:55,q:"¿Qué indica el número atómico de un elemento?",o:["La masa del átomo","El número de neutrones","El número de electrones en la capa externa","La cantidad de protones en el núcleo"],a:3,e:"El número atómico (Z) = número de protones. Identifica al elemento en la tabla periódica."},
+  {area:"qui",t:55,q:"¿Qué son los isótopos?",o:["Átomos del mismo elemento con diferente número de neutrones","Átomos de diferentes elementos","Moléculas con misma fórmula","Iones de carga opuesta"],a:0,e:"Los isótopos tienen el mismo Z (mismo elemento) pero diferente A (diferente número de neutrones)."},
+  {area:"qui",t:55,q:"El enlace iónico se forma entre:",o:["Dos no-metales (compartición)","Un metal y un no-metal (transferencia de electrones)","Dos metales","Átomos iguales"],a:1,e:"En el enlace iónico, el metal cede electrones al no-metal: se forman catión (+) y anión (−)."},
+  {area:"qui",t:55,q:"Balancea: H₂ + O₂ → H₂O. La ecuación balanceada es:",o:["H₂ + O₂ → H₂O","H₂ + 2O₂ → H₂O","2H₂ + O₂ → 2H₂O","4H₂ + O₂ → H₂O"],a:2,e:"2H₂ + O₂ → 2H₂O conserva los átomos: 4H y 2O en cada lado."},
+  {area:"qui",t:55,q:"Un ácido, según Arrhenius, produce en agua:",o:["Iones OH⁻","Iones metálicos","Gases inertes","Iones H⁺ (protones)"],a:3,e:"Arrhenius definió ácidos como sustancias que liberan H⁺ en solución acuosa."},
+  {area:"qui",t:60,q:"La estequiometría estudia:",o:["Las proporciones cuantitativas en las reacciones químicas","La estructura del núcleo","Los estados de la materia","Las propiedades físicas de los elementos"],a:0,e:"La estequiometría calcula cantidades de reactivos y productos en una reacción balanceada."},
+  {area:"qui",t:55,q:"¿Cuántos electrones de valencia tiene el carbono (Z=6)?",o:["2","4","6","3"],a:1,e:"Carbono: configuración 2,4 → 4 electrones en la capa de valencia. Por eso forma 4 enlaces."},
+  // FILOSOFÍA (7) — rotación continua: 2,3,0,1,2,3,0
+  {area:"fil",t:50,q:"¿Qué es la epistemología?",o:["El estudio de los valores morales","La ciencia de la vida","La rama filosófica que estudia el conocimiento","El estudio del lenguaje"],a:2,e:"La epistemología investiga la naturaleza, el origen y los límites del conocimiento humano."},
+  {area:"fil",t:50,q:"Sócrates es conocido por el método de la:",o:["Deducción formal","Empirismo sensorial","Racionalismo matemático","Mayéutica (diálogo interrogativo)"],a:3,e:"La mayéutica socrática usaba preguntas para que el interlocutor descubriera el conocimiento por sí mismo."},
+  {area:"fil",t:50,q:"El utilitarismo de John Stuart Mill propone que una acción es buena si:",o:["Produce el mayor bienestar para el mayor número de personas","Sigue las normas divinas","Está de acuerdo con el orden natural","Es aprobada por la tradición"],a:0,e:"El utilitarismo mide la moralidad por las consecuencias: maximizar la felicidad colectiva."},
+  {area:"fil",t:50,q:"El 'Cogito ergo sum' ('Pienso, luego existo') fue formulado por:",o:["Aristóteles","René Descartes","Platón","Kant"],a:1,e:"Descartes llegó a esta certeza mínima: si dudo, pienso; si pienso, existo."},
+  {area:"fil",t:50,q:"La ética estudia principalmente:",o:["Las leyes físicas del universo","La composición química de los seres vivos","Los principios que guían la conducta humana","La estructura del lenguaje"],a:2,e:"La ética es la disciplina filosófica que reflexiona sobre el bien, el mal y cómo debemos actuar."},
+  {area:"fil",t:50,q:"El empirismo sostiene que el conocimiento proviene de:",o:["La razón pura","Dios","La tradición","La experiencia sensorial"],a:3,e:"Hume y Locke afirmaban que todo conocimiento se origina en los sentidos y la experiencia."},
+  {area:"fil",t:50,q:"¿Qué es el relativismo moral?",o:["La creencia de que la moralidad varía según la cultura o individuo","La idea de que existen leyes morales universales","El estudio de las normas jurídicas","La negación de toda ética"],a:0,e:"El relativismo niega la existencia de verdades morales absolutas: cada cultura define lo correcto."},
+  // C. POLÍTICAS Y ECONÓMICAS (7) — rotación continua: 1,2,3,0,1,2,3
+  {area:"pol",t:50,q:"El Estado colombiano se organiza en tres ramas del poder público que son:",o:["Administrativa, Militar y Civil","Legislativa, Ejecutiva y Judicial","Federal, Departamental y Municipal","Presidencial, Senatorial y Ministerial"],a:1,e:"Art. 113 Constitución: Congreso (legislativa), Presidente (ejecutiva), Cortes (judicial)."},
+  {area:"pol",t:50,q:"La inflación descontrolada tiene como principal efecto:",o:["Aumento del empleo","Crecimiento económico","Pérdida del poder adquisitivo","Reducción de precios"],a:2,e:"Cuando los precios suben más rápido que los salarios, la gente puede comprar menos con el mismo dinero."},
+  {area:"pol",t:50,q:"¿Qué es el desempleo estructural?",o:["El que ocurre en épocas de recesión","El desempleo estacional","El que resulta de cambiar de trabajo voluntariamente","El causado por cambios tecnológicos o sectoriales permanentes"],a:3,e:"El desempleo estructural surge cuando las habilidades de los trabajadores no coinciden con las del mercado."},
+  {area:"pol",t:50,q:"¿Cuál es la función del Banco de la República en Colombia?",o:["Regular la política monetaria y emitir moneda","Cobrar impuestos","Dirigir el ejército","Construir obras públicas"],a:0,e:"El Banco de la República controla la inflación, emite dinero y es el banco de bancos del Estado."},
+  {area:"pol",t:50,q:"La democracia representativa funciona mediante:",o:["El voto directo en todas las decisiones","Elección de representantes que legislan en nombre del pueblo","El liderazgo de un partido único","La herencia del poder"],a:1,e:"En la democracia representativa, los ciudadanos eligen congresistas y gobernantes que los representan."},
+  {area:"pol",t:50,q:"El neoliberalismo económico propone principalmente:",o:["Mayor intervención estatal en la economía","Proteccionismo comercial","Libre mercado, privatización y reducción del Estado","Distribución igual de la riqueza"],a:2,e:"El neoliberalismo promueve la desregulación, las privatizaciones y la apertura comercial."},
+  {area:"pol",t:50,q:"Los tratados de libre comercio (TLC) buscan principalmente:",o:["Eliminar la moneda nacional","Privatizar la educación","Unificar leyes penales","Reducir aranceles para aumentar el comercio entre países"],a:3,e:"Los TLC reducen barreras arancelarias para facilitar el comercio bilateral o multilateral."},
+  // INGLÉS (7) — rotación continua: 0,1,2,3,0,1,2
+  {area:"ing",t:45,q:"Choose the correct sentence: 'Yesterday, I ___ to school.'",o:["went","go","will go","going"],a:0,e:"'Yesterday' indicates past tense. The past tense of 'go' is 'went' (irregular verb)."},
+  {area:"ing",t:45,q:"What does 'moreover' mean in English?",o:["However / But","Furthermore / In addition","Therefore / So","Nevertheless / Yet"],a:1,e:"'Moreover' is an additive connector: 'furthermore' or 'in addition'."},
+  {area:"ing",t:45,q:"'She has been studying for 3 hours.' This sentence is in:",o:["Simple Present","Past Perfect","Present Perfect Continuous","Future Simple"],a:2,e:"'Has been + -ing' = Present Perfect Continuous: action started in the past and continues now."},
+  {area:"ing",t:45,q:"Select the correct option: 'If it rains, I ___ stay home.'",o:["would","had","can","will"],a:3,e:"First conditional (real possibility): If + simple present, will + infinitive."},
+  {area:"ing",t:45,q:"The word 'although' introduces:",o:["A contrast or concession","A result","A cause","A condition"],a:0,e:"'Although' (= though/even though) introduces a contrasting clause: 'Although it was late, she came.'"},
+  {area:"ing",t:45,q:"Choose the right question tag: 'She likes music, ___?'",o:["does she","doesn't she","isn't she","didn't she"],a:1,e:"The tag must be negative when the statement is positive, using the same auxiliary verb: doesn't she."},
+  {area:"ing",t:45,q:"'The book was written by Márquez.' What grammatical structure is this?",o:["Active voice","Reported speech","Passive voice","Conditional"],a:2,e:"Passive voice: the subject receives the action. Structure: to be + past participle. 'Was written' = past passive."},
+];
+
+// ================================================================
+// BANCO GRADO 11 — 50 preguntas
+// Áreas: Matemáticas (Cálculo/Estadística), Física avanzada, Q. Orgánica,
+//        Lectura Crítica, C. Políticas, Inglés, Filosofía
+// ================================================================
+const BANCO_G11 = [
+  // MATEMÁTICAS - CÁLCULO Y ESTADÍSTICA (8) — rotación: 0,1,2,3,0,1,2,3
+  {area:"mat",t:60,q:"El límite lim(x→2) de (x²−4)/(x−2) es:",o:["4","2","0","No existe"],a:0,e:"Factorizando: (x−2)(x+2)/(x−2) = x+2. Cuando x→2: 2+2 = 4."},
+  {area:"mat",t:55,q:"La derivada de f(x) = 3x² es:",o:["f'(x) = 3x","f'(x) = 6x","f'(x) = 6x²","f'(x) = 3x²"],a:1,e:"Regla de la potencia: d/dx(axⁿ) = n·axⁿ⁻¹. d/dx(3x²) = 2·3x = 6x."},
+  {area:"mat",t:55,q:"¿Qué representa la integral definida de una función entre dos puntos?",o:["La pendiente de la curva","El valor máximo de la función","El área bajo la curva entre esos puntos","La raíz de la función"],a:2,e:"La integral definida ∫ᵃᵇ f(x)dx calcula el área entre la curva y el eje x en [a,b]."},
+  {area:"mat",t:50,q:"En el conjunto de datos 3, 5, 5, 7, 9, ¿cuál es la mediana?",o:["6","7","5.8","5"],a:3,e:"Ordenados: 3,5,5,7,9. El valor central (posición 3 de 5) es 5."},
+  {area:"mat",t:50,q:"La probabilidad de sacar un 4 al lanzar un dado justo es:",o:["1/6","1/4","1/3","1/2"],a:0,e:"El dado tiene 6 caras equiprobables. Solo una es el 4. P(4) = 1/6."},
+  {area:"mat",t:55,q:"¿Qué describe el coeficiente de correlación r = 0?",o:["Correlación perfecta positiva","No hay relación lineal entre las variables","Correlación perfecta negativa","Las variables son iguales"],a:1,e:"r=0 indica ausencia de relación lineal (aunque puede existir otro tipo de relación)."},
+  {area:"mat",t:55,q:"Con Media=70 y σ=10, ¿qué porcentaje de datos queda entre 60 y 80?",o:["95%","99.7%","68% (regla empírica ±1σ)","50%"],a:2,e:"En una distribución normal, aprox. el 68% de los datos están dentro de ±1 desviación estándar de la media."},
+  {area:"mat",t:60,q:"El número de combinaciones de 5 elementos tomados de 3 en 3 — C(5,3) — es:",o:["15","20","6","10"],a:3,e:"C(5,3) = 5!/(3!·2!) = (5×4)/(2×1) = 10."},
+  // FÍSICA AVANZADA (7) — rotación continua: 0,1,2,3,0,1,2
+  {area:"fis",t:60,q:"Las ondas electromagnéticas se propagan:",o:["Sin necesidad de medio material (en el vacío)","Solo en el agua","Solo en metales","Solo en el aire"],a:0,e:"A diferencia de las ondas mecánicas, las EM (luz, radio, rayos X) se propagan en el vacío."},
+  {area:"fis",t:55,q:"El principio de Bernoulli establece que en un fluido en movimiento:",o:["La presión siempre es constante","Donde la velocidad es mayor, la presión es menor","La velocidad y presión son proporcionales","La densidad aumenta con la velocidad"],a:1,e:"P + ½ρv² + ρgh = constante. A mayor velocidad, menor presión (principio del vuelo en aviones)."},
+  {area:"fis",t:55,q:"La Ley de Ohm establece que la corriente eléctrica es:",o:["I = V × R","I = R/V","I = V/R (voltaje dividido entre resistencia)","I = V + R"],a:2,e:"Ley de Ohm: I(amperios) = V(voltios) / R(ohmios)."},
+  {area:"fis",t:60,q:"El calor específico de una sustancia mide:",o:["La temperatura máxima que alcanza","La velocidad de conducción térmica","La energía liberada en una reacción","La energía necesaria para elevar 1 kg en 1°C"],a:3,e:"Q = m·c·ΔT. El calor específico 'c' indica cuántos Joules necesita 1 kg para subir 1°C."},
+  {area:"fis",t:55,q:"¿Qué fenómeno explica los colores en una pompa de jabón?",o:["Interferencia de ondas de luz","Refracción del sonido","Reflexión interna total","Difracción por rendija"],a:0,e:"Los colores resultan de la interferencia constructiva/destructiva de la luz en las delgadas capas de jabón."},
+  {area:"fis",t:55,q:"La fisión nuclear consiste en:",o:["La unión de dos núcleos ligeros","La división de un núcleo pesado liberando energía","La emisión de electrones","El movimiento de protones"],a:1,e:"En la fisión (reactores nucleares), núcleos como U-235 se dividen en fragmentos más pequeños liberando enorme energía."},
+  {area:"fis",t:55,q:"¿Cuál es la velocidad de la luz en el vacío?",o:["3×10⁶ m/s","9.8 m/s","3×10⁸ m/s","340 m/s"],a:2,e:"c ≈ 3×10⁸ m/s ≈ 300.000 km/s. Es la máxima velocidad posible según la Relatividad Especial."},
+  // QUÍMICA ORGÁNICA (7) — rotación continua: 3,0,1,2,3,0,1
+  {area:"qui",t:55,q:"¿Qué elemento es la base de la Química Orgánica?",o:["El hidrógeno","El oxígeno","El nitrógeno","El carbono"],a:3,e:"El carbono puede formar largas cadenas y 4 enlaces, siendo el esqueleto de todos los compuestos orgánicos."},
+  {area:"qui",t:55,q:"Los alcanos son hidrocarburos con:",o:["Solo enlaces simples (C−C)","Un doble enlace","Un triple enlace","Anillo aromático"],a:0,e:"Los alcanos son saturados: solo contienen enlaces simples C−C. Fórmula general: CₙH₂ₙ₊₂."},
+  {area:"qui",t:55,q:"El grupo funcional −OH en un compuesto orgánico indica que es:",o:["Un ácido carboxílico","Un alcohol","Un éster","Una amina"],a:1,e:"El grupo hidroxilo (−OH) unido a carbono caracteriza a los alcoholes (ej: etanol CH₃CH₂OH)."},
+  {area:"qui",t:55,q:"La reacción de saponificación produce:",o:["Plástico","Combustible","Jabón (sales de ácidos grasos) y glicerina","Ácido clorhídrico"],a:2,e:"La saponificación es la hidrólisis de grasas con base fuerte (NaOH/KOH): produce jabón + glicerol."},
+  {area:"qui",t:60,q:"¿Cuál es el monómero que forma el polietileno?",o:["Propileno","Acetileno","Benceno","Etileno (CH₂=CH₂)"],a:3,e:"El etileno (eteno, CH₂=CH₂) se polimeriza para formar el polietileno, uno de los plásticos más comunes."},
+  {area:"qui",t:55,q:"Las proteínas están formadas por unidades llamadas:",o:["Aminoácidos","Nucleótidos","Glucosa","Ácidos grasos"],a:0,e:"Las proteínas son polímeros de aminoácidos unidos por enlaces peptídicos (−CO−NH−)."},
+  {area:"qui",t:55,q:"El benceno (C₆H₆) es el compuesto aromático más simple porque tiene:",o:["6 carbonos en cadena recta","Un anillo de 6 carbonos con electrones deslocalizados","Solo enlaces simples","3 carbonos en triángulo"],a:1,e:"El benceno tiene un anillo hexagonal con electrones π deslocalizados que le dan estabilidad especial."},
+  // LECTURA CRÍTICA (7) — rotación continua: 2,3,0,1,2,3,0
+  {area:"lec",t:55,q:"La 'validez' de un argumento depende de:",o:["Si el argumento es largo","Si quien lo dice tiene autoridad","Si la conclusión se sigue lógicamente de las premisas","Si es apoyado por cifras"],a:2,e:"Un argumento válido tiene estructura lógica correcta, independientemente de si las premisas son verdaderas."},
+  {area:"lec",t:55,q:"'Todos los jóvenes de Tumaco son violentos.' ¿Qué tipo de falacia es?",o:["Argumento de autoridad","Falacia ad hominem","Petición de principio","Generalización apresurada"],a:3,e:"Concluir sobre 'todos' a partir de pocos casos es una generalización apresurada (falacia informal)."},
+  {area:"lec",t:55,q:"Una infografía es un ejemplo de texto:",o:["Discontinuo e icónico","Continuo y argumentativo","Narrativo y oral","Descriptivo y lírico"],a:0,e:"Los textos discontinuos combinan imágenes, gráficos y texto no lineal: tablas, mapas, infografías."},
+  {area:"lec",t:55,q:"La ironía en un texto crítico sirve para:",o:["Informar objetivamente","Criticar o cuestionar algo diciendo lo contrario","Narrar una historia trágica","Describir un objeto"],a:1,e:"La ironía expresa crítica o burla mediante la contradicción entre lo dicho y lo querido decir."},
+  {area:"lec",t:55,q:"Cuando un autor usa datos estadísticos en su argumento, busca:",o:["Confundir al lector","Adornar el texto","Dar evidencia cuantitativa para apoyar su tesis","Introducir hechos históricos"],a:2,e:"Las estadísticas son evidencia empírica que refuerza la credibilidad y objetividad de un argumento."},
+  {area:"lec",t:55,q:"¿Qué es el contexto de enunciación de un texto?",o:["El vocabulario utilizado","La extensión del texto","El tema central","Las circunstancias (quién, cuándo, dónde) en que se produce el texto"],a:3,e:"El contexto de enunciación considera el emisor, receptor, momento histórico y propósito de la comunicación."},
+  {area:"lec",t:55,q:"En una caricatura política, el mensaje se transmite principalmente mediante:",o:["Exageración de rasgos e ironía visual","Texto extenso y académico","Datos estadísticos precisos","Narración cronológica"],a:0,e:"La caricatura usa deformación intencional y símbolos visuales para criticar o comentar la realidad."},
+  // C. POLÍTICAS Y ECONÓMICAS (7) — rotación continua: 1,2,3,0,1,2,3
+  {area:"pol",t:55,q:"¿Qué es el Estado de Bienestar?",o:["Sistema puramente capitalista","Modelo donde el Estado garantiza servicios sociales como salud y educación","Gobierno sin gasto público","Estado mínimo sin intervención"],a:1,e:"El Estado de Bienestar combina mercado con protección social: pensiones, salud pública, educación."},
+  {area:"pol",t:55,q:"Los ODS (Objetivos de Desarrollo Sostenible) fueron adoptados en:",o:["La OTAN en 2000","El FMI en 2010","La ONU en 2015 para cumplirse en 2030","La Unión Europea en 2020"],a:2,e:"Los 17 ODS de la Agenda 2030 guían el desarrollo sostenible mundial: pobreza, clima, salud, etc."},
+  {area:"pol",t:55,q:"La Corte Interamericana de Derechos Humanos tiene competencia sobre:",o:["Todos los países del mundo","Solo Colombia y Venezuela","Solo delitos de guerra","Estados miembros de la OEA que aceptaron su jurisdicción"],a:3,e:"La CIDH juzga violaciones a la Convención Americana sobre DDHH en los países que la ratificaron."},
+  {area:"pol",t:55,q:"¿Qué es el populismo político?",o:["Discurso que enfrenta al 'pueblo virtuoso' contra una 'élite corrupta'","Un sistema de gobierno formal","La democracia participativa directa","El socialismo marxista"],a:0,e:"El populismo construye una narrativa nosotros (el pueblo) vs. ellos (la élite), apelando a las emociones."},
+  {area:"pol",t:55,q:"El desplazamiento forzado viola principalmente el derecho a:",o:["Voto libre","La libre circulación y la vivienda digna","Educación superior","Trabajo formal"],a:1,e:"El desplazamiento viola derechos fundamentales: vivienda, propiedad, unidad familiar, libre circulación."},
+  {area:"pol",t:55,q:"¿Qué medida usa el Banco de la República para controlar la inflación?",o:["Imprimir más dinero","Reducir impuestos","Aumentar la tasa de interés de referencia","Privatizar empresas"],a:2,e:"Al subir tasas de interés, el crédito se encarece, el consumo baja y los precios se moderan."},
+  {area:"pol",t:55,q:"La economía informal en Colombia se caracteriza por:",o:["Empresas exportadoras","El sector financiero regulado","Las cooperativas formales","Trabajadores sin contrato, sin seguridad social y sin pago de impuestos"],a:3,e:"La informalidad laboral implica falta de prestaciones sociales, inestabilidad y baja productividad."},
+  // INGLÉS (7) — rotación continua: 0,1,2,3,0,1,2
+  {area:"ing",t:50,q:"Choose the correct option: 'By the time she arrived, they ___ the meeting.'",o:["had finished","finished","have finished","will finish"],a:0,e:"Past Perfect is used for an action completed BEFORE another past action. 'Had finished' is correct."},
+  {area:"ing",t:45,q:"The sentence 'She suggested that he study harder' uses:",o:["Passive voice","Reported speech with subjunctive","Future conditional","Present perfect"],a:1,e:"After 'suggest', 'recommend', 'insist', the subjunctive (base form) is used: 'that he study'."},
+  {area:"ing",t:45,q:"'The more you practice, ___ you become.' Complete correctly:",o:["the good","the best","the better","better"],a:2,e:"Double comparative structure: 'The more... the better.' Both parts use comparative forms."},
+  {area:"ing",t:45,q:"What is the function of 'nevertheless' in a text?",o:["To add information","To indicate cause","To indicate time","To introduce a contrast despite a previous statement"],a:3,e:"'Nevertheless' (= nonetheless / however) introduces contrast: 'It was expensive; nevertheless, she bought it.'"},
+  {area:"ing",t:45,q:"'I wish I had studied more.' This expresses:",o:["Regret about the past","A future plan","A present possibility","A condition for the future"],a:0,e:"'I wish + past perfect' expresses regret about something that happened (or didn't happen) in the past."},
+  {area:"ing",t:45,q:"Choose the correct relative pronoun: 'The student ___ won the prize is from Tumaco.'",o:["which","who","what","whose"],a:1,e:"'Who' is the relative pronoun for people. 'Which' is for things. 'Whose' indicates possession."},
+  {area:"ing",t:45,q:"What does 'to be on the fence' mean?",o:["To be very sure about a decision","To disagree strongly","To be undecided or neutral about something","To be in danger"],a:2,e:"Idiomatic expression: 'on the fence' = being neutral or unable/unwilling to decide."},
+];
+
+// ================================================================
+// SELECCIÓN DE PREGUNTAS SEGÚN GRADO (50 preguntas adaptadas)
+// ================================================================
+function construirPreguntas(grado) {
+    let banco;
+    if (grado === '8')         banco = BANCO_G8;
+    else if (grado === '9')    banco = BANCO_G9;
+    else if (grado === '10')   banco = BANCO_G10;
+    else if (grado === '11' || grado === 'Egresado') banco = BANCO_G11;
+    else banco = BANCO_G8;  // fallback
+
+    // Mezcla aleatoria y toma hasta 50 preguntas
+    const mezclado = [...banco].sort(() => Math.random() - 0.5).slice(0, 50);
+    return mezclado.map((p, idx) => ({
+        ...p,
+        tiempoCad: p.t || p.tiempoCad || 45,
+        explicacion: p.e || p.explicacion || '',
+        area: AREA_META[p.area] ? AREA_META[p.area].nombre : p.area,
+        areaKey: p.area,
+        color: AREA_META[p.area] ? AREA_META[p.area].color : 'var(--teal)',
+        numero: idx + 1
+    }));
+}
+
+let PREGUNTAS = construirPreguntas('8'); // se actualiza con el grado real al iniciar
+
+
+
+// ================================================================
+// ESTADO DEL TEST
+// ================================================================
+let indice = 0;
+let respuestas = [];
+let timerInterval = null;
+let tiempoRestante = 0;
+let datosAspirante = {};
+
+const sesion = localStorage.getItem('usuario_sesion_activa');
+const usuario = sesion ? JSON.parse(sesion) : null;
+
+// ── INICIO (Mantenemos el Event Listener original cruzado por seguridad) ──
+const btnIniciar = document.getElementById('btn-iniciar');
+if (btnIniciar) {
+    btnIniciar.addEventListener('click', () => {
+        // Ejecuta la validación unificada y robusta para asegurar que no falle
+        window.validarEIniciarTest();
+    });
+}
+
+// ── CARGAR PREGUNTA ──────────────────────────────────────────────
+function cargarPregunta() {
+    if (indice >= PREGUNTAS.length) { mostrarResultados(); return; }
+
+    const p = PREGUNTAS[indice];
+    const total = PREGUNTAS.length;
+
+    // Progreso
+    document.getElementById('barra-progreso').style.width = (indice / total * 100) + '%';
+    document.getElementById('txt-progreso').textContent = `${indice + 1} / ${total}`;
+    document.getElementById('question-num').textContent = `Pregunta ${indice + 1} de ${total}`;
+
+    // Área
+    const areaTag = document.getElementById('quiz-area');
+    areaTag.textContent = p.area;
+    areaTag.className = `quiz-area-tag area-${p.areaKey}`;
+
+    // Enunciado
+    document.getElementById('quiz-enunciado').textContent = p.q;
+
+    // Limpiar
+    document.getElementById('feedback-bar').style.display = 'none';
+    document.getElementById('btn-siguiente').classList.add('hidden');
+
+    // Opciones
+    const cont = document.getElementById('quiz-opciones');
+    cont.innerHTML = '';
+    const letras = ['A', 'B', 'C', 'D'];
+    p.o.forEach((op, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-letter">${letras[i]}</span><span>${op}</span>`;
+        btn.onclick = () => seleccionarOpcion(i, btn);
+        cont.appendChild(btn);
+    });
+
+    // Timer
+    iniciarTimer(p.tiempoCad);
+}
+
+// ── TIMER ────────────────────────────────────────────────────────
+function iniciarTimer(segundos) {
+    clearInterval(timerInterval);
+    tiempoRestante = segundos;
+    actualizarTimerDisplay();
+    timerInterval = setInterval(() => {
+        tiempoRestante--;
+        actualizarTimerDisplay();
+        if (tiempoRestante <= 0) {
+            clearInterval(timerInterval);
+            tiempoAgotado();
+        }
+    }, 1000);
+}
+
+function actualizarTimerDisplay() {
+    const el = document.getElementById('timer-display');
+    el.textContent = `⏱ ${tiempoRestante}s`;
+    el.className = 'timer';
+    if (tiempoRestante <= 10) el.classList.add('danger');
+    else if (tiempoRestante <= 20) el.classList.add('warning');
+}
+
+function tiempoAgotado() {
+    // No bloquear las opciones — el estudiante DEBE seleccionar una para continuar
+    const fb = document.getElementById('feedback-bar');
+    fb.style.display = 'flex';
+    fb.className = 'feedback-bar wrong';
+    fb.textContent = '⏰ ¡Tiempo agotado! Selecciona una opción para continuar.';
+    // Reiniciar el timer con unos segundos extra para que el usuario pueda seleccionar
+    timerInterval = setInterval(() => {}, 99999); // detener tick
+}
+
+// ── SELECCIONAR OPCIÓN ───────────────────────────────────────────
+function seleccionarOpcion(opcionIdx, btnSeleccionado) {
+    clearInterval(timerInterval);
+    const p = PREGUNTAS[indice];
+    const esCorrecta = opcionIdx === p.a;
+
+    document.querySelectorAll('.option-btn').forEach((b, i) => {
+        b.disabled = true;
+        if (i === p.a) b.classList.add('correct');
+        if (i === opcionIdx && !esCorrecta) b.classList.add('wrong');
+    });
+
+    respuestas.push({
+        pregunta: indice,
+        respondida: true,
+        correcta: esCorrecta,
+        area: p.areaKey,
+        tiempoUsado: p.tiempoCad - tiempoRestante
+    });
+
+    mostrarFeedback(esCorrecta, (esCorrecta ? '✅ ¡Correcto! ' : '❌ Incorrecto. ') + p.explicacion, esCorrecta);
+    document.getElementById('btn-siguiente').classList.remove('hidden');
+}
+
+function mostrarFeedback(esCorrecta, msg, _) {
+    const fb = document.getElementById('feedback-bar');
+    fb.style.display = 'flex';
+    fb.className = `feedback-bar ${esCorrecta ? 'correct' : 'wrong'}`;
+    fb.textContent = msg;
+}
+
+// ── SIGUIENTE ────────────────────────────────────────────────────
+window.siguientePregunta = function() {
+    indice++;
+    cargarPregunta();
+};
+
+// ── RESULTADOS ───────────────────────────────────────────────────
+async function mostrarResultados() {
+    clearInterval(timerInterval);
+    document.getElementById('pantalla-quiz').classList.add('hidden');
+    document.getElementById('pantalla-resultados').classList.remove('hidden');
+
+    const areas = {};
+    let totalOk = 0;
+    respuestas.forEach(r => {
+        if (!areas[r.area]) areas[r.area] = { ok: 0, total: 0 };
+        areas[r.area].total++;
+        if (r.correcta) { areas[r.area].ok++; totalOk++; }
+    });
+
+    const porcentaje = Math.round(totalOk / PREGUNTAS.length * 100);
+    const puntos = totalOk * 10;
+
+    const circle = document.getElementById('score-circle');
+    document.getElementById('res-puntos').textContent = `${totalOk}/${PREGUNTAS.length}`;
+    if (porcentaje >= 80) { circle.className = 'score-circle excelente'; }
+    else if (porcentaje >= 60) { circle.className = 'score-circle bien'; }
+    else if (porcentaje >= 40) { circle.className = 'score-circle regular'; }
+    else { circle.className = 'score-circle reforzar'; }
+
+    const messages = {
+        excelente: ['¡Desempeño Sobresaliente!', 'Tu nivel supera el promedio diagnóstico. Estás listo para el módulo avanzado.'],
+        bien: ['¡Buen Desempeño!', 'Tienes una base sólida. Con práctica adicional llegarás al nivel universitario.'],
+        regular: ['Vas por buen camino', 'Tienes fundamentos. El programa PRI te ayudará a fortalecer las áreas críticas.'],
+        reforzar: ['Detectamos áreas de refuerzo', 'No te preocupes — eso es exactamente para lo que existe el Programa PRI.']
+    };
+    const nivel = porcentaje >= 80 ? 'excelente' : porcentaje >= 60 ? 'bien' : porcentaje >= 40 ? 'regular' : 'reforzar';
+    document.getElementById('results-title').textContent = messages[nivel][0];
+    document.getElementById('results-msg').textContent = messages[nivel][1];
+
+    // Desglose dinámico por área
+    const cont = document.getElementById('area-breakdown-container');
+    cont.innerHTML = '';
+    const resumenAreas = []; // para fortalezas/falencias y para guardar en BD
+    Object.keys(areas).forEach(key => {
+        const a = areas[key];
+        const meta = AREA_META[key] || { nombre: key, icono: '📌', color: 'var(--teal)' };
+        const pct = Math.round(a.ok / a.total * 100);
+        resumenAreas.push({ key, nombre: meta.nombre, ok: a.ok, total: a.total, pct });
+        cont.insertAdjacentHTML('beforeend', `
+            <div class="area-row">
+                <div class="area-row-header">
+                    <span class="area-row-name">${meta.icono} ${meta.nombre}</span>
+                    <span class="area-row-score" style="color:${meta.color}">${a.ok}/${a.total}</span>
                 </div>
-            </div>
+                <div class="area-bar-bg"><div class="area-bar-fill" style="width:0%;background:${meta.color}" data-pct="${pct}"></div></div>
+            </div>`);
+    });
+    setTimeout(() => {
+        document.querySelectorAll('.area-bar-fill').forEach(el => { el.style.width = el.dataset.pct + '%'; });
+    }, 200);
 
-            <div class="quiz-actions">
-                <button class="btn-primary">Siguiente Desafío &#8594;</button>
-            </div>
+    // Fortalezas y falencias (basado en datos reales del intento)
+    resumenAreas.sort((x, y) => y.pct - x.pct);
+    const fortalezas = resumenAreas.filter(a => a.pct >= 70);
+    const falencias = resumenAreas.filter(a => a.pct < 70);
+    const fyf = document.getElementById('fyf-container');
+    fyf.innerHTML = '';
+    if (fortalezas.length) {
+        fyf.insertAdjacentHTML('beforeend', `<div class="fyf-box fuerte"><b>💪 Tu fortaleza:</b> ${fortalezas.map(a => a.nombre).join(', ')}. ¡Sigue así!</div>`);
+    }
+    if (falencias.length) {
+        fyf.insertAdjacentHTML('beforeend', `<div class="fyf-box falencia"><b>🎯 Temas centrales por mejorar:</b> ${falencias.map(a => a.nombre).join(', ')}. El Programa PRI tiene módulos específicos para fortalecer estas áreas.</div>`);
+    } else {
+        fyf.insertAdjacentHTML('beforeend', `<div class="fyf-box fuerte"><b>🏆 Excelente base general.</b> Te invitamos a profundizar en el Programa PRI para llegar al nivel universitario.</div>`);
+    }
 
-        </div>
-    </section>
+    document.getElementById('puntos-ganados-val').textContent = `+${puntos} PTS`;
 
+    // Guardar en Firebase
+    try {
+        const payload = {
+            ...datosAspirante,
+            registrado: !!usuario,
+            uid: usuario ? usuario.uid : null,
+            aciertos: totalOk,
+            total: PREGUNTAS.length,
+            porcentaje: porcentaje + '%',
+            puntos,
+            desglosePorArea: areas,
+            resumenAreas,
+            fortalezas: fortalezas.map(a => a.nombre),
+            falencias: falencias.map(a => a.nombre),
+            fechaMuestra: serverTimestamp()
+        };
+        await addDoc(collection(db, "muestras_pretest"), payload);
+
+        // También guardar en sondeo_piloto para estadísticas generales
+        try {
+            await addDoc(collection(db, "sondeo_piloto"), {
+                nombre: datosAspirante.nombre || '',
+                correo: datosAspirante.correo || '',
+                tel: datosAspirante.tel || '',
+                ciudad: datosAspirante.ciudad || 'Tumaco, Nariño',
+                doc_tipo: datosAspirante.docTipo || '',
+                doc_num: datosAspirante.docNum || '',
+                rol: datosAspirante.rol || 'ESTUDIANTE',
+                nivel: datosAspirante.nivel || (datosAspirante.grado + '° grado'),
+                institucion: datosAspirante.colegio || 'No especificada',
+                areas_interes: datosAspirante.areas_interes || fortalezas.map(a=>a.nombre),
+                puntuacion: totalOk,
+                puntaje_max: PREGUNTAS.length,
+                fecha_registro: new Date().toLocaleDateString('es-CO'),
+                fuente: 'pretest_web',
+                timestamp: serverTimestamp()
+            });
+        } catch(e2) { /* no bloquea si falla */ }
+
+        if (usuario) {
+            await updateDoc(doc(db, "usuarios", usuario.uid), {
+                puntos: increment(puntos),
+                ultimoTest: new Date(),
+                caracterizacion_completa: true
+            });
+            const updated = { ...usuario, puntos: (usuario.puntos || 0) + puntos, caracterizacion_completa: true };
+            localStorage.setItem('usuario_sesion_activa', JSON.stringify(updated));
+        }
+    } catch (err) {
+        console.warn('Error al guardar:', err.message);
+    }
+
+    // DISPARADOR DEL CTA FINAL AUTOMÁTICO AL TERMINAR TU PRUEBA NATAL
+    if (typeof mostrarCTAFinal === "function") {
+        mostrarCTAFinal();
+    }
+}
+
+// ── REINICIAR ────────────────────────────────────────────────────
+window.reiniciarTest = function() {
+    indice = 0; respuestas = [];
+    clearInterval(timerInterval);
+    document.getElementById('pantalla-resultados').classList.add('hidden');
+    document.getElementById('pantalla-inicio').classList.remove('hidden');
+};
+
+// =======================================================
+// 3. GUARDADO EN FIREBASE Y DESPLIEGUE DE INVITACIÓN (CTA)
+// =======================================================
+window.finalizarYGuardar = async function(totalOk, totalPreguntas, porcentaje, puntos, areas) {
+      const btnResultados = document.getElementById('btn-siguiente');
+      if(btnResultados) {
+          btnResultados.innerText = "Guardando resultados...";
+          btnResultados.disabled = true;
+      }
+
+      try {
+          await addDoc(collection(db, "muestras_pretest"), {
+              ...datosAspirante,
+              aciertos: totalOk,
+              total: totalPreguntas,
+              porcentaje: porcentaje + '%',
+              puntosObtenidos: puntos,
+              desglosePorArea: areas || {},
+              fechaMuestra: serverTimestamp()
+          });
+          console.log("✅ Resultados guardados exitosamente en Firebase.");
+      } catch (err) {
+          console.error("❌ Error de Firebase:", err.message);
+      } finally {
+          mostrarCTAFinal();
+      }
+  };
+
+  function mostrarCTAFinal() {
+      const pantallaResultados = document.getElementById('pantalla-resultados');
+      if (!pantallaResultados) return;
+
+      if (document.getElementById('cta-registro-programa')) return;
+
+      const ctaDiv = document.createElement('div');
+      ctaDiv.id = 'cta-registro-programa';
+      ctaDiv.className = 'cta-final'; 
+      
+      const primerNombre = (datosAspirante.nombre || window.datosAspiranteGlobal.nombre) 
+          ? (datosAspirante.nombre || window.datosAspiranteGlobal.nombre).split(' ')[0] 
+          : 'Futuro Ingeniero';
+
+      ctaDiv.innerHTML = `
+          <div style="margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(6,32,64,0.9), rgba(4,24,48,0.9)); border: 2px dashed var(--naranja); border-radius: 12px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+              <span class="brand-eyebrow" style="color: var(--teal); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: block; margin-bottom: 0.5rem;">¡Este es solo el comienzo!</span>
+              <h3 style="font-family: 'Montserrat', sans-serif; color: var(--oro); font-size: 1.4rem; margin-bottom: 0.75rem;">¿Quieres superar este puntaje, ${primerNombre}?</h3>
+              <p style="color: var(--blanco); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; opacity: 0.9;">
+                No dejes que las pruebas de estado definen tu límite. Regístrate oficialmente en <b>PROGRAMA-PRI</b> y accede gratis a nuestras clases, simuladores completos y gana recompensas por estudiar.
+              </p>
+              <button class="btn-primary" style="background: var(--naranja); color: var(--blanco); font-weight: 900; padding: 0.8rem 2rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; width: 100%; max-width: 320px; box-shadow: 0 4px 15px rgba(255,94,0,0.3);" onclick="window.location.href='login.html'">
+                Crear mi Perfil Oficial Ahora 🚀
+              </button>
+          </div>
+      `;
+      
+      pantallaResultados.appendChild(ctaDiv);
+  }
+</script>
+
+<script src="fondo-dinamico.js"></script>
 </body>
 </html>

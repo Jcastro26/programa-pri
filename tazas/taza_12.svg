@@ -1,0 +1,38 @@
+<svg viewBox="0 0 200 145" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo semitransparente (la taza blanca provee el fondo real) -->
+  <rect width="200" height="145" fill="#0c2340" opacity="0.12"/>
+
+  <!-- Ilustración central -->
+  <g transform="translate(0,-8)">
+    <!-- Pesca artesanal -->
+<path d="M30,90 Q100,78 170,85" stroke="#0369a1" stroke-width="1.5" fill="none" opacity="0.5"/>
+<path d="M30,96 Q100,84 170,91" stroke="#0284c7" stroke-width="1" fill="none" opacity="0.4"/>
+<path d="M100,40 L100,85 M90,40 Q100,35 110,40 Z" stroke="#7c4a1e" stroke-width="2" fill="#a16207" opacity="0.8"/>
+<path d="M100,55 Q130,48 155,60 Q145,72 125,70 Q112,68 100,55 Z" fill="none" stroke="#b45309" stroke-width="1.2" opacity="0.6"/>
+<path d="M78,80 Q82,70 86,76 Q90,68 94,74 Q98,68 102,76 Q106,70 110,78" stroke="#0369a1" stroke-width="1" fill="none" opacity="0.7"/>
+<ellipse cx="62" cy="86" rx="8" ry="5" fill="#0891b2" opacity="0.5" transform="rotate(-20,62,86)"/>
+  </g>
+
+  <!-- Logo PRI pequeño esquina superior derecha -->
+  <image href="../logo.png" x="172" y="4" width="22" height="22"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior semitransparente para legibilidad del texto -->
+  <rect x="0" y="96" width="200" height="49" fill="#0c2340" opacity="0.55" rx="0"/>
+
+  <!-- Frase inspiradora — 2 líneas, tamaño legible -->
+  <text x="100" y="109" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#e0f2fe" opacity="0.95">"El trabajo dignifica;</text>
+  <text x="100" y="121" text-anchor="middle"
+        font-family="Georgia,serif" font-style="italic" font-size="9.5"
+        fill="#e0f2fe" opacity="0.95">el conocimiento libera"</text>
+  <!-- Autor -->
+  <text x="100" y="131" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="7.5"
+        fill="#38bdf8" letter-spacing="1" opacity="0.9">— Paulo Freire</text>
+  <!-- Título del diseño -->
+  <text x="100" y="141" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="10"
+        fill="#38bdf8" letter-spacing="2" opacity="1">PESCA ARTESANAL</text>
+</svg>

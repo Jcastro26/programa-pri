@@ -1,0 +1,47 @@
+<svg viewBox="0 0 400 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g12bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d0d0d"/>
+      <stop offset="40%" stop-color="#1a0a00"/>
+      <stop offset="100%" stop-color="#330d00"/>
+    </linearGradient>
+    <linearGradient id="g12sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4400" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ff8800" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="560" fill="url(#g12bg)"/>
+  <!-- Círculo solar de fondo -->
+  <circle cx="200" cy="200" r="100" fill="url(#g12sky)" opacity="0.4"/>
+  <circle cx="200" cy="200" r="80" fill="rgba(255,80,0,0.15)"/>
+  <!-- Águila en vuelo (silueta) -->
+  <g transform="translate(200, 190)" fill="#111" opacity="0.9">
+    <!-- Cuerpo -->
+    <ellipse cx="0" cy="0" rx="28" ry="18" fill="#1a1a1a"/>
+    <!-- Alas extendidas -->
+    <path d="M -28,-2 C -80,20 -130,8 -150,20 C -130,2 -100,-15 -28,0 Z" fill="#222"/>
+    <path d="M 28,-2 C 80,20 130,8 150,20 C 130,2 100,-15 28,0 Z" fill="#222"/>
+    <!-- Cola -->
+    <path d="M -15,15 C -5,40 5,40 15,15 C 10,30 -10,30 -15,15 Z" fill="#1a1a1a"/>
+    <!-- Cabeza -->
+    <ellipse cx="22" cy="-14" rx="16" ry="14" fill="#222"/>
+    <!-- Pico -->
+    <path d="M 34,-18 L 46,-14 L 34,-10 Z" fill="#cc8800"/>
+    <!-- Ojo -->
+    <circle cx="28" cy="-16" r="4" fill="#ffcc00"/>
+    <circle cx="29" cy="-16" r="2" fill="#000"/>
+    <!-- Garras decorativas -->
+    <path d="M -8,15 L -12,35 M -4,16 L -6,36 M 0,17 L 0,37 M 4,16 L 6,35 M 8,15 L 12,34" stroke="#333" stroke-width="2" fill="none"/>
+  </g>
+  <!-- Montañas silueta fondo -->
+  <polygon points="0,420 60,320 120,420" fill="#120800" opacity="0.6"/>
+  <polygon points="80,420 160,280 240,420" fill="#0d0500" opacity="0.7"/>
+  <polygon points="200,420 290,300 380,420" fill="#120800" opacity="0.6"/>
+  <polygon points="300,420 360,350 400,420" fill="#0d0500" opacity="0.5"/>
+  <rect x="0" y="420" width="400" height="140" fill="#0a0500"/>
+  <!-- Texto -->
+  <text x="200" y="470" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="900" font-size="26" fill="white" letter-spacing="5">LIBERTAD</text>
+  <text x="200" y="496" text-anchor="middle" font-family="Montserrat,sans-serif" font-weight="700" font-size="11" fill="rgba(255,140,0,0.7)" letter-spacing="5">PACÍFICO</text>
+  <line x1="100" y1="510" x2="300" y2="510" stroke="rgba(255,94,0,0.6)" stroke-width="1.5"/>
+  <text x="200" y="528" text-anchor="middle" font-family="Montserrat,sans-serif" font-size="9" fill="rgba(255,255,255,0.4)" letter-spacing="2">PROGRAMA-PRI · TUMACO</text>
+</svg>

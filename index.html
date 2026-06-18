@@ -3,112 +3,2162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROGRAMA-PRI | Océano Realista Maximalista</title>
-    
-    <!-- Importando las tipografías impactantes: Montserrat (Títulos) y Lora (Textos) -->
+    <title>PROGRAMA-PRI | El Pacífico Renaciendo con Ingeniería</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
-    
-    <!-- Vinculando el archivo de estilos -->
     <link rel="stylesheet" href="style.css">
+
+<style>
+
+/* ===== OPTIMIZACIÓN RESPONSIVA PARA TARJETAS DE ESTADÍSTICAS ===== */
+.stat-card {
+    /* Cambiamos 'height' fijo por 'min-height' para que la tarjeta pueda crecer si el texto aumenta */
+    min-height: 200px; 
+    height: auto !important; 
+    
+    /* Forzamos un comportamiento flex para que todo el contenido interno se distribuya bien */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distribuye equitativamente sublabel, número y label */
+    align-items: center;
+    
+    padding: 1.5rem; /* Un espacio interno seguro para que el texto no toque los bordes */
+    box-sizing: border-box;
+    overflow: hidden; /* Evita que cualquier residuo visual sobresalga */
+    text-align: center;
+}
+
+/* Asegura que los textos largos hagan salto de línea correctamente y no empujen hacia los lados */
+.stat-label {
+    font-size: 0.9rem; /* Un tamaño sutilmente optimizado para textos largos */
+    line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    margin-top: auto; /* Empuja el texto hacia la parte inferior del cuadro de manera elegante */
+}
+/* Cursor personalizado */
+.cursor-dot {
+    width: 8px; height: 8px;
+    background: var(--naranja-atardecer);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+}
+.cursor-ring {
+    width: 32px; height: 32px;
+    border: 2px solid rgba(255,94,0,0.5);
+    border-radius: 50%;
+    position: fixed; pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+}
+body:hover .cursor-dot { opacity: 1; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+.reveal-right { opacity: 0; transform: translateX(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+/* Barra de progreso de lectura */
+#reading-bar {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 2000;
+    background: linear-gradient(90deg, var(--naranja-atardecer), var(--oro-sol));
+    width: 0%; transition: width 0.1s linear;
+}
+
+/* Navbar mejorada con glassmorphism real */
+.navbar { transition: padding 0.3s ease, box-shadow 0.3s ease; }
+.navbar.scrolled { padding: 0.6rem 2.5rem 0.6rem 1.25rem; box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+.nav-links a { position: relative; }
+.nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 2px; background: var(--naranja-atardecer);
+    transition: width 0.3s ease;
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* ===== SECCIÓN HERO CON PARTÍCULAS ===== */
+#particles-canvas {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%; z-index: 4; pointer-events: none;
+}
+
+/* ===== SECCIÓN DE ESTADÍSTICAS ANIMADAS ===== */
+.stats-section {
+    background: linear-gradient(135deg, #010d1a 0%, #021a36 50%, #031428 100%);
+    padding: 6rem 5%;
+    position: relative;
+    border-top: 3px solid var(--naranja-atardecer);
+    border-bottom: 3px solid #063162;
+    overflow: hidden;
+}
+.stats-section::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: var(--patron-grid);
+    opacity: 0.04;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative; z-index: 1;
+}
+.stat-card {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border: 1px solid rgba(255,94,0,0.2);
+    background: rgba(255,94,0,0.03);
+    position: relative;
+    transition: all 0.4s ease;
+    cursor: default;
+}
+.stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--naranja-atardecer), transparent);
+    transform: scaleX(0); transition: transform 0.4s ease;
+}
+.stat-card:hover::before { transform: scaleX(1); }
+.stat-card:hover {
+    background: rgba(255,94,0,0.07);
+    border-color: rgba(255,94,0,0.5);
+    transform: translateY(-6px);
+}
+.stat-number {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(3rem, 7vw, 5rem);
+    font-weight: 900;
+    color: var(--naranja-atardecer);
+    line-height: 1;
+    display: block;
+    -webkit-text-stroke: 1px rgba(255,215,0,0.3);
+}
+.stat-label {
+    font-family: var(--fuente-textos);
+    font-size: 1rem;
+    color: #94a3b8;
+    margin-top: 0.8rem;
+    display: block;
+    line-height: 1.4;
+}
+.stat-sublabel {
+    font-family: var(--fuente-titulos);
+    font-size: 0.75rem;
+    color: var(--azul-superficie-teal);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+/* ===== SECCIÓN MISIÓN REDISEÑADA ===== */
+.mision-section {
+    background: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    padding: 7rem 5%;
+    position: relative;
+    overflow: hidden;
+}
+.mision-section::after {
+    content: 'PRI';
+    position: absolute;
+    right: -2%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: var(--fuente-titulos);
+    font-size: 25vw;
+    font-weight: 900;
+    color: rgba(2,26,54,0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+}
+.mision-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 5rem;
+    align-items: center;
+    position: relative; z-index: 1;
+}
+.mision-tag {
+    display: inline-block;
+    background: var(--naranja-atardecer);
+    color: white;
+    padding: 0.4rem 1rem;
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    box-shadow: 3px 3px 0 var(--azul-deep-tumaco);
+}
+.mision-h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    color: var(--azul-deep-tumaco);
+}
+.mision-h2 em {
+    font-style: normal;
+    color: var(--naranja-atardecer);
+}
+.mision-p {
+    font-family: var(--fuente-textos);
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: #334155;
+    margin-bottom: 1.2rem;
+}
+.founder-card {
+    background: var(--azul-deep-tumaco);
+    color: var(--blanco-espuma);
+    padding: 3rem;
+    border: 3px solid var(--azul-deep-tumaco);
+    box-shadow: 10px 10px 0 var(--naranja-atardecer);
+    position: relative;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.founder-card:hover {
+    transform: translate(-4px, -4px);
+    box-shadow: 14px 14px 0 var(--naranja-atardecer);
+}
+.founder-card::before {
+    content: '"';
+    position: absolute;
+    top: -1.5rem; left: 1.5rem;
+    font-size: 8rem;
+    font-family: Georgia, serif;
+    color: var(--naranja-atardecer);
+    line-height: 1;
+    opacity: 0.4;
+}
+.founder-name {
+    font-family: var(--fuente-titulos);
+    font-size: 1.4rem;
+    margin-bottom: 0.3rem;
+    color: var(--oro-sol);
+}
+.founder-role {
+    font-family: var(--fuente-textos);
+    font-size: 0.9rem;
+    color: var(--azul-superficie-teal);
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+.founder-quote {
+    font-family: var(--fuente-textos);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #cbd5e1;
+}
+.img-founder {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    border: 3px solid var(--naranja-atardecer);
+    box-shadow: 4px 4px 0 var(--naranja-atardecer);
+    object-fit: cover;
+    object-position: center top;
+    margin-bottom: 1.2rem;
+    display: block;
+}
+@media (min-width: 769px) {
+    .img-founder { width: 110px; height: 110px; }
+}
+
+/* ===== SECCIÓN NIVELES / FASES MEJORADA ===== */
+.niveles-section {
+    background: linear-gradient(to bottom, #031428, #010d1a);
+    padding: 7rem 5%;
+    position: relative;
+}
+.niveles-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 5rem;
+}
+.niveles-header h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    color: var(--blanco-espuma);
+    margin-bottom: 1rem;
+}
+.niveles-header p {
+    font-family: var(--fuente-textos);
+    color: #94a3b8;
+    font-size: 1.15rem;
+    line-height: 1.6;
+}
+.niveles-track {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+}
+.niveles-track::before {
+    content: '';
+    position: absolute;
+    left: 42px;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--naranja-atardecer), var(--azul-superficie-teal), transparent);
+}
+.nivel-item {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    align-items: center;
+}
+.nivel-num-circle {
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: rgba(2, 26, 54, 0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 3px solid var(--naranja-atardecer);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    flex-shrink: 0;
+    box-shadow: 0 0 24px rgba(255,94,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: all 0.3s ease;
+    position: relative; z-index: 2;
+    cursor: default;
+}
+.nivel-num-circle:hover {
+    background: rgba(255,94,0,0.85);
+    box-shadow: 0 0 36px rgba(255,94,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+    transform: scale(1.08) rotate(5deg);
+}
+.nivel-num-circle span:first-child { font-size: 0.65rem; color: var(--oro-sol); letter-spacing: 2px; }
+.nivel-num-circle span:last-child { font-size: 1.8rem; color: var(--blanco-espuma); line-height: 1; }
+.nivel-body {
+    border-radius: 1rem;
+    padding: 2rem;
+    position: relative;
+    transition: all 0.35s ease;
+}
+.nivel-body:hover {
+    background: rgba(255, 94, 0, 0.08) !important;
+    border-color: rgba(255, 94, 0, 0.32) !important;
+    transform: translateX(8px);
+}
+.nivel-grado {
+    font-family: var(--fuente-titulos);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--azul-superficie-teal);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+.nivel-body h3 {
+    font-family: var(--fuente-titulos);
+    font-size: 1.4rem;
+    color: var(--blanco-espuma);
+    margin-bottom: 0.8rem;
+}
+.nivel-body p {
+    font-family: var(--fuente-textos);
+    color: #94a3b8;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* ===== SECCIÓN IMPACTO / TIMELINE ===== */
+.impacto-section {
+    background: var(--blanco-espuma);
+    color: var(--azul-deep-tumaco);
+    padding: 7rem 5%;
+}
+.impacto-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.impacto-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+.impacto-header h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    color: var(--azul-deep-tumaco);
+    margin-bottom: 1rem;
+}
+.impacto-header p {
+    font-family: var(--fuente-textos);
+    color: #64748b;
+    font-size: 1.15rem;
+}
+.timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+}
+.timeline-card {
+    background: var(--azul-deep-tumaco);
+    color: var(--blanco-espuma);
+    padding: 2.5rem 2rem;
+    border: 2px solid var(--azul-deep-tumaco);
+    box-shadow: 6px 6px 0 #000;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+.timeline-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 4px; width: 0;
+    background: var(--naranja-atardecer);
+    transition: width 0.4s ease;
+}
+.timeline-card:hover::after { width: 100%; }
+.timeline-card:hover { transform: translate(-4px, -4px); box-shadow: 10px 10px 0 var(--naranja-atardecer); }
+.timeline-num {
+    font-family: var(--fuente-titulos);
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    color: var(--naranja-atardecer);
+    margin-bottom: 1rem;
+    display: block;
+}
+.timeline-card h3 {
+    font-family: var(--fuente-titulos);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+.timeline-card p {
+    font-family: var(--fuente-textos);
+    font-size: 0.98rem;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+/* ===== SECCIÓN CTA FINAL ===== */
+.cta-final {
+    background: linear-gradient(135deg, var(--naranja-atardecer) 0%, #c44700 100%);
+    padding: 8rem 5%;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.cta-final::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+        45deg, transparent, transparent 10px,
+        rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 11px
+    );
+}
+.cta-final h2 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    color: var(--blanco-espuma);
+    text-shadow: 4px 4px 0 rgba(0,0,0,0.3);
+    margin-bottom: 1.5rem;
+    position: relative; z-index: 1;
+}
+.cta-final p {
+    font-family: var(--fuente-textos);
+    font-size: 1.3rem;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 3rem;
+    position: relative; z-index: 1;
+}
+.cta-buttons { position: relative; z-index: 1; display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+.btn-cta-white {
+    background: var(--blanco-espuma);
+    color: var(--naranja-atardecer);
+    padding: 1.2rem 2.5rem;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 3px solid #000;
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+.btn-cta-white:hover { transform: translate(-3px,-3px); box-shadow: 9px 9px 0 rgba(0,0,0,0.3); }
+.btn-cta-dark {
+    background: transparent;
+    color: var(--blanco-espuma);
+    padding: 1.2rem 2.5rem;
+    font-family: var(--fuente-titulos);
+    font-weight: 900;
+    font-size: 1.1rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: 3px solid rgba(255,255,255,0.7);
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    display: inline-block;
+    border-radius: 0.65rem;
+}
+.btn-cta-dark:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translate(-3px,-3px);
+    box-shadow: 9px 9px 0 rgba(0,0,0,0.2);
+}
+
+/* ===== TOOLTIP FLOTANTE EN HERO ===== */
+.hero-tooltip {
+    position: absolute;
+    background: rgba(2,26,54,0.95);
+    border: 1px solid var(--naranja-atardecer);
+    color: var(--blanco-espuma);
+    padding: 0.8rem 1.2rem;
+    font-family: var(--fuente-titulos);
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    white-space: nowrap;
+}
+
+/* ===== PROGRESS BAR NIVELES ===== */
+.nivel-progress {
+    height: 4px;
+    background: rgba(255,255,255,0.05);
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+.nivel-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--naranja-atardecer), var(--oro-sol));
+    width: 0%;
+    transition: width 1.5s ease;
+}
+.nivel-body.visible .nivel-progress-fill { }
+
+/* Responsive */
+@media (max-width: 900px) {
+    .mision-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .niveles-track::before { left: 38px; }
+    .nivel-item { grid-template-columns: 76px 1fr; }
+    .nivel-num-circle { width: 76px; height: 76px; }
+}
+@media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .cta-buttons { flex-direction: column; align-items: center; }
+}
+</style>
+<script src="pri-modal.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ── LOGO MÓVIL: fix definitivo — carga después de style.css ── */
+@media (max-width: 768px) {
+    #mainNav .logo-container,
+    #mainNav .logo-container .logo-link,
+    #mainNav .logo-container .logo-link > div { overflow: visible !important; flex-shrink: 0 !important; max-width: none !important; }
+    #mainNav .logo-container h2 { font-size: 0.62rem !important; white-space: nowrap !important; overflow: visible !important; text-overflow: unset !important; max-width: none !important; letter-spacing: 0.4px !important; }
+    #mainNav .logo-container p { font-size: 0.28rem !important; white-space: normal !important; overflow: visible !important; text-overflow: unset !important; max-width: 130px !important; line-height: 1.3 !important; letter-spacing: 0.5px !important; }
+}
+</style>
 </head>
 <body>
 
-    <!-- ==================== MENÚ DE NAVEGACIÓN ==================== -->
-    <header class="navbar">
-       <div class="logo-container">
-            <a href="index.html" class="logo-link">
-                <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
-                <h2>PROGRAMA-PRI</h2>
-            </a>
+<!-- Cursor personalizado -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Barra de progreso de lectura -->
+<div id="reading-bar"></div>
+
+<!-- ==================== NAVBAR ==================== -->
+<header class="navbar" id="mainNav">
+    <div class="logo-container">
+        <a href="index.html" class="logo-link">
+            <img src="logo.png" alt="Logo PROGRAMA-PRI" class="logo-img">
+            <div><h2>PROGRAMA-PRI</h2><p>El Pacífico Renaciendo con Ingeniería</p></div>
+        </a>
+    </div>
+    <div class="menu-toggle" id="mobile-menu">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </div>
+    <nav>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Inicio</a></li>
+            <li><a href="ppri.html">Sobre PRI</a></li>
+            <li><a href="preicfes.html">PRE-ICFES</a></li>
+            <li><a href="pre-test.html">PRE-TEST</a></li>
+            <li><a href="docentes.html">Docentes</a></li>
+            <li><a href="productos.html">Productos</a></li>
+            <li><a href="login.html" class="btn-login">Inicia Sesión</a></li>
+        </ul>
+    </nav>
+    <div id="nav-backdrop"></div>
+</header>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Video animación oceánica (fondo del Hero) -->
+    <div id="hero-video-bg" style="position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;">
+        <video autoplay loop muted playsinline
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);opacity:0.4;">
+            <source src="ANIMACION1.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="ocean-system cloudy-theme">
+        <div class="natural-sky">
+            <svg width="100%" height="100%" viewBox="0 0 1000 500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#1b232e" />
+                        <stop offset="40%" stop-color="#2d3a4b" />
+                        <stop offset="70%" stop-color="#465669" />
+                        <stop offset="100%" stop-color="#5c6d81" />
+                    </linearGradient>
+                    <!-- Blur base nube: muy suave para forma -->
+                    <filter id="cBlur1" x="-15%" y="-30%" width="130%" height="160%">
+                        <feGaussianBlur stdDeviation="10"/>
+                    </filter>
+                    <!-- Blur cuerpo nube: medio -->
+                    <filter id="cBlur2" x="-10%" y="-20%" width="120%" height="140%">
+                        <feGaussianBlur stdDeviation="5"/>
+                    </filter>
+                    <!-- Blur top: suave y nítido -->
+                    <filter id="cBlur3" x="-8%" y="-15%" width="116%" height="130%">
+                        <feGaussianBlur stdDeviation="2.5"/>
+                    </filter>
+                    <style>
+                        @keyframes cDrift1{0%,100%{transform:translateX(0)}50%{transform:translateX(28px)}}
+                        @keyframes cDrift2{0%,100%{transform:translateX(0)}50%{transform:translateX(-22px)}}
+                        @keyframes cDrift3{0%,100%{transform:translateX(0)}50%{transform:translateX(18px)}}
+                        @keyframes twk1{0%,100%{opacity:0.95}45%{opacity:0.35}}
+                        @keyframes twk2{0%,100%{opacity:0.80}55%{opacity:0.20}}
+                        @keyframes twk3{0%,100%{opacity:0.65}38%{opacity:0.10}}
+                        @keyframes twk4{0%,100%{opacity:0.90}62%{opacity:0.40}}
+                        .cld1{animation:cDrift1 70s ease-in-out infinite}
+                        .cld2{animation:cDrift2 85s ease-in-out infinite 8s}
+                        .cld3{animation:cDrift3 60s ease-in-out infinite 4s}
+                        .s1{animation:twk1 2.8s ease-in-out infinite}
+                        .s2{animation:twk2 3.6s ease-in-out infinite}
+                        .s3{animation:twk3 4.2s ease-in-out infinite}
+                        .s4{animation:twk4 2.2s ease-in-out infinite}
+                    </style>
+                </defs>
+                <rect id="sky-rect" width="100%" height="100%" fill="url(#skyGradient)" style="transition:opacity 1.5s ease"/>
+
+                <!-- ── ESTRELLAS — visibles de noche ── -->
+                <g id="stars-layer" style="opacity:0;transition:opacity 3s ease">
+                    <!-- Grandes brillantes -->
+                    <circle class="s1" cx="68"  cy="22"  r="2.0" fill="white"/>
+                    <circle class="s2" cx="195" cy="14"  r="1.8" fill="#d8e8ff"/>
+                    <circle class="s3" cx="340" cy="28"  r="1.6" fill="white"/>
+                    <circle class="s4" cx="488" cy="10"  r="2.2" fill="#ffe8c0"/>
+                    <circle class="s1" cx="612" cy="18"  r="1.9" fill="white"/>
+                    <circle class="s2" cx="755" cy="8"   r="1.7" fill="#d8e8ff"/>
+                    <circle class="s3" cx="880" cy="25"  r="2.0" fill="white"/>
+                    <circle class="s4" cx="960" cy="15"  r="1.5" fill="#ffe8c0"/>
+                    <!-- Medianas -->
+                    <circle class="s2" cx="38"  cy="55"  r="1.2" fill="white"/>
+                    <circle class="s3" cx="130" cy="44"  r="1.1" fill="#e8f0ff"/>
+                    <circle class="s1" cx="260" cy="60"  r="1.3" fill="white"/>
+                    <circle class="s4" cx="380" cy="42"  r="1.0" fill="white"/>
+                    <circle class="s2" cx="440" cy="70"  r="1.2" fill="#ffe8c0"/>
+                    <circle class="s3" cx="560" cy="52"  r="1.1" fill="white"/>
+                    <circle class="s1" cx="670" cy="40"  r="1.4" fill="#d8e8ff"/>
+                    <circle class="s4" cx="800" cy="58"  r="1.0" fill="white"/>
+                    <circle class="s2" cx="920" cy="48"  r="1.2" fill="white"/>
+                    <circle class="s3" cx="990" cy="35"  r="1.0" fill="#e8f0ff"/>
+                    <!-- Pequeñas -->
+                    <circle class="s1" cx="85"  cy="90"  r="0.8" fill="white"/>
+                    <circle class="s4" cx="165" cy="78"  r="0.9" fill="white"/>
+                    <circle class="s2" cx="290" cy="96"  r="0.8" fill="#ffe8c0"/>
+                    <circle class="s3" cx="415" cy="82"  r="0.7" fill="white"/>
+                    <circle class="s1" cx="520" cy="100" r="0.9" fill="white"/>
+                    <circle class="s4" cx="635" cy="88"  r="0.8" fill="#d8e8ff"/>
+                    <circle class="s2" cx="720" cy="105" r="0.7" fill="white"/>
+                    <circle class="s3" cx="845" cy="92"  r="0.8" fill="white"/>
+                    <circle class="s1" cx="935" cy="80"  r="0.9" fill="#ffe8c0"/>
+                    <!-- Muy pequeñas dispersas -->
+                    <circle class="s3" cx="18"  cy="120" r="0.6" fill="rgba(255,255,255,0.7)"/>
+                    <circle class="s2" cx="220" cy="118" r="0.6" fill="rgba(255,255,255,0.7)"/>
+                    <circle class="s4" cx="360" cy="130" r="0.5" fill="rgba(255,255,255,0.6)"/>
+                    <circle class="s1" cx="475" cy="122" r="0.6" fill="rgba(220,235,255,0.7)"/>
+                    <circle class="s3" cx="590" cy="135" r="0.5" fill="rgba(255,255,255,0.6)"/>
+                    <circle class="s2" cx="710" cy="115" r="0.6" fill="rgba(255,255,255,0.7)"/>
+                    <circle class="s4" cx="870" cy="125" r="0.5" fill="rgba(255,248,200,0.7)"/>
+                    <circle class="s1" cx="980" cy="110" r="0.6" fill="rgba(255,255,255,0.6)"/>
+                    <!-- Estrellas en media altura -->
+                    <circle class="s2" cx="50"  cy="155" r="0.7" fill="rgba(255,255,255,0.5)"/>
+                    <circle class="s3" cx="310" cy="162" r="0.6" fill="rgba(255,255,255,0.5)"/>
+                    <circle class="s4" cx="550" cy="150" r="0.5" fill="rgba(255,248,200,0.5)"/>
+                    <circle class="s1" cx="790" cy="158" r="0.6" fill="rgba(255,255,255,0.5)"/>
+                    <!-- Cruz del Sur (4 estrellas en patrón) -->
+                    <circle class="s1" cx="748" cy="72"  r="1.8" fill="white"/>
+                    <circle class="s1" cx="762" cy="88"  r="1.4" fill="white"/>
+                    <circle class="s2" cx="775" cy="74"  r="1.0" fill="white"/>
+                    <circle class="s3" cx="748" cy="88"  r="0.9" fill="rgba(255,255,255,0.7)"/>
+                </g>
+
+                <!-- ── NUBES ATMOSFÉRICAS — visibles de día/atardecer ── -->
+                <g id="sky-clouds" style="opacity:0;transition:opacity 2s ease">
+                    <!-- Nube 1 izquierda -->
+                    <g class="cld1">
+                        <!-- base muy difusa -->
+                        <ellipse cx="155" cy="90" rx="145" ry="18" fill="rgba(200,215,235,0.28)" filter="url(#cBlur1)"/>
+                        <!-- cuerpo principal -->
+                        <ellipse cx="140" cy="76" rx="110" ry="14" fill="rgba(255,255,255,0.50)" filter="url(#cBlur2)"/>
+                        <ellipse cx="175" cy="68" rx="80"  ry="12" fill="rgba(255,255,255,0.65)" filter="url(#cBlur2)"/>
+                        <!-- top brillante -->
+                        <ellipse cx="162" cy="62" rx="60"  ry="9"  fill="rgba(255,255,255,0.82)" filter="url(#cBlur3)"/>
+                        <ellipse cx="198" cy="65" rx="42"  ry="8"  fill="rgba(255,255,255,0.72)" filter="url(#cBlur3)"/>
+                    </g>
+                    <!-- Nube 2 centro, grande -->
+                    <g class="cld2">
+                        <ellipse cx="560" cy="72" rx="185" ry="20" fill="rgba(200,215,235,0.22)" filter="url(#cBlur1)"/>
+                        <ellipse cx="545" cy="58" rx="145" ry="16" fill="rgba(255,255,255,0.45)" filter="url(#cBlur2)"/>
+                        <ellipse cx="575" cy="46" rx="108" ry="14" fill="rgba(255,255,255,0.62)" filter="url(#cBlur2)"/>
+                        <ellipse cx="555" cy="38" rx="75"  ry="11" fill="rgba(255,255,255,0.78)" filter="url(#cBlur3)"/>
+                        <ellipse cx="605" cy="42" rx="58"  ry="10" fill="rgba(255,255,255,0.70)" filter="url(#cBlur3)"/>
+                        <ellipse cx="520" cy="50" rx="45"  ry="9"  fill="rgba(255,255,255,0.60)" filter="url(#cBlur3)"/>
+                    </g>
+                    <!-- Nube 3 derecha -->
+                    <g class="cld3">
+                        <ellipse cx="858" cy="80" rx="130" ry="16" fill="rgba(200,215,235,0.25)" filter="url(#cBlur1)"/>
+                        <ellipse cx="845" cy="65" rx="100" ry="13" fill="rgba(255,255,255,0.48)" filter="url(#cBlur2)"/>
+                        <ellipse cx="862" cy="55" rx="72"  ry="11" fill="rgba(255,255,255,0.65)" filter="url(#cBlur3)"/>
+                        <ellipse cx="892" cy="60" rx="50"  ry="9"  fill="rgba(255,255,255,0.58)" filter="url(#cBlur3)"/>
+                    </g>
+                </g>
+            </svg>
         </div>
         
-        <!-- ESTE ES EL NUEVO BOTÓN HAMBURGUESA -->
-        <div class="menu-toggle" id="mobile-menu">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
+        <div class="animated-sun">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="svg-sun">
+                <defs>
+                    <radialGradient id="sunCore" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#fff7a0"/>
+                        <stop offset="35%" stop-color="#FFD700"/>
+                        <stop offset="70%" stop-color="#FFA500"/>
+                        <stop offset="100%" stop-color="#FF6B00" stop-opacity="0.6"/>
+                    </radialGradient>
+                    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stop-color="#FFD700" stop-opacity="0.4"/>
+                        <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
+                    </radialGradient>
+                    <filter id="sunBlur"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
+                </defs>
+                <circle cx="100" cy="100" r="90" fill="url(#sunGlow)" class="sun-corona"/>
+                <g class="sun-rays-long" transform-origin="100 100">
+                    <line x1="100" y1="5" x2="100" y2="30" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="100" y1="170" x2="100" y2="195" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="5" y1="100" x2="30" y2="100" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="170" y1="100" x2="195" y2="100" stroke="#FFD700" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+                    <line x1="28" y1="28" x2="48" y2="48" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="152" y1="152" x2="172" y2="172" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="172" y1="28" x2="152" y2="48" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                    <line x1="28" y1="172" x2="48" y2="152" stroke="#FFD700" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                </g>
+                <circle cx="100" cy="100" r="42" fill="url(#sunCore)" filter="url(#sunBlur)"/>
+                <circle cx="85" cy="85" r="12" fill="white" opacity="0.25"/>
+            </svg>
         </div>
 
-        <nav>
-            <ul class="nav-links">
-                <li><a href="index.html" class="active">Inicio</a></li>
-                <li><a href="ppri.html">Sobre PRI</a></li>
-                <li><a href="pre-icfes.html">PRE-ICFES</a></li>
-                <li><a href="pre-test.html">PRE-TEST</a></li>
-                <li><a href="docentes.html">Docentes</a></li>
-                 <li><a href="productos.html">Productos</a></li>
-                <li><a href="login.html" class="btn-login">Acceso Total</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <!-- ==================== SECCIÓN HERO (OCÉANO REALISTA MAXIMALISTA) ==================== -->
-    <section class="hero-section">
-        
-        <!-- Capas de la iluminación maximalista -->
-        <div class="sky-background"></div>
-        <div class="sun-reflection"></div> <!-- El destello del sol pegando en el agua -->
-        
-        <!-- Contenedor del Océano Realista -->
-        <div class="ocean-system">
-            <!-- Capas de olas con textura orgánica -->
-            <div class="wave wave-deep"></div>
-            <div class="wave wave-mid"></div>
-            <div class="wave wave-surface"></div>
-            <div class="wave wave-surf"></div>
-            <div class="wave wave-foam"></div> <!-- Espuma detallada -->
-            
-            <!-- Capa de partículas de brillo (NUEVO) -->
-            <div class="ocean-shimmer"></div>
+        <div class="tumaco-rock" id="tumaco-rock-el">
+            <svg viewBox="0 0 520 620" preserveAspectRatio="xMaxYMax slice" class="svg-morro" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="rockTex2" x="-10%" y="-10%" width="120%" height="120%">
+                        <feTurbulence type="fractalNoise" baseFrequency="0.032 0.048" numOctaves="5" seed="17" result="n"/>
+                        <feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+                    </filter>
+                    <filter id="vegTex2" x="-6%" y="-6%" width="112%" height="112%">
+                        <feTurbulence type="turbulence" baseFrequency="0.045 0.065" numOctaves="4" seed="7" result="n2"/>
+                        <feDisplacementMap in="SourceGraphic" in2="n2" scale="6" xChannelSelector="G" yChannelSelector="R"/>
+                    </filter>
+                    <filter id="softShadow2"><feGaussianBlur stdDeviation="5"/></filter>
+                    <linearGradient id="faceLit" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#cbbf9a"/>
+                        <stop offset="55%" stop-color="#8a7558"/>
+                        <stop offset="100%" stop-color="#2e1e0e"/>
+                    </linearGradient>
+                    <clipPath id="rockClip"><rect width="520" height="620"/></clipPath>
+                </defs>
+                <g clip-path="url(#rockClip)">
+                    <ellipse cx="260" cy="614" rx="160" ry="10" fill="#000" opacity="0.30" filter="url(#softShadow2)"/>
+                    <path d="M 80,620 C 85,592 92,562 102,532 C 113,500 127,468 144,438 C 162,406 182,376 204,348 C 226,320 250,294 272,270 C 290,250 306,230 318,212 C 328,196 334,182 338,170 C 342,158 344,148 346,140 C 350,126 352,122 358,116 C 362,119 364,126 368,138 C 373,155 380,175 389,200 C 400,228 412,256 425,285 C 438,316 450,347 462,378 C 472,408 480,437 488,466 C 493,494 494,521 494,547 C 492,572 486,595 483,607 C 478,614 474,620 474,620 Z" fill="url(#faceLit)" filter="url(#rockTex2)"/>
+                    <path d="M 296,148 C 282,136 266,128 250,126 C 232,124 216,130 206,142 C 196,154 196,170 206,182 C 216,194 232,200 250,202 C 268,202 286,196 300,186 C 314,176 322,163 320,152 Z" fill="#15441a" filter="url(#vegTex2)"/>
+                    <path d="M 316,120 C 302,106 284,98 266,96 C 246,94 228,102 218,116 C 208,130 210,148 224,160 C 236,172 256,178 276,178 C 294,178 312,171 323,158 C 332,148 332,134 324,124 Z" fill="#2e8038" filter="url(#vegTex2)"/>
+                    <path d="M 80,620 C 110,612 150,608 200,610 C 260,612 320,614 370,612 C 410,610 445,607 474,612 C 477,614 474,620 474,620 Z" fill="rgba(195,215,230,0.28)" filter="url(#softShadow2)"/>
+                </g>
+            </svg>
+            <!-- Rocas al pie del Morro sumergidas en el mar -->
+            <svg viewBox="0 0 520 80" xmlns="http://www.w3.org/2000/svg" style="position:absolute;bottom:-8px;left:0;width:100%;height:auto;pointer-events:none;">
+                <defs>
+                    <filter id="rockBlur3"><feGaussianBlur stdDeviation="1.5"/></filter>
+                </defs>
+                <!-- Sombra reflejo en el agua -->
+                <ellipse cx="260" cy="70" rx="200" ry="12" fill="rgba(0,0,0,0.25)" filter="url(#rockBlur3)"/>
+                <!-- Roca grande izquierda -->
+                <path d="M 60,72 C 62,58 70,50 82,48 C 96,46 106,54 108,66 C 110,72 108,76 102,78 C 88,80 66,78 60,72 Z" fill="#7a6545"/>
+                <path d="M 68,60 C 74,56 84,55 90,58 C 86,54 80,51 74,52 Z" fill="#a0856c"/>
+                <!-- Roca mediana centro -->
+                <path d="M 200,74 C 202,64 210,57 222,56 C 234,55 242,63 242,72 C 242,78 238,80 228,80 C 214,80 200,78 200,74 Z" fill="#6b5840"/>
+                <path d="M 206,66 C 212,62 220,61 226,64 Z" fill="#9a7d60"/>
+                <!-- Roca pequeña derecha -->
+                <path d="M 360,76 C 361,68 368,63 378,63 C 388,63 394,69 393,76 C 392,80 386,80 376,80 C 366,80 359,78 360,76 Z" fill="#8a7255"/>
+                <!-- Roca mini -->
+                <path d="M 290,78 C 291,73 296,70 302,70 C 308,70 312,73 311,78 C 310,80 306,80 300,80 Z" fill="#7a6545"/>
+                <!-- Agua entre rocas -->
+                <path d="M 108,76 Q 155,68 200,74" stroke="rgba(80,140,180,0.4)" stroke-width="2" fill="none"/>
+                <path d="M 242,74 Q 270,70 290,78" stroke="rgba(80,140,180,0.4)" stroke-width="2" fill="none"/>
+            </svg>
         </div>
 
-        <div class="hero-content">
-            <h1>El Pacífico <span class="highlight">Renaciendo</span> con Ingeniería Propia</h1>
-            <p>Pasamos del diagnóstico a la acción técnica. Aseguramos que el talento de Tumaco lidere la transformación de su territorio.</p>
-            <div class="hero-buttons">
-                <a href="pre-icfes.html" class="btn-primary">Entrena Ahora</a>
-                <a href="#about" class="btn-secondary">Explora PRI</a>
+        <div class="boat-wrapper" id="animBoat">
+            <svg viewBox="0 0 120 55" xmlns="http://www.w3.org/2000/svg" class="svg-boat">
+                <path d="M 8,40 C 14,47 26,51 44,52 C 62,53 80,52 92,50 C 100,48 103,44 100,40 Z" fill="#b0c4d8"/>
+                <path d="M 8,40 L 100,40 C 100,44 96,47 88,49 C 74,51 55,52 38,51 C 24,50 14,47 8,40 Z" fill="#8aacc4"/>
+                <path d="M 12,40 C 18,36 32,32 52,31 C 70,30 84,33 96,40 Z" fill="#d8e8f2"/>
+                <rect x="36" y="21" width="26" height="14" rx="3" fill="#98b8d0"/>
+                <rect x="39" y="23" width="8" height="7" rx="1" fill="#c8e4f4" opacity="0.75"/>
+                <rect x="50" y="23" width="8" height="7" rx="1" fill="#c8e4f4" opacity="0.75"/>
+            </svg>
+        </div>
+
+        <div class="gull g1"><svg viewBox="0 0 60 30"><path class="wl" d="M30 15 C20 5, 5 8, 0 14 C10 17, 22 20, 30 15Z" fill="#dde6f0"/><path class="wr" d="M30 15 C40 5, 55 8, 60 14 C50 17, 38 20, 30 15Z" fill="#c8d4e0"/></svg></div>
+        <div class="gull g2"><svg viewBox="0 0 60 30"><path class="wl" d="M30 15 C20 5, 5 8, 0 14 C10 17, 22 20, 30 15Z" fill="#cdd8e8"/><path class="wr" d="M30 15 C40 5, 55 8, 60 14 C50 17, 38 20, 30 15Z" fill="#b8c8d8"/></svg></div>
+        <div class="gull g3"><svg viewBox="0 0 60 30"><path class="wl" d="M30 15 C20 5, 5 8, 0 14 C10 17, 22 20, 30 15Z" fill="#b8c8da"/><path class="wr" d="M30 15 C40 5, 55 8, 60 14 C50 17, 38 20, 30 15Z" fill="#a8b8cc"/></svg></div>
+
+        <div class="wave wave-deep"></div>
+        <div class="wave wave-mid"></div>
+        <div class="wave wave-surface"></div>
+        <div class="wave wave-surf"></div>
+        <div class="wave wave-foam"></div>
+        <div class="wave-shimmer"></div>
+        <canvas id="fishCanvas" class="fish-canvas"></canvas>
+    </div>
+
+    <div class="hero-content" id="hero-content-block">
+        <h1 class="hero-title">
+            El Pacífico<br>
+            <span class="hero-title-accent">Renaciendo</span><br>
+            con Ingeniería Propia
+        </h1>
+        <p class="hero-subtitle">Pasamos del diagnóstico a la acción técnica. Un programa universitario que transforma el potencial de Tumaco en futuros ingenieros.</p>
+        <div class="hero-buttons">
+            <a href="pre-test.html" class="btn btn-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-right:6px;vertical-align:middle"><polygon points="5 3 19 12 5 21 5 3"/></svg>Entrena Ahora</a>
+            <a href="ppri.html" class="btn btn-secondary">Explora PRI →</a>
+        </div>
+    </div>
+
+    <!-- Indicador de scroll -->
+    <div style="position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:20;text-align:center;animation:bounceDown 2s infinite ease-in-out;">
+        <div style="font-family:var(--fuente-titulos);font-size:0.7rem;letter-spacing:3px;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">SCROLL</div>
+        <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+            <path d="M8 0V20M8 20L2 14M8 20L14 14" stroke="rgba(255,94,0,0.7)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+</section>
+
+<style>
+@keyframes bounceDown { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+</style>
+
+<!-- ==================== ESTADÍSTICAS ANIMADAS ==================== -->
+<section class="stats-section">
+    <div class="stats-grid">
+        <div class="stat-card reveal">
+            <span class="stat-sublabel">Brecha actual</span>
+            <span class="stat-number" data-target="202" data-suffix="">202</span>
+            <span class="stat-label">Puntos promedio regional en Saber 11 vs. estándar nacional</span>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.15s">
+            <span class="stat-sublabel">Meta PRI</span>
+            <span class="stat-number" data-target="36" data-suffix="%">+36%</span>
+            <span class="stat-label">Incremento proyectado en tránsito inmediato a la universidad</span>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.3s">
+            <span class="stat-sublabel">Cobertura</span>
+            <span class="stat-number" data-target="32" data-suffix="">32</span>
+            <span class="stat-label">Estudiantes formados en ciencias exactas e ingeniería en 2025</span>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.45s">
+            <span class="stat-sublabel">Retención</span>
+            <span class="stat-number" data-target="94" data-suffix="%">94%</span>
+            <span class="stat-label">Tasa de permanencia en el programa — por encima del promedio nacional</span>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SECCIÓN MISIÓN ==================== -->
+<section class="mision-section">
+    <div class="mision-inner">
+        <div class="reveal-left">
+            <div class="mision-tag">La Misión</div>
+            <h2 class="mision-h2">Inmersión <em>STEM</em> y Fuerza Psicoemocional</h2>
+            <p class="mision-p">Nuestra metodología cierra la brecha entre el colegio público de Tumaco y la exigencia universitaria. Unimos matemáticas, física y programación con pensamiento crítico para asegurar que no solo ingreses, sino que <strong>lideres</strong>.</p>
+            <p class="mision-p">Operamos bajo el programa PEAMA de la Universidad Nacional, con un modelo de nivelación escalonada que ataca el rezago desde grado 8° hasta el primer semestre universitario.</p>
+            <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap;">
+                <a href="ppri.html" style="display:inline-block;background:var(--azul-deep-tumaco);color:white;padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid var(--azul-deep-tumaco);box-shadow:5px 5px 0 var(--naranja-atardecer);transition:all 0.3s ease;border-radius:0.65rem;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='8px 8px 0 var(--naranja-atardecer)'" onmouseout="this.style.transform='';this.style.boxShadow='5px 5px 0 var(--naranja-atardecer)'">Ver el Programa</a>
+                <a href="#sondeo-stats" style="display:inline-block;background:transparent;color:rgba(255,255,255,0.9);padding:1rem 2rem;font-family:var(--fuente-titulos);font-weight:900;font-size:0.95rem;text-transform:uppercase;text-decoration:none;border:2px solid rgba(255,255,255,0.45);transition:all 0.3s ease;border-radius:0.65rem;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">Ver Métricas</a>
             </div>
         </div>
-    </section>
-
-    <!-- ==================== SECCIÓN SOBRE EL PROGRAMA (Integrada e Intensa) ==================== -->
-    <section id="about" class="about-section">
-        <!-- Textura de fondo ingenieril -->
-        <div class="engineering-grid"></div>
-
-        <article class="maximalist-container">
-            <div class="mission-block">
-                <span class="subtitle">La Misión Técnica</span>
-                <h2>Inmersión STEM y Fuerza Psicoemocional</h2>
-                <p>Nuestra metodología cierra la brecha entre el colegio público y la facultad. Unimos matemáticas básicas, física y programación con pensamiento crítico para asegurar que no solo ingreses, sino que <span class="bold">lideres</span>.</p>
+        <div class="reveal-right">
+            <div class="founder-card">
+                <img src="joseluis.jpg" alt="José Luis Castro Góngora" class="img-founder"
+                     onerror="this.outerHTML='<svg class=\'img-founder\' viewBox=\'0 0 70 70\' xmlns=\'http://www.w3.org/2000/svg\' style=\'width:70px;height:70px;border-radius:50%;border:3px solid var(--naranja-atardecer);display:block;margin-bottom:1.2rem\'><rect width=\'70\' height=\'70\' rx=\'35\' fill=\'#062040\'/><circle cx=\'35\' cy=\'28\' r=\'13\' fill=\'rgba(255,94,0,0.3)\' stroke=\'rgba(255,94,0,0.6)\' stroke-width=\'1.5\'/><ellipse cx=\'35\' cy=\'56\' rx=\'18\' ry=\'12\' fill=\'rgba(255,94,0,0.2)\' stroke=\'rgba(255,94,0,0.4)\' stroke-width=\'1.5\'/><text x=\'35\' y=\'33\' text-anchor=\'middle\' dominant-baseline=\'middle\' font-family=\'Montserrat,sans-serif\' font-weight=\'900\' font-size=\'16\' fill=\'#ff5e00\'>JL</text></svg>'">
+                <div class="founder-name">José Luis Castro Góngora</div>
+                <div class="founder-role">Fundador & Líder — Ingeniería Mecatrónica, UNAL</div>
+                <p class="founder-quote">"Construir ingeniería en el Pacífico no es solo técnica — es acto político, cultural y de amor al territorio. PRI nació de la necesidad propia y se sostiene del compromiso colectivo."</p>
             </div>
-            
-            <div class="founder-block">
-                <!-- Contenedor Maximalista para la foto -->
-                <div class="founder-image-wrapper">
-                    <img src="joseluis.jpg" alt="José Luis Castro" class="founder-img">
-                </div>
-                
-                <div class="founder-text">
-                    <h3>José Luis Castro Góngora</h3>
-                    <p>Líder del Proyecto PRI. Estudiante de Ingeniería Mecatrónica (UNAL) y orgullosamente Tumaqueño. Fundador apostando por la educación, conciencia social y empoderamiento de las siguientes generaciones.</p>
-                </div>
-            </div>
-            
-        </article>
-    </section>
-<!-- Script del Menú Móvil -->
-    <script>
-        const mobileMenu = document.getElementById('mobile-menu');
-        const navLinks = document.querySelector('.nav-links');
+        </div>
+    </div>
+</section>
 
-        mobileMenu.addEventListener('click', () => {
-            mobileMenu.classList.toggle('is-active'); /* Transforma la hamburguesa en X */
-            navLinks.classList.toggle('active');      /* Desliza el menú inmersivo */
+<!-- ==================== NIVELES ACADÉMICOS ==================== -->
+<section class="niveles-section">
+    <div class="niveles-header reveal">
+        <div class="mision-tag" style="background:var(--azul-superficie-teal);box-shadow:3px 3px 0 rgba(0,0,0,0.5);">Estructura Académica</div>
+        <h2>4 Niveles de Inmersión en Ingeniería</h2>
+        <p>Un modelo pedagógico escalonado — desde despertar el interés en grado 8° hasta preparar el choque cultural del primer semestre universitario.</p>
+    </div>
+    <div class="niveles-track">
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal">
+                <span>NIVEL</span>
+                <span>1</span>
+            </div>
+            <div class="nivel-body reveal" data-progress="45">
+                <div class="nivel-grado">Grado 8° · Exploración</div>
+                <h3>Bases y Despertar Científico</h3>
+                <p>Nivelación aritmética elemental, lógica matemática básica y talleres lúdicos diseñados para despertar el interés por la ciencia aplicada al territorio costero del Pacífico.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:45%"></div></div>
+            </div>
+        </div>
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal" style="transition-delay:0.1s">
+                <span>NIVEL</span>
+                <span>2</span>
+            </div>
+            <div class="nivel-body reveal" style="transition-delay:0.1s" data-progress="60">
+                <div class="nivel-grado">Grado 9° · Consolidación</div>
+                <h3>Álgebra y Pensamiento Técnico</h3>
+                <p>Introducción al álgebra matricial, geometría plana, física del movimiento y desarrollo de habilidades lógico-abstractas para resolver problemas complejos con estructura.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:60%"></div></div>
+            </div>
+        </div>
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal" style="transition-delay:0.2s;border-color:var(--azul-superficie-teal)">
+                <span>NIVEL</span>
+                <span>3</span>
+            </div>
+            <div class="nivel-body reveal" style="transition-delay:0.2s" data-progress="78">
+                <div class="nivel-grado">Grado 10° · Profundización</div>
+                <h3>Trigonometría, Física y Química</h3>
+                <p>Trigonometría analítica, mecánica elemental, química inorgánica aplicada y metodologías ágiles orientadas a solucionar problemas reales de ingeniería comunitaria.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:78%"></div></div>
+            </div>
+        </div>
+        <div class="nivel-item">
+            <div class="nivel-num-circle reveal" style="transition-delay:0.3s;border-color:var(--oro-sol)">
+                <span>NIVEL</span>
+                <span>4</span>
+            </div>
+            <div class="nivel-body reveal" style="transition-delay:0.3s" data-progress="100">
+                <div class="nivel-grado">Grado 11° · Inmersión Total</div>
+                <h3>Cálculo, ICFES y Vida Universitaria</h3>
+                <p>Cálculo diferencial pre-universitario, física eléctrica, simulacros intensivos Saber 11 y talleres psicoemocionales para el choque cultural del primer semestre en la universidad.</p>
+                <div class="nivel-progress"><div class="nivel-progress-fill" style="width:100%;background:linear-gradient(90deg,var(--naranja-atardecer),var(--oro-sol))"></div></div>
+            </div>
+        </div>
+    </div>
+    <div style="text-align:center;margin-top:4rem;" class="reveal">
+        <a href="ppri.html" style="display:inline-block;background:var(--naranja-atardecer);color:white;padding:1.2rem 2.5rem;font-family:var(--fuente-titulos);font-weight:900;font-size:1rem;text-transform:uppercase;text-decoration:none;border:2px solid #000;box-shadow:6px 6px 0 #000;transition:all 0.3s ease;border-radius:0.65rem;" onmouseover="this.style.transform='translate(-3px,-3px)';this.style.boxShadow='9px 9px 0 #000'" onmouseout="this.style.transform='';this.style.boxShadow='6px 6px 0 #000'">Ver Programa Completo →</a>
+    </div>
+</section>
+
+<!-- ==================== TIMELINE / HISTORIA ==================== -->
+<section class="impacto-section">
+    <div class="impacto-inner">
+        <div class="impacto-header reveal">
+            <div class="mision-tag" style="background:var(--azul-deep-tumaco);">Historia & Hoja de Ruta</div>
+            <h2>Cómo Nació y Hacia Dónde Va el PRI</h2>
+            <p>De la necesidad propia al sistema educativo colectivo — una trayectoria de acción técnica y voluntad.</p>
+        </div>
+        <div class="timeline-grid">
+            <div class="timeline-card reveal" style="transition-delay:0s">
+                <span class="timeline-num">01 • EL ORIGEN</span>
+                <h3>La Semilla</h3>
+                <p>El proyecto germina de la experiencia propia de estudiantes tumaqueños en la UNAL, decididos a diseñar un plan estructurado para evitar el rezago académico regional.</p>
+            </div>
+            <div class="timeline-card reveal" style="transition-delay:0.12s">
+                <span class="timeline-num" style="color:var(--oro-sol)">02 • PILOTO</span>
+                <h3>Laboratorio Inicial</h3>
+                <p>Despliegue de grupos de control en Tumaco para medir vacíos formativos en ciencias avanzadas y respuestas psicológicas a la presión académica del examen Saber 11.</p>
+            </div>
+            <div class="timeline-card reveal" style="transition-delay:0.24s">
+                <span class="timeline-num" style="color:var(--azul-superficie-teal)">03 • FASE 1</span>
+                <h3>Entrada a las Aulas</h3>
+                <p>Entrada robusta a los colegios públicos asociados, estableciendo un estándar metodológico enfocado en competencias lógicas, analíticas y psicoemocionales.</p>
+            </div>
+            <div class="timeline-card reveal" style="transition-delay:0.36s">
+                <span class="timeline-num" style="color:#a78bfa">04 • ESCALA</span>
+                <h3>Plataforma Digital</h3>
+                <p>Lanzamiento del ecosistema digital con simuladores Pre-Test, panel de métricas en tiempo real y expansión hacia todas las fronteras del municipio de Tumaco.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== SONDEO DIAGNÓSTICO ==================== -->
+<section id="sondeo-stats" style="padding:5rem 0;background:var(--azul-panel,#062040);border-top:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);overflow:hidden;">
+<div style="max-width:1200px;margin:0 auto;padding:0 2rem;">
+
+    <!-- Encabezado -->
+    <div style="text-align:center;margin-bottom:3.5rem;">
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:4px;text-transform:uppercase;color:var(--teal,#38bdf8);margin-bottom:0.75rem;">Sondeo Piloto 2025 · Tumaco, Nariño</p>
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:0.75rem;">Diagnóstico de <span style="color:var(--naranja,#ff5e00);">Nuestros Colegios</span></h2>
+        <p style="color:rgba(255,255,255,0.45);font-size:0.85rem;max-width:560px;margin:0 auto;">Datos reales del sondeo piloto al Programa PRI — <strong style="color:rgba(255,255,255,0.7);">48 participantes únicos</strong> evaluados en 8 instituciones del municipio de Tumaco.</p>
+    </div>
+
+    <!-- BANNER ALERTA DEFICIENCIA -->
+    <div class="diag-alerta reveal-diag">
+        <div style="flex:0 0 auto;text-align:center;min-width:110px;">
+            <p id="stat-def" style="font-family:'Montserrat',sans-serif;font-size:3.2rem;font-weight:900;color:var(--naranja,#ff5e00);line-height:1;margin:0;">0%</p>
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.48rem;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,94,0,0.65);margin-top:0.4rem;line-height:1.5;">No alcanzó<br>nivel aprobatorio</p>
+        </div>
+        <div style="flex:1;min-width:200px;border-left:1px solid rgba(255,94,0,0.25);padding-left:1.5rem;">
+            <h3 style="font-family:'Montserrat',sans-serif;font-size:0.9rem;font-weight:900;color:#fff;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.8px;">Diagnóstico: Brecha Formativa Crítica en Tumaco</h3>
+            <p style="font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.65;margin:0;">El <strong style="color:rgba(255,140,0,0.95);">83.3% de los participantes obtuvo menos del 60%</strong> en el diagnóstico (≤14/25 pts). Solo <strong style="color:#fff;">8 de 48 estudiantes</strong> alcanzaron nivel aprobatorio. Este dato revela la magnitud del rezago formativo que el <strong style="color:var(--teal,#38bdf8);">Programa PRI</strong> busca revertir con talleres, mentoría y acompañamiento psicoeducativo.</p>
+        </div>
+    </div>
+
+    <!-- KPI CARDS con contadores animados -->
+    <div class="diag-kpis-grid">
+        <div class="diag-kpi" style="--kpi-color:var(--naranja,#ff5e00);">
+            <p id="stat-total" class="diag-kpi-num" data-target="48">0</p>
+            <p class="diag-kpi-label">Participantes</p>
+        </div>
+        <div class="diag-kpi" style="--kpi-color:var(--teal,#38bdf8);">
+            <p id="stat-inst" class="diag-kpi-num" data-target="8">0</p>
+            <p class="diag-kpi-label">Instituciones</p>
+        </div>
+        <div class="diag-kpi" style="--kpi-color:var(--oro,#ffd700);">
+            <p id="stat-prom" class="diag-kpi-num" data-target="89" data-decimal="true">0</p>
+            <p class="diag-kpi-label">Puntaje Prom / 25</p>
+        </div>
+        <div class="diag-kpi" style="--kpi-color:#22c55e;">
+            <p id="stat-est" class="diag-kpi-num" data-target="37">0</p>
+            <p class="diag-kpi-label">Est. Bachillerato</p>
+        </div>
+    </div>
+
+    <!-- BLOQUE 1: INSTITUCIONES + PANEL -->
+    <div class="diag-block reveal-diag">
+        <div class="diag-chart-col">
+            <p class="diag-chart-title">🏫 Por Institución Educativa</p>
+            <div style="position:relative;height:260px;"><canvas id="chart-inst"></canvas></div>
+        </div>
+        <div class="diag-explain-col">
+            <div class="diag-explain-badge" style="background:rgba(56,189,248,0.1);border-color:rgba(56,189,248,0.3);">
+                <span style="font-size:1.4rem;line-height:1;">🏫</span>
+            </div>
+            <h4 class="diag-explain-title">Cobertura Institucional</h4>
+            <p class="diag-explain-text">Participaron jóvenes de <strong>8 instituciones distintas</strong> de Tumaco. La <strong>I.E. Misional Santa Teresita</strong> lidera con 17 participantes, seguida de <strong>I.E. Imbili Carretera</strong> con 10.</p>
+            <p class="diag-explain-text">Esta diversidad confirma que la brecha formativa no es exclusiva de un colegio: <em>es un fenómeno estructural del territorio tumaqueño.</em> El Programa PRI prioriza alianzas con estas instituciones para llegar directamente a los salones.</p>
+        </div>
+    </div>
+
+    <!-- BLOQUE 2: PUNTAJES + PANEL (invertido) -->
+    <div class="diag-block diag-block-rev reveal-diag">
+        <div class="diag-chart-col">
+            <p class="diag-chart-title">📊 Distribución de Puntajes (sobre 25 pts)</p>
+            <div style="position:relative;height:260px;"><canvas id="chart-puntajes"></canvas></div>
+        </div>
+        <div class="diag-explain-col" style="order:-1;">
+            <div class="diag-explain-badge" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.3);">
+                <span style="font-size:1.4rem;line-height:1;">⚠️</span>
+            </div>
+            <h4 class="diag-explain-title">La Brecha en Números</h4>
+            <p class="diag-explain-text">El <strong>68% de los estudiantes obtuvo entre 0 y 10 puntos</strong> sobre 25, concentrándose en los rangos más bajos. El nivel aprobatorio (≥15 pts) fue alcanzado únicamente por 8 personas.</p>
+            <p class="diag-explain-text">Solo <strong>3 participantes</strong> (6.25%) alcanzaron más de 20 puntos. Estos datos justifican la urgencia del Programa PRI y permiten proyectar su impacto potencial sobre la tasa de admisión universitaria regional.</p>
+        </div>
+    </div>
+
+    <!-- BLOQUE 3: ÁREAS + PANEL -->
+    <div class="diag-block reveal-diag">
+        <div class="diag-chart-col">
+            <p class="diag-chart-title">📚 Áreas de Mayor Demanda</p>
+            <div style="position:relative;height:260px;"><canvas id="chart-areas"></canvas></div>
+        </div>
+        <div class="diag-explain-col">
+            <div class="diag-explain-badge" style="background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);">
+                <span style="font-size:1.4rem;line-height:1;">🎯</span>
+            </div>
+            <h4 class="diag-explain-title">¿Qué Quieren Aprender?</h4>
+            <p class="diag-explain-text"><strong>Matemáticas Básicas</strong> concentra el mayor interés — el <strong>58% de los participantes</strong> la eligió como área prioritaria. Esto confirma que es el vacío más urgente del territorio.</p>
+            <p class="diag-explain-text"><strong>Programación</strong> emergió como segunda área (9 solicitudes), reflejando el interés creciente por competencias digitales. PRI diseñó su malla curricular alrededor de estas demandas reales.</p>
+        </div>
+    </div>
+
+    <!-- BLOQUE 4: NIVEL EDUCATIVO + PANEL (invertido) -->
+    <div class="diag-block diag-block-rev reveal-diag">
+        <div class="diag-chart-col">
+            <p class="diag-chart-title">🎓 Por Nivel Educativo</p>
+            <div style="position:relative;height:260px;"><canvas id="chart-nivel"></canvas></div>
+        </div>
+        <div class="diag-explain-col" style="order:-1;">
+            <div class="diag-explain-badge" style="background:rgba(167,139,250,0.1);border-color:rgba(167,139,250,0.3);">
+                <span style="font-size:1.4rem;line-height:1;">🎓</span>
+            </div>
+            <h4 class="diag-explain-title">Población Objetivo</h4>
+            <p class="diag-explain-text">La mayoría de participantes cursa <strong>grado 11° (once)</strong> — el año más crítico antes del Saber 11. Intervenir en este momento específico <em>maximiza el impacto del programa.</em></p>
+            <p class="diag-explain-text">También participaron <strong>estudiantes universitarios</strong>, evidenciando que la brecha formativa persiste en educación superior. PRI actúa como refuerzo preventivo de la deserción universitaria en la región.</p>
+        </div>
+    </div>
+
+    <!-- BLOQUE GRADOS OBJETIVO -->
+    <div class="reveal-diag" style="margin-bottom:1.5rem;background:linear-gradient(135deg,rgba(56,189,248,0.07),rgba(56,189,248,0.02));border:1px solid rgba(56,189,248,0.2);padding:2rem 2.5rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;border-radius:1.1rem;">
+        <div style="flex:0 0 auto;text-align:center;">
+            <p style="font-family:'Montserrat',sans-serif;font-size:2.8rem;font-weight:900;color:var(--teal,#38bdf8);line-height:1;margin:0;">8°→11°</p>
+            <p style="font-family:'Montserrat',sans-serif;font-size:0.48rem;letter-spacing:3px;text-transform:uppercase;color:rgba(56,189,248,0.6);margin-top:0.35rem;">Grados objetivo<br>del programa</p>
+        </div>
+        <div style="flex:1;min-width:200px;border-left:1px solid rgba(56,189,248,0.2);padding-left:2rem;">
+            <h3 style="font-family:'Montserrat',sans-serif;font-size:0.85rem;font-weight:900;color:#fff;margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.8px;">Nos enfocamos en los grados 8°, 9°, 10° y 11°</h3>
+            <p style="font-size:0.78rem;color:rgba(255,255,255,0.58);line-height:1.68;margin:0;">La brecha formativa más crítica se concentra en el bachillerato medio y superior, exactamente cuando los jóvenes se preparan para el <strong style="color:rgba(255,255,255,0.85);">Examen ICFES Saber 11</strong>. El Programa PRI interviene en estos 4 grados con talleres, mentoría y simulacros para que cada estudiante llegue a la prueba con bases sólidas y confianza académica — aumentando su probabilidad de acceso a la educación superior.</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;flex:0 0 auto;">
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">8° GRADO</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">9° GRADO</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(56,189,248,0.18);border:1px solid rgba(56,189,248,0.4);color:var(--teal,#38bdf8);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">10° GRADO</span>
+            <span style="font-family:'Montserrat',sans-serif;font-size:0.6rem;font-weight:800;background:rgba(255,94,0,0.15);border:1px solid rgba(255,94,0,0.4);color:var(--naranja,#ff5e00);padding:.35rem .7rem;letter-spacing:1px;border-radius:0.5rem;">11° ICFES ⭐</span>
+        </div>
+    </div>
+
+    <!-- CTA participar -->
+    <div style="text-align:center;padding-top:2rem;">
+        <a href="sondeo.html" style="font-family:'Montserrat',sans-serif;font-size:0.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:var(--naranja,#ff5e00);color:#fff;text-decoration:none;padding:0.9rem 2rem;display:inline-block;margin-right:0.75rem;border-radius:0.65rem;">📝 Registrarme al Sondeo</a>
+        <span style="font-family:'Montserrat',sans-serif;font-size:0.65rem;color:rgba(255,255,255,0.3);">¿Eres nuevo? Ingresa tus datos y únete al programa.</span>
+    </div>
+</div>
+</section>
+
+<style>
+/* ========= DIAGNÓSTICO — ESTILOS ========= */
+.diag-alerta {
+    background: linear-gradient(135deg,rgba(255,94,0,0.1),rgba(200,20,0,0.05));
+    border: 1px solid rgba(255,94,0,0.28);
+    padding: 1.75rem 2rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+.diag-kpis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.diag-kpi {
+    background: rgba(2,26,54,0.75);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.diag-kpi::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--kpi-color);
+    transform: scaleX(0);
+    transition: transform 0.8s ease 0.3s;
+}
+.diag-kpi.animated::before { transform: scaleX(1); }
+.diag-kpi:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); }
+.diag-kpi-num {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--kpi-color);
+    line-height: 1;
+    margin: 0;
+}
+.diag-kpi-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.38);
+    margin-top: 0.4rem;
+}
+.diag-block {
+    display: flex;
+    gap: 0;
+    margin-bottom: 1.5rem;
+    background: rgba(2,26,54,0.55);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: border-color 0.3s ease;
+}
+.diag-block:hover { border-color: rgba(255,255,255,0.12); }
+.diag-chart-col {
+    flex: 1;
+    padding: 1.75rem;
+    border-right: 1px solid rgba(255,255,255,0.06);
+}
+.diag-explain-col {
+    flex: 0 0 270px;
+    padding: 1.75rem;
+    background: rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.diag-chart-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.diag-explain-badge {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.diag-explain-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    margin: 0;
+}
+.diag-explain-text {
+    font-size: 0.75rem;
+    line-height: 1.68;
+    color: rgba(255,255,255,0.52);
+    margin: 0;
+}
+.diag-explain-text strong { color: rgba(255,255,255,0.85); }
+.diag-explain-text em { color: rgba(255,255,255,0.7); font-style: italic; }
+/* Barras horizontales */
+.sondeo-bar-row { margin-bottom: 0.9rem; }
+.sondeo-bar-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.63rem;
+    color: rgba(255,255,255,0.52);
+    margin-bottom: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+}
+.sondeo-bar-label span { color: rgba(255,255,255,0.82); font-weight: 700; }
+.sondeo-bar-track { background: rgba(255,255,255,0.06); height: 7px; }
+.sondeo-bar-fill { height: 7px; transition: width 1.3s cubic-bezier(0.4,0,0.2,1); width: 0; }
+/* Reveal animaciones */
+.reveal-diag { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.reveal-diag.vis { opacity: 1; transform: translateY(0); }
+/* Responsive */
+@media (max-width: 720px) {
+    .diag-block, .diag-block-rev { flex-direction: column !important; }
+    .diag-explain-col { flex: 0 0 auto; order: 1 !important; border-left: none; border-top: 1px solid rgba(255,255,255,0.06); }
+    .diag-chart-col { border-right: none; }
+    .diag-alerta { flex-direction: column; }
+}
+</style>
+
+<script type="module" id="sondeo-stats-script">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
+    authDomain: "programa-pri-2d395.firebaseapp.com",
+    projectId: "programa-pri-2d395",
+    storageBucket: "programa-pri-2d395.firebasestorage.app",
+    messagingSenderId: "854011964095",
+    appId: "1:854011964095:web:6e075f73a385bb804e5356"
+};
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ── Datos reales del CSV piloto (48 participantes únicos) ──
+const PILOTO = {
+    total: 48, estudiantes: 37, universitarios: 11, instCount: 8, deficiencia: 83,
+    instituciones: {
+        'I.E. Misional Santa Teresita': 17,
+        'I.E. Imbili Carretera':        10,
+        'I.E. Ciudadela Mixta Colombia':  7,
+        'Liceo San Andrés de Tumaco':     4,
+        'Univ. Nacional de Colombia':     3,
+        'I.E. Los Amigos de la Ciencia':  2,
+        'I.E. General Santander':         2,
+        'Univ. de Nariño / Otro':         3,
+    },
+    niveles: {
+        'Grado 11° (Once)':         26,
+        'Grado 10° (Décimo)':       11,
+        'Universitario (3°–5° sem)':  8,
+        'Próx. a graduarse':          3,
+    },
+    puntajes: { '0–5 pts':16, '6–10 pts':17, '11–15 pts':7, '16–20 pts':5, '21–25 pts':3 },
+    areas:    { 'Matemáticas Básicas':28, 'Programación':9, 'Cálculo I':8, 'Álgebra Lineal':2, 'Física':1 },
+    promedio: 8.9
+};
+
+// ── Chart.js defaults globales ──
+const _chartDefaults = {
+    responsive: true,
+    maintainAspectRatio: false,
+    animation: { duration: 900, easing: 'easeOutQuart' },
+    plugins: {
+        legend: { display: false },
+        tooltip: {
+            backgroundColor: 'rgba(2,26,54,0.95)',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            titleColor: '#f0f4f8',
+            bodyColor: 'rgba(240,244,248,0.7)',
+            titleFont: { family: 'Montserrat, sans-serif', size: 11, weight: '700' },
+            bodyFont: { family: 'Montserrat, sans-serif', size: 10 },
+            padding: 10,
+            callbacks: {
+                label: ctx => ` ${ctx.parsed.x ?? ctx.parsed.y} personas (${Math.round((ctx.parsed.x ?? ctx.parsed.y) / ctx.dataset._total * 100)}%)`
+            }
+        }
+    },
+    scales: {
+        x: { display: false, grid: { display: false } },
+        y: { display: false, grid: { display: false } }
+    }
+};
+
+const _chartInstances = {};
+
+function crearGrafico(id, tipo, labels, valores, colores, options = {}) {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    if (_chartInstances[id]) { _chartInstances[id].destroy(); }
+    const total = valores.reduce((a,b)=>a+b,0);
+    const dataset = { data: valores, backgroundColor: colores, borderWidth: 0, _total: total };
+    if (tipo === 'bar') {
+        dataset.borderRadius = 4;
+        dataset.barThickness = 18;
+    }
+    const cfg = {
+        type: tipo,
+        data: { labels, datasets: [dataset] },
+        options: {
+            ...JSON.parse(JSON.stringify(_chartDefaults)),
+            indexAxis: tipo === 'bar' ? 'y' : 'x',
+            ...options,
+        }
+    };
+    if (tipo === 'bar') {
+        cfg.options.scales = {
+            x: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(240,244,248,0.4)', font: { size: 9, family: 'Montserrat,sans-serif' } }, border: { display: false } },
+            y: { display: true, grid: { display: false }, ticks: { color: 'rgba(240,244,248,0.65)', font: { size: 9, family: 'Montserrat,sans-serif' }, maxRotation: 0 }, border: { display: false } }
+        };
+        cfg.options.plugins.tooltip.callbacks.label = ctx => ` ${ctx.parsed.x} personas`;
+    }
+    if (tipo === 'doughnut' || tipo === 'polarArea') {
+        cfg.options.cutout = tipo === 'doughnut' ? '60%' : undefined;
+        cfg.options.plugins.legend = {
+            display: true,
+            position: 'bottom',
+            labels: { color: 'rgba(240,244,248,0.5)', font: { size: 9, family: 'Montserrat,sans-serif' }, padding: 8, boxWidth: 10, boxHeight: 10 }
+        };
+        cfg.options.plugins.tooltip.callbacks.label = ctx => ` ${ctx.parsed} personas`;
+        cfg.options.scales = {};
+    }
+    _chartInstances[id] = new Chart(canvas, cfg);
+}
+
+// ── Contador animado ──
+function animarContador(el, target, isDecimal) {
+    const dur = 1500, t0 = performance.now();
+    const tick = (now) => {
+        const p = Math.min((now - t0) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = isDecimal
+            ? (target * ease / 10).toFixed(1)
+            : Math.round(target * ease);
+        if (p < 1) requestAnimationFrame(tick);
+        else el.textContent = isDecimal ? (target/10).toFixed(1) : target;
+    };
+    requestAnimationFrame(tick);
+}
+
+function animarDeficiencia(target) {
+    let v = 0;
+    const iv = setInterval(() => {
+        v = Math.min(v + 2, target);
+        document.getElementById('stat-def').textContent = v + '%';
+        if (v >= target) clearInterval(iv);
+    }, 22);
+}
+
+// ── Activar animaciones una vez (KPIs + deficiencia; Chart.js anima solo) ──
+let animated = false;
+function activarTodo() {
+    if (animated) return;
+    animated = true;
+    document.querySelectorAll('.diag-kpi-num[data-target]').forEach(el => {
+        animarContador(el, +el.dataset.target, el.dataset.decimal === 'true');
+    });
+    document.querySelectorAll('.diag-kpi').forEach(k => k.classList.add('animated'));
+    animarDeficiencia(83);
+}
+
+// ── Observer reveal + animaciones ──
+const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('vis');
+        if (e.target.classList.contains('diag-kpis-grid') || e.target.classList.contains('diag-alerta')) {
+            activarTodo();
+        }
+    });
+}, { threshold: 0.15 });
+
+// ── Render con Chart.js ──
+function render(s) {
+    // Instituciones → horizontal bar
+    const instE = Object.entries(s.instituciones);
+    crearGrafico('chart-inst', 'bar',
+        instE.map(([l])=>l.replace('I.E. ','').replace('Univ. ','U. ')),
+        instE.map(([,v])=>v),
+        instE.map((_,i)=>['#38bdf8','#22d3ee','#67e8f9','#0ea5e9','#7dd3fc','#93c5fd','#60a5fa','#38bdf8'][i%8])
+    );
+    // Puntajes → bar con colores semáforo
+    const ptsE = Object.entries(s.puntajes);
+    crearGrafico('chart-puntajes', 'bar',
+        ptsE.map(([l])=>l),
+        ptsE.map(([,v])=>v),
+        ['#ef4444','#f97316','#fbbf24','#84cc16','#22c55e']
+    );
+    // Áreas → doughnut
+    const areasE = Object.entries(s.areas);
+    crearGrafico('chart-areas', 'doughnut',
+        areasE.map(([l])=>l),
+        areasE.map(([,v])=>v),
+        ['#22c55e','#a78bfa','#38bdf8','#f97316','#fbbf24']
+    );
+    // Niveles → doughnut
+    const nivE = Object.entries(s.niveles);
+    crearGrafico('chart-nivel', 'doughnut',
+        nivE.map(([l])=>l),
+        nivE.map(([,v])=>v),
+        ['#ff5e00','#f97316','#a78bfa','#38bdf8']
+    );
+    // KPI targets
+    document.getElementById('stat-total').dataset.target = s.total;
+    document.getElementById('stat-inst').dataset.target  = s.instCount;
+    document.getElementById('stat-prom').dataset.target  = Math.round(+s.promedio * 10);
+    document.getElementById('stat-est').dataset.target   = s.estudiantes;
+}
+
+async function cargarStats() {
+    // Renderizar datos piloto inmediatamente
+    render(PILOTO);
+
+    // Registrar observers
+    document.querySelectorAll('.reveal-diag').forEach(el => obs.observe(el));
+    document.querySelectorAll('.diag-kpis-grid, .diag-alerta').forEach(el => obs.observe(el));
+
+    // Intentar enriquecer desde Firestore si la colección tiene datos
+    try {
+        const snap = await getDocs(collection(db, 'sondeo_piloto'));
+        if (snap.empty) return;
+        const data = [];
+        snap.forEach(d => data.push(d.data()));
+        const inst = {}, nivel = {}, areas = {};
+        const pts = {'0–5 pts':0,'6–10 pts':0,'11–15 pts':0,'16–20 pts':0,'21–25 pts':0};
+        let est = 0, uni = 0; const ps = [];
+        data.forEach(r => {
+            if ((r.rol||'').match(/ESTUDIANT/i)) est++;
+            if ((r.nivel||'').match(/PREGRADO|UNIV/i)) uni++;
+            const i = r.institucion||'No especificada'; inst[i]=(inst[i]||0)+1;
+            const n = r.nivel||'No especificado'; nivel[n]=(nivel[n]||0)+1;
+            if (typeof r.puntuacion==='number') {
+                ps.push(r.puntuacion);
+                if(r.puntuacion<=5)pts['0–5 pts']++;
+                else if(r.puntuacion<=10)pts['6–10 pts']++;
+                else if(r.puntuacion<=15)pts['11–15 pts']++;
+                else if(r.puntuacion<=20)pts['16–20 pts']++;
+                else pts['21–25 pts']++;
+            }
+            (r.areas_interes||[]).forEach(a=>{ if(a) areas[a]=(areas[a]||0)+1; });
         });
-    </script>
+        const prom = ps.length ? (ps.reduce((a,b)=>a+b,0)/ps.length) : PILOTO.promedio;
+        const aprobados = ps.filter(p=>p>=15).length;
+        const def = ps.length ? Math.round((1-aprobados/ps.length)*100) : PILOTO.deficiencia;
+        render({
+            total: data.length, estudiantes: est, universitarios: uni,
+            instCount: Object.keys(inst).length, deficiencia: def,
+            instituciones: Object.fromEntries(Object.entries(inst).sort((a,b)=>b[1]-a[1]).slice(0,8)),
+            niveles:       Object.fromEntries(Object.entries(nivel).sort((a,b)=>b[1]-a[1]).slice(0,6)),
+            puntajes: pts,
+            areas:         Object.fromEntries(Object.entries(areas).sort((a,b)=>b[1]-a[1]).slice(0,6)),
+            promedio: prom.toFixed(1)
+        });
+    } catch(e) { /* usar datos piloto */ }
+}
+
+cargarStats();
+</script>
+
+<!-- ==================== CTA FINAL ==================== -->
+<section class="cta-final">
+    <h2 class="reveal">¿LISTO PARA EL<br>SIGUIENTE NIVEL?</h2>
+    <p class="reveal">Únete a los 90 estudiantes que ya están construyendo su futuro universitario con PRI.</p>
+    <div class="cta-buttons reveal">
+        <a href="pre-test.html" class="btn-cta-white"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="margin-right:6px;vertical-align:middle"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>Hacer el Pre-Test</a>
+        <a href="https://wa.me/573183553653?text=Hola!%20Quiero%20información%20sobre%20el%20Programa%20PRI" target="_blank" class="btn-cta-dark">📲 Contactar por WhatsApp</a>
+    </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer-industrial">
+    <div class="footer-container">
+        <div class="footer-brand-panel">
+            <h2 class="massive-footer-text">PROGRAMA-PRI</span></h2>
+        </div>
+        <div class="footer-links-panel">
+            <ul class="footer-nav-list">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pre-test.html">Simuladores</a></li>
+                <li><a href="productos.html">Recompensas</a></li>
+                <li><a href="docentes.html">Mentores</a></li>
+            </ul>
+        </div>
+        <div class="footer-info-panel">
+            <div class="contacto-datos-premium">
+                <p><span>📍</span> Pacífico</p>
+                <p><span>✉️</span> <a href="mailto:programapri_bog@unal.edu.co">Información General</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom-bar">
+        <p class="copyright">© 2026 Ecosistema PRI • Todos los derechos reservados.</p>
+    </div>
+</footer>
+
+<script>
+// ===== CURSOR PERSONALIZADO =====
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+function animateCursor() {
+    if (dot) { dot.style.left = mx+'px'; dot.style.top = my+'px'; }
+    rx += (mx - rx) * 0.15;
+    ry += (my - ry) *.15;
+    if (ring) { ring.style.left = rx+'px'; ring.style.top = ry+'px'; }
+    requestAnimationFrame(animateCursor);
+}
+animateCursor();
+document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { if(ring) ring.style.transform = 'translate(-50%,-50%) scale(1.8)'; });
+    el.addEventListener('mouseleave', () => { if(ring) ring.style.transform = 'translate(-50%,-50%) scale(1)'; });
+});
+
+// ===== BARRA DE PROGRESO DE LECTURA =====
+const bar = document.getElementById('reading-bar');
+window.addEventListener('scroll', () => {
+    const max = document.body.scrollHeight - window.innerHeight;
+    const pct = (window.scrollY / max) * 100;
+    if(bar) bar.style.width = pct + '%';
+});
+
+// ===== NAVBAR SCROLL =====
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+    if(window.scrollY > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+});
+
+// ===== MENÚ HAMBURGUESA — cajón lateral =====
+(function(){
+    const toggle = document.getElementById('mobile-menu');
+    const navLinks = document.querySelector('.nav-links');
+    const backdrop = document.getElementById('nav-backdrop');
+    function openMenu(){ toggle.classList.add('is-active'); navLinks.classList.add('active'); backdrop.classList.add('active'); document.body.style.overflow='hidden'; }
+    function closeMenu(){ toggle.classList.remove('is-active'); navLinks.classList.remove('active'); backdrop.classList.remove('active'); document.body.style.overflow=''; }
+    toggle.addEventListener('click', function(){ navLinks.classList.contains('active') ? closeMenu() : openMenu(); });
+    backdrop.addEventListener('click', closeMenu);
+    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+})();
+
+// ===== SCROLL REVEAL =====
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if(e.isIntersecting) { e.target.classList.add('visible'); }
+    });
+}, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+revealEls.forEach(el => observer.observe(el));
+
+// ===== CONTADOR ANIMADO DE ESTADÍSTICAS =====
+function animateCount(el, target, suffix, duration) {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+        start = Math.min(start + step, target);
+        el.textContent = (suffix === '%' ? '+' : '') + Math.floor(start) + suffix;
+        if(start >= target) clearInterval(timer);
+    }, 16);
+}
+const statsObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if(e.isIntersecting) {
+            const numEl = e.target.querySelector('.stat-number');
+            if(numEl && !numEl.dataset.counted) {
+                numEl.dataset.counted = 'true';
+                const target = parseInt(numEl.dataset.target);
+                const suffix = numEl.dataset.suffix || '';
+                animateCount(numEl, target, suffix, 1800);
+            }
+        }
+    });
+}, { threshold: 0.5 });
+document.querySelectorAll('.stat-card').forEach(c => statsObs.observe(c));
+
+// ===== PARTÍCULAS EN EL HERO =====
+(function() {
+    const canvas = document.getElementById('particles-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+    const particles = Array.from({length: 40}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height * 0.6,
+        r: Math.random() * 2 + 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -Math.random() * 0.4 - 0.1,
+        alpha: Math.random() * 0.5 + 0.1,
+    }));
+    function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.x += p.vx; p.y += p.vy;
+            if(p.y < -10) { p.y = canvas.height * 0.6; p.x = Math.random() * canvas.width; }
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(255,215,0,${p.alpha})`;
+            ctx.fill();
+        });
+        requestAnimationFrame(loop);
+    }
+    loop();
+})();
+
+// ===== LANCHA ANIMADA — vaivén: va, rodea la peña y vuelve =====
+(function() {
+    const boat = document.getElementById('animBoat');
+    if (!boat) return;
+
+    // Duración de un ciclo completo: ida (izq→der) + vuelta (der→izq)
+    const CYCLE = 30000; // ms
+
+    function waveOscY(t) {
+        return Math.sin(t*0.00160+0.50)*6 + Math.sin(t*0.00390+1.30)*3.5 + Math.sin(t*0.00870+2.20)*1.8;
+    }
+    function waveRoll(t) {
+        const step = 40;
+        return (waveOscY(t+step) - waveOscY(t-step)) / (step*2) * 55;
+    }
+    function getWaterLine() {
+        const oceanEl = boat.closest('.ocean-system') || boat.parentElement;
+        const waveEl  = document.querySelector('.wave-surface');
+        if (!waveEl || !oceanEl) return window.innerHeight * 0.144;
+        const oRect = oceanEl.getBoundingClientRect();
+        const wRect = waveEl.getBoundingClientRect();
+        const waterY = wRect.top + wRect.height * 0.44;
+        return Math.max(6, oRect.bottom - waterY);
+    }
+
+    let startTime = null;
+    function animate(ts) {
+        if (!startTime) startTime = ts;
+        const elapsed = ts - startTime;
+
+        // Péndulo con seno: oscila entre 3 % (izq) y 92 % (bien dentro de la peña)
+        const phase    = (elapsed / CYCLE) * Math.PI * 2;
+        const sinVal   = Math.sin(phase);               // -1 → +1
+        const xPct     = 3 + (sinVal + 1) / 2 * 89;    // 3 % → 92 %
+
+        // cos > 0 → yendo hacia la derecha; cos < 0 → volviendo
+        const goingRight = Math.cos(phase) > 0;
+
+        const oscY  = waveOscY(elapsed);
+        const roll  = waveRoll(elapsed);
+        const baseB = getWaterLine();
+
+        boat.style.left    = xPct + '%';
+        boat.style.bottom  = (baseB - oscY) + 'px';
+        boat.style.top     = 'auto';
+        boat.style.opacity = '1';
+
+        // scaleX(-1) = mirando a la derecha; scaleX(1) = mirando a la izquierda
+        const flipX   = goingRight ? -1 : 1;
+        const rollDir = goingRight ? -roll : roll;
+        boat.style.transform = `scaleX(${flipX}) rotate(${rollDir}deg)`;
+
+        // ── Transición lancha ↔ peña ─────────────────────────────────────────
+        // La peña empieza visualmente ~62 % desde la izquierda.
+        // Fade estrecho (6 %) justo en ese borde: simula el barrido real de
+        // la roca cubriendo/descubriendo la lancha conforme avanza.
+        //   • Completamente visible : xPct < 61
+        //   • Fade (desaparece / aparece): 61 % → 67 %   (6 % de rango)
+        //   • Completamente detrás  : xPct > 67
+        const FADE_S = 61;   // borde izquierdo visible de la peña
+        const FADE_E = 67;   // borde donde la lancha queda totalmente oculta
+
+        let boatZ, boatAlpha;
+
+        if (xPct <= FADE_S) {
+            boatZ = '8'; boatAlpha = 1;                          // delante, visible
+        } else if (xPct >= FADE_E) {
+            boatZ = '4'; boatAlpha = 0;                          // detrás, oculta
+        } else {
+            // Zona de barrido: la roca "tapa" o "destapa" progresivamente
+            const t = (xPct - FADE_S) / (FADE_E - FADE_S);      // 0 → 1
+            boatAlpha = +(1 - t).toFixed(3);
+            boatZ = t >= 0.55 ? '4' : '8';  // cambia cuando alpha < 0.45 (casi invisible)
+        }
+
+        boat.style.zIndex  = boatZ;
+        boat.style.opacity = String(boatAlpha);
+
+        requestAnimationFrame(animate);
+    }
+    requestAnimationFrame(animate);
+})();
+
+// ===== SISTEMA DE PECES =====
+(function() {
+    const canvas = document.getElementById('fishCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width=window.innerWidth; canvas.height=canvas.parentElement.offsetHeight||window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    class Fish {
+        constructor() { this.reset(true); }
+        reset(init=false) {
+            const ch=canvas.height,cw=canvas.width;
+            this.dir=Math.random()>0.5?1:-1;
+            this.x=init?Math.random()*cw:(this.dir===1?-60:cw+60);
+            const st=ch*0.55,margin=(ch-st)*0.08;
+            this.yBase=st+margin+Math.random()*((ch-st)-margin*2);
+            this.y=this.yBase;
+            this.size=8+Math.random()*18; this.speed=(1.2+Math.random()*2)*this.dir;
+            this.wAmp=1.5+Math.random()*3; this.wFreq=0.008+Math.random()*0.012;
+            this.phase=Math.random()*Math.PI*2; this.alpha=0; this.t=0;
+            this.jumping=false; this.jumpTimer=200+Math.floor(Math.random()*400);
+            this.jumpPhase=0; this.targetAlpha=0.85+Math.random()*0.15;
+            this.surfaceY=ch*0.55;
+        }
+        update() {
+            this.t++; this.x+=this.speed*0.8;
+            const swimY=Math.sin(this.t*this.wFreq+this.phase)*this.wAmp;
+            if(!this.jumping) {
+                this.jumpTimer--; this.alpha=0;
+                if(this.jumpTimer<=0){this.jumping=true;this.jumpPhase=0;}
+                this.y=this.yBase+swimY;
+            } else {
+                this.jumpPhase+=0.12;
+                const jp=this.jumpPhase/Math.PI;
+                this.y=this.yBase-Math.abs(Math.sin(this.jumpPhase))*(40+this.size*2.5);
+                if(jp<0.15) this.alpha=Math.min(this.alpha+0.15,this.targetAlpha);
+                else if(jp>0.85) this.alpha=Math.max(this.alpha-0.15,0);
+                if(this.jumpPhase>=Math.PI){this.jumping=false;this.jumpTimer=300+Math.floor(Math.random()*500);this.alpha=0;this.y=this.yBase;}
+            }
+            const cw=canvas.width;
+            if(this.dir===1&&this.x>cw+60)this.reset();
+            if(this.dir===-1&&this.x<-60)this.reset();
+        }
+        draw() {
+            ctx.save(); ctx.globalAlpha=this.alpha;
+            ctx.translate(this.x,this.y);
+            if(this.dir===-1)ctx.scale(-1,1);
+            const s=this.size;
+            ctx.beginPath(); ctx.ellipse(0,0,s,s*0.45,0,0,Math.PI*2);
+            ctx.fillStyle='#dde8f0'; ctx.fill();
+            ctx.beginPath(); ctx.moveTo(-s,0); ctx.lineTo(-s*1.5,-s*0.45); ctx.lineTo(-s*1.5,s*0.45); ctx.closePath();
+            ctx.fillStyle='#b0c8d8'; ctx.fill();
+            ctx.beginPath(); ctx.arc(s*0.55,-s*0.08,s*0.14,0,Math.PI*2);
+            ctx.fillStyle='#000'; ctx.fill();
+            ctx.restore();
+        }
+    }
+    const fishes=Array.from({length:12},()=>new Fish());
+    function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);fishes.forEach(f=>{f.update();f.draw();});requestAnimationFrame(loop);}
+    loop();
+})();
+</script>
+<!-- aqui-->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // 1. Buscar si hay una sesión guardada
+        const sesion = localStorage.getItem('usuario_sesion_activa');
+        
+        // Si hay una sesión, aplicamos los cambios para el usuario logueado
+        if (sesion) {
+            const usuario = JSON.parse(sesion);
+
+            // 2. Modificar el footer dinámicamente si los elementos existen en la página
+            const footName = document.getElementById('footer-name');
+            const footMeta = document.getElementById('footer-meta');
+            
+            if (footName && footMeta) {
+                // Aquí asumo que usas usuario.nombre u otra propiedad. 
+                // Ajusta las variables según la estructura de tu JSON
+                footName.innerText = `Estudiante: ${usuario.nombre || 'Desconocido'}`;
+                footMeta.innerText = `Perfil Activo`; 
+            }
+            
+            // Opcional: Aquí podrías ocultar el botón de "Iniciar Sesión" 
+            // y mostrar un botón de "Cerrar Sesión"
+        } 
+        // Si no hay sesión (!sesion), no hacemos nada. 
+        // El usuario externo simplemente verá la página normal sin el mensaje emergente.
+    });
+</script>
+<!--aqui-->
+
+<!-- ==================== CICLO DÍA / NOCHE + CONTADOR DINÁMICO ==================== -->
+<style>
+/* LUNA */
+.animated-moon {
+    position: absolute !important;
+    top: 22%; left: 7%;
+    width: 80px; height: 80px;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.5s ease, top 1.5s ease;
+}
+.animated-moon .moon-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffde7, #f9e87e 40%, #e0c040 80%);
+    box-shadow: 0 0 30px 10px rgba(240,215,80,0.35), 0 0 60px 20px rgba(240,215,80,0.12);
+}
+/* Fondo de atardecer */
+.hero-atardecer-bg {
+    position: absolute; inset: 0; z-index: 0;
+    overflow: hidden;
+    opacity: 0; transition: opacity 1.5s ease;
+    pointer-events: none;
+}
+
+/* MOBILE INDEX */
+@media (max-width: 768px) {
+    .hero { min-height: 80vh !important; padding-top: 70px !important; }
+    .hero-content { padding: 1.5rem !important; max-width: 100% !important; }
+    .hero-title { font-size: clamp(1.8rem, 8vw, 3rem) !important; }
+    .hero-buttons { flex-direction: column; gap: 0.75rem; }
+    .hero-buttons .btn { width: 100%; text-align: center; }
+    .tumaco-rock { width: clamp(160px, 45vw, 300px) !important; right: -2% !important; bottom: 4% !important; opacity: 0.7; }
+    .animated-sun { width: 60px !important; height: 60px !important; }
+    .animated-moon { width: 55px !important; height: 55px !important; }
+    .animated-moon .moon-circle { width: 55px; height: 55px; }
+    .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 0.75rem !important; }
+    .stat-number { font-size: 2.2rem !important; }
+    /* Sondeo stats */
+    #sondeo-stats > div > div:nth-child(3),
+    #sondeo-stats > div > div:nth-child(4) { grid-template-columns: 1fr !important; }
+    /* Misión */
+    .mision-section { padding: 3rem 1.25rem !important; }
+    .niveles-grid { grid-template-columns: 1fr 1fr !important; }
+    /* Footer */
+    .footer-container { grid-template-columns: 1fr !important; text-align: center; }
+    .massive-footer-text { font-size: clamp(2.5rem, 12vw, 5rem) !important; }
+    /* CTA */
+    .cta-final h2 { font-size: 1.6rem !important; }
+    .cta-buttons { flex-direction: column !important; gap: 0.75rem !important; }
+    .cta-buttons a { width: 100%; text-align:center; }
+    /* Sondeo stats row */
+    #sondeo-stats [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+    /* Impacto / Timeline */
+    .impacto-section { padding: 3rem 1.25rem !important; }
+    /* Navbar */
+    .navbar-links { display: none !important; }
+}
+@media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr !important; }
+    .niveles-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const fc = { apiKey:"AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30", authDomain:"programa-pri-2d395.firebaseapp.com", projectId:"programa-pri-2d395", storageBucket:"programa-pri-2d395.firebasestorage.app", messagingSenderId:"854011964095", appId:"1:854011964095:web:6e075f73a385bb804e5356" };
+const app = getApps().length ? getApps()[0] : initializeApp(fc);
+const db = getFirestore(app);
+
+// === CONTADOR COBERTURA: estudiantes reales registrados en el programa ===
+// Muestra el número de usuarios con rol 'estudiante' en Firebase,
+// con base de 32 (los del piloto) si aún no hay registros digitales.
+async function actualizarContadorCobertura() {
+    try {
+        const snap = await getDocs(collection(db, 'usuarios'));
+        let estudiantes = 0;
+        snap.forEach(d => { if ((d.data().rol||'') === 'estudiante') estudiantes++; });
+        // Usar max(registros, 32) para no mostrar menos del piloto real
+        const total = Math.max(estudiantes, 32);
+        const el = document.querySelector('.stat-number[data-target="32"]');
+        if (el) {
+            el.textContent = total;
+            el.setAttribute('data-target', total);
+        }
+    } catch(e) { /* mantiene 32 */ }
+}
+actualizarContadorCobertura();
+</script>
+
+<script>
+// === CICLO DÍA / NOCHE EN EL HERO ===
+(function() {
+    const hora = new Date().getHours() + new Date().getMinutes() / 60;
+
+    // Añadir fondo atardecer
+    const heroEl = document.querySelector('.hero');
+    if (!heroEl) return;
+    const ataEl = document.createElement('div');
+    ataEl.className = 'hero-atardecer-bg';
+    ataEl.innerHTML = '<video autoplay loop muted playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.06);"><source src="fondo_pacifico.mp4" type="video/mp4"></video>';
+    heroEl.insertAdjacentElement('afterbegin', ataEl);
+    ataEl.querySelector('video').play().catch(()=>{});
+
+    // Añadir luna
+    const moonEl = document.createElement('div');
+    moonEl.className = 'animated-moon';
+    moonEl.innerHTML = '<div class="moon-circle"></div>';
+    const oceanEl = document.querySelector('.ocean-system');
+    if (oceanEl) oceanEl.appendChild(moonEl);
+
+    const sunEl = document.querySelector('.animated-sun');
+    const skyStop0 = document.querySelector('#skyGradient stop:first-child');
+    const skyStop1 = document.querySelector('#skyGradient stop:nth-child(2)');
+    const skyStop2 = document.querySelector('#skyGradient stop:nth-child(3)');
+    const skyStop3 = document.querySelector('#skyGradient stop:last-child');
+    const skyRectEl = document.getElementById('sky-rect');
+    const starsEl   = document.getElementById('stars-layer');
+    const cloudsEl  = document.getElementById('sky-clouds');
+
+    // ── Aves siempre visibles ──────────────────────────────────
+    const birdsEl = document.createElement('div');
+    birdsEl.id = 'animated-birds';
+    birdsEl.style.cssText = 'position:absolute;top:18%;left:20%;z-index:15;pointer-events:none;opacity:1;transition:opacity 1s ease;';
+    birdsEl.innerHTML = `<svg width="120" height="40" viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">
+        <path d="M0,20 Q6,12 12,20 Q18,28 24,20" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M28,14 Q34,6 40,14 Q46,22 52,14" fill="none" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M60,22 Q65,15 70,22 Q75,29 80,22" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+        <path d="M90,10 Q95,4 100,10 Q105,16 110,10" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+    if (oceanEl) oceanEl.appendChild(birdsEl);
+
+    // Animación sutil del vuelo de las aves
+    let birdDir = 1, birdPos = 20;
+    setInterval(()=>{ birdPos += birdDir * 0.15; if(birdPos>30||birdPos<10) birdDir*=-1; birdsEl.style.left=birdPos+'%'; }, 100);
+
+    function setEstado(h) {
+        // h = hora decimal (0-24)
+        // ── Color de las aves según hora ──────────────────────
+        const isDark = (h >= 19 || h < 5);
+        const isSunset = (h >= 16 && h < 19);
+        // Aves: visibles de día y atardecer, invisibles de noche
+        birdsEl.style.opacity = isDark ? '0' : '1';
+        if (isSunset) {
+            birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','#2d1a0e'));
+        } else if (!isDark) {
+            birdsEl.querySelector('svg').querySelectorAll('path').forEach(p => p.setAttribute('stroke','#1a1a2e'));
+        }
+
+        if (h >= 5 && h < 12) {
+            // MAÑANA (5-12h)
+            sunEl && (sunEl.style.top = `${Math.max(10, 35 - (h-5)*2)}%`);
+            sunEl && (sunEl.style.left = `${7 + (h-5)*3}%`);
+            sunEl && (sunEl.style.opacity = '1');
+            moonEl.style.opacity = '0';
+            ataEl.style.opacity = '0';
+            if (skyRectEl) skyRectEl.style.opacity = '1';
+            if (starsEl)  starsEl.style.opacity  = '0';
+            if (cloudsEl) cloudsEl.style.opacity  = '1';
+            if (skyStop0) skyStop0.setAttribute('stop-color', '#1a3a6e');
+            if (skyStop1) skyStop1.setAttribute('stop-color', '#3a6fa8');
+            if (skyStop2) skyStop2.setAttribute('stop-color', '#5a8fc0');
+            if (skyStop3) skyStop3.setAttribute('stop-color', '#8ab4d4');
+
+        } else if (h >= 12 && h < 16) {
+            // MEDIODÍA (12-16h)
+            const t = (h - 12) / 4;
+            sunEl && (sunEl.style.top = `${10 + t*15}%`);
+            sunEl && (sunEl.style.left = `${22 + t*18}%`);
+            sunEl && (sunEl.style.opacity = '1');
+            moonEl.style.opacity = '0';
+            ataEl.style.opacity = `${t * 0.3}`;
+            if (skyRectEl) skyRectEl.style.opacity = `${1 - t * 0.3}`;
+            if (starsEl)  starsEl.style.opacity  = '0';
+            if (cloudsEl) cloudsEl.style.opacity  = '1';
+            if (skyStop0) skyStop0.setAttribute('stop-color', '#0d2a5e');
+            if (skyStop1) skyStop1.setAttribute('stop-color', '#2a5a9e');
+            if (skyStop2) skyStop2.setAttribute('stop-color', '#4a7fc0');
+            if (skyStop3) skyStop3.setAttribute('stop-color', '#7aaed4');
+
+        } else if (h >= 16 && h < 19) {
+            // ATARDECER (16-19h): atardecer.png domina, gradiente se retira
+            const t = (h - 16) / 3; // 0=16h, 1=19h
+            sunEl && (sunEl.style.top = `${25 + t*40}%`);
+            sunEl && (sunEl.style.left = `${40 + t*28}%`);
+            sunEl && (sunEl.style.opacity = `${Math.max(0, 1 - t * 1.4)}`);
+            moonEl.style.opacity = '0';
+            if (starsEl)  starsEl.style.opacity  = '0';
+            // Nubes con tinte cálido al atardecer (opacidad reducida para que la foto domine)
+            if (cloudsEl) cloudsEl.style.opacity  = `${Math.max(0.15, 0.7 - t * 0.6)}`;
+            // Foto real de atardecer domina el cielo
+            ataEl.style.opacity = `${0.55 + t * 0.45}`;
+            // Gradiente SVG se retira para dejar ver la foto
+            if (skyRectEl) skyRectEl.style.opacity = `${Math.max(0.05, 0.5 - t * 0.45)}`;
+
+            // Gradiente cálido residual (tonos dorados/rojos sobre la foto)
+            const t2 = Math.min(1, t * 1.5);
+            if (skyStop0) skyStop0.setAttribute('stop-color', `rgba(${Math.round(90+t2*80)},${Math.round(25+t2*5)},${Math.round(5+t2*20)},0.7)`);
+            if (skyStop1) skyStop1.setAttribute('stop-color', `rgba(${Math.round(190+t2*30)},${Math.round(60-t2*30)},${Math.round(10+t2*30)},0.7)`);
+            if (skyStop2) skyStop2.setAttribute('stop-color', `rgba(${Math.round(150+t2*30)},${Math.round(50-t2*20)},${Math.round(15+t2*50)},0.7)`);
+            if (skyStop3) skyStop3.setAttribute('stop-color', `rgba(${Math.round(90+t2*40)},${Math.round(35-t2*15)},${Math.round(50+t2*60)},0.7)`);
+
+        } else if (h >= 19 || h < 4) {
+            // NOCHE (19h-4h)
+            sunEl && (sunEl.style.opacity = '0');
+            ataEl.style.opacity = '0';
+            moonEl.style.opacity = '1';
+            if (skyRectEl) skyRectEl.style.opacity = '1';
+            if (starsEl)  starsEl.style.opacity  = '1';
+            if (cloudsEl) cloudsEl.style.opacity  = '0';
+            const hn = h >= 19 ? h - 19 : h + 5;
+            const t = hn / 9;
+            moonEl.style.top = `${Math.max(8, 35 - Math.sin(t * Math.PI) * 25)}%`;
+            moonEl.style.left = `${8 + t * 60}%`;
+            if (skyStop0) skyStop0.setAttribute('stop-color', '#030d1a');
+            if (skyStop1) skyStop1.setAttribute('stop-color', '#07182a');
+            if (skyStop2) skyStop2.setAttribute('stop-color', '#0d2038');
+            if (skyStop3) skyStop3.setAttribute('stop-color', '#122a48');
+
+        } else {
+            // MADRUGADA (4-5h)
+            const t = h - 4;
+            sunEl && (sunEl.style.top = `${70 - t*35}%`);
+            sunEl && (sunEl.style.left = '5%');
+            sunEl && (sunEl.style.opacity = `${t}`);
+            moonEl.style.opacity = `${1 - t}`;
+            if (skyRectEl) skyRectEl.style.opacity = '1';
+            if (starsEl)  starsEl.style.opacity  = `${1 - t}`;
+            if (cloudsEl) cloudsEl.style.opacity  = `${t * 0.7}`;
+            if (skyStop0) skyStop0.setAttribute('stop-color', `rgb(${Math.round(t*26)},${Math.round(t*42)},${20+Math.round(t*80)})`);
+            if (skyStop1) skyStop1.setAttribute('stop-color', `rgb(${Math.round(t*50)},${Math.round(t*80)},${30+Math.round(t*120)})`);
+        }
+    }
+
+    // Aplicar al cargar
+    setEstado(hora);
+
+    // Actualizar cada minuto para animación progresiva
+    setInterval(() => {
+        const h2 = new Date().getHours() + new Date().getMinutes() / 60;
+        setEstado(h2);
+    }, 60000);
+})();
+</script>
+
+<script>
+/* ── Sesión activa: pill desktop + avatar móvil + IR A PLATAFORMA ── */
+(function(){
+    const raw = localStorage.getItem('usuario_sesion_activa');
+    if (!raw) return;
+    try {
+        const u = JSON.parse(raw);
+        if (u.sesionExpira && Date.now() > u.sesionExpira) {
+            localStorage.removeItem('usuario_sesion_activa'); return;
+        }
+        const primeros = (u.nombre || '').trim().split(/\s+/).slice(0,2).join(' ');
+        const inicial = (primeros[0] || '?').toUpperCase();
+        const avatarStyle = (size, fs) =>
+            u.fotoUrl
+                ? `<img src="${u.fotoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:2px solid #ff5e00;flex-shrink:0;">`
+                : `<div style="width:${size}px;height:${size}px;border-radius:50%;background:#ff5e00;display:flex;align-items:center;justify-content:center;font-size:${fs}px;font-weight:900;color:#fff;flex-shrink:0;">${inicial}</div>`;
+
+        /* ── Desktop: reemplaza "Inicia Sesión" con pill ── */
+        const btn = document.querySelector('a.btn-login');
+        if (btn) {
+            btn.href = 'dashboard.html';
+            btn.style.cssText = 'display:flex;align-items:center;gap:7px;padding:3px 14px 3px 3px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.03em;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:#fafafa;text-decoration:none;';
+            btn.innerHTML = `${avatarStyle(28,11)}<span>${primeros}</span>`;
+        }
+
+        /* ── Mobile: mini-avatar junto al hamburger ── */
+        const toggle = document.getElementById('mobile-menu');
+        if (toggle) {
+            const pill = document.createElement('div');
+            pill.id = 'mobile-user-pill';
+            pill.style.cssText = 'display:none;align-items:center;z-index:3001;cursor:pointer;';
+            pill.innerHTML = avatarStyle(34,13);
+            pill.addEventListener('click', () => { window.location.href='dashboard.html'; });
+            toggle.parentNode.insertBefore(pill, toggle);
+            const mq = window.matchMedia('(max-width:768px)');
+            const setVis = m => { pill.style.display = m.matches ? 'flex' : 'none'; };
+            setVis(mq); mq.addEventListener('change', setVis);
+        }
+
+        /* ── Mobile: "IR A PLATAFORMA" como primer ítem del drawer ── */
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks) {
+            const li = document.createElement('li');
+            li.className = 'nav-ir-plataforma';
+            li.innerHTML = `<a href="dashboard.html" style="display:block;font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:3px;text-decoration:none;text-align:center;">🚀 IR A PLATAFORMA</a>`;
+            navLinks.insertBefore(li, navLinks.firstChild);
+            const s = document.createElement('style');
+            s.textContent = '@media(min-width:769px){.nav-ir-plataforma{display:none!important;}} .nav-ir-plataforma a{font-size:.72rem!important;border-bottom:none!important;transform:none!important;padding:.65rem 1.3rem!important;letter-spacing:2px!important;width:100%!important;box-sizing:border-box;}';
+            document.head.appendChild(s);
+        }
+    } catch(e) {}
+})();
+</script>
+
+<script src="fondo-dinamico.js"></script>
 </body>
 </html>

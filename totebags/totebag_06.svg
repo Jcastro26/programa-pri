@@ -1,0 +1,38 @@
+<svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="220" fill="#4a1942" opacity="0.1"/>
+
+  <!-- Ilustración -->
+  <g transform="scale(0.85) translate(12,10)">
+    <!-- Mariposas grande -->
+<path d="M100,115 Q68,82 44,90 Q38,110 68,122 Q82,126 100,115 Z" fill="#d946ef" opacity="0.85"/>
+<path d="M100,115 Q132,82 156,90 Q162,110 132,122 Q118,126 100,115 Z" fill="#c026d3" opacity="0.85"/>
+<path d="M100,115 Q72,140 52,152 Q46,132 68,124 Q82,120 100,115 Z" fill="#e879f9" opacity="0.75"/>
+<path d="M100,115 Q128,140 148,152 Q154,132 132,124 Q118,120 100,115 Z" fill="#d946ef" opacity="0.75"/>
+<line x1="100" y1="95" x2="100" y2="148" stroke="#4a044e" stroke-width="2" opacity="0.6"/>
+<circle cx="100" cy="115" r="5" fill="#fae8ff"/>
+<path d="M44,92 Q28,72 35,60" stroke="#d946ef" stroke-width="2" fill="none" opacity="0.4"/>
+  </g>
+
+  <!-- Logo PRI -->
+  <image href="../logo.png" x="168" y="6" width="26" height="26"
+         opacity="0.65" preserveAspectRatio="xMidYMid meet"/>
+
+  <!-- Banda inferior -->
+  <rect x="0" y="162" width="200" height="58" fill="#4a1942" opacity="0.55"/>
+
+  <!-- Programa PRI -->
+  <text x="100" y="175" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="8"
+        fill="#e879f9" letter-spacing="2" opacity="0.8">PROGRAMA PRI</text>
+  <text x="100" y="186" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="7" font-weight="600"
+        fill="#fae8ff" letter-spacing="1" opacity="0.8">EL PACÍFICO RENACIENDO CON INGENIERÍA</text>
+
+  <!-- Título -->
+  <text x="100" y="202" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-weight="900" font-size="13"
+        fill="#e879f9" letter-spacing="2" opacity="1">MARIPOSAS</text>
+  <text x="100" y="214" text-anchor="middle"
+        font-family="Montserrat,Arial,sans-serif" font-size="8" font-weight="600"
+        fill="#fae8ff" letter-spacing="1" opacity="0.85">Metamorfosis Pacífico</text>
+</svg>
