@@ -687,8 +687,8 @@
           grado = '11'; // Para voluntarios usamos banco G11 como base
       }
 
-      window.datosAspiranteGlobal = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, docTipo, docNum, nivel };
-      datosAspirante = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, docTipo, docNum, nivel };
+      window.datosAspiranteGlobal = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, municipio: ciudad, docTipo, docNum, nivel };
+      datosAspirante = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, municipio: ciudad, docTipo, docNum, nivel };
 
       // Poblar barra superior del quiz
       const setUI = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };

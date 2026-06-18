@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Inline crítico: evita flash del menú móvil antes de que cargue el CSS externo -->
+    <style>
+    @media (max-width:768px){
+        .nav-links:not(.active){visibility:hidden!important;transform:translateX(100%)!important;transition:none!important;}
+    }
+    </style>
     <title>PROGRAMA-PRI | El Pacífico Renaciendo con Ingeniería</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

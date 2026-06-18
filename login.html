@@ -202,7 +202,7 @@
                         <label>WhatsApp / Contacto</label>
                         <input type="tel" id="reg-contacto" placeholder="300 123 4567">
                     </div>
-                    <div class="field-group span-2">
+                    <div class="field-group span-2" id="campo-acudiente">
                         <label>Nombre del Acudiente / Tutor</label>
                         <input type="text" id="reg-acudiente" placeholder="Nombre del acudiente">
                     </div>
@@ -298,6 +298,13 @@
         const nota = document.getElementById('nota-rol');
         if (NOTAS_ROL[rol]) { nota.textContent = '💡 ' + NOTAS_ROL[rol]; nota.classList.add('visible'); }
         else nota.classList.remove('visible');
+        // Ocultar campo acudiente para roles que no son estudiante
+        const campoAcudiente = document.getElementById('campo-acudiente');
+        if (campoAcudiente) {
+            const soloEstudiante = !rol || rol === 'estudiante';
+            campoAcudiente.style.display = soloEstudiante ? '' : 'none';
+            if (!soloEstudiante) document.getElementById('reg-acudiente').value = '';
+        }
     };
 
     function notif(titulo, msg, icono='ℹ️', tipo='info') {

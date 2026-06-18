@@ -430,6 +430,27 @@
         .qa-label{font-family:var(--fuente-t);font-size:0.7rem;font-weight:700;color:var(--blanco);}
         /* Edit modal */
         .modal-edit-section{background:var(--azul-panel);border:1px solid rgba(255,94,0,0.3);padding:1.5rem;margin-top:1rem;}
+        /* ── BANCO DE PREGUNTAS MATEMÁTICAS ── */
+        .banco-form-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:1.1rem 1.2rem;margin-bottom:.6rem;transition:border-color .2s;}
+        .banco-form-card:hover{border-color:rgba(255,94,0,0.25);}
+        .banco-titulo{font-family:var(--fuente-t);font-weight:900;font-size:.88rem;color:var(--blanco);}
+        .banco-meta{font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:.8px;margin-top:.2rem;}
+        .banco-q-block{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:6px;padding:1rem;margin-bottom:.75rem;position:relative;}
+        .banco-q-num{font-family:var(--fuente-t);font-size:.58rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--naranja);margin-bottom:.6rem;}
+        .banco-q-img{width:100%;max-height:160px;object-fit:contain;border-radius:4px;margin:.4rem 0;border:1px solid rgba(255,255,255,.1);}
+        .banco-q-img-placeholder{width:100%;height:90px;background:rgba(255,255,255,.03);border:2px dashed rgba(255,255,255,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s;}
+        .banco-q-img-placeholder:hover{border-color:var(--naranja);color:var(--naranja);}
+        .badge-grado{display:inline-block;padding:.18rem .55rem;background:rgba(56,189,248,.1);color:var(--teal);font-family:var(--fuente-t);font-size:.55rem;font-weight:900;letter-spacing:1.5px;border-radius:3px;text-transform:uppercase;}
+        .badge-publicado{background:rgba(34,197,94,.12);color:var(--verde);}
+        .badge-borrador{background:rgba(255,94,0,.08);color:var(--naranja);}
+        /* ── QUIZ MODAL ── */
+        .quiz-progress{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-bottom:1.1rem;}
+        .quiz-progress-fill{height:100%;background:var(--naranja);border-radius:2px;transition:width .3s ease;}
+        .quiz-opcion{width:100%;padding:.8rem 1rem;margin-bottom:.4rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--blanco);font-family:var(--fuente-t);font-size:.78rem;font-weight:700;cursor:pointer;text-align:left;transition:all .18s;border-radius:4px;display:block;}
+        .quiz-opcion:hover{border-color:rgba(255,94,0,.45);background:rgba(255,94,0,.07);}
+        .quiz-opcion.seleccionado{border-color:var(--naranja);background:rgba(255,94,0,.1);color:var(--naranja);}
+        .quiz-opcion.correcta-final{border-color:var(--verde)!important;background:rgba(34,197,94,.1)!important;color:var(--verde)!important;}
+        .quiz-opcion.incorrecta-final{border-color:var(--rojo)!important;background:rgba(239,68,68,.08)!important;color:#fca5a5!important;}
     </style>
 </head>
 <body>
@@ -1192,7 +1213,102 @@
                 </div>
             </div>
         </div>
+
+        <!-- PANEL: BANCO DE PREGUNTAS MATEMÁTICAS (ADMIN) -->
+        <div class="panel" id="panel-banco-mat">
+            <p class="panel-title">Banco de Preguntas</p>
+            <h2 class="panel-heading">📐 Formularios de <em>Matemáticas</em></h2>
+            <p class="panel-desc">Crea formularios con preguntas, imágenes de referencia y grado objetivo. Publícalos para que los estudiantes los respondan directamente desde su dashboard.</p>
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+                <button class="btn-add" onclick="mostrarEditorFormularioBanco()">➕ Nuevo Formulario</button>
+            </div>
+
+            <!-- Editor formulario (oculto por defecto) -->
+            <div id="banco-editor-cont" style="display:none;">
+                <div class="section-box" style="border-color:rgba(255,94,0,.35);background:rgba(255,94,0,.02);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;">
+                        <p class="section-box-title" style="margin:0;" id="banco-editor-titulo-label">Nuevo Formulario</p>
+                        <button onclick="cerrarEditorFormularioBanco()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
+                    </div>
+                    <div class="form-add" style="margin-bottom:1rem;">
+                        <div class="fa-group" style="grid-column:1/-1"><label>Título del Formulario</label><input type="text" id="bf-titulo" placeholder="ej: Formulario 1 — Números Racionales e Irracionales"></div>
+                        <div class="fa-group"><label>Área</label>
+                            <select id="bf-area">
+                                <option value="Matemáticas">Matemáticas</option>
+                                <option value="Geometría">Geometría</option>
+                                <option value="Estadística">Estadística</option>
+                                <option value="Trigonometría">Trigonometría</option>
+                                <option value="Álgebra">Álgebra</option>
+                            </select>
+                        </div>
+                        <div class="fa-group"><label>Grado objetivo</label>
+                            <select id="bf-grado">
+                                <option value="todos">Todos (8°–11°)</option>
+                                <option value="8">Solo 8°</option>
+                                <option value="9">Solo 9°</option>
+                                <option value="10">Solo 10°</option>
+                                <option value="11">Solo 11° / ICFES</option>
+                                <option value="avanzado">10° y 11°</option>
+                            </select>
+                        </div>
+                        <div class="fa-group" style="grid-column:1/-1"><label>Descripción (opcional)</label><textarea id="bf-desc" rows="2" placeholder="¿Qué competencias trabaja este formulario?"></textarea></div>
+                    </div>
+                    <div id="bf-preguntas-builder"><p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);">Agrega preguntas con el botón de abajo.</p></div>
+                    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;">
+                        <button class="btn-add" style="background:rgba(56,189,248,.1);color:var(--teal);border:1px solid rgba(56,189,248,.25);" onclick="agregarPreguntaBancoUI()">➕ Agregar Pregunta</button>
+                        <button class="btn-add" onclick="guardarFormularioBanco()">💾 Guardar Formulario</button>
+                        <button class="btn-add" style="background:rgba(255,255,255,.05);" onclick="cerrarEditorFormularioBanco()">✕ Cancelar</button>
+                    </div>
+                    <input type="hidden" id="bf-editando-id" value="">
+                </div>
+            </div>
+
+            <!-- Lista formularios -->
+            <div class="section-box">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
+                    <p class="section-box-title" style="margin:0;">📋 Formularios del Banco</p>
+                    <select id="bf-filter-grado" onchange="renderBancoMat()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .5rem;">
+                        <option value="">Todos los grados</option>
+                        <option value="8">8°</option><option value="9">9°</option>
+                        <option value="10">10°</option><option value="11">11° / ICFES</option>
+                        <option value="avanzado">10° y 11°</option><option value="todos">Todos</option>
+                    </select>
+                </div>
+                <div id="bf-lista"><p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando formularios…</p></div>
+            </div>
+        </div>
+
+        <!-- PANEL: CUESTIONARIOS MATEMÁTICAS (ESTUDIANTE) -->
+        <div class="panel" id="panel-cuestionarios-est">
+            <p class="panel-title">Práctica Matemática</p>
+            <h2 class="panel-heading">Cuestionarios de <em>Matemáticas</em></h2>
+            <p class="panel-desc">Practica con cuestionarios de selección múltiple. Al finalizar verás tu puntaje, las respuestas correctas y ganas puntos por cada acierto.</p>
+            <div class="section-box">
+                <p class="section-box-title">📋 Disponibles para tu grado</p>
+                <div id="est-cuestionarios-lista"><p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p></div>
+            </div>
+        </div>
     </main>
+</div>
+
+<!-- MODAL CUESTIONARIO ESTUDIANTE -->
+<div class="modal-overlay" id="modal-cuestionario">
+    <div class="modal-box" style="max-width:640px;width:95vw;max-height:88vh;overflow-y:auto;" id="quiz-modal-box">
+        <button class="modal-close" onclick="cerrarCuestionario()">✕</button>
+        <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div></div>
+        <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:.4rem;" id="quiz-pregunta-num">PREGUNTA 1 DE N</p>
+        <p class="modal-title" id="quiz-titulo-form" style="font-size:.7rem;margin-bottom:.8rem;color:rgba(255,255,255,.5);"></p>
+        <div id="quiz-imagen-cont" style="margin-bottom:1rem;display:none;text-align:center;">
+            <img id="quiz-imagen" src="" alt="Imagen de la pregunta" style="max-width:100%;max-height:220px;object-fit:contain;border-radius:6px;border:1px solid rgba(255,255,255,.1);">
+            <p id="quiz-img-ref" style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.22);margin-top:.2rem;"></p>
+        </div>
+        <h3 id="quiz-enunciado" style="font-family:var(--fuente-t);font-size:.95rem;line-height:1.55;font-weight:700;margin-bottom:1rem;color:var(--blanco);"></h3>
+        <div id="quiz-opciones"></div>
+        <div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap;">
+            <button id="btn-quiz-sig" class="btn-add" onclick="siguientePregunta()" style="display:none;">Siguiente →</button>
+            <button id="btn-quiz-fin" class="btn-add" onclick="finalizarCuestionario()" style="display:none;">Ver Resultados 🏆</button>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL RATING MENTORES -->
@@ -1444,21 +1560,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Renovar timestamp en cada carga de página
     localStorage.setItem('sesion_timestamp', String(Date.now()));
 
-    // Refrescar datos desde Firestore
-    if (currentUser.uid && currentUser.uid !== 'admin-jcastrogo') {
+    // Refrescar datos desde Firestore (todos los usuarios, incluido admin)
+    if (currentUser.uid) {
         try {
             const snap = await getDoc(doc(db, "usuarios", currentUser.uid));
             if (snap.exists()) {
                 const firestoreData = snap.data();
-                // Preservar el rol de localStorage si Firestore no tiene uno válido
-                const rolesValidos = ['estudiante','docente','voluntario','admin'];
-                const rolFirestore = (firestoreData.rol || '').toLowerCase().trim();
-                if (!rolesValidos.includes(rolFirestore)) {
-                    delete firestoreData.rol; // no sobreescribir con valor inválido
+                if (currentUser.uid === 'admin-jcastrogo') {
+                    // Admin hardcodeado: solo sincronizar fotoUrl para no perder datos de sesión
+                    if (firestoreData.fotoUrl) currentUser.fotoUrl = firestoreData.fotoUrl;
                 } else {
-                    firestoreData.rol = rolFirestore; // normalizar a minúsculas
+                    // Preservar el rol de localStorage si Firestore no tiene uno válido
+                    const rolesValidos = ['estudiante','docente','voluntario','admin'];
+                    const rolFirestore = (firestoreData.rol || '').toLowerCase().trim();
+                    if (!rolesValidos.includes(rolFirestore)) {
+                        delete firestoreData.rol; // no sobreescribir con valor inválido
+                    } else {
+                        firestoreData.rol = rolFirestore; // normalizar a minúsculas
+                    }
+                    currentUser = { ...currentUser, ...firestoreData };
                 }
-                currentUser = { ...currentUser, ...firestoreData };
                 localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
             }
         } catch(e) {}
@@ -1547,6 +1668,7 @@ function construirMenu(rol) {
             {label:'🎨 Catálogo', fn:()=>{ localStorage.setItem('_pri_back','dashboard.html'); window.location.href='catalogo.html'; }},
             {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-admin');cargarPremiosAdmin();}},
             {label:'🛒 Tienda', fn:()=>{activarPanel('panel-gestion-tienda');cargarGestionTienda();}},
+            {label:'📐 Banco Mat.', fn:()=>{activarPanel('panel-banco-mat');cargarBancoMat();}},
             {label:'➕ Contenido', fn:()=>activarPanel('panel-admin-add')},
             {label:'💬 Foro Global', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
             {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
@@ -1585,6 +1707,7 @@ function construirMenu(rol) {
             {label:'🛡️ Retos', fn:()=>{activarPanel('panel-retos');cargarRetosCompletados().then(()=>cargarRetos());}},
             {label:'📚 Talleres', fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();cargarCompletadosEstudiante();cargarTutores();}},
             {label:'📣 Capacitación', fn:()=>activarPanel('panel-capacitaciones-sol')},
+            {label:'📐 Cuestionarios', fn:()=>{activarPanel('panel-cuestionarios-est');cargarCuestionariosEst();}},
             {label:'🎁 Productos', fn:()=>{activarPanel('panel-productos');initProductos();}},
             {label:'💬 Foro', fn:()=>{activarPanel('panel-foro');cargarForo();}},
             {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
@@ -2655,6 +2778,32 @@ window.verDetalleEstudiante = async function(uid) {
                 talleresHTML += '</div>';
             }
         } catch(e2){}
+        // Cargar resultados de Pre-Test para este usuario
+        let pretestHTML = '';
+        try {
+            const ptSnap = await getDocs(query(collection(db,"muestras_pretest"), where("uid","==",uid), orderBy("fechaMuestra","desc"))).catch(async () => {
+                // fallback sin orderBy si falta el índice
+                return getDocs(query(collection(db,"muestras_pretest"), where("uid","==",uid)));
+            });
+            if (!ptSnap.empty) {
+                pretestHTML = '<div class="section-box"><p class="section-box-title">🧪 Resultados Pre-Test</p>';
+                ptSnap.forEach(d => {
+                    const pt = d.data();
+                    const fechaPT = pt.fechaMuestra ? new Date(pt.fechaMuestra.toDate()).toLocaleString('es-CO',{dateStyle:'short',timeStyle:'short'}) : '—';
+                    const fortalezas = (pt.fortalezas||[]).join(', ') || '—';
+                    const falencias = (pt.falencias||[]).join(', ') || '—';
+                    pretestHTML += `<div style="padding:0.75rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+                            <span style="font-family:var(--fuente-t);font-size:0.75rem;font-weight:900;color:var(--teal)">${pt.porcentaje||'—'}</span>
+                            <span style="font-size:0.65rem;color:rgba(255,255,255,0.35)">${fechaPT}</span>
+                        </div>
+                        <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.15rem;">💪 Fortalezas: <span style="color:#86efac">${fortalezas}</span></p>
+                        <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);">🎯 Por mejorar: <span style="color:#fca5a5">${falencias}</span></p>
+                    </div>`;
+                });
+                pretestHTML += '</div>';
+            }
+        } catch(ePT){}
         document.getElementById('admin-perfil-contenido').innerHTML = `
             <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
                 <button class="btn-table" onclick="activarPanel('panel-admin-global');">← Volver</button>
@@ -2674,6 +2823,7 @@ window.verDetalleEstudiante = async function(uid) {
                     ${Object.entries({p1:'Nombre',p2:'Municipio',p3:'Barrio',p4:'Estrato',p5:'Vivienda',p9:'Personas hogar',p19:'Internet',p20:'Equipo',p22:'Institución',p23:'Grado',p24:'Dificultad',p25:'Interés U',p26:'Primer prof.'}).map(([k,label])=>r[k]?`<div><p style="font-family:var(--fuente-t);font-size:0.5rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">${label}</p><p style="color:var(--blanco);">${r[k]}</p></div>`:''    ).join('')}
                 </div>
             </div>`:''}
+            ${pretestHTML}
             ${talleresHTML}
             ${canjesHTML?`<div class="section-box"><p class="section-box-title">🎁 Premios Reclamados</p>${canjesHTML}</div>`:''}
         `;
@@ -2777,7 +2927,17 @@ function normalizarCedula(raw) {
 
 // ── helpers locales de ICFES ──────────────────────────────────────────────────
 const _px = (r,...k) => { for(const c of k){ const v=r[c]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } return null; };
-const _pct = raw => { if(!raw) return NaN; const s=String(raw).trim(); const m=s.match(/^([\d.]+)\s*\/\s*([\d.]+)$/); if(m) return parseFloat(m[1])/parseFloat(m[2])*100; return parseFloat(s); };
+const _pct = raw => {
+    if(!raw) return NaN;
+    const s = String(raw).trim();
+    // "X / Y (N%)" — prefer the explicit percentage
+    const mp = s.match(/\((\d+\.?\d*)%\)/);
+    if(mp) return parseFloat(mp[1]);
+    // "X / Y" or "X/Y"
+    const m = s.match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
+    if(m) return parseFloat(m[1]) / parseFloat(m[2]) * 100;
+    return parseFloat(s);
+};
 const _pcolor = p => isNaN(p)?'rgba(240,244,248,.4)':p>=70?'#86efac':p>=40?'#fbbf24':'#fca5a5';
 
 function _extraerEstudiante(r) {
@@ -2974,19 +3134,22 @@ function renderResultadosICFES() {
         const promColor = prom!=null ? _pcolor(prom) : 'rgba(240,244,248,.4)';
 
         const filasForms = e.formularios
-            .sort((a,b)=>a.area.localeCompare(b.area))
+            .sort((a,b)=>{ const da=new Date(String(b.fecha).replace(/[-/]/g,'-')), db=new Date(String(a.fecha).replace(/[-/]/g,'-')); return isNaN(da)||isNaN(db)?0:da-db; })
             .map(f=>{
                 const p = _pct(f.pts); const pc = isNaN(p)?null:Math.round(p);
-                const pts_m = String(f.pts).match(/^([\d.]+)\s*\/\s*([\d.]+)$/);
+                const pts_m = String(f.pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
                 const correctas   = pts_m ? pts_m[1] : (pc!=null?`${pc}%`:'—');
                 const incorrectas = pts_m ? (parseFloat(pts_m[2])-parseFloat(pts_m[1])) : '—';
                 const aColor = AREA_COLOR[f.area]||'var(--teal)';
                 return `<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:.4rem;align-items:center;padding:.3rem .6rem;background:rgba(255,255,255,.02);border-radius:4px;margin-bottom:.2rem;">
-                    <span style="font-family:var(--fuente-t);font-size:.62rem;font-weight:700;color:${aColor};">${f.area}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.62rem;font-weight:700;color:${aColor};">
+                        ${f.hoja && f.hoja !== f.area ? f.hoja : f.area}
+                        ${f.hoja && f.hoja !== f.area ? `<span style="font-size:.48rem;font-weight:700;background:rgba(255,94,0,.12);color:var(--naranja);border-radius:3px;padding:.1rem .3rem;margin-left:.3rem;vertical-align:middle;">${f.area}</span>` : ''}
+                    </span>
                     <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${_pcolor(p)};text-align:center;">${f.pts}</span>
                     <span style="font-family:var(--fuente-t);font-size:.6rem;color:#86efac;text-align:center;">✅ ${correctas}</span>
                     <span style="font-family:var(--fuente-t);font-size:.6rem;color:#fca5a5;text-align:center;">❌ ${incorrectas}</span>
-                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);white-space:nowrap;">${String(f.fecha).slice(0,10)}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);white-space:nowrap;">${String(f.fecha)}</span>
                 </div>`;
             }).join('');
 
@@ -4765,6 +4928,436 @@ window.logoutSession = function() {
             };
         }
     });
+
+// ══════════════════════════════════════════════════════════════════
+// BANCO DE PREGUNTAS MATEMÁTICAS — ADMIN
+// Colección Firestore: formularios_banco
+// ══════════════════════════════════════════════════════════════════
+let _bancoFormularios = [];
+let _bancoPregContador = 0;
+
+window.cargarBancoMat = async function() {
+    const lista = document.getElementById('bf-lista');
+    if (!lista) return;
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>';
+    try {
+        const snap = await getDocs(query(collection(db,'formularios_banco'), orderBy('creadoEn','desc')));
+        _bancoFormularios = snap.docs.map(d => ({id:d.id,...d.data()}));
+        renderBancoMat();
+    } catch(e) {
+        lista.innerHTML = `<p style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;">${e.message}</p>`;
+    }
+};
+
+window.renderBancoMat = function() {
+    const lista = document.getElementById('bf-lista');
+    if (!lista) return;
+    const filtroGrado = document.getElementById('bf-filter-grado')?.value || '';
+    const fms = filtroGrado ? _bancoFormularios.filter(f => f.grado === filtroGrado) : _bancoFormularios;
+    if (!fms.length) {
+        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">No hay formularios aún. Crea el primero con el botón de arriba.</p>';
+        return;
+    }
+    lista.innerHTML = fms.map(f => {
+        const nPregs = (f.preguntas||[]).length;
+        const pub = !!f.publicado;
+        return `<div class="banco-form-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.6rem;">
+                <div style="flex:1;min-width:0;">
+                    <p class="banco-titulo">${f.titulo||'Sin título'}</p>
+                    <p class="banco-meta">${f.area||'Matemáticas'} · ${nPregs} pregunta${nPregs!==1?'s':''} · Grado: ${f.grado||'todos'}</p>
+                    <div style="margin-top:.4rem;display:flex;gap:.35rem;flex-wrap:wrap;">
+                        <span class="badge-grado">Grado ${f.grado||'todos'}</span>
+                        <span class="badge-grado ${pub?'badge-publicado':'badge-borrador'}">${pub?'✅ Publicado':'📝 Borrador'}</span>
+                    </div>
+                </div>
+                <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;flex-shrink:0;">
+                    <button class="btn-module" onclick="togglePublicarBanco('${f.id}',${pub})">${pub?'📴 Quitar':'📢 Publicar'}</button>
+                    <button class="btn-module" style="color:#93c5fd;border-color:rgba(56,189,248,.25);" onclick="editarFormularioBanco('${f.id}')">✏️ Editar</button>
+                    <button class="btn-module" style="color:#fca5a5;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.06);" onclick="eliminarFormularioBanco('${f.id}')">✕</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+};
+
+window.mostrarEditorFormularioBanco = function() {
+    document.getElementById('bf-editando-id').value = '';
+    document.getElementById('banco-editor-titulo-label').textContent = 'Nuevo Formulario';
+    document.getElementById('bf-titulo').value = '';
+    document.getElementById('bf-area').value = 'Matemáticas';
+    document.getElementById('bf-grado').value = 'todos';
+    document.getElementById('bf-desc').value = '';
+    document.getElementById('bf-preguntas-builder').innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);">Agrega preguntas con el botón de abajo.</p>';
+    _bancoPregContador = 0;
+    document.getElementById('banco-editor-cont').style.display = 'block';
+    document.getElementById('banco-editor-cont').scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+window.cerrarEditorFormularioBanco = function() {
+    document.getElementById('banco-editor-cont').style.display = 'none';
+};
+
+window.editarFormularioBanco = function(id) {
+    const f = _bancoFormularios.find(x => x.id === id);
+    if (!f) return;
+    document.getElementById('bf-editando-id').value = id;
+    document.getElementById('banco-editor-titulo-label').textContent = 'Editando: ' + (f.titulo||'Formulario');
+    document.getElementById('bf-titulo').value = f.titulo || '';
+    document.getElementById('bf-area').value = f.area || 'Matemáticas';
+    document.getElementById('bf-grado').value = f.grado || 'todos';
+    document.getElementById('bf-desc').value = f.descripcion || '';
+    const builder = document.getElementById('bf-preguntas-builder');
+    builder.innerHTML = '';
+    _bancoPregContador = 0;
+    (f.preguntas || []).forEach(p => { _bancoPregContador++; builder.insertAdjacentHTML('beforeend', _bfPregHTML(_bancoPregContador, p)); });
+    document.getElementById('banco-editor-cont').style.display = 'block';
+    document.getElementById('banco-editor-cont').scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+window.agregarPreguntaBancoUI = function(datos) {
+    _bancoPregContador++;
+    const builder = document.getElementById('bf-preguntas-builder');
+    const placeholder = builder.querySelector('p');
+    if (placeholder && builder.children.length === 1) placeholder.remove();
+    builder.insertAdjacentHTML('beforeend', _bfPregHTML(_bancoPregContador, datos || {}));
+};
+
+function _bfPregHTML(n, d) {
+    const ops = d.opciones || {};
+    const correcta = String(d.correcta ?? '0');
+    const ref = d.ref || `TAL-P??-Q${String(n).padStart(2,'0')}`;
+    const imgUrl = d.imagenUrl || '';
+    return `<div class="banco-q-block" id="bfq-${n}">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;">
+            <p class="banco-q-num">Pregunta ${n} <span style="color:rgba(255,255,255,.3);font-weight:400;font-size:.5rem;letter-spacing:0;">(${ref})</span></p>
+            <button onclick="document.getElementById('bfq-${n}').remove()" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:.9rem;line-height:1;padding:.2rem .5rem;">✕</button>
+        </div>
+        <div class="form-add">
+            <div class="fa-group" style="grid-column:1/-1"><label>Enunciado</label><textarea id="bfq${n}-q" rows="2" placeholder="Escribe el enunciado de la pregunta…">${d.enunciado||''}</textarea></div>
+            <div class="fa-group"><label>Referencia imagen (ej: TAL-P01-Q01)</label><input type="text" id="bfq${n}-ref" value="${ref}" placeholder="TAL-P01-Q01"></div>
+            <div class="fa-group" style="grid-column:1/-1">
+                <label>Imagen de la pregunta</label>
+                ${imgUrl?`<img src="${imgUrl}" class="banco-q-img" id="bfq${n}-img-preview" style="display:block;">`:''}
+                <div class="banco-q-img-placeholder" id="bfq${n}-placeholder" style="${imgUrl?'display:none':''}" onclick="document.getElementById('bfq${n}-file').click()">📷 Clic para subir imagen del enunciado</div>
+                <input type="file" id="bfq${n}-file" accept="image/*" style="display:none" onchange="subirImagenPreguntaBanco(${n})">
+                <input type="hidden" id="bfq${n}-imgurl" value="${imgUrl}">
+                <p id="bfq${n}-upload-msg" style="font-family:var(--fuente-t);font-size:.6rem;margin-top:.3rem;display:none;"></p>
+            </div>
+            <div class="fa-group"><label>Opción A</label><input type="text" id="bfq${n}-a" value="${ops.A||''}" placeholder="Opción A"></div>
+            <div class="fa-group"><label>Opción B</label><input type="text" id="bfq${n}-b" value="${ops.B||''}" placeholder="Opción B"></div>
+            <div class="fa-group"><label>Opción C</label><input type="text" id="bfq${n}-c" value="${ops.C||''}" placeholder="Opción C"></div>
+            <div class="fa-group"><label>Opción D</label><input type="text" id="bfq${n}-d" value="${ops.D||''}" placeholder="Opción D"></div>
+            <div class="fa-group"><label>Respuesta Correcta</label>
+                <select id="bfq${n}-correcta">
+                    <option value="0" ${correcta==='0'?'selected':''}>A</option>
+                    <option value="1" ${correcta==='1'?'selected':''}>B</option>
+                    <option value="2" ${correcta==='2'?'selected':''}>C</option>
+                    <option value="3" ${correcta==='3'?'selected':''}>D</option>
+                </select>
+            </div>
+            <div class="fa-group"><label>Explicación (opcional)</label><input type="text" id="bfq${n}-exp" value="${d.explicacion||''}" placeholder="¿Por qué es correcta?"></div>
+        </div>
+    </div>`;
+}
+
+window.subirImagenPreguntaBanco = async function(n) {
+    const file = document.getElementById(`bfq${n}-file`)?.files[0];
+    if (!file) return;
+    const msg = document.getElementById(`bfq${n}-upload-msg`);
+    msg.style.display = 'block'; msg.style.color = 'var(--teal)'; msg.textContent = '⏳ Subiendo imagen…';
+    try {
+        const url = await subirImagenCloudinary(file);
+        document.getElementById(`bfq${n}-imgurl`).value = url;
+        let img = document.getElementById(`bfq${n}-img-preview`);
+        if (!img) {
+            img = document.createElement('img');
+            img.id = `bfq${n}-img-preview`;
+            img.className = 'banco-q-img';
+            document.getElementById(`bfq${n}-placeholder`).insertAdjacentElement('beforebegin', img);
+        }
+        img.src = url; img.style.display = 'block';
+        const ph = document.getElementById(`bfq${n}-placeholder`);
+        if (ph) ph.style.display = 'none';
+        msg.textContent = '✅ Imagen subida correctamente';
+        setTimeout(() => { msg.style.display='none'; }, 2500);
+    } catch(e) {
+        msg.style.color = '#fca5a5';
+        msg.textContent = '❌ Error al subir: ' + e.message;
+    }
+};
+
+window.guardarFormularioBanco = async function() {
+    const titulo = document.getElementById('bf-titulo').value.trim();
+    const area   = document.getElementById('bf-area').value;
+    const grado  = document.getElementById('bf-grado').value;
+    const desc   = document.getElementById('bf-desc').value.trim();
+    const editandoId = document.getElementById('bf-editando-id').value;
+    if (!titulo) { notif('Falta título','Escribe el nombre del formulario.','⚠️','warn'); return; }
+
+    const preguntas = [];
+    let n = 1;
+    while (document.getElementById(`bfq-${n}`)) {
+        const q   = document.getElementById(`bfq${n}-q`)?.value.trim();
+        const ref = document.getElementById(`bfq${n}-ref`)?.value.trim();
+        const img = document.getElementById(`bfq${n}-imgurl`)?.value || '';
+        const a   = document.getElementById(`bfq${n}-a`)?.value.trim();
+        const b   = document.getElementById(`bfq${n}-b`)?.value.trim();
+        const c   = document.getElementById(`bfq${n}-c`)?.value.trim() || '';
+        const d   = document.getElementById(`bfq${n}-d`)?.value.trim() || '';
+        const cor = parseInt(document.getElementById(`bfq${n}-correcta`)?.value ?? '0');
+        const exp = document.getElementById(`bfq${n}-exp`)?.value.trim() || '';
+        if (q && a && b) preguntas.push({ num:n, enunciado:q, ref:ref||'', imagenUrl:img, opciones:{A:a,B:b,C:c,D:d}, correcta:cor, explicacion:exp });
+        n++;
+    }
+    if (!preguntas.length) { notif('Sin preguntas','Agrega al menos una pregunta.','⚠️','warn'); return; }
+
+    const datos = { titulo, area, grado, descripcion:desc, preguntas, totalPreguntas:preguntas.length, publicado: false };
+    try {
+        if (editandoId) {
+            datos.actualizadoEn = serverTimestamp();
+            await updateDoc(doc(db,'formularios_banco',editandoId), datos);
+            notif('Actualizado',`"${titulo}" guardado con ${preguntas.length} preguntas.`,'✅','success');
+        } else {
+            datos.creadoEn = serverTimestamp();
+            await addDoc(collection(db,'formularios_banco'), datos);
+            notif('Formulario creado',`"${titulo}" con ${preguntas.length} preguntas listo.`,'✅','success');
+        }
+        cerrarEditorFormularioBanco();
+        cargarBancoMat();
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+window.togglePublicarBanco = async function(id, estadoActual) {
+    try {
+        const nuevo = !estadoActual;
+        await updateDoc(doc(db,'formularios_banco',id), { publicado: nuevo });
+        const f = _bancoFormularios.find(x => x.id === id);
+        if (f) f.publicado = nuevo;
+        renderBancoMat();
+        notif(nuevo?'Publicado':'Despublicado', nuevo?'Los estudiantes ya pueden verlo.':'Retirado del acceso estudiantil.', nuevo?'✅':'📴', nuevo?'success':'info');
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+window.eliminarFormularioBanco = async function(id) {
+    if (!confirm('¿Eliminar este formulario permanentemente?')) return;
+    try {
+        await deleteDoc(doc(db,'formularios_banco',id));
+        _bancoFormularios = _bancoFormularios.filter(x => x.id !== id);
+        renderBancoMat();
+        notif('Eliminado','Formulario eliminado del banco.','🗑️','warn');
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+// ══════════════════════════════════════════════════════════════════
+// CUESTIONARIOS MATEMÁTICAS — ESTUDIANTE
+// ══════════════════════════════════════════════════════════════════
+let _quizActivo = null;
+let _quizPregActual = 0;
+let _quizRespuestas = [];
+let _quizFormId = null;
+
+window.cargarCuestionariosEst = async function() {
+    const lista = document.getElementById('est-cuestionarios-lista');
+    if (!lista) return;
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>';
+    const gradoUsuario = String(currentUser.grado || '').replace(/[°ºo]/gi,'').trim();
+
+    try {
+        const snap = await getDocs(query(collection(db,'formularios_banco'), where('publicado','==',true), orderBy('creadoEn','desc')));
+        const forms = snap.docs.map(d => ({id:d.id,...d.data()})).filter(f => {
+            if (!f.grado || f.grado === 'todos') return true;
+            if (f.grado === 'avanzado') return gradoUsuario === '10' || gradoUsuario === '11';
+            return f.grado === gradoUsuario;
+        });
+
+        // Load previous results
+        let misRes = {};
+        try {
+            if (currentUser.uid) {
+                const rs = await getDocs(collection(db,'usuarios',currentUser.uid,'respuestas_banco'));
+                rs.forEach(d => { misRes[d.id] = d.data(); });
+            }
+        } catch(e) {}
+
+        if (!forms.length) {
+            lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">No hay cuestionarios disponibles para tu grado todavía.</p>';
+            return;
+        }
+
+        lista.innerHTML = forms.map(f => {
+            const r = misRes[f.id];
+            const pct = r ? Math.round((r.correctas/(r.total||1))*100) : null;
+            return `<div class="banco-form-card" style="cursor:pointer;" onclick="iniciarCuestionario('${f.id}')">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.5rem;">
+                    <div style="flex:1;min-width:0;">
+                        <p class="banco-titulo">${f.titulo||'—'}</p>
+                        <p class="banco-meta">${f.area||'Matemáticas'} · ${f.totalPreguntas||0} preguntas · Grado ${f.grado||'todos'}</p>
+                        ${r ? `<p class="banco-meta" style="color:var(--verde);margin-top:.3rem;">✅ Tu resultado: ${pct}% (${r.correctas}/${r.total} correctas)</p>`
+                             : `<p class="banco-meta" style="color:rgba(255,94,0,.7);margin-top:.3rem;">⏳ Sin intentar aún</p>`}
+                    </div>
+                    <button class="btn-module" style="background:var(--naranja);color:#fff;border:none;flex-shrink:0;">${r?'🔄 Reintentar':'▶ Iniciar'}</button>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        lista.innerHTML = `<p style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;">${e.message}</p>`;
+    }
+};
+
+window.iniciarCuestionario = async function(id) {
+    try {
+        const snap = await getDoc(doc(db,'formularios_banco',id));
+        if (!snap.exists()) { notif('Error','No se encontró el formulario.','❌','error'); return; }
+        _quizActivo = {id, ...snap.data()};
+        _quizFormId = id;
+        _quizPregActual = 0;
+        _quizRespuestas = new Array((_quizActivo.preguntas||[]).length).fill(null);
+        document.getElementById('quiz-titulo-form').textContent = _quizActivo.titulo || '';
+        _mostrarPreguntaQuiz(0);
+        document.getElementById('modal-cuestionario').classList.add('open');
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+function _mostrarPreguntaQuiz(idx) {
+    const preguntas = _quizActivo.preguntas || [];
+    if (idx >= preguntas.length) return;
+    const p = preguntas[idx];
+    const total = preguntas.length;
+
+    document.getElementById('quiz-pregunta-num').textContent = `PREGUNTA ${idx+1} DE ${total}`;
+    document.getElementById('quiz-progress-fill').style.width = `${Math.round(((idx+1)/total)*100)}%`;
+    document.getElementById('quiz-enunciado').textContent = p.enunciado || '—';
+
+    const imgCont = document.getElementById('quiz-imagen-cont');
+    if (p.imagenUrl) {
+        document.getElementById('quiz-imagen').src = p.imagenUrl;
+        document.getElementById('quiz-img-ref').textContent = p.ref ? `Ref: ${p.ref}` : '';
+        imgCont.style.display = 'block';
+    } else {
+        imgCont.style.display = 'none';
+    }
+
+    const opsCont = document.getElementById('quiz-opciones');
+    const letras = ['A','B','C','D'];
+    opsCont.innerHTML = letras
+        .filter(l => p.opciones && p.opciones[l])
+        .map((l, i) => `<button class="quiz-opcion" id="qop-${i}" onclick="seleccionarOpcionQuiz(${i})">${l}. ${p.opciones[l]}</button>`)
+        .join('');
+
+    document.getElementById('btn-quiz-sig').style.display = 'none';
+    document.getElementById('btn-quiz-fin').style.display = 'none';
+
+    if (_quizRespuestas[idx] !== null) _marcarOpcionQuiz(_quizRespuestas[idx]);
+}
+
+window.seleccionarOpcionQuiz = function(idx) {
+    _quizRespuestas[_quizPregActual] = idx;
+    _marcarOpcionQuiz(idx);
+    const total = (_quizActivo.preguntas||[]).length;
+    document.getElementById('btn-quiz-sig').style.display = _quizPregActual < total - 1 ? 'inline-block' : 'none';
+    document.getElementById('btn-quiz-fin').style.display = _quizPregActual >= total - 1 ? 'inline-block' : 'none';
+};
+
+function _marcarOpcionQuiz(idx) {
+    document.querySelectorAll('.quiz-opcion').forEach((b, i) => b.classList.toggle('seleccionado', i === idx));
+}
+
+window.siguientePregunta = function() {
+    if (_quizRespuestas[_quizPregActual] === null) {
+        notif('Selecciona una opción','Elige tu respuesta antes de continuar.','⚠️','warn'); return;
+    }
+    _quizPregActual++;
+    _mostrarPreguntaQuiz(_quizPregActual);
+};
+
+window.finalizarCuestionario = async function() {
+    if (_quizRespuestas[_quizPregActual] === null) {
+        notif('Selecciona una opción','Elige tu respuesta antes de ver resultados.','⚠️','warn'); return;
+    }
+    const preguntas = _quizActivo.preguntas || [];
+    let correctas = 0;
+    const detalles = preguntas.map((p, i) => {
+        const resp = _quizRespuestas[i] ?? -1;
+        const esCorrecta = resp === (parseInt(p.correcta) || 0);
+        if (esCorrecta) correctas++;
+        return { resp, correcta: parseInt(p.correcta)||0, esCorrecta };
+    });
+    const pct = Math.round((correctas / preguntas.length) * 100);
+
+    try {
+        if (currentUser.uid) {
+            await setDoc(doc(db,'usuarios',currentUser.uid,'respuestas_banco',_quizFormId), {
+                formularioId:_quizFormId, titulo:_quizActivo.titulo,
+                correctas, total:preguntas.length, porcentaje:pct,
+                respuestas:_quizRespuestas, detalles, fecha:serverTimestamp()
+            });
+            const pts = correctas * 5;
+            if (pts > 0) {
+                await updateDoc(doc(db,'usuarios',currentUser.uid), { puntos:increment(pts) });
+                currentUser.puntos = (currentUser.puntos||0) + pts;
+                localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+            }
+        }
+    } catch(e) { console.warn('Error guardando resultado cuestionario:', e); }
+
+    _mostrarResultadosQuiz(detalles, correctas, preguntas, pct);
+};
+
+function _mostrarResultadosQuiz(detalles, correctas, preguntas, pct) {
+    const box = document.getElementById('quiz-modal-box');
+    const letras = ['A','B','C','D'];
+    const colorPct = pct >= 70 ? 'var(--verde)' : pct >= 50 ? 'var(--oro)' : 'var(--naranja)';
+    box.innerHTML = `
+        <button class="modal-close" onclick="cerrarCuestionario()">✕</button>
+        <p class="modal-title" style="text-align:center;">🏆 Resultados</p>
+        <p style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(255,255,255,.5);text-align:center;margin-bottom:1.2rem;">${_quizActivo.titulo||''}</p>
+        <div style="text-align:center;padding:1.5rem;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:1.5rem;">
+            <p style="font-family:var(--fuente-t);font-size:3.2rem;font-weight:900;color:${colorPct};line-height:1;">${pct}%</p>
+            <p style="font-family:var(--fuente-t);font-size:.75rem;color:rgba(255,255,255,.55);margin-top:.4rem;">${correctas} de ${preguntas.length} correctas</p>
+            <p style="font-family:var(--fuente-t);font-size:.7rem;color:var(--teal);margin-top:.3rem;">+${correctas*5} PTS ganados</p>
+        </div>
+        <div style="max-height:38vh;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+            ${detalles.map((d,i) => {
+                const p = preguntas[i];
+                const rLetra = letras[d.resp] || '—';
+                const cLetra = letras[d.correcta];
+                return `<div style="padding:.7rem .9rem;margin-bottom:.4rem;border-radius:5px;
+                    background:${d.esCorrecta?'rgba(34,197,94,.07)':'rgba(239,68,68,.07)'};
+                    border:1px solid ${d.esCorrecta?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)'};">
+                    <p style="font-family:var(--fuente-t);font-size:.58rem;font-weight:900;color:${d.esCorrecta?'var(--verde)':'#fca5a5'};margin-bottom:.3rem;">
+                        ${d.esCorrecta?'✅':'❌'} Pregunta ${i+1}</p>
+                    <p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.6);">${(p.enunciado||'').substring(0,90)}${(p.enunciado||'').length>90?'…':''}</p>
+                    ${!d.esCorrecta?`<p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.35);margin-top:.2rem;">Tu resp.: ${rLetra} · Correcta: ${cLetra}</p>`:''}
+                    ${p.explicacion?`<p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(56,189,248,.8);margin-top:.2rem;">💡 ${p.explicacion}</p>`:''}
+                </div>`;
+            }).join('')}
+        </div>
+        <button class="btn-add" onclick="cerrarCuestionario();cargarCuestionariosEst();" style="width:100%;margin-top:1rem;">↩ Volver a Cuestionarios</button>`;
+}
+
+window.cerrarCuestionario = function() {
+    document.getElementById('modal-cuestionario').classList.remove('open');
+    setTimeout(() => {
+        const box = document.getElementById('quiz-modal-box');
+        if (!box) return;
+        box.innerHTML = `
+            <button class="modal-close" onclick="cerrarCuestionario()">✕</button>
+            <div class="quiz-progress"><div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div></div>
+            <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:.4rem;" id="quiz-pregunta-num">PREGUNTA 1 DE N</p>
+            <p class="modal-title" id="quiz-titulo-form" style="font-size:.7rem;margin-bottom:.8rem;color:rgba(255,255,255,.5);"></p>
+            <div id="quiz-imagen-cont" style="margin-bottom:1rem;display:none;text-align:center;">
+                <img id="quiz-imagen" src="" alt="" style="max-width:100%;max-height:220px;object-fit:contain;border-radius:6px;border:1px solid rgba(255,255,255,.1);">
+                <p id="quiz-img-ref" style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.22);margin-top:.2rem;"></p>
+            </div>
+            <h3 id="quiz-enunciado" style="font-family:var(--fuente-t);font-size:.95rem;line-height:1.55;font-weight:700;margin-bottom:1rem;color:var(--blanco);"></h3>
+            <div id="quiz-opciones"></div>
+            <div style="display:flex;gap:.6rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap;">
+                <button id="btn-quiz-sig" class="btn-add" onclick="siguientePregunta()" style="display:none;">Siguiente →</button>
+                <button id="btn-quiz-fin" class="btn-add" onclick="finalizarCuestionario()" style="display:none;">Ver Resultados 🏆</button>
+            </div>`;
+    }, 350);
+};
 </script>
 </body>
 </html>

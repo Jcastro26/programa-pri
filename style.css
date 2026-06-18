@@ -25,6 +25,14 @@ body {
     font-family: var(--fuente-textos);
     line-height: 1.5;
     overflow-x: hidden;
+    /* Android scroll fix */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: auto;
+}
+/* Android Chrome: evitar que elementos hijos bloqueen el scroll del body */
+html {
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
 }
 
 h1, h2, h3 {
@@ -1133,8 +1141,9 @@ h1, h2, h3 {
 
 .page-login {
     background-color: var(--azul-deep-tumaco);
-    overflow: hidden; /* Evita rebotes extraños en PC */
-    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto; /* Android: no bloquear scroll vertical */
+    min-height: 100vh;
     width: 100vw;
 }
 
@@ -6013,5 +6022,27 @@ html, body {
     .tumaco-rock {
         bottom: 12vh !important;
         width: clamp(200px, 55vw, 320px) !important;
+    }
+}
+
+/* ── Android scroll fix global ─────────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Evitar que secciones de fondo bloqueen el scroll táctil en Android */
+    .hero-section,
+    .hero-section *:not(a):not(button):not(input):not(select):not(textarea) {
+        touch-action: pan-y pinch-zoom;
+    }
+    /* Asegurar que canvas decorativos nunca capturen toques */
+    canvas { touch-action: none; pointer-events: none; }
+    /* Momentum scroll en contenedores desplazables */
+    [style*="overflow-y:auto"],
+    [style*="overflow-y: auto"],
+    .overflow-y-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+    /* Evitar que elementos fixed/absolute bloqueen scroll */
+    #nav-backdrop, .particles-canvas, #hero-video-bg {
+        touch-action: none;
+        pointer-events: none;
     }
 }
