@@ -341,7 +341,39 @@
 
             /* Foro / Chat — scroll táctil obligatorio en móvil */
             .foro-messages{height:clamp(240px,42vh,400px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
-            #inbox-chat-mensajes{height:clamp(240px,42vh,400px) !important;overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
+
+            /* ── INBOX CHAT: overlay pantalla completa en móvil ── */
+            /* Evita que la página compita con el scroll del chat */
+            #inbox-chat-box{
+                position:fixed !important;
+                inset:0 !important;
+                z-index:3500 !important;
+                background:var(--azul-panel) !important;
+                display:flex !important;
+                flex-direction:column !important;
+                overflow:hidden !important;
+            }
+            #inbox-chat-box .section-box{
+                flex:1 !important;
+                display:flex !important;
+                flex-direction:column !important;
+                overflow:hidden !important;
+                border-radius:0 !important;
+                border:none !important;
+                height:100% !important;
+            }
+            #inbox-chat-mensajes{
+                flex:1 !important;
+                height:auto !important;
+                min-height:0 !important;
+                max-height:none !important;
+                overflow-y:scroll !important;
+                -webkit-overflow-scrolling:touch !important;
+                overscroll-behavior-y:contain !important;
+                touch-action:pan-y !important;
+            }
+            /* Ocultar cuando display:none está en el elemento */
+            #inbox-chat-box[style*="display:none"]{display:none !important;}
             .foro-input-row{flex-direction:column;}
             .btn-send{width:100%;}
 
@@ -5214,9 +5246,13 @@ async function cargarInbox() {
 window.abrirConversacionInbox = function(uid, nombre, chatId) {
     inboxChatUid = uid; inboxChatId = chatId;
     document.getElementById('inbox-lista-sec').style.display = 'none';
-    document.getElementById('inbox-chat-box').style.display = 'block';
+    document.getElementById('inbox-chat-box').style.display = 'flex';
     document.getElementById('inbox-chat-nombre').textContent = nombre || '…';
     document.getElementById('inbox-chat-input').value = '';
+    // Bloquear scroll del body para que iOS no compita con el div de mensajes
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
 
     // Si el nombre no se resolvió (chat antiguo sin mapa "nombres"), buscar en Firestore
     if (!nombre || nombre === 'Conversación') {
@@ -5252,6 +5288,10 @@ window.cerrarInboxChat = function() {
     inboxChatUid = null; inboxChatId = null;
     document.getElementById('inbox-lista-sec').style.display = '';
     document.getElementById('inbox-chat-box').style.display = 'none';
+    // Restaurar scroll del body al cerrar el chat
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width = '';
 };
 
 window.enviarMensajeInbox = async function() {
