@@ -1356,6 +1356,13 @@
             <!-- Botón nuevo + lista -->
             <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem;">
                 <button class="btn-add" onclick="mostrarEditorTallerTematico()">➕ Nuevo Taller</button>
+                <details style="flex:1;min-width:200px;">
+                    <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px;list-style:none;">📥 Carga inicial de talleres del PDF (solo primera vez)</summary>
+                    <div style="padding:.6rem 0 .25rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+                        <button class="btn-add" id="btn-seed-tt" onclick="seedTalleresTemáticos()" style="font-size:.6rem;padding:.4rem .85rem;">📥 Cargar talleres del libro de teoría</button>
+                        <p id="seed-tt-status" style="font-family:var(--fuente-t);font-size:.62rem;color:#86efac;display:none;"></p>
+                    </div>
+                </details>
             </div>
             <div class="section-box">
                 <p class="section-box-title">📋 Talleres en Firebase</p>
@@ -1950,10 +1957,13 @@ window.abrirRetoForm = async function(retoId) {
     window._formRetoId = retoId;
 
     const btnComp = document.getElementById('btn-marcar-completado');
-    btnComp.style.display = currentUser?.rol === 'estudiante' ? 'inline-block' : 'none';
-    btnComp.textContent = '✅ Marcar como completado';
-    btnComp.disabled = false;
-    btnComp.onclick = () => marcarRetoCompletado(retoId, t.titulo || t.nombre || 'Reto', t.puntos || 10);
+    if (currentUser?.rol === 'estudiante') {
+        btnComp.style.display = 'inline-block';
+        btnComp.onclick = () => marcarRetoCompletado(retoId, t.titulo || t.nombre || 'Reto', t.puntos || 10);
+        _iniciarCuentaRegresivaForm(btnComp, 90);
+    } else {
+        btnComp.style.display = 'none';
+    }
 
     document.getElementById('modal-form-icfes-titulo').textContent = t.titulo || 'Reto';
     document.getElementById('modal-form-icfes-iframe').style.display = 'none';
@@ -1965,6 +1975,7 @@ window.abrirRetoForm = async function(retoId) {
 
 window.marcarRetoCompletado = async function(retoId, titulo, puntos) {
     if (!currentUser) return;
+    if (!confirm('¿Ya enviaste el formulario completamente?\n\nSolo haz clic en "Aceptar" si realmente lo completaste y enviaste. Esta acción no se puede deshacer.')) return;
     const compId = `${currentUser.uid}_${retoId}`;
     const btn = document.getElementById('btn-marcar-completado');
     btn.disabled = true; btn.textContent = 'Guardando…';
@@ -2242,9 +2253,12 @@ window.abrirFormICFES = async function(tallerIdOrTitulo, legacyFormId, legacyUrl
 
     // Show/hide complete button based on role
     const btnComp = document.getElementById('btn-marcar-completado');
-    btnComp.style.display = (currentUser && currentUser.rol === 'estudiante') ? 'inline-block' : 'none';
-    btnComp.textContent = '✅ Marcar como completado';
-    btnComp.disabled = false;
+    if (currentUser && currentUser.rol === 'estudiante') {
+        btnComp.style.display = 'inline-block';
+        _iniciarCuentaRegresivaForm(btnComp, 90);
+    } else {
+        btnComp.style.display = 'none';
+    }
 
     document.getElementById('modal-form-icfes-titulo').textContent = titulo;
     document.getElementById('modal-form-icfes-iframe').style.display = 'none';
@@ -2254,8 +2268,31 @@ window.abrirFormICFES = async function(tallerIdOrTitulo, legacyFormId, legacyUrl
     setTimeout(() => { document.getElementById('modal-form-icfes-iframe').src = embedUrl; }, 80);
 };
 
+/* ── Cuenta regresiva para el botón "Marcar completado" ── */
+let _cuentaRegresivaInterval = null;
+function _iniciarCuentaRegresivaForm(btn, segundos) {
+    if (_cuentaRegresivaInterval) clearInterval(_cuentaRegresivaInterval);
+    btn.disabled = true;
+    btn.style.opacity = '0.45';
+    let restante = segundos;
+    btn.textContent = `⏳ Espera ${restante}s`;
+    _cuentaRegresivaInterval = setInterval(() => {
+        restante--;
+        if (restante <= 0) {
+            clearInterval(_cuentaRegresivaInterval);
+            _cuentaRegresivaInterval = null;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.textContent = '✅ Marcar como completado';
+        } else {
+            btn.textContent = `⏳ Espera ${restante}s`;
+        }
+    }, 1000);
+}
+
 window.marcarTallerCompletado = async function() {
     if (!currentUser) { notif('Inicia sesión','Debes iniciar sesión para registrar tu progreso.','🔒','info'); return; }
+    if (!confirm('¿Ya enviaste el formulario completamente?\n\nSolo haz clic en "Aceptar" si realmente lo completaste y enviaste. Esta acción no se puede deshacer.')) return;
     const tallerId = window._formIcfesTallerId;
     const titulo   = window._formIcfesTitulo || 'Taller';
     const compId   = `${currentUser.uid}_${tallerId || Date.now()}`;
@@ -2286,6 +2323,7 @@ window.marcarTallerCompletado = async function() {
 };
 
 window.cerrarFormModal = function() {
+    if (_cuentaRegresivaInterval) { clearInterval(_cuentaRegresivaInterval); _cuentaRegresivaInterval = null; }
     document.getElementById('modal-form-icfes').classList.remove('open');
     document.getElementById('modal-form-icfes-iframe').src = '';
 };
@@ -2373,7 +2411,7 @@ function cargarForo() {
                 const btn = document.createElement('button');
                 btn.className = 'btn-reply-priv';
                 btn.textContent = '💬 Responder privado';
-                btn.onclick = () => iniciarChatPrivado(m.autorUid, m.autor||'');
+                btn.onclick = () => iniciarChatPrivado(m.autorUid, m.autor||'', m.autorFoto||'');
                 div.querySelector('.msg-item-body').appendChild(btn);
             }
             cont.appendChild(div);
@@ -2388,9 +2426,9 @@ function cargarForo() {
     });
 }
 
-window.iniciarChatPrivado = function(uid, nombre) {
+window.iniciarChatPrivado = function(uid, nombre, fotoUrl) {
     if (!uid || uid === 'undefined') { notif('Sin UID','Este usuario no tiene identificador. No se puede chatear.','⚠️','warn'); return; }
-    chatPrivadoCon = {uid, nombre};
+    chatPrivadoCon = {uid, nombre, fotoUrl: fotoUrl||''};
     document.getElementById('chat-priv-banner').style.display = 'flex';
     document.getElementById('chat-priv-con').textContent = nombre;
     document.getElementById('forum-input').placeholder = `Mensaje privado para ${nombre}...`;
@@ -2419,8 +2457,10 @@ window.cerrarChatPrivado = function() {
 function crearMsgItem(m, esMio) {
     const hora = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
     const iniciales = (m.autor||'?')[0].toUpperCase();
-    const avatarInner = m.autorFoto
-        ? `<img src="${m.autorFoto}" onerror="this.parentElement.textContent='${iniciales}'">`
+    // Fallback: si el mensaje es mío y no tiene foto guardada, usar la foto actual del usuario
+    const foto = m.autorFoto || (esMio ? (currentUser?.fotoUrl||'') : '');
+    const avatarInner = foto
+        ? `<img src="${foto}" onerror="this.parentElement.textContent='${iniciales}'">`
         : iniciales;
     const div = document.createElement('div');
     div.className = `msg-item${esMio?' mine':''}`;
@@ -3076,9 +3116,6 @@ function _areaDeHoja(hoja) {
     for (const [area, kws] of Object.entries(_AREA_KEYWORDS)) {
         if (kws.some(k => hojaL.includes(k.normalize('NFD').replace(/[̀-ͯ]/g,'')))) return area;
     }
-    // 5. Nombre genérico de Google Forms ("Respuestas de formulario N") → Matemáticas
-    //    (todos los formularios de este programa son de competencias matemáticas)
-    if (/respuestas\s+de\s+formulario\s*\d*/i.test(hojaL)) return 'Matemáticas';
     return null;
 }
 
@@ -5707,6 +5744,158 @@ window.eliminarTallerTematico = async function(id) {
         notif('Eliminado','Taller eliminado.','✅','success');
         cargarTalleresTematicoAdmin();
     } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+/* ─── SEED: cargar talleres iniciales del libro de teoría ─── */
+window.seedTalleresTemáticos = async function() {
+    const btn = document.getElementById('btn-seed-tt');
+    const status = document.getElementById('seed-tt-status');
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Creando talleres…'; }
+    if (status) { status.style.display = 'none'; }
+
+    const talleres = [
+        {
+            titulo: 'Números Racionales e Irracionales',
+            area: 'Matemáticas',
+            grado: 'todos',
+            puntos: 60,
+            descripcion: 'Comprende la diferencia entre números racionales e irracionales, sus representaciones y operaciones fundamentales.',
+            formularioBancoId: null,
+            formularioBancoTitulo: null,
+            publicado: true,
+            diapositivas: [
+                { orden: 1, titulo: '¿Qué son los Números Racionales?', contenido: 'Un número racional es todo número que puede expresarse como una fracción p/q, donde p y q son números enteros y q ≠ 0.\n\nEjemplos:\n• 1/2 = 0.5 (decimal exacto)\n• 3/4 = 0.75 (decimal exacto)\n• 1/3 = 0.333… (decimal periódico)\n• −5 = −5/1 (entero también es racional)\n• 0 = 0/1\n\nClave: los números enteros, las fracciones y los decimales periódicos son TODOS racionales.', imgUrl: '' },
+                { orden: 2, titulo: '¿Qué son los Números Irracionales?', contenido: 'Un número irracional NO puede expresarse como fracción p/q. Su representación decimal es infinita y no periódica (no se repite ningún bloque de cifras).\n\nEjemplos célebres:\n• √2 = 1.41421356…\n• √3 = 1.73205080…\n• π (pi) = 3.14159265…\n• e (número de Euler) = 2.71828182…\n• √5, √7, √11… (raíces de números que no son cuadrados perfectos)\n\nRecuerda: √4 = 2 sí es racional, pero √2 no lo es.', imgUrl: '' },
+                { orden: 3, titulo: 'Representación en la Recta Numérica', contenido: 'Tanto racionales como irracionales tienen su lugar exacto en la recta numérica real.\n\nCómo ubicar √2:\n1. Dibuja un cuadrado de lado 1\n2. Su diagonal mide exactamente √2 (por Pitágoras: 1² + 1² = 2)\n3. Lleva esa longitud a la recta numérica con un compás\n\nEstos dos conjuntos juntos forman los Números Reales (ℝ):\nℝ = Racionales ∪ Irracionales\n\nNo existe ningún número real que sea a la vez racional e irracional.', imgUrl: '' },
+                { orden: 4, titulo: 'Operaciones con Racionales', contenido: 'Suma y resta de fracciones:\n• Mismo denominador: a/c + b/c = (a+b)/c\n• Diferente denominador: busca el MCM\n  Ej: 1/4 + 1/6 → MCM(4,6)=12 → 3/12 + 2/12 = 5/12\n\nMultiplicación: (a/b) × (c/d) = ac/bd\n  Ej: 2/3 × 3/4 = 6/12 = 1/2\n\nDivisión (multiplica por el recíproco):\n  Ej: 2/3 ÷ 4/5 = 2/3 × 5/4 = 10/12 = 5/6\n\nRegla de oro: simplifica siempre al final buscando el MCD del numerador y denominador.', imgUrl: '' },
+                { orden: 5, titulo: 'Ejercicio de Cierre', contenido: 'Clasifica cada número como Racional (R) o Irracional (I):\n\n1. 7/9 → ____\n2. √16 → ____\n3. √13 → ____\n4. 0.252525… → ____\n5. π/2 → ____\n6. −8 → ____\n\nRespuestas:\n1. R (fracción)\n2. R (√16 = 4, entero)\n3. I (13 no es cuadrado perfecto)\n4. R (decimal periódico = 25/99)\n5. I (π es irracional, dividirlo no lo hace racional)\n6. R (entero)\n\n¡Practica con el cuestionario a continuación!', imgUrl: '' }
+            ]
+        },
+        {
+            titulo: 'Álgebra: Expresiones y Ecuaciones',
+            area: 'Matemáticas',
+            grado: 'todos',
+            puntos: 70,
+            descripcion: 'Domina el lenguaje algebraico: simplificación de expresiones, factorización y resolución de ecuaciones de primer y segundo grado.',
+            formularioBancoId: null,
+            formularioBancoTitulo: null,
+            publicado: true,
+            diapositivas: [
+                { orden: 1, titulo: 'Expresiones Algebraicas', contenido: 'Una expresión algebraica combina números, variables y operaciones.\n\nPartes de un término algebraico:\n• 5x² → coeficiente: 5, variable: x, exponente: 2\n• −3xy → coeficiente: −3, variables: x e y\n\nTérminos semejantes: tienen la MISMA variable con el MISMO exponente.\n• 3x² y 7x² son semejantes → se suman: 10x²\n• 3x² y 7x NO son semejantes (distinto exponente)\n\nSimplificación:\n2x² + 5x − 3x² + x − 4\n= (2−3)x² + (5+1)x − 4\n= −x² + 6x − 4', imgUrl: '' },
+                { orden: 2, titulo: 'Productos Notables', contenido: 'Los productos notables son multiplicaciones especiales cuyo resultado podemos memorizar:\n\n1. Cuadrado de una suma:\n   (a + b)² = a² + 2ab + b²\n   Ej: (x+3)² = x² + 6x + 9\n\n2. Cuadrado de una diferencia:\n   (a − b)² = a² − 2ab + b²\n   Ej: (x−5)² = x² − 10x + 25\n\n3. Diferencia de cuadrados:\n   (a + b)(a − b) = a² − b²\n   Ej: (x+4)(x−4) = x² − 16\n\nEstos patrones aceleran enormemente los cálculos en álgebra y son la base de la factorización.', imgUrl: '' },
+                { orden: 3, titulo: 'Factorización', contenido: 'Factorizar es escribir una expresión como un PRODUCTO de factores más simples.\n\nMétodos:\n1. Factor común: 6x² + 9x = 3x(2x + 3)\n\n2. Diferencia de cuadrados: x² − 25 = (x+5)(x−5)\n\n3. Trinomio cuadrado perfecto:\n   x² + 6x + 9 = (x+3)²\n\n4. Trinomio general (ax² + bx + c):\n   x² + 5x + 6 → busca dos números que sumen 5 y multipliquen 6: son 2 y 3\n   → (x+2)(x+3)\n\nVerificación: siempre expande el resultado para confirmar que vuelves a la expresión original.', imgUrl: '' },
+                { orden: 4, titulo: 'Ecuaciones de Primer Grado', contenido: 'Una ecuación de primer grado tiene la forma ax + b = c.\n\nPrincipios de equivalencia:\n• Lo que se hace en un lado, se hace en el otro\n• El objetivo: dejar x sola\n\nEjemplo:\n3x − 7 = 2x + 5\n3x − 2x = 5 + 7\nx = 12\n\nEjemplo con fracciones:\n(x/3) + 2 = 5\nx/3 = 3\nx = 9 (multiplicamos ambos lados × 3)\n\nVerificación: sustituye x=9 → 9/3 + 2 = 3 + 2 = 5 ✓', imgUrl: '' },
+                { orden: 5, titulo: 'Ecuaciones de Segundo Grado', contenido: 'Forma general: ax² + bx + c = 0\n\nMétodo 1 — Factorización (cuando es posible):\nx² − 5x + 6 = 0 → (x−2)(x−3) = 0\nx = 2 o x = 3\n\nMétodo 2 — Fórmula cuadrática (siempre funciona):\nx = [−b ± √(b²−4ac)] / 2a\n\nEl discriminante Δ = b²−4ac determina cuántas soluciones hay:\n• Δ > 0 → 2 soluciones reales distintas\n• Δ = 0 → 1 solución real (raíz doble)\n• Δ < 0 → 0 soluciones reales (soluciones complejas)\n\nEjemplo: 2x²−3x−2=0\nΔ = 9+16 = 25\nx = (3 ± 5)/4 → x=2 o x=−½', imgUrl: '' }
+            ]
+        },
+        {
+            titulo: 'Geometría Plana: Figuras y Áreas',
+            area: 'Geometría',
+            grado: 'todos',
+            puntos: 65,
+            descripcion: 'Explora las propiedades de las principales figuras planas, sus perímetros, áreas y relaciones angulares.',
+            formularioBancoId: null,
+            formularioBancoTitulo: null,
+            publicado: true,
+            diapositivas: [
+                { orden: 1, titulo: 'Ángulos y sus Relaciones', contenido: 'Un ángulo es la abertura entre dos rayos con el mismo origen (vértice). Se mide en grados (°).\n\nClasificación:\n• Agudo: 0° < α < 90°\n• Recto: α = 90° (esquina perfecta)\n• Obtuso: 90° < α < 180°\n• Llano: α = 180° (línea recta)\n\nRelaciones importantes:\n• Complementarios: suman 90° (ej: 30° y 60°)\n• Suplementarios: suman 180° (ej: 120° y 60°)\n• Opuestos por el vértice: son iguales\n• Ángulos de una recta paralela cortada por transversal: alternos internos iguales, correspondientes iguales.', imgUrl: '' },
+                { orden: 2, titulo: 'Triángulos: Tipos y Propiedades', contenido: 'La suma de los ángulos interiores de cualquier triángulo siempre es 180°.\n\nPor sus lados:\n• Equilátero: 3 lados iguales, 3 ángulos de 60°\n• Isósceles: 2 lados iguales, 2 ángulos iguales\n• Escaleno: todos los lados diferentes\n\nPor sus ángulos:\n• Acutángulo: todos los ángulos < 90°\n• Rectángulo: un ángulo = 90° (tiene hipotenusa)\n• Obtusángulo: un ángulo > 90°\n\nFórmulas clave:\n• Área = (base × altura) / 2\n• Teorema de Pitágoras (solo rectángulo): a² + b² = c²\n  donde c es la hipotenusa (lado mayor)', imgUrl: '' },
+                { orden: 3, titulo: 'Cuadriláteros', contenido: 'Un cuadrilátero tiene 4 lados y la suma de sus ángulos interiores es 360°.\n\nCuadrado:\n• 4 lados iguales, 4 ángulos de 90°\n• Área = l² | Perímetro = 4l\n\nRectángulo:\n• Lados opuestos iguales, 4 ángulos de 90°\n• Área = base × altura | Perímetro = 2(b+h)\n\nParalelogramo:\n• Lados opuestos paralelos e iguales\n• Área = base × altura (altura perpendicular, no el lado inclinado)\n\nTrapecio:\n• Solo un par de lados paralelos (bases)\n• Área = [(B+b) × h] / 2\n\nRombo:\n• 4 lados iguales, diagonales perpendiculares\n• Área = (d₁ × d₂) / 2', imgUrl: '' },
+                { orden: 4, titulo: 'El Círculo', contenido: 'El círculo es el conjunto de puntos equidistantes de un centro. La distancia del centro al borde es el radio (r).\n\nElementos:\n• Radio (r): del centro al borde\n• Diámetro (d): d = 2r (cuerda que pasa por el centro)\n• Circunferencia (perímetro): C = 2πr = πd\n• Área: A = πr²\n\nEl número π ≈ 3.14159…\n\nEjemplo — círculo de radio 5 cm:\n• Circunferencia = 2π(5) = 10π ≈ 31.4 cm\n• Área = π(5²) = 25π ≈ 78.5 cm²\n\nSector circular (porción de "pizza"):\n• Área = (θ/360°) × πr²  donde θ es el ángulo central', imgUrl: '' },
+                { orden: 5, titulo: 'Teorema de Pitágoras — Aplicación', contenido: 'En un triángulo rectángulo: a² + b² = c²\n• a, b = catetos (lados que forman el ángulo recto)\n• c = hipotenusa (lado opuesto al ángulo recto, siempre el mayor)\n\nTernas pitagóricas memorables:\n• 3, 4, 5 → 9+16=25 ✓\n• 5, 12, 13 → 25+144=169 ✓\n• 8, 15, 17 → 64+225=289 ✓\n• 7, 24, 25 → 49+576=625 ✓\n\nAplicación práctica:\nUna escalera de 5 m apoyada en una pared llega a 4 m de altura. ¿A qué distancia está la base de la pared?\na² + 4² = 5²\na² = 25 − 16 = 9\na = 3 m', imgUrl: '' }
+            ]
+        },
+        {
+            titulo: 'Estadística: Datos y Tendencias',
+            area: 'Estadística',
+            grado: 'todos',
+            puntos: 55,
+            descripcion: 'Aprende a organizar, analizar e interpretar conjuntos de datos usando medidas de tendencia central y gráficos estadísticos.',
+            formularioBancoId: null,
+            formularioBancoTitulo: null,
+            publicado: true,
+            diapositivas: [
+                { orden: 1, titulo: 'Organización de Datos', contenido: 'La estadística estudia cómo recopilar, organizar, analizar e interpretar datos.\n\nTabla de frecuencias:\n• Frecuencia absoluta (f): cuántas veces aparece cada valor\n• Frecuencia relativa (fr): f / n (n = total de datos)\n• Frecuencia acumulada (F): suma de frecuencias hasta ese valor\n\nEjemplo — notas de un grupo (10 estudiantes): 3, 4, 4, 3, 5, 4, 2, 5, 4, 3\n\nValor | f | fr  | F\n  2   | 1 | 10% | 1\n  3   | 3 | 30% | 4\n  4   | 4 | 40% | 8\n  5   | 2 | 20% | 10\nTotal | 10 | 100%', imgUrl: '' },
+                { orden: 2, titulo: 'Medidas de Tendencia Central', contenido: 'Resumen un conjunto de datos en un solo valor representativo.\n\n📍 Media aritmética (promedio):\nS̄ = (suma de todos los valores) / n\nEj: (3+4+4+3+5+4+2+5+4+3)/10 = 37/10 = 3.7\n\n📍 Mediana:\nValor central al ordenar los datos. Si n es par, promedia los dos centrales.\nOrdenados: 2,3,3,3,4,4,4,4,5,5 → centrales: 4 y 4 → Mediana = 4\n\n📍 Moda:\nValor que más se repite.\n4 aparece 4 veces → Moda = 4\n\n¿Cuándo usar cada una?\n• Media: datos sin valores extremos atípicos\n• Mediana: cuando hay valores muy altos o bajos\n• Moda: datos cualitativos o frecuencias', imgUrl: '' },
+                { orden: 3, titulo: 'Medidas de Dispersión', contenido: 'Indican qué tan "esparcidos" están los datos alrededor del promedio.\n\nRango: valor máximo − valor mínimo\nEj: 5 − 2 = 3\n\nVarianza (σ²):\n1. Calcula la media\n2. Resta la media a cada dato y eleva al cuadrado\n3. Promedia esos cuadrados\n\nDesviación estándar (σ):\nσ = √(varianza)\nInterpretación: σ pequeña → datos concentrados cerca de la media; σ grande → datos muy dispersos.\n\nCuartiles:\n• Q1: 25% de los datos están por debajo\n• Q2: 50% (= mediana)\n• Q3: 75%\n• RIC = Q3 − Q1 (rango intercuartílico): mide la dispersión del 50% central', imgUrl: '' },
+                { orden: 4, titulo: 'Gráficos Estadísticos', contenido: 'Cada gráfico tiene un propósito específico:\n\n📊 Diagrama de barras:\nCompara categorías. Eje X: categorías; eje Y: frecuencias.\n\n🥧 Gráfico circular (torta):\nMuestra proporciones de un todo. Ángulo = (fr × 360°).\nÚtil para mostrar partes porcentuales.\n\n📈 Histograma:\nComo barras, pero para datos continuos agrupados en intervalos. Las barras se tocan.\n\n📉 Polígono de frecuencias:\nUne los puntos medios de cada barra del histograma. Útil para comparar distribuciones.\n\n🔲 Diagrama de caja (Box plot):\nMuestra mínimo, Q1, mediana, Q3 y máximo. Identifica valores atípicos (outliers).', imgUrl: '' },
+                { orden: 5, titulo: 'Interpretación y Conclusiones', contenido: 'Leer un gráfico estadístico en el ICFES requiere identificar rápidamente:\n\n1. ¿Qué variable se mide y en qué unidades?\n2. ¿Cuál es el valor más alto? ¿El más bajo?\n3. ¿Qué tendencia se observa? (creciente, decreciente, estable)\n4. ¿Hay valores atípicos (outliers) que llamen la atención?\n5. ¿Qué conclusión permite sacar el gráfico?\n\nError común: confundir correlación con causalidad. Que dos variables aumenten juntas NO significa que una cause a la otra.\n\nEjemplo de pregunta tipo ICFES:\n"Según la gráfica, en qué mes se registró la mayor variación…"\n→ Busca la diferencia más grande entre dos barras o puntos consecutivos.', imgUrl: '' }
+            ]
+        },
+        {
+            titulo: 'Trigonometría: Razones y Aplicaciones',
+            area: 'Trigonometría',
+            grado: 'avanzado',
+            puntos: 80,
+            descripcion: 'Comprende las razones trigonométricas (seno, coseno, tangente), el círculo unitario y sus aplicaciones en triángulos y problemas de la vida real.',
+            formularioBancoId: null,
+            formularioBancoTitulo: null,
+            publicado: true,
+            diapositivas: [
+                { orden: 1, titulo: 'Razones Trigonométricas Básicas', contenido: 'En un triángulo rectángulo, para un ángulo agudo θ:\n\n• sen(θ) = cateto opuesto / hipotenusa\n• cos(θ) = cateto adyacente / hipotenusa\n• tan(θ) = cateto opuesto / cateto adyacente\n\nMemotecnia SOH-CAH-TOA:\n  S = O/H | C = A/H | T = O/A\n\nRelaciones recíprocas:\n• csc(θ) = 1/sen(θ)\n• sec(θ) = 1/cos(θ)\n• cot(θ) = 1/tan(θ)\n\nEjemplo: triángulo con ángulo 30°, hipotenusa 10:\n• Cateto opuesto = 10 × sen(30°) = 10 × 0.5 = 5\n• Cateto adyacente = 10 × cos(30°) = 10 × (√3/2) ≈ 8.66', imgUrl: '' },
+                { orden: 2, titulo: 'Ángulos Notables', contenido: 'Memoriza estos valores exactos, son frecuentes en pruebas:\n\n Ángulo | sen   | cos   | tan\n  0°    |  0    |  1    |  0\n  30°   |  1/2  | √3/2  | √3/3\n  45°   | √2/2  | √2/2  |  1\n  60°   | √3/2  |  1/2  |  √3\n  90°   |  1    |  0    | ∞ (no definida)\n\nTrucos:\n• sen(30°) = cos(60°) y viceversa (ángulos complementarios)\n• sen²(θ) + cos²(θ) = 1 (identidad pitagórica, siempre válida)\n\nEjemplo: sin calculadora, sen(45°) = √2/2 ≈ 0.707', imgUrl: '' },
+                { orden: 3, titulo: 'El Círculo Unitario', contenido: 'El círculo unitario tiene radio 1 y centro en el origen. Permite extender las razones trigonométricas a CUALQUIER ángulo.\n\nPara un ángulo θ, el punto en el círculo es:\nP = (cos θ, sen θ)\n\nSigno de las razones por cuadrante:\n• I (0°–90°):    sen+, cos+, tan+  → TODO positivo\n• II (90°–180°): sen+, cos−, tan−  → Solo Seno\n• III (180°–270°):sen−, cos−, tan+ → Solo Tangente\n• IV (270°–360°):sen−, cos+, tan−  → Solo Coseno\n\nMemotecnia: "Todos los Santos Tocaron Campanas" (T, S, T, C → cuadrantes I, II, III, IV)\n\nÁngulos de referencia: usa el ángulo agudo equivalente y ajusta el signo según el cuadrante.', imgUrl: '' },
+                { orden: 4, titulo: 'Ley de Senos y Ley de Cosenos', contenido: 'Para triángulos NO rectángulos usamos estas leyes:\n\n📐 Ley de Senos:\na/sen(A) = b/sen(B) = c/sen(C)\nÚsala cuando conoces: un ángulo y su lado opuesto + otro elemento.\n\nEj: A=30°, a=5, B=45° → b = 5×sen(45°)/sen(30°) = 5×(√2/2)/(1/2) = 5√2 ≈ 7.07\n\n📐 Ley de Cosenos:\nc² = a² + b² − 2ab·cos(C)\nÚsala cuando conoces: 3 lados (para hallar ángulos) o 2 lados y el ángulo entre ellos.\n\nNota: si C=90°, la fórmula se reduce al Teorema de Pitágoras (cos 90°=0).', imgUrl: '' },
+                { orden: 5, titulo: 'Aplicaciones Prácticas', contenido: 'La trigonometría resuelve problemas reales de altura y distancia:\n\nProblema 1 — Ángulo de elevación:\nDesde un punto en el suelo a 20 m de la base de un árbol, el ángulo de elevación a la copa es 35°.\n¿Cuánto mide el árbol?\ntan(35°) = altura/20\naltura = 20 × tan(35°) ≈ 20 × 0.700 ≈ 14 m\n\nProblema 2 — Ángulo de depresión:\nDesde lo alto de un faro de 50 m, se ve un bote con ángulo de depresión 18°.\ntan(18°) = 50/distancia\ndistancia = 50/tan(18°) ≈ 50/0.3249 ≈ 154 m\n\nEstrategia general:\n1. Dibuja la situación\n2. Identifica el triángulo rectángulo\n3. Decide qué razón usar (SOH-CAH-TOA)\n4. Despeja la incógnita', imgUrl: '' }
+            ]
+        },
+        {
+            titulo: 'Pensamiento Lógico y Resolución de Problemas',
+            area: 'Matemáticas',
+            grado: 'todos',
+            puntos: 50,
+            descripcion: 'Desarrolla estrategias para interpretar enunciados, identificar patrones, y resolver problemas matemáticos paso a paso como los del ICFES.',
+            formularioBancoId: null,
+            formularioBancoTitulo: null,
+            publicado: true,
+            diapositivas: [
+                { orden: 1, titulo: 'Pasos para Resolver un Problema', contenido: 'El método de Polya (4 pasos) es el más efectivo en pruebas estandarizadas:\n\n1. ENTENDER el problema\n   • ¿Qué datos me dan? ¿Qué me piden?\n   • ¿Hay palabras clave (suma, diferencia, producto, razón)?\n\n2. PLANEAR una estrategia\n   • ¿Ecuación? ¿Diagrama? ¿Tabla? ¿Ensayo y error?\n\n3. EJECUTAR el plan\n   • Realiza los cálculos con cuidado, paso a paso\n\n4. VERIFICAR la respuesta\n   • ¿Tiene sentido el resultado en el contexto del problema?\n   • Sustituye para comprobar\n\nEn el ICFES: si no ves la solución de inmediato, usa eliminación de opciones.', imgUrl: '' },
+                { orden: 2, titulo: 'Patrones y Sucesiones', contenido: 'Una sucesión es una lista ordenada de números que siguen una regla.\n\nSucesión aritmética:\n• Se suma (o resta) un valor constante llamado razón (d)\n• Fórmula: aₙ = a₁ + (n−1)d\n• Ej: 3, 7, 11, 15, … → d=4 → a₁₀ = 3+9×4 = 39\n\nSucesión geométrica:\n• Se multiplica por una razón constante (r)\n• Fórmula: aₙ = a₁ × r^(n−1)\n• Ej: 2, 6, 18, 54, … → r=3 → a₅ = 2×3⁴ = 162\n\nIdentifica el tipo:\n• Si la diferencia entre términos es constante → aritmética\n• Si el cociente entre términos es constante → geométrica', imgUrl: '' },
+                { orden: 3, titulo: 'Proporcionalidad', contenido: 'Dos magnitudes son proporcionales si al cambiar una, la otra cambia de manera predecible.\n\nProporcionalidad directa: y = kx\n• Si x sube, y sube en la misma proporción\n• k = y/x (constante de proporcionalidad)\n• Ej: velocidad constante → distancia ∝ tiempo\n\nProporcionalidad inversa: y = k/x\n• Si x sube, y baja\n• k = x·y (siempre constante)\n• Ej: más obreros → menos días de trabajo\n\nRegla de tres simple:\n¿Cuánto cuesta 7 kg si 3 kg cuestan $12.000?\n3 kg → $12.000\n7 kg → x\nx = (7 × 12.000)/3 = $28.000\n\nPara proporcionalidad inversa: x = (3 × 12.000)/7', imgUrl: '' },
+                { orden: 4, titulo: 'Lógica Proposicional', contenido: 'Una proposición es una afirmación que puede ser Verdadera (V) o Falsa (F).\n\nConectores lógicos:\n• Negación (¬p): "NO p" → invierte el valor\n• Conjunción (p ∧ q): "p Y q" → V solo si ambas son V\n• Disyunción (p ∨ q): "p O q" → F solo si ambas son F\n• Condicional (p → q): "Si p, entonces q" → F solo si p=V y q=F\n• Bicondicional (p ↔ q): "p si y solo si q" → V cuando ambas tienen el mismo valor\n\nEjemplo:\np = "Estudio" (V)\nq = "Apruebo" (V)\n• p ∧ q = V (estudio Y apruebo)\n• p → q = V (si estudio entonces apruebo)\n• ¬p = F (no estudio = falso, porque sí estudio)', imgUrl: '' },
+                { orden: 5, titulo: 'Estrategias para el ICFES', contenido: 'El ICFES Matemáticas evalúa tres competencias:\n\n1. COMUNICACIÓN: interpretar, representar, traducir entre lenguaje matemático y natural.\n2. RAZONAMIENTO: justificar, probar, inferir, generalizar.\n3. RESOLUCIÓN: modelar situaciones y aplicar procedimientos.\n\nConsejos prácticos:\n• Lee el enunciado DOS veces antes de calcular\n• Dibuja si la geometría o la física lo permiten\n• Elimina opciones absurdas (muy grandes o muy pequeñas)\n• Si hay gráfica, léela antes del enunciado\n• En series: busca diferencias y cocientes entre términos\n• No dejes preguntas en blanco (no hay puntaje negativo)\n• Administra el tiempo: ~2 min por pregunta', imgUrl: '' }
+            ]
+        }
+    ];
+
+    let creados = 0;
+    let errores = 0;
+    try {
+        // Check for existing talleres to avoid duplicates
+        const existSnap = await getDocs(collection(db,'talleres_tematicos'));
+        const existentes = new Set(existSnap.docs.map(d => (d.data().titulo||'').toLowerCase()));
+
+        for (const t of talleres) {
+            if (existentes.has((t.titulo||'').toLowerCase())) { continue; }
+            try {
+                await addDoc(collection(db,'talleres_tematicos'), {
+                    titulo: t.titulo,
+                    area: t.area,
+                    grado: t.grado,
+                    puntos: t.puntos,
+                    descripcion: t.descripcion,
+                    formularioBancoId: t.formularioBancoId,
+                    formularioBancoTitulo: t.formularioBancoTitulo,
+                    diapositivas: t.diapositivas,
+                    publicado: t.publicado,
+                    creadoEn: serverTimestamp()
+                });
+                creados++;
+            } catch(e) { errores++; }
+        }
+        if (status) {
+            status.style.display = 'inline';
+            status.textContent = creados > 0
+                ? `✅ ${creados} talleres creados${errores?` (${errores} errores)`:''}.`
+                : `ℹ️ Todos los talleres ya existían.`;
+        }
+        notif('Talleres cargados', `${creados} nuevos talleres temáticos añadidos.`, '📖', 'success');
+        cargarTalleresTematicoAdmin();
+    } catch(e) {
+        notif('Error', e.message, '❌', 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '📥 Cargar talleres del libro de teoría'; }
+    }
 };
 
 /* ─── ESTUDIANTE: cargar lista ─── */
