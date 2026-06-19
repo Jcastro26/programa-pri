@@ -487,7 +487,7 @@ import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/1
 // • LLAVE PÚBLICA PROD: empieza con "pub_prod_"  ← usar en producción
 // • LLAVE INTEGRIDAD: en Dashboard → Desarrolladores → Eventos → Llave de integridad
 const WOMPI_PUBLIC_KEY    = 'pub_test_XldUHkFB8BQhlJUKrKv5iyScP0JZ5QaM';
-const WOMPI_INTEGRITY_KEY = 'test_integrity_REEMPLAZAR';
+const WOMPI_INTEGRITY_KEY = 'test_integrity_MZ2iFki5DUOKHh0K7SE08d7ghdZ9TDFa';
 const WOMPI_CHECKOUT_URL  = 'https://checkout.wompi.co/p/';
 // EmailJS: crea cuenta en https://www.emailjs.com → My Account
 // • SERVICE_ID: pestaña "Email Services" → tu servicio Gmail/Outlook
@@ -495,10 +495,10 @@ const WOMPI_CHECKOUT_URL  = 'https://checkout.wompi.co/p/';
 // • PUBLIC_KEY: pestaña "Account" → "Public Key"
 // Variables de plantilla recomendadas: {{to_name}}, {{to_email}}, {{producto}},
 //   {{precio}}, {{referencia}}, {{fecha}}
-const EMAILJS_SERVICE_ID        = 'service_REEMPLAZAR';
-const EMAILJS_TEMPLATE_ID       = 'template_REEMPLAZAR';     // plantilla para el comprador
-const EMAILJS_TEMPLATE_ADMIN_ID = 'template_REEMPLAZAR_ADMIN'; // plantilla para notificar al admin
-const EMAILJS_PUBLIC_KEY        = 'REEMPLAZAR_CON_TU_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID        = 'service_vudn8au';
+const EMAILJS_TEMPLATE_ID       = 'template_9wv6akj';        // plantilla confirmación comprador
+const EMAILJS_TEMPLATE_ADMIN_ID = 'template_REEMPLAZAR_ADMIN'; // plantilla notificación admin (pendiente)
+const EMAILJS_PUBLIC_KEY        = '9fun2hyQg95a0wijl';
 // Correo del administrador que recibirá la notificación de cada venta
 const ADMIN_EMAIL               = 'programapri_bog@unal.edu.co';
 // ─────────────────────────────────────────────────────────────────────────────
@@ -999,8 +999,14 @@ async function generarFirmaWompi(referencia, montoCentavos, moneda) {
 // ── WOMPI: ABRIR MODAL DE PAGO ────────────────────────────────────────────
 let _prodActualPago = null;
 
+// Productos vitrina hardcodeados que no están en Firestore
+const _PROD_VITRINA = {
+    '__libreta__': { id: '__libreta__', nombre: 'Libreta Corporativa PRI', precioCOP: 25000, disponible: true },
+    '__taza__':    { id: '__taza__',    nombre: 'Taza Oficial PRI',          precioCOP: 35000, disponible: true },
+};
+
 window.iniciarPago = function(prodId) {
-    const prod = _productosMap[prodId];
+    const prod = _productosMap[prodId] || _PROD_VITRINA[prodId];
     if (!prod) return;
     if (!prod.precioCOP || prod.precioCOP <= 0) return;
 

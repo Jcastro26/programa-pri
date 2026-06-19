@@ -931,6 +931,7 @@
                     <div class="fa-group"><label>Sesión #</label><input type="number" id="ti-sesion" min="1" max="20" placeholder="1"></div>
                     <div class="fa-group"><label>Módulo</label><input type="text" id="ti-modulo" placeholder="ej: 1B"></div>
                     <div class="fa-group" style="grid-column:1/-1"><label>Form ID (parte del URL de Google Forms)</label><input type="text" id="ti-formid" placeholder="1FAIpQLSf..."></div>
+                    <div class="fa-group" style="grid-column:1/-1"><label style="color:#fbbf24;">📊 Nombre de pestaña en Google Sheets (para resultados ICFES)</label><input type="text" id="ti-hojacalculo" placeholder="ej: Respuestas de formulario 26  —  encuéntralo en la pestaña inferior del Sheet"></div>
                     <div class="fa-group"><label>Fecha límite (opcional)</label><input type="datetime-local" id="ti-fechalimite"></div>
                     <div class="fa-group" style="justify-content:center;flex-direction:row;align-items:center;gap:.5rem;">
                         <input type="checkbox" id="ti-habilitado" checked style="width:1rem;height:1rem;accent-color:var(--naranja);">
@@ -1048,6 +1049,12 @@
                         </select>
                     </div>
                     <div style="display:flex;flex-direction:column;gap:.3rem;">
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">Filtrar por Colegio</label>
+                        <select id="ri-filtro-colegio" onchange="renderResultadosICFES()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;">
+                            <option value="">Todos los colegios</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:.3rem;">
                         <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">Buscar (nombre, cédula o email)</label>
                         <input type="text" id="ri-buscar" oninput="renderResultadosICFES()" placeholder="Buscar..." style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;width:200px;">
                     </div>
@@ -1067,11 +1074,19 @@
             <!-- Resumen estadístico -->
             <div id="ri-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.2rem;"></div>
 
-            <!-- Gráfico de barras por formulario -->
-            <div class="section-box" style="margin-bottom:1.2rem;">
-                <p class="section-box-title">📊 Puntaje promedio por formulario</p>
-                <div id="ri-chart-wrap" style="overflow-x:auto;">
-                    <canvas id="ri-chart" height="220"></canvas>
+            <!-- Gráficos lado a lado -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;">
+                <div class="section-box">
+                    <p class="section-box-title">📊 Promedio por Área</p>
+                    <div id="ri-chart-wrap" style="overflow-x:auto;">
+                        <canvas id="ri-chart" height="220"></canvas>
+                    </div>
+                </div>
+                <div class="section-box">
+                    <p class="section-box-title">🏫 Promedio por Colegio</p>
+                    <div id="ri-chart-colegio-wrap" style="overflow-x:auto;">
+                        <canvas id="ri-chart-colegio" height="220"></canvas>
+                    </div>
                 </div>
             </div>
 
@@ -1083,6 +1098,7 @@
                         <thead>
                             <tr style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);text-align:left;">
                                 <th style="padding:.5rem .7rem;">Nombre del Estudiante</th>
+                                <th style="padding:.5rem .7rem;">Colegio</th>
                                 <th style="padding:.5rem .7rem;">Cédula</th>
                                 <th style="padding:.5rem .7rem;">Email</th>
                                 <th style="padding:.5rem .7rem;text-align:center;">Promedio · Forms</th>
@@ -3016,11 +3032,12 @@ function descargarCSV(csv, nombre) {
 }
 
 // ─── RESULTADOS ICFES ─────────────────────────────────────────────────────────
-let _riDatos    = [];   // registros de diagnostico_colegios
-let _riTalleres = [];   // talleres para mapear _hoja → área
-let _riSortCol  = 'nombre';
-let _riSortAsc  = true;
-let _riChart    = null;
+let _riDatos         = [];   // registros de diagnostico_colegios
+let _riTalleres      = [];   // talleres para mapear _hoja → área
+let _riSortCol       = 'nombre';
+let _riSortAsc       = true;
+let _riChart         = null;
+let _riChartColegio  = null;
 
 // Mapeo _hoja → área (persiste en Firestore + localStorage como caché)
 function getHojaMapeo() {
@@ -3079,7 +3096,8 @@ const _pct = raw => {
     // "X / Y" or "X/Y"
     const m = s.match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
     if(m) return parseFloat(m[1]) / parseFloat(m[2]) * 100;
-    return parseFloat(s);
+    // Número suelto sin total conocido → no podemos calcular %
+    return NaN;
 };
 const _pcolor = p => isNaN(p)?'rgba(240,244,248,.4)':p>=70?'#86efac':p>=40?'#fbbf24':'#fca5a5';
 
@@ -3102,7 +3120,13 @@ function _extraerEstudiante(r) {
     const fecha   = _px(r,'marca_temporal','_timestamp_envio','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
     const pts     = _px(r,'Puntuación','puntuacion','PUNTUACION','Puntaje');
     const tipoId  = _px(r,'tipo_de_identificacion','tipo_de_documento','tipo_id','Tipo de Identificación','TIPO DE IDENTIFICACION') || '';
-    return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—', tipoId };
+    const colegio = _px(r,
+        'nombre_del_colegio','nombre_colegio','colegio','COLEGIO','Colegio',
+        'institucion_educativa','institucion','nombre_institucion',
+        'nombre_de_la_institucion','Institución Educativa','INSTITUCION EDUCATIVA',
+        '_colegio'
+    ) || '';
+    return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—', tipoId, colegio };
 }
 
 // Devuelve el área del taller que tiene ese _hoja como título, o el mapeo manual
@@ -3124,18 +3148,25 @@ const _AREA_KEYWORDS = {
 };
 function _areaDeHoja(hoja) {
     if (!hoja) return null;
-    // 1. match exacto por título en talleres
-    const t = _riTalleres.find(t => (t.titulo||'').toLowerCase() === hoja.toLowerCase());
+    const hojaLow = hoja.toLowerCase();
+    // 1. match exacto por hojaCalculo (nombre de pestaña configurado en el taller)
+    const t0 = _riTalleres.find(t => t.hojaCalculo && t.hojaCalculo.toLowerCase() === hojaLow);
+    if (t0?.area) return t0.area;
+    // 2. match exacto por título en talleres
+    const t = _riTalleres.find(t => (t.titulo||'').toLowerCase() === hojaLow);
     if (t?.area) return t.area;
-    // 2. match parcial en talleres
-    const t2 = _riTalleres.find(t => hoja.toLowerCase().includes((t.titulo||'').toLowerCase().slice(0,8)) && t.titulo.length > 4);
+    // 3. match parcial en talleres (el _hoja contiene parte del titulo)
+    const t2 = _riTalleres.find(t => {
+        const tit = (t.titulo||'').toLowerCase();
+        return tit.length > 4 && (hojaLow.includes(tit) || tit.includes(hojaLow));
+    });
     if (t2?.area) return t2.area;
-    // 3. mapeo manual (localStorage)
+    // 4. mapeo manual (Firestore + localStorage)
     if (getHojaMapeo()[hoja]) return getHojaMapeo()[hoja];
-    // 4. auto-detección por palabras clave
-    const hojaL = hoja.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+    // 5. auto-detección por palabras clave
+    const hojaN = hojaLow.normalize('NFD').replace(/[̀-ͯ]/g,'');
     for (const [area, kws] of Object.entries(_AREA_KEYWORDS)) {
-        if (kws.some(k => hojaL.includes(k.normalize('NFD').replace(/[̀-ͯ]/g,'')))) return area;
+        if (kws.some(k => hojaN.includes(k.normalize('NFD').replace(/[̀-ͯ]/g,'')))) return area;
     }
     return null;
 }
@@ -3161,13 +3192,22 @@ async function cargarResultadosICFES() {
             return;
         }
 
-        // Poblar selector de áreas únicas (incluye auto-detectadas)
+        // Poblar selector de áreas únicas (solo áreas asignadas, sin mostrar "(sin área)")
         const areasSet = new Set();
-        _riDatos.forEach(r => { const a = _areaDeHoja(r._hoja); areasSet.add(a || '(sin área)'); });
+        _riDatos.forEach(r => { const a = _areaDeHoja(r._hoja); if(a) areasSet.add(a); });
         const sel = document.getElementById('ri-filtro-hoja');
         sel.innerHTML = '<option value="">Todas las áreas</option>';
         [...areasSet].sort().forEach(a => {
             const o = document.createElement('option'); o.value = a; o.textContent = a; sel.appendChild(o);
+        });
+
+        // Poblar selector de colegios únicos
+        const colegiosSet = new Set();
+        _riDatos.forEach(r => { const c = _extraerEstudiante(r).colegio; if(c) colegiosSet.add(c); });
+        const selCol = document.getElementById('ri-filtro-colegio');
+        selCol.innerHTML = '<option value="">Todos los colegios</option>';
+        [...colegiosSet].sort().forEach(c => {
+            const o = document.createElement('option'); o.value = c; o.textContent = c; selCol.appendChild(o);
         });
 
         // Poblar mapeo — mostrar TODOS los formularios (sin área Y con área) para poder editarlos
@@ -3216,8 +3256,9 @@ window.guardarMapeoHoja = async function(hoja, area) {
 };
 
 function renderResultadosICFES() {
-    const filtroArea = document.getElementById('ri-filtro-hoja')?.value || '';
-    const buscar     = (document.getElementById('ri-buscar')?.value || '').toLowerCase().trim();
+    const filtroArea    = document.getElementById('ri-filtro-hoja')?.value    || '';
+    const filtroColegio = document.getElementById('ri-filtro-colegio')?.value || '';
+    const buscar        = (document.getElementById('ri-buscar')?.value || '').toLowerCase().trim();
 
     // Agrupar por estudiante (cedula o email como clave)
     const mapaEst = {};
@@ -3228,17 +3269,25 @@ function renderResultadosICFES() {
         const area = areaRaw || '(sin área)';
         if (filtroArea && area !== filtroArea) return;
         if (!mapaEst[clave]) mapaEst[clave] = { ...e, formularios:[] };
-        if (e.nombre !== '—' && mapaEst[clave].nombre === '—') mapaEst[clave].nombre = e.nombre;
-        if (e.email  !== '—' && mapaEst[clave].email  === '—') mapaEst[clave].email  = e.email;
+        if (e.nombre   !== '—'  && mapaEst[clave].nombre   === '—')  mapaEst[clave].nombre   = e.nombre;
+        if (e.email    !== '—'  && mapaEst[clave].email    === '—')  mapaEst[clave].email    = e.email;
+        if (e.colegio  && !mapaEst[clave].colegio)                   mapaEst[clave].colegio  = e.colegio;
         mapaEst[clave].formularios.push({ area, pts:e.pts, fecha:e.fecha, hoja:r._hoja||'' });
     });
 
     let estudiantes = Object.values(mapaEst);
+
+    // Filtro por colegio
+    if (filtroColegio) {
+        estudiantes = estudiantes.filter(e => e.colegio === filtroColegio);
+    }
+
     if (buscar) {
         estudiantes = estudiantes.filter(e =>
             e.nombre.toLowerCase().includes(buscar) ||
             e.cedula.toLowerCase().includes(buscar) ||
-            e.email.toLowerCase().includes(buscar)
+            e.email.toLowerCase().includes(buscar) ||
+            (e.colegio||'').toLowerCase().includes(buscar)
         );
     }
     // Ordenar por nombre
@@ -3262,23 +3311,56 @@ function renderResultadosICFES() {
             <div style="font-family:var(--fuente-t);font-size:1.1rem;font-weight:900;color:var(--teal);">${val}</div>
         </div>`).join('');
 
-    // Gráfico: promedio por área
+    // Gráfico 1: promedio por área (excluye "(sin área)")
     const porArea = {};
     estudiantes.forEach(e => e.formularios.forEach(f => {
         const p = _pct(f.pts); if(isNaN(p)) return;
+        if(f.area === '(sin área)') return;
         if(!porArea[f.area]) porArea[f.area]={suma:0,n:0};
         porArea[f.area].suma+=p; porArea[f.area].n++;
     }));
-    const labels  = Object.keys(porArea).sort();
-    const valores = labels.map(a=>(porArea[a].suma/porArea[a].n).toFixed(1));
-    const colores = valores.map(v=>parseFloat(v)>=70?'rgba(134,239,172,.7)':parseFloat(v)>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
-    const canvas  = document.getElementById('ri-chart');
-    canvas.width  = Math.max(labels.length*60,400);
+    const labelsArea  = Object.keys(porArea).sort();
+    const valoresArea = labelsArea.map(a=>(porArea[a].suma/porArea[a].n).toFixed(1));
+    const coloresArea = valoresArea.map(v=>parseFloat(v)>=70?'rgba(134,239,172,.7)':parseFloat(v)>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
+    const canvasArea  = document.getElementById('ri-chart');
+    canvasArea.width  = Math.max(labelsArea.length*60,400);
     if(_riChart) _riChart.destroy();
-    _riChart = new Chart(canvas,{type:'bar',data:{labels,datasets:[{label:'Promedio %',data:valores,backgroundColor:colores,borderRadius:5}]},
+    _riChart = new Chart(canvasArea,{type:'bar',data:{labels:labelsArea,datasets:[{label:'Promedio %',data:valoresArea,backgroundColor:coloresArea,borderRadius:5}]},
         options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y}%`}}},
         scales:{x:{ticks:{color:'rgba(240,244,248,.5)',font:{size:10},maxRotation:30},grid:{color:'rgba(255,255,255,.05)'}},
                 y:{ticks:{color:'rgba(240,244,248,.5)',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'},suggestedMin:0,suggestedMax:100}}}});
+
+    // Gráfico 2: promedio por colegio
+    const porColegio = {};
+    estudiantes.forEach(e => {
+        if (!e.colegio) return;
+        const pcts = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n));
+        if (!pcts.length) return;
+        const prom = pcts.reduce((a,b)=>a+b,0)/pcts.length;
+        if(!porColegio[e.colegio]) porColegio[e.colegio]={suma:0,n:0};
+        porColegio[e.colegio].suma += prom;
+        porColegio[e.colegio].n++;
+    });
+    const labelsCol  = Object.keys(porColegio).sort();
+    const valoresCol = labelsCol.map(c=>(porColegio[c].suma/porColegio[c].n).toFixed(1));
+    const coloresCol = valoresCol.map(v=>parseFloat(v)>=70?'rgba(134,239,172,.7)':parseFloat(v)>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
+    const canvasCol  = document.getElementById('ri-chart-colegio');
+    if (canvasCol) {
+        canvasCol.width = Math.max(labelsCol.length*80, 320);
+        if(_riChartColegio) _riChartColegio.destroy();
+        if (labelsCol.length) {
+            _riChartColegio = new Chart(canvasCol,{type:'bar',data:{labels:labelsCol,datasets:[{label:'Promedio %',data:valoresCol,backgroundColor:coloresCol,borderRadius:5}]},
+                options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y}%`}}},
+                scales:{x:{ticks:{color:'rgba(240,244,248,.5)',font:{size:10},maxRotation:35},grid:{color:'rgba(255,255,255,.05)'}},
+                        y:{ticks:{color:'rgba(240,244,248,.5)',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'},suggestedMin:0,suggestedMax:100}}}});
+        } else {
+            const ctx2 = canvasCol.getContext('2d'); ctx2.clearRect(0,0,canvasCol.width,canvasCol.height);
+            canvasCol.width=320; canvasCol.height=80;
+            const ctx3 = canvasCol.getContext('2d');
+            ctx3.fillStyle='rgba(255,255,255,.2)'; ctx3.font='12px sans-serif'; ctx3.textAlign='center';
+            ctx3.fillText('Sin datos de colegio en los formularios', 160, 44);
+        }
+    }
 
     // Tabla agrupada por estudiante
     const tbody = document.getElementById('ri-tbody');
@@ -3310,18 +3392,15 @@ function renderResultadosICFES() {
                     incorrectas_n = Math.round(total_n - correctas_n);
                     pct_val       = Math.round(correctas_n / total_n * 100);
                 } else if (!isNaN(parseFloat(ptsStr))) {
-                    // Solo número: asumimos que es puntuación sobre 100
-                    correctas_n   = parseFloat(ptsStr);
-                    total_n       = 100;
-                    incorrectas_n = Math.round(100 - correctas_n);
-                    pct_val       = Math.round(correctas_n);
+                    // Número sin total conocido → no inventamos correctas/incorrectas/%
+                    correctas_n = total_n = incorrectas_n = pct_val = null;
                 } else {
                     correctas_n = total_n = incorrectas_n = pct_val = null;
                 }
                 const pctColor = pct_val != null ? _pcolor(pct_val) : 'rgba(240,244,248,.4)';
                 const aColor   = AREA_COLOR[f.area] || 'var(--teal)';
                 const areaLabel = f.area !== '(sin área)' ? f.area : '';
-                const hojaLabel = f.hoja || f.area;
+                const hojaLabel = f.hoja || (f.area !== '(sin área)' ? f.area : 'Formulario');
 
                 return `<div style="display:grid;grid-template-columns:1.7fr 0.9fr 1.1fr 0.75fr 1.4fr;gap:.4rem;align-items:center;padding:.35rem .6rem;background:rgba(255,255,255,.02);border-radius:4px;margin-bottom:.25rem;">
                     <!-- Área -->
@@ -3351,6 +3430,9 @@ function renderResultadosICFES() {
             <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.68rem;font-weight:900;color:#e8f0f8;">
                 👤 ${e.nombre !== '—' ? e.nombre : e.email}
             </td>
+            <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;">
+                ${e.colegio ? `<span style="font-size:.58rem;font-weight:700;background:rgba(14,165,233,.12);color:#7dd3fc;border-radius:3px;padding:.15rem .4rem;display:inline-block;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${e.colegio}">🏫 ${e.colegio}</span>` : '<span style="color:rgba(255,255,255,.2);font-size:.55rem;">—</span>'}
+            </td>
             <td style="padding:.5rem .7rem;font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">
                 ${e.tipoId ? `<span style="font-size:.48rem;font-weight:700;background:rgba(56,189,248,.15);color:var(--teal);border-radius:3px;padding:.1rem .3rem;margin-right:.3rem;vertical-align:middle;">${e.tipoId}</span>` : ''}${e.cedula}
             </td>
@@ -3361,9 +3443,9 @@ function renderResultadosICFES() {
             </td>
         </tr>
         <tr id="${detId}" style="display:none;background:rgba(255,94,0,.03);">
-            <td colspan="4" style="padding:.5rem .8rem .7rem;border-bottom:2px solid rgba(255,94,0,.12);">
+            <td colspan="5" style="padding:.5rem .8rem .7rem;border-bottom:2px solid rgba(255,94,0,.12);">
                 <div style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.4rem;">
-                    📧 ${e.email} · 🪪 ${e.tipoId ? e.tipoId+' ' : ''}${e.cedula}
+                    📧 ${e.email} · 🪪 ${e.tipoId ? e.tipoId+' ' : ''}${e.cedula}${e.colegio ? ` · 🏫 ${e.colegio}` : ''}
                 </div>
                 <div style="display:grid;grid-template-columns:1.7fr 0.9fr 1.1fr 0.75fr 1.4fr;gap:.4rem;padding:.25rem .6rem;margin-bottom:.3rem;opacity:.4;border-bottom:1px solid rgba(255,255,255,.06);">
                     <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Área / Formulario</span>
@@ -3761,7 +3843,7 @@ window.renderTalleresAdmin = function() {
         return `<div style="box-sizing:border-box;width:100%;min-height:44px;margin-bottom:6px;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${bColor};border-radius:6px;opacity:${habilitado?1:.65};display:flex;align-items:center;">
             <div style="flex:1;min-width:0;padding:8px 10px;">
                 <div style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;font-weight:700;color:#e8f0f8;line-height:17px;">${titulo} ${badgeHtml}</div>
-                <div style="font-size:9px;color:rgba(255,255,255,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}${t.hojaCalculo ? ` <span style="color:#86efac;">📊 ${t.hojaCalculo}</span>` : ` <span style="color:#fbbf24;cursor:pointer;" title="Sin hoja configurada — edita para asignar la pestaña de Google Sheets">⚠️ sin hoja</span>`}</div>
             </div>
             <div style="flex-shrink:0;padding:8px 10px;white-space:nowrap;">
                 <button class="btn-table" onclick="toggleHabilitadoTaller('${safeId}',${!habilitado})" style="padding:3px 7px;font-size:9px;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
@@ -3850,14 +3932,15 @@ window.importarTalleresCSV = async function() {
 window.guardarTallerAdmin = async function() {
     const fechaLimiteVal = document.getElementById('ti-fechalimite').value;
     const t = {
-        titulo:      document.getElementById('ti-titulo').value.trim(),
-        area:        document.getElementById('ti-area').value,
-        grupo:       document.getElementById('ti-grupo').value,
-        sesion:      parseInt(document.getElementById('ti-sesion').value) || 1,
-        modulo:      document.getElementById('ti-modulo').value.trim(),
-        formId:      normalizarFormId(document.getElementById('ti-formid').value.trim()),
-        habilitado:  document.getElementById('ti-habilitado').checked,
-        fechaLimite: fechaLimiteVal || null,
+        titulo:       document.getElementById('ti-titulo').value.trim(),
+        area:         document.getElementById('ti-area').value,
+        grupo:        document.getElementById('ti-grupo').value,
+        sesion:       parseInt(document.getElementById('ti-sesion').value) || 1,
+        modulo:       document.getElementById('ti-modulo').value.trim(),
+        formId:       normalizarFormId(document.getElementById('ti-formid').value.trim()),
+        hojaCalculo:  document.getElementById('ti-hojacalculo').value.trim(),
+        habilitado:   document.getElementById('ti-habilitado').checked,
+        fechaLimite:  fechaLimiteVal || null,
     };
     if (!t.titulo) { alert('Escribe un título para el taller.'); return; }
     try {
@@ -3881,8 +3964,9 @@ window.editarTallerAdmin = function(id) {
     document.getElementById('ti-grupo').value       = t.grupo   || 'General';
     document.getElementById('ti-sesion').value      = t.sesion  || 1;
     document.getElementById('ti-modulo').value      = t.modulo  || '';
-    document.getElementById('ti-formid').value      = t.formId  || '';
-    document.getElementById('ti-fechalimite').value = t.fechaLimite || '';
+    document.getElementById('ti-formid').value       = t.formId      || '';
+    document.getElementById('ti-hojacalculo').value  = t.hojaCalculo || '';
+    document.getElementById('ti-fechalimite').value  = t.fechaLimite || '';
     document.getElementById('ti-habilitado').checked = t.habilitado !== false; // default true
     document.getElementById('ti-edit-label').style.display = 'block';
     document.getElementById('ti-titulo').focus();
@@ -3891,7 +3975,7 @@ window.editarTallerAdmin = function(id) {
 
 window.cancelarEdicionTaller = function() {
     tallerEditandoId = null;
-    ['ti-titulo','ti-sesion','ti-modulo','ti-formid','ti-fechalimite'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    ['ti-titulo','ti-sesion','ti-modulo','ti-formid','ti-hojacalculo','ti-fechalimite'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     const hab = document.getElementById('ti-habilitado'); if(hab) hab.checked = true;
     document.getElementById('ti-edit-label').style.display = 'none';
 };
@@ -4834,8 +4918,24 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     inboxChatUid = uid; inboxChatId = chatId;
     document.getElementById('inbox-lista-sec').style.display = 'none';
     document.getElementById('inbox-chat-box').style.display = 'block';
-    document.getElementById('inbox-chat-nombre').textContent = nombre;
+    document.getElementById('inbox-chat-nombre').textContent = nombre || '…';
     document.getElementById('inbox-chat-input').value = '';
+
+    // Si el nombre no se resolvió (chat antiguo sin mapa "nombres"), buscar en Firestore
+    if (!nombre || nombre === 'Conversación') {
+        getDoc(doc(db, 'usuarios', uid)).then(uSnap => {
+            const realName = uSnap.exists()
+                ? (uSnap.data().nombre || uSnap.data().nombres || nombre)
+                : nombre;
+            if (realName && realName !== 'Conversación') {
+                document.getElementById('inbox-chat-nombre').textContent = realName;
+                // Persistir en el doc para que próximas cargas lo muestren directo
+                updateDoc(doc(db,'chats_privados',chatId), {
+                    [`nombres.${uid}`]: realName
+                }).catch(()=>{});
+            }
+        }).catch(()=>{});
+    }
     if (inboxUnsubscribe) inboxUnsubscribe();
     const q = query(collection(db,"chats_privados",chatId,"mensajes"), orderBy("timestamp","asc"), limit(60));
     inboxUnsubscribe = onSnapshot(q, snap => {
@@ -4864,13 +4964,15 @@ window.enviarMensajeInbox = async function() {
     // Actualizar doc raíz con último mensaje (evita N+1 al cargar inbox)
     const _inboxOtroUid = inboxChatUid || '';
     // Recuperar nombre del otro desde el header del chat activo
-    const _inboxOtroNombre = document.getElementById('inbox-chat-nombre')?.textContent || 'Usuario';
+    const _inboxOtroNombreRaw = document.getElementById('inbox-chat-nombre')?.textContent || '';
+    // No persistir 'Conversación' ni '…' como nombre real
+    const _inboxOtroNombre = (_inboxOtroNombreRaw && _inboxOtroNombreRaw !== 'Conversación' && _inboxOtroNombreRaw !== '…') ? _inboxOtroNombreRaw : null;
     await setDoc(doc(db,"chats_privados",inboxChatId), {
         participantes: [currentUser.uid, ...(_inboxOtroUid ? [_inboxOtroUid] : [])],
         ultimoAutorUid: currentUser.uid,
         ultimoAutorNombre: currentUser.nombre || 'Usuario',
         // Mapa bidireccional de nombres y fotos
-        ...(_inboxOtroUid ? {
+        ...(_inboxOtroUid && _inboxOtroNombre ? {
             nombres: {
                 [currentUser.uid]: currentUser.nombre || 'Usuario',
                 [_inboxOtroUid]: _inboxOtroNombre

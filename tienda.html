@@ -472,13 +472,27 @@ footer a{color:rgba(255,94,0,0.6)}
 <!-- EmailJS para confirmaciones de pedido -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
-  // Configura con tu cuenta EmailJS: https://www.emailjs.com
-  // Service ID, Template ID y Public Key van aquí:
-  window.EMAILJS_SERVICE  = 'service_pri';       // reemplaza con tu service ID
-  window.EMAILJS_TEMPLATE = 'template_pedido';   // reemplaza con tu template ID
-  window.EMAILJS_PUBKEY   = 'YOUR_PUBLIC_KEY';   // reemplaza con tu public key
-  if(window.emailjs && window.EMAILJS_PUBKEY !== 'YOUR_PUBLIC_KEY'){
+  // ── WOMPI ──────────────────────────────────────────────────────────────────
+  // Llave pública: Dashboard Wompi → Desarrolladores → Llaves
+  // Llave integridad: Dashboard → Desarrolladores → Eventos → Llave de integridad
+  const WOMPI_PUBLIC_KEY    = 'pub_test_XldUHkFB8BQhlJUKrKv5iyScP0JZ5QaM';
+  const WOMPI_INTEGRITY_KEY = 'test_integrity_MZ2iFki5DUOKHh0K7SE08d7ghdZ9TDFa';
+  const WOMPI_CHECKOUT_URL  = 'https://checkout.wompi.co/p/';
+
+  // ── EMAILJS ────────────────────────────────────────────────────────────────
+  window.EMAILJS_SERVICE   = 'service_vudn8au';
+  window.EMAILJS_TEMPLATE  = 'template_9wv6akj';
+  window.EMAILJS_PUBKEY    = '9fun2hyQg95a0wijl';
+  if(window.emailjs && window.EMAILJS_PUBKEY.indexOf('REEMPLAZAR') === -1){
     emailjs.init({ publicKey: window.EMAILJS_PUBKEY });
+  }
+
+  // ── Firma de integridad SHA-256 para Wompi ─────────────────────────────────
+  async function generarFirmaWompiTienda(referencia, montoCentavos, moneda) {
+    const cadena  = `${referencia}${montoCentavos}${moneda}${WOMPI_INTEGRITY_KEY}`;
+    const encoded = new TextEncoder().encode(cadena);
+    const hash    = await crypto.subtle.digest('SHA-256', encoded);
+    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
   }
 </script>
 </head>
@@ -710,45 +724,35 @@ footer a{color:rgba(255,94,0,0.6)}
     </div>
 
     <div id="checkout-step-2" style="display:none">
-      <p class="modal-title">💳 Instrucciones de Pago</p>
-      <div class="pago-info">
-        <p><strong>Nequi / Daviplata:</strong></p>
-        <p style="margin:0.4rem 0 0.8rem">📱 <strong>+57 318 355 3653</strong><br>A nombre de: <strong>José Luis Castro Góngora</strong></p>
-        <p><strong>Bancolombia (transferencia):</strong></p>
-        <p style="margin:0.4rem 0">Cuenta de Ahorros: <strong>069-XXXXXXXXXX</strong><br>
-        Titular: José Luis Castro Góngora · CC: XXXXXXXXXX</p>
-      </div>
-      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);padding:1rem;border-radius:6px;margin-bottom:1.25rem">
-        <p style="font-size:0.78rem;color:rgba(255,255,255,0.75);line-height:1.6">
-          1. Realiza el pago por el monto exacto.<br>
-          2. Envía el comprobante al WhatsApp <strong>+57 318 355 3653</strong> con tu nombre y número de pedido.<br>
-          3. Recibirás confirmación en máx. 24 horas y el pedido se procesará de inmediato.
-        </p>
-      </div>
+      <p class="modal-title">🔒 Pago Seguro</p>
       <div class="resumen-pedido">
-        <p class="resumen-title">MONTO A PAGAR</p>
+        <p class="resumen-title">RESUMEN DEL PEDIDO</p>
         <div class="resumen-items" id="ch-resumen-items2"></div>
         <div class="resumen-total">
           <span>TOTAL</span>
           <strong id="ch-total-display2" style="font-size:1.4rem">$0</strong>
         </div>
       </div>
-      <div class="modal-btns">
-        <button class="btn-secondary-modal" onclick="volverADatos()">← Datos</button>
-        <button class="btn-primary-modal" onclick="confirmarPedido()">✅ CONFIRMAR PEDIDO</button>
+      <div style="background:rgba(14,165,233,0.05);border:1px solid rgba(14,165,233,0.2);padding:1rem;border-radius:6px;margin-bottom:1.25rem">
+        <p style="font-family:'Montserrat',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:0.5rem">Acepta:</p>
+        <p style="font-size:0.8rem;color:rgba(255,255,255,0.7)">💳 Débito &nbsp;·&nbsp; 💳 Crédito &nbsp;·&nbsp; 📱 Nequi &nbsp;·&nbsp; 🏦 PSE &nbsp;·&nbsp; 🏦 Bancolombia</p>
       </div>
+      <div class="modal-btns" style="flex-direction:column;gap:0.75rem">
+        <button class="btn-primary-modal" id="btn-wompi-tienda" onclick="irAWompi()" style="background:linear-gradient(135deg,#0ea5e9,#22c55e);width:100%">🔒 IR AL PAGO SEGURO →</button>
+        <button class="btn-secondary-modal" onclick="volverADatos()" style="width:100%">← Editar datos</button>
+      </div>
+      <p style="font-family:'Montserrat',sans-serif;font-size:0.52rem;color:rgba(255,255,255,0.22);text-align:center;margin-top:0.65rem;line-height:1.6">Serás redirigido al portal de pagos certificado de Wompi (Bancolombia). Tu información financiera nunca pasa por nuestros servidores.</p>
     </div>
 
     <div id="checkout-step-3" style="display:none">
       <div class="confirmacion">
         <div class="conf-icon">🎉</div>
-        <p class="conf-title">¡PEDIDO REGISTRADO!</p>
+        <p class="conf-title">¡PAGO APROBADO!</p>
         <p class="conf-text">
-          Tu pedido ha sido registrado con el número:<br>
+          Tu pedido fue procesado exitosamente.<br>
+          Número de pedido:<br>
           <strong class="conf-num" id="conf-num-pedido">PRI-0000</strong><br><br>
-          Recuerda enviar el comprobante de pago al WhatsApp<br>
-          <strong style="color:#25D366">+57 318 355 3653</strong><br>
-          indicando tu nombre y el número de pedido.<br><br>
+          Recibirás un correo de confirmación con los detalles de tu envío.<br><br>
           ¡Gracias por apoyar el Programa PRI y la educación tumaqueña! 🌊
         </p>
         <button class="btn-primary-modal" onclick="cerrarCheckout();limpiarCarrito()" style="width:100%">CERRAR Y SEGUIR COMPRANDO</button>
@@ -837,7 +841,7 @@ footer a{color:rgba(255,94,0,0.6)}
 <!-- ==================== FIREBASE ==================== -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey:"AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
@@ -850,6 +854,11 @@ window._db = db;
 window._addDoc = addDoc;
 window._collection = collection;
 window._serverTimestamp = serverTimestamp;
+window._updateDoc = updateDoc;
+window._doc = doc;
+window._getDocs = getDocs;
+window._query = query;
+window._where = where;
 </script>
 
 <!-- ==================== APP JS ==================== -->
@@ -1351,83 +1360,157 @@ window.volverADatos = function(){
   document.getElementById('checkout-step-2').style.display='none';
 };
 
-window.confirmarPedido = async function(){
-  const numPedido = 'PRI-'+Date.now().toString(36).toUpperCase().slice(-6);
+// ── Wompi: guarda pedido en Firestore y redirige al checkout ──────────────
+window.irAWompi = async function(){
+  const btn = document.getElementById('btn-wompi-tienda');
+  if(btn){ btn.disabled=true; btn.textContent='⏳ Preparando pago seguro…'; }
+
+  const nombre     = document.getElementById('ch-nombre').value.trim();
+  const email      = document.getElementById('ch-email').value.trim();
+  const tel        = document.getElementById('ch-tel').value.trim();
+  const totalProds = carrito.reduce((s,i)=>s+i.precio*i.qty,0);
+  const totalConEnvio = totalProds + 23000;
+  const montoCentavos = Math.round(totalConEnvio * 100);
+
+  const ts       = Date.now();
+  const fecha    = new Date();
+  const ymd      = `${fecha.getFullYear()}${String(fecha.getMonth()+1).padStart(2,'0')}${String(fecha.getDate()).padStart(2,'0')}`;
+  const orderId  = `TDA-${ymd}-${String(ts).slice(-4)}`;
+  const referencia = `TDA-${String(ts).slice(-8)}`;
+
   const pedido = {
-    numeroPedido: numPedido,
-    nombre: document.getElementById('ch-nombre').value.trim(),
-    telefono: document.getElementById('ch-tel').value.trim(),
-    email: document.getElementById('ch-email').value.trim(),
-    departamento: document.getElementById('ch-dpto').value.trim(),
-    ciudad: document.getElementById('ch-ciudad').value.trim(),
-    barrio: document.getElementById('ch-barrio').value.trim(),
-    direccion: document.getElementById('ch-dir').value.trim(),
-    notas: document.getElementById('ch-notas').value.trim(),
+    orderId,
+    referencia,
+    numeroPedido: orderId,
+    comprador: { nombre, email, tel: tel||'' },
+    envio: {
+      departamento: document.getElementById('ch-dpto').value.trim(),
+      ciudad:       document.getElementById('ch-ciudad').value.trim(),
+      barrio:       document.getElementById('ch-barrio').value.trim(),
+      direccion:    document.getElementById('ch-dir').value.trim(),
+      notas:        document.getElementById('ch-notas').value.trim(),
+    },
     items: carrito.map(i=>({id:i.id,nombre:i.nombre,tipo:i.tipo,precio:i.precio,qty:i.qty})),
-    totalProductos: carrito.reduce((s,i)=>s+i.precio*i.qty,0),
+    totalProductos: totalProds,
     costoEnvio: 23000,
-    total: carrito.reduce((s,i)=>s+i.precio*i.qty,0)+23000,
-    estado: 'pendiente_pago',
+    total: totalConEnvio,
+    montoCentavos,
+    estado: 'pendiente',
     creadoEn: window._serverTimestamp ? window._serverTimestamp() : new Date().toISOString(),
   };
+
   try {
     if(window._db && window._addDoc && window._collection){
       await window._addDoc(window._collection(window._db,'pedidos'), pedido);
-      // Notificación al admin en Firestore
-      await window._addDoc(window._collection(window._db,'notificaciones'), {
-        tipo:'nuevo_pedido',
-        titulo:'Nuevo Pedido en la Tienda',
-        mensaje:`Pedido ${numPedido} de ${pedido.nombre} por ${formatCOP(pedido.total)}`,
-        pedidoId: numPedido,
-        leido: false,
-        para: 'admin',
-        creadoEn: window._serverTimestamp ? window._serverTimestamp() : new Date().toISOString(),
-      });
     }
-  } catch(e){ console.warn('Firebase error:',e); }
-  document.getElementById('conf-num-pedido').textContent = numPedido;
-  document.getElementById('checkout-step-2').style.display='none';
-  document.getElementById('checkout-step-3').style.display='block';
-  // ── Enviar correo de confirmación
-  enviarEmailConfirmacion(pedido);
+  } catch(e){ console.warn('Firebase error al guardar pedido:', e); }
+
+  // Firma SHA-256
+  const firma = await generarFirmaWompiTienda(referencia, montoCentavos, 'COP');
+
+  const urlBase = window.location.href.split('?')[0];
+  const params  = new URLSearchParams({
+    'public-key'              : WOMPI_PUBLIC_KEY,
+    'currency'                : 'COP',
+    'amount-in-cents'         : montoCentavos,
+    'reference'               : referencia,
+    'signature:integrity'     : firma,
+    'redirect-url'            : urlBase,
+    'customer-data:email'     : email,
+    'customer-data:full-name' : nombre,
+  });
+  if(tel) params.set('customer-data:phone-number', tel);
+
+  window.location.href = `${WOMPI_CHECKOUT_URL}?${params.toString()}`;
 };
 
-// ── Email de confirmación de compra ────────────────────
-function enviarEmailConfirmacion(pedido){
-  const itemsTexto = pedido.items.map(i=>`• ${i.qty}× ${i.nombre} — $${i.precio.toLocaleString('es-CO')}`).join('\n');
-  const params = {
-    to_name:    pedido.nombre,
-    to_email:   pedido.email,
-    num_pedido: pedido.numeroPedido,
-    items:      itemsTexto,
-    total:      '$' + pedido.total.toLocaleString('es-CO'),
-    ciudad:     pedido.ciudad,
-    direccion:  pedido.direccion,
-    metodo_pago:'Nequi / Bancolombia (ver instrucciones en pantalla)',
-    reply_to:   'jcastrogo@unal.edu.co',
-  };
-  if(window.emailjs && window.EMAILJS_PUBKEY !== 'YOUR_PUBLIC_KEY'){
-    emailjs.send(window.EMAILJS_SERVICE, window.EMAILJS_TEMPLATE, params)
-      .then(()=>console.log('Email de confirmación enviado.'))
-      .catch(e=>console.warn('EmailJS error:',e));
-  } else {
-    // Fallback: abrir cliente de correo con los datos
-    const cuerpo = encodeURIComponent(
-      `Hola ${pedido.nombre},\n\n` +
-      `¡Gracias por tu pedido en la Tienda PRI! 🎉\n\n` +
-      `N° de pedido: ${pedido.numeroPedido}\n\n` +
-      `Items:\n${itemsTexto}\n\n` +
-      `Total: $${pedido.total.toLocaleString('es-CO')}\n` +
-      `(incluye envío $23.000)\n\n` +
-      `Para completar tu pedido realiza el pago a:\n` +
-      `• Nequi / Bancolombia: 318 355 3653\n` +
-      `• Envía comprobante a: jcastrogo@unal.edu.co\n` +
-      `• Asunto: Pedido ${pedido.numeroPedido}\n\n` +
-      `Con amor desde Tumaco 🌊\nPrograma PRI`
-    );
-    // No abrimos mailto automáticamente; solo guardamos en Firestore (ya hecho arriba)
-    console.log('Pedido registrado. Configura EmailJS para envío automático.');
+// ── Wompi: detectar retorno del checkout ─────────────────────────────────
+async function detectarRedirectWompiTienda(){
+  const params       = new URLSearchParams(window.location.search);
+  const transaccionId = params.get('id');
+  const status        = params.get('status');
+  const referencia    = params.get('reference');
+
+  if(!transaccionId || !status || !referencia) return;
+
+  // Limpiar URL
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  if(status === 'APPROVED'){
+    try {
+      if(window._db && window._getDocs && window._query && window._collection && window._where){
+        const q    = window._query(window._collection(window._db,'pedidos'), window._where('referencia','==',referencia));
+        const snap = await window._getDocs(q);
+        if(!snap.empty){
+          const docRef = snap.docs[0];
+          const pedido = { id: docRef.id, ...docRef.data() };
+          await window._updateDoc(window._doc(window._db,'pedidos',docRef.id), {
+            estado: 'aprobado',
+            transaccionId,
+            fechaPago: window._serverTimestamp ? window._serverTimestamp() : new Date().toISOString()
+          });
+          document.getElementById('conf-num-pedido').textContent = pedido.orderId || pedido.numeroPedido || referencia;
+          document.getElementById('modal-checkout').classList.add('open');
+          document.getElementById('checkout-step-1').style.display='none';
+          document.getElementById('checkout-step-2').style.display='none';
+          document.getElementById('checkout-step-3').style.display='block';
+          // Email de confirmación
+          enviarEmailConfirmacion({
+            numeroPedido: pedido.orderId || referencia,
+            nombre: pedido.comprador?.nombre || '',
+            email:  pedido.comprador?.email  || '',
+            items:  pedido.items || [],
+            total:  pedido.total || 0,
+            ciudad: pedido.envio?.ciudad || '',
+            direccion: pedido.envio?.direccion || '',
+            transaccionId,
+          });
+        } else {
+          alert('¡Pago aprobado! 🎉 Recibirás un correo de confirmación.');
+        }
+      }
+    } catch(err){
+      console.error('Error confirmando pago:', err);
+      alert('¡Pago aprobado! 🎉 Recibirás un correo con los detalles.');
+    }
+  } else if(status === 'DECLINED' || status === 'ERROR'){
+    try {
+      if(window._db && window._getDocs && window._query && window._collection && window._where && window._updateDoc && window._doc){
+        const q = window._query(window._collection(window._db,'pedidos'), window._where('referencia','==',referencia));
+        const snap = await window._getDocs(q);
+        if(!snap.empty) await window._updateDoc(window._doc(window._db,'pedidos',snap.docs[0].id), { estado:'rechazado', transaccionId });
+      }
+    } catch(_){}
+    alert('El pago no fue procesado. Puedes intentarlo de nuevo.');
+  } else if(status === 'PENDING'){
+    alert('Tu pago está siendo revisado por el banco. Te notificaremos por correo.');
   }
+}
+
+// Inicializar detección de redirect Wompi
+(function(){ detectarRedirectWompiTienda(); })();
+
+// ── Email de confirmación de compra (vía EmailJS template_9wv6akj) ────────
+function enviarEmailConfirmacion(pedido){
+  if(!window.emailjs || window.EMAILJS_PUBKEY.indexOf('REEMPLAZAR') !== -1){
+    console.log('EmailJS no configurado — pedido registrado en Firestore.');
+    return;
+  }
+  const itemsTexto = (pedido.items||[]).map(i=>`• ${i.qty||1}× ${i.nombre} — $${(i.precio||0).toLocaleString('es-CO')}`).join('\n');
+  emailjs.send(window.EMAILJS_SERVICE, window.EMAILJS_TEMPLATE, {
+    to_name:      pedido.nombre   || 'Comprador',
+    to_email:     pedido.email    || '',
+    order_id:     pedido.numeroPedido || pedido.orderId || '—',
+    items:        itemsTexto,
+    total:        '$' + (pedido.total||0).toLocaleString('es-CO'),
+    ciudad:       pedido.ciudad   || '',
+    direccion:    pedido.direccion|| '',
+    transaccion:  pedido.transaccionId || '—',
+    fecha:        new Date().toLocaleDateString('es-CO',{dateStyle:'full'}),
+    programa:     'Programa PRI — Universidad Nacional de Colombia',
+    reply_to:     'jcastrogo@unal.edu.co',
+  }).then(()=>console.log('Email enviado a', pedido.email))
+    .catch(e=>console.warn('EmailJS error:', e?.text||e));
 }
 
 // ── Arranque ───────────────────────────────────────────

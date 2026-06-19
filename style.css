@@ -994,9 +994,9 @@ h1, h2, h3 {
 /* ========================================================================== */
 @media (max-width: 768px) {
     
-    /* Ocultar el contenedor <nav> en móvil para que no genere espacio fantasma
-       (los .nav-links son position:fixed y no necesitan el <nav> visible) */
-    .navbar nav { display: none !important; }
+    /* El <nav> se colapsa a ancho 0 en flex — sus hijos position:fixed siguen visibles.
+       NO usar display:none porque ocultaría también al drawer position:fixed dentro de <nav>. */
+    .navbar nav { width: 0 !important; flex-shrink: 0 !important; overflow: visible !important; margin-left: 0 !important; }
 
     /* 1. Botón hamburguesa — visible, pegado a la derecha con margin-left:auto */
     .menu-toggle {
