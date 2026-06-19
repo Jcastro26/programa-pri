@@ -1226,12 +1226,12 @@
                 <div id="inbox-threads-list"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando...</p></div>
             </div>
             <div id="inbox-chat-box" style="display:none;">
-                <div class="section-box" style="padding:0;overflow:hidden;">
+                <div class="section-box" style="padding:0;overflow:visible;">
                     <div class="chat-priv-header">
                         <span>💬 Chat con: <strong id="inbox-chat-nombre">—</strong></span>
                         <button class="btn-cerrar-chat" onclick="cerrarInboxChat()">✕ Volver</button>
                     </div>
-                    <div class="foro-messages" id="inbox-chat-mensajes"></div>
+                    <div class="foro-messages" id="inbox-chat-mensajes" style="overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y;"></div>
                     <div style="padding:1rem;">
                         <div class="foro-input-row">
                             <input class="foro-input" type="text" id="inbox-chat-input" placeholder="Escribe..." onkeydown="if(event.key==='Enter')enviarMensajeInbox()">
@@ -1384,6 +1384,7 @@
                     <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px;list-style:none;">📥 Carga inicial de talleres del PDF (solo primera vez)</summary>
                     <div style="padding:.6rem 0 .25rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
                         <button class="btn-add" id="btn-seed-tt" onclick="seedTalleresTemáticos()" style="font-size:.6rem;padding:.4rem .85rem;">📥 Cargar talleres del libro de teoría</button>
+                        <button class="btn-add" onclick="seedTalleresInteractivos()" style="font-size:.6rem;padding:.4rem .85rem;background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.4);color:var(--naranja);">🎮 Cargar talleres interactivos de Matemáticas</button>
                         <p id="seed-tt-status" style="font-family:var(--fuente-t);font-size:.62rem;color:#86efac;display:none;"></p>
                     </div>
                 </details>
@@ -3286,16 +3287,20 @@ async function cargarResultadosICFES() {
             const filaHoja = (h, urgente) => {
                 const areaActual = _areaDeHoja(h) || '';
                 const eid = 'mapsel-' + CSS.escape(h);
-                return `<div style="display:grid;grid-template-columns:1fr 180px auto;gap:.5rem;align-items:center;padding:.45rem .6rem;border-radius:5px;background:${urgente?'rgba(255,94,0,.06)':'rgba(255,255,255,.02)'};margin-bottom:.3rem;">
+                const hEsc = h.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+                const nResp = _riDatos.filter(r=>r._hoja===h).length;
+                return `<div style="display:grid;grid-template-columns:1fr 160px auto auto;gap:.45rem;align-items:center;padding:.45rem .6rem;border-radius:5px;background:${urgente?'rgba(255,94,0,.06)':'rgba(255,255,255,.02)'};margin-bottom:.3rem;">
                     <span style="font-family:var(--fuente-t);font-size:.62rem;color:${urgente?'rgba(255,180,50,.8)':'rgba(255,255,255,.5)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${h}">
-                        ${urgente?'⚠️ ':''}${h}
+                        ${urgente?'⚠️ ':''}${h} <span style="color:rgba(255,255,255,.25);font-size:.58rem;">(${nResp})</span>
                     </span>
                     <select id="${eid}" style="font-family:var(--fuente-t);font-size:.62rem;background:#0a1e32;color:#e8f0f8;border:1px solid ${urgente?'rgba(255,94,0,.4)':'rgba(255,255,255,.15)'};border-radius:5px;padding:.3rem .5rem;">
                         <option value="">— Sin área —</option>
                         ${_AREAS_DISPONIBLES.map(a=>`<option value="${a}"${areaActual===a?' selected':''}>${a}</option>`).join('')}
                     </select>
-                    <button onclick="guardarMapeoHoja('${h.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}', document.getElementById('${eid}').value)"
-                        style="font-family:var(--fuente-t);font-size:.6rem;background:var(--teal);color:#000;border:none;border-radius:5px;padding:.3rem .7rem;cursor:pointer;font-weight:800;white-space:nowrap;">💾 Guardar</button>
+                    <button onclick="guardarMapeoHoja('${hEsc}', document.getElementById('${eid}').value)"
+                        style="font-family:var(--fuente-t);font-size:.6rem;background:var(--teal);color:#000;border:none;border-radius:5px;padding:.3rem .6rem;cursor:pointer;font-weight:800;white-space:nowrap;">💾</button>
+                    <button onclick="abrirEstadisticasFormulario('${hEsc}')"
+                        style="font-family:var(--fuente-t);font-size:.6rem;background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);border-radius:5px;padding:.3rem .6rem;cursor:pointer;font-weight:800;white-space:nowrap;">📊</button>
                 </div>`;
             };
             mapeoBody.innerHTML = todasHojas.length === 0
@@ -3318,6 +3323,138 @@ window.guardarMapeoHoja = async function(hoja, area) {
     await guardarHojaMapeoFirestore(m);
     cargarResultadosICFES();
     notif('Área guardada', area.trim() ? `"${hoja}" → "${area.trim()}"` : `"${hoja}" quitada del mapeo`, '✅','success');
+};
+
+/* ─── ESTADÍSTICAS POR FORMULARIO ─── */
+let _sfChart = null;
+
+function _parsePuntaje(r) {
+    const raw = r.Puntuacion || r.puntuacion || r.PUNTUACION || r.Puntaje || r['Puntuación'] || '';
+    const s = String(raw).trim();
+    const mFrac = s.match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
+    if (mFrac) return { obtenido: parseFloat(mFrac[1]), total: parseFloat(mFrac[2]) };
+    const n = parseFloat(s);
+    if (!isNaN(n)) return { obtenido: n, total: null };
+    return null;
+}
+
+window.abrirEstadisticasFormulario = function(hoja) {
+    const registros = _riDatos.filter(r => r._hoja === hoja);
+    if (!registros.length) { notif('Sin datos', 'No hay respuestas para este formulario.', 'ℹ️', 'info'); return; }
+
+    // Extraer puntuaciones
+    const totalMax = (typeof _maxPorHoja !== 'undefined' && _maxPorHoja[hoja]) || null;
+    const datos = registros.map(r => {
+        const p = _parsePuntaje(r);
+        const est = _extraerEstudiante(r);
+        const totalReal = p?.total || totalMax;
+        const pct = (p && totalReal) ? Math.round(p.obtenido / totalReal * 100) : null;
+        return { nombre: est.nombre !== '—' ? est.nombre : est.email, obtenido: p?.obtenido ?? null, total: totalReal, pct, fecha: est.fecha || '' };
+    }).filter(d => d.obtenido !== null).sort((a,b) => (b.obtenido||0) - (a.obtenido||0));
+
+    if (!datos.length) { notif('Sin puntuaciones', 'Este formulario no tiene puntajes procesables.', 'ℹ️', 'info'); return; }
+
+    const scores = datos.map(d => d.obtenido);
+    const n      = scores.length;
+    const sum    = scores.reduce((a,b) => a+b, 0);
+    const mean   = sum / n;
+    const sorted = [...scores].sort((a,b)=>a-b);
+    const median = n % 2 === 0 ? (sorted[n/2-1]+sorted[n/2])/2 : sorted[Math.floor(n/2)];
+    const minV   = sorted[0];
+    const maxV   = sorted[n-1];
+    const totalLabel = totalMax ? `/${totalMax}` : '';
+
+    // Rellenar header
+    document.getElementById('sf-titulo').textContent = hoja;
+    document.getElementById('sf-meta').textContent   = `${n} respuesta${n!==1?'s':''} · Área: ${_areaDeRegistro({_hoja:hoja}) || '(sin área)'}`;
+
+    // Tarjetas
+    const cardStyle = 'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.75rem .9rem;text-align:center;';
+    document.getElementById('sf-cards').innerHTML = [
+        { label:'Promedio',     val: mean.toFixed(2)+totalLabel,        sub:'puntos' },
+        { label:'Valor medio',  val: median.toFixed(median%1?1:0)+totalLabel, sub:'mediana' },
+        { label:'Intervalo',    val: `${minV}–${maxV}${totalLabel}`,    sub:'mín – máx' },
+    ].map(c => `<div style="${cardStyle}">
+        <p style="font-family:var(--fuente-t);font-size:1.1rem;font-weight:900;color:var(--blanco);margin:0;">${c.val}</p>
+        <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.4);margin:.2rem 0 0;text-transform:uppercase;letter-spacing:.8px;">${c.label}</p>
+        <p style="font-family:var(--fuente-t);font-size:.55rem;color:rgba(255,255,255,.25);margin:.1rem 0 0;">${c.sub}</p>
+    </div>`).join('');
+
+    // Histograma: bins de ancho ~1 si rango ≤ 25, si no ~2
+    const rango   = maxV - minV;
+    const binW    = rango <= 25 ? 1 : (rango <= 50 ? 2 : Math.ceil(rango / 20));
+    const nBins   = Math.ceil((rango + 1) / binW);
+    const bins    = Array.from({length: nBins}, (_,i) => ({ label: minV + i*binW, count:0 }));
+    scores.forEach(s => {
+        const idx = Math.min(Math.floor((s - minV) / binW), nBins - 1);
+        if (bins[idx]) bins[idx].count++;
+    });
+    const labels  = bins.map(b => String(b.label));
+    const counts  = bins.map(b => b.count);
+
+    const ctx = document.getElementById('sf-chart').getContext('2d');
+    if (_sfChart) { _sfChart.destroy(); _sfChart = null; }
+    _sfChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'N.º de respuestas',
+                data: counts,
+                backgroundColor: 'rgba(139,168,107,.7)',
+                borderColor:     'rgba(139,168,107,1)',
+                borderWidth: 1,
+                borderRadius: 3,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        title: items => `Puntaje: ${items[0].label}${totalLabel}`,
+                        label: item => `${item.raw} estudiante${item.raw!==1?'s':''}`,
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display:true, text:'Puntuación obtenida', color:'rgba(255,255,255,.4)', font:{size:11} },
+                    ticks: { color:'rgba(255,255,255,.5)', font:{size:10} },
+                    grid:  { color:'rgba(255,255,255,.05)' }
+                },
+                y: {
+                    title: { display:true, text:'N.º de encuestados', color:'rgba(255,255,255,.4)', font:{size:11} },
+                    ticks: { color:'rgba(255,255,255,.5)', stepSize:1, font:{size:10} },
+                    grid:  { color:'rgba(255,255,255,.05)' },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Tabla individual
+    const tbody = document.getElementById('sf-tbody');
+    tbody.innerHTML = datos.map((d,i) => {
+        const pctStr = d.pct !== null ? `${d.pct}%` : '—';
+        const pctColor = d.pct !== null ? (d.pct >= 70 ? '#86efac' : d.pct >= 50 ? '#fbbf24' : '#fca5a5') : 'rgba(255,255,255,.3)';
+        const bg = i % 2 === 0 ? 'rgba(255,255,255,.02)' : 'transparent';
+        return `<tr style="background:${bg};border-bottom:1px solid rgba(255,255,255,.04);">
+            <td style="padding:.4rem .6rem;color:rgba(255,255,255,.75);">${d.nombre}</td>
+            <td style="padding:.4rem .6rem;text-align:center;font-weight:700;color:var(--teal);">${d.obtenido}${d.total ? '/'+d.total : ''}</td>
+            <td style="padding:.4rem .6rem;text-align:center;font-weight:700;color:${pctColor};">${pctStr}</td>
+            <td style="padding:.4rem .6rem;color:rgba(255,255,255,.35);font-size:.58rem;">${d.fecha||'—'}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('modal-stats-form').classList.add('open');
+};
+
+window.cerrarEstadisticasFormulario = function() {
+    document.getElementById('modal-stats-form').classList.remove('open');
+    if (_sfChart) { _sfChart.destroy(); _sfChart = null; }
 };
 
 function renderResultadosICFES() {
@@ -4995,9 +5132,11 @@ async function cargarInbox() {
             const otroUid   = (c.participantes||[]).find(u => u !== currentUser.uid) || '';
             const ultimoMsg = c.ultimoMensaje || '—';
 
-            // Nombre: ignorar si coincide con el nombre del admin (mal guardado)
+            // Nombre: ignorar si coincide con el nombre del admin (mal guardado, incluye variantes con/sin tilde)
             const nombreEnMapa  = c.nombres?.[otroUid];
-            const nombreValido  = (n) => n && n !== 'Conversación' && n !== currentUser.nombre;
+            const _normNom      = (s) => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+            const _miNomNorm    = _normNom(currentUser.nombre);
+            const nombreValido  = (n) => n && n !== 'Conversación' && _normNom(n) !== _miNomNorm;
             const nombreOtro = (nombreValido(nombreEnMapa) ? nombreEnMapa : null)
                 || (nombreValido(c.otroNombre) ? c.otroNombre : null)
                 || (c.ultimoAutorUid && c.ultimoAutorUid !== currentUser.uid && nombreValido(c.ultimoAutorNombre) ? c.ultimoAutorNombre : null)
@@ -5035,14 +5174,15 @@ async function cargarInbox() {
                     if (!uSnap.exists()) return;
                     const ud = uSnap.data();
                     const realName = ud.nombre || ud.nombres || '';
-                    const realFoto = ud.foto || ud.fotoPerfil || ud.photoURL || '';
+                    const realFoto = ud.fotoUrl || ud.foto || ud.fotoPerfil || ud.photoURL || '';
 
                     // Actualizar DOM
                     const nmEl = document.getElementById(`inbox-nm-${chatId}`);
                     const avEl = document.getElementById(`inbox-av-${chatId}`);
                     const thEl = document.getElementById(`inbox-thread-${chatId}`);
 
-                    if (nmEl && realName && realName !== currentUser.nombre) {
+                    const _nr = (s) => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+                    if (nmEl && realName && _nr(realName) !== _nr(currentUser.nombre)) {
                         nmEl.textContent = realName;
                     }
                     if (avEl) {
@@ -5060,7 +5200,7 @@ async function cargarInbox() {
 
                     // Persistir en Firestore para carga futura sin lookup
                     const updates = {};
-                    if (realName && realName !== currentUser.nombre) updates[`nombres.${otroUid}`] = realName;
+                    if (realName && _nr(realName) !== _nr(currentUser.nombre)) updates[`nombres.${otroUid}`] = realName;
                     if (realFoto) updates[`fotos.${otroUid}`] = realFoto;
                     if (Object.keys(updates).length) {
                         updateDoc(doc(db,'chats_privados',chatId), updates).catch(()=>{});
@@ -6223,6 +6363,44 @@ window.seedTalleresTemáticos = async function() {
     }
 };
 
+/* ─── SEED: talleres interactivos de matemáticas ─── */
+window.seedTalleresInteractivos = async function() {
+    const TALLERES_INTERACTIVOS = [
+        {
+            titulo: 'Números y Álgebra 🔢',
+            area: 'Matemáticas',
+            grado: 'todos',
+            puntos: 80,
+            descripcion: 'Múltiplos, divisores, factores primos y números racionales e irracionales. Juegos interactivos tipo ICFES.',
+            tipo: 'interactivo',
+            url: 'taller_mat_numeros.html',
+            publicado: true
+        },
+        {
+            titulo: 'Estadística y Probabilidad 📊',
+            area: 'Matemáticas',
+            grado: 'todos',
+            puntos: 80,
+            descripcion: 'Probabilidad, ruleta experimental, tablas de datos, gráficas y preguntas reales ICFES.',
+            tipo: 'interactivo',
+            url: 'taller_mat_probabilidad.html',
+            publicado: true
+        }
+    ];
+    try {
+        const existSnap = await getDocs(collection(db,'talleres_tematicos'));
+        const existentes = new Set(existSnap.docs.map(d => (d.data().titulo||'').toLowerCase()));
+        let creados = 0;
+        for (const t of TALLERES_INTERACTIVOS) {
+            if (existentes.has((t.titulo||'').toLowerCase())) continue;
+            await addDoc(collection(db,'talleres_tematicos'), {...t, creadoEn: serverTimestamp()});
+            creados++;
+        }
+        notif('Talleres interactivos', `${creados} talleres de matemáticas añadidos 🎮`, '✅', 'success');
+        cargarTalleresTematicoAdmin();
+    } catch(e) { notif('Error', e.message, '❌', 'error'); }
+};
+
 /* ─── ESTUDIANTE: cargar lista ─── */
 window.cargarTalleresTematicoEst = async function() {
     const lista = document.getElementById('tt-lista-est');
@@ -6250,10 +6428,12 @@ window.cargarTalleresTematicoEst = async function() {
         lista.innerHTML = talleres.map(t => {
             const hecho = completados.has(t.id);
             const nd = (t.diapositivas||[]).length;
+            const esInteractivo = t.tipo === 'interactivo' && t.url;
+            const metaLabel = esInteractivo ? `${t.area||'—'} · Grado ${t.grado||'todos'} · 🎮 Taller interactivo` : `${t.area||'—'} · Grado ${t.grado||'todos'} · ${nd} diapositiva${nd!==1?'s':''}`;
             return `<div class="tt-card${hecho?' tt-card-done':''}" onclick="abrirTallerViewer('${t.id}')">
                 <div style="flex:1;min-width:0;">
                     <p class="tt-card-titulo">${t.titulo||'—'}</p>
-                    <p class="tt-card-meta">${t.area||'—'} · Grado ${t.grado||'todos'} · ${nd} diapositiva${nd!==1?'s':''}</p>
+                    <p class="tt-card-meta">${metaLabel}</p>
                     ${t.descripcion?`<p style="font-family:var(--fuente-t);font-size:.63rem;color:rgba(255,255,255,.48);margin:.35rem 0 0;line-height:1.5;">${t.descripcion}</p>`:''}
                     <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.5rem;">
                         ${hecho
@@ -6282,6 +6462,12 @@ window.abrirTallerViewer = async function(id) {
         if (currentUser.uid) {
             const cp = await getDoc(doc(db,'talleres_tematicos_progreso',`${currentUser.uid}_${id}`));
             _ttCompletado = cp.exists();
+        }
+
+        // ── TALLER INTERACTIVO (iframe) ──
+        if (_ttViewer.tipo === 'interactivo' && _ttViewer.url) {
+            abrirTallerInteractivo(_ttViewer);
+            return;
         }
 
         const diapos = _ttViewer.diapositivas||[];
@@ -6387,6 +6573,52 @@ window.cerrarTallerViewer = function() {
     _ttViewer = null;
 };
 
+/* ─── TALLER INTERACTIVO (iframe) ─── */
+window.abrirTallerInteractivo = function(tallerData) {
+    document.getElementById('ti-titulo').textContent = tallerData.titulo || '';
+    document.getElementById('ti-iframe').src = tallerData.url;
+    document.getElementById('modal-taller-interactivo').classList.add('open');
+};
+
+window.cerrarTallerInteractivo = function() {
+    document.getElementById('modal-taller-interactivo').classList.remove('open');
+    document.getElementById('ti-iframe').src = '';
+};
+
+// Escucha mensajes del iframe interactivo
+window.addEventListener('message', async (e) => {
+    if (!e.data || typeof e.data !== 'object') return;
+    if (e.data.type === 'cerrar-taller-interactivo') {
+        cerrarTallerInteractivo();
+    }
+    if (e.data.type === 'taller-completado' && e.data.tallerExternoId) {
+        // Buscar el taller en Firestore por url que incluya tallerExternoId
+        if (!currentUser?.uid) return;
+        try {
+            const snap = await getDocs(query(collection(db,'talleres_tematicos'), where('publicado','==',true)));
+            const tallerDoc = snap.docs.find(d => {
+                const url = d.data().url || '';
+                return url.includes(e.data.tallerExternoId);
+            });
+            if (!tallerDoc) return;
+            const tid = tallerDoc.id;
+            const progRef = doc(db,'talleres_tematicos_progreso',`${currentUser.uid}_${tid}`);
+            const ya = await getDoc(progRef);
+            if (ya.exists()) return; // ya completado
+            const ptsTaller = tallerDoc.data().puntos || 50;
+            await setDoc(progRef, {uid:currentUser.uid, tallerId:tid, completadoEn:serverTimestamp()});
+            // sumar puntos al usuario
+            const uRef = doc(db,'usuarios',currentUser.uid);
+            const uSnap = await getDoc(uRef);
+            if (uSnap.exists()) {
+                const ptsActuales = uSnap.data().puntos || 0;
+                await updateDoc(uRef, {puntos: ptsActuales + ptsTaller});
+            }
+            notif('¡Taller completado!', `+${ptsTaller} puntos acreditados a tu perfil 🎉`, '🏆', 'success');
+        } catch(err) { console.error('Error registrando taller interactivo:', err); }
+    }
+});
+
 /* ─── ESTUDIANTE: completar ─── */
 window.completarTallerTematico = async function() {
     if (_ttCompletado || !currentUser.uid || !_ttViewer) return;
@@ -6462,6 +6694,61 @@ window.cerrarCuestionario = function() {
             <p id="tt-counter" style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.35);margin:0;"></p>
             <button id="tt-btn-sig" class="btn-add" onclick="navDiapo(1)" style="min-width:105px;font-size:.62rem;">Siguiente →</button>
         </div>
+    </div>
+</div>
+
+<!-- ── MODAL ESTADÍSTICAS POR FORMULARIO ── -->
+<div class="modal-overlay" id="modal-stats-form" style="z-index:4500;">
+    <div style="background:var(--azul-panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;max-width:660px;width:96vw;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;margin:auto;position:relative;">
+        <!-- Header -->
+        <div style="padding:.9rem 1.25rem .7rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-shrink:0;position:sticky;top:0;background:var(--azul-panel);z-index:1;">
+            <div>
+                <p style="font-family:var(--fuente-t);font-size:.5rem;letter-spacing:2.5px;color:rgba(167,139,250,.8);text-transform:uppercase;margin:0 0 .25rem;font-weight:700;">📊 ESTADÍSTICAS DEL FORMULARIO</p>
+                <p id="sf-titulo" style="font-family:var(--fuente-t);font-size:.78rem;font-weight:700;color:var(--blanco);margin:0;line-height:1.35;"></p>
+                <p id="sf-meta" style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.4);margin:.2rem 0 0;"></p>
+            </div>
+            <button onclick="cerrarEstadisticasFormulario()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+        </div>
+        <!-- Tarjetas de resumen -->
+        <div id="sf-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;padding:1rem 1.25rem .5rem;"></div>
+        <!-- Histograma -->
+        <div style="padding:.5rem 1.25rem 1.25rem;">
+            <p style="font-family:var(--fuente-t);font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);text-align:center;margin:.5rem 0 .9rem;letter-spacing:.5px;">DISTRIBUCIÓN DE PUNTUACIONES</p>
+            <div style="position:relative;height:220px;">
+                <canvas id="sf-chart"></canvas>
+            </div>
+        </div>
+        <!-- Tabla de respuestas del formulario -->
+        <div style="padding:0 1.25rem 1.25rem;">
+            <p style="font-family:var(--fuente-t);font-size:.62rem;font-weight:700;color:rgba(255,255,255,.4);margin-bottom:.6rem;letter-spacing:.5px;">RESPUESTAS INDIVIDUALES</p>
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-family:var(--fuente-t);font-size:.62rem;">
+                    <thead>
+                        <tr style="background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);text-align:left;">
+                            <th style="padding:.45rem .6rem;">Estudiante</th>
+                            <th style="padding:.45rem .6rem;text-align:center;">Puntuación</th>
+                            <th style="padding:.45rem .6rem;text-align:center;">% obtenido</th>
+                            <th style="padding:.45rem .6rem;">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sf-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── MODAL TALLER INTERACTIVO (iframe) ── -->
+<div class="modal-overlay" id="modal-taller-interactivo" style="z-index:4000;">
+    <div style="background:var(--azul-panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;max-width:640px;width:96vw;height:90vh;display:flex;flex-direction:column;overflow:hidden;margin:auto;position:relative;">
+        <div style="padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
+            <div>
+                <p id="ti-titulo" style="font-family:var(--fuente-t);font-size:.7rem;font-weight:700;color:rgba(255,255,255,.6);margin:0;"></p>
+                <p style="font-family:var(--fuente-t);font-size:.5rem;letter-spacing:2px;color:var(--naranja);text-transform:uppercase;margin:2px 0 0;font-weight:700;">🎮 Taller Interactivo</p>
+            </div>
+            <button onclick="cerrarTallerInteractivo()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+        </div>
+        <iframe id="ti-iframe" src="" style="flex:1;border:none;width:100%;background:var(--azul-panel);"></iframe>
     </div>
 </div>
 </body>

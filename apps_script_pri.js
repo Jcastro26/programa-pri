@@ -19,10 +19,29 @@ const CAMPOS_TIPO_ID = ['tipo_de_identificacion', 'tipo_de_documento', 'tipo_id'
 const CAMPOS_FECHA   = ['digite_la_fecha', 'digita_la_fecha', 'marca_temporal'];
 
 // ── EXTRAER ID DE FORMULARIO DESDE URL ───────────────────────────────────────
+/**
+ * Extrae el formId DE RESPUESTA (1FAIpQLSxxx) a partir de la URL de edición o respuesta.
+ * - Si la URL ya contiene /d/e/{responseId}/ → lo devuelve directamente.
+ * - Si es URL de edición /d/{editId}/ → abre el formulario y obtiene el publishedUrl.
+ * Esto garantiza que el ID guardado en Firestore coincida con TALLERES_SEED.
+ */
 function extractFormId(url) {
     if (!url) return '';
-    const m = url.match(/\/forms\/d\/([^\/\?]+)/);
-    return m ? m[1] : '';
+    // Ya es URL de respuesta (contiene /d/e/)
+    const rMatch = url.match(/\/forms\/d\/e\/([^\/\?]+)/);
+    if (rMatch) return rMatch[1];
+    // Es URL de edición — obtener el publishedUrl via FormApp
+    try {
+        const form = FormApp.openByUrl(url);
+        const pubUrl = form.getPublishedUrl(); // ej: https://docs.google.com/forms/d/e/1FAIpQLSxxx/viewform
+        const pMatch = pubUrl.match(/\/forms\/d\/e\/([^\/\?]+)/);
+        if (pMatch) return pMatch[1];
+    } catch(e) {
+        // Si falla (permisos), intenta con el shortId del edit URL como fallback
+        const eMatch = url.match(/\/forms\/d\/([^\/\?]+)/);
+        return eMatch ? eMatch[1] : '';
+    }
+    return '';
 }
 
 // ── 1. TRIGGER AUTOMÁTICO ────────────────────────────────────────────────────
