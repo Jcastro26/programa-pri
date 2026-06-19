@@ -1056,12 +1056,12 @@
                 </div>
             </div>
 
-            <!-- Mapeo de nombres de formularios -->
-            <details id="ri-mapeo-wrap" style="margin-bottom:1rem;">
-                <summary style="font-family:var(--fuente-t);font-size:.65rem;font-weight:700;color:var(--teal);cursor:pointer;padding:.5rem;background:rgba(56,189,248,.06);border-radius:6px;border:1px solid rgba(56,189,248,.15);">
-                    ⚙️ Renombrar formularios (mapear _hoja → nombre real)
+            <!-- Asignar área a formularios -->
+            <details id="ri-mapeo-wrap" style="margin-bottom:1rem;" open>
+                <summary style="font-family:var(--fuente-t);font-size:.65rem;font-weight:700;color:var(--naranja);cursor:pointer;padding:.5rem;background:rgba(255,94,0,.06);border-radius:6px;border:1px solid rgba(255,94,0,.2);letter-spacing:.5px;">
+                    📋 ASIGNAR ÁREA A FORMULARIOS
                 </summary>
-                <div id="ri-mapeo-body" style="background:#081422;border:1px solid rgba(255,255,255,.07);border-top:none;border-radius:0 0 6px 6px;padding:.75rem;"></div>
+                <div id="ri-mapeo-body" style="background:#081422;border:1px solid rgba(255,94,0,.15);border-top:none;border-radius:0 0 6px 6px;padding:.75rem;"></div>
             </details>
 
             <!-- Resumen estadístico -->
@@ -3022,16 +3022,34 @@ let _riSortCol  = 'nombre';
 let _riSortAsc  = true;
 let _riChart    = null;
 
-// Mapeo _hoja → nombre amigable (persiste en localStorage)
+// Mapeo _hoja → área (persiste en Firestore + localStorage como caché)
 function getHojaMapeo() {
     try { return JSON.parse(localStorage.getItem('_pri_hoja_mapeo') || '{}'); } catch { return {}; }
 }
 function setHojaMapeo(m) { localStorage.setItem('_pri_hoja_mapeo', JSON.stringify(m)); }
+async function syncHojaMapeoFirestore() {
+    try {
+        const snap = await getDoc(doc(db,'config_app','hoja_mapeo'));
+        if (snap.exists() && snap.data().mapeo) {
+            const remoto = snap.data().mapeo;
+            const local  = getHojaMapeo();
+            setHojaMapeo(Object.assign({}, local, remoto)); // remoto gana
+        }
+    } catch(e) {}
+}
+async function guardarHojaMapeoFirestore(m) {
+    setHojaMapeo(m);
+    try { await setDoc(doc(db,'config_app','hoja_mapeo'), { mapeo: m }, {merge:true}); } catch(e) {}
+}
 function nombreHoja(hoja) {
     if (!hoja) return '(sin nombre)';
     const m = getHojaMapeo();
     return m[hoja] || hoja;
 }
+const _AREAS_DISPONIBLES = [
+    'Matemáticas','Geometría','Estadística','Lectura Crítica','Ciencias Naturales',
+    'Ciencias Sociales','Inglés','Filosofía','Lenguaje','Trigonometría','Física','Química','Biología'
+];
 
 // Extracción inteligente de campos (prueba múltiples variantes de nombre)
 function extraerCampo(r, ...claves) {
@@ -3089,17 +3107,20 @@ function _extraerEstudiante(r) {
 
 // Devuelve el área del taller que tiene ese _hoja como título, o el mapeo manual
 const _AREA_KEYWORDS = {
-    'Lectura Crítica':      ['lectura','critica','critico','comprension','comprensión','texto','lector','narrativo','literario'],
-    'Matemáticas':          ['matematica','matemática','calculo','álgebra','algebra','aritmetica','aritmética','numeracion','numeración','fraccion','fracción','porcentaje','racional','irracional','ecuacion','ecuación','funcion','función','competencia','exito','éxito','icfes mat'],
-    'Geometría':            ['geometria','geometría','trigonometria','trigonometría','figuras','espacial','angulo','ángulo','triangulo','triángulo','circulo','círculo','perimetro','perímetro','area geom'],
+    'Lectura Crítica':      ['lectura critica','lectura crítica','comprension lectora','comprensión lectora','texto','lector','narrativo','literario','critica literaria','crítica literaria','analisis texto','análisis texto','comprension de lectura'],
+    'Matemáticas':          ['matematica','matemática','calculo','álgebra','algebra','aritmetica','aritmética','numeracion','numeración','fraccion','fracción','porcentaje','racional','irracional','ecuacion','ecuación','funcion','función','competencia mat','icfes mat','mat ','razonamiento cuantitativo','pensamiento numerico','pensamiento numérico'],
+    'Geometría':            ['geometria','geometría','figuras planas','espacial','angulo','ángulo','triangulo','triángulo','circulo','círculo','perimetro','perímetro','areas y perimetros','figuras geométricas','geometria plana'],
     'Ciencias Naturales':   ['ciencias naturales','natural','naturales'],
     'Biología':             ['biologia','biología','ecologia','ecología','celula','célula','genetica','genética'],
     'Química':              ['quimica','química','elemento','molecula','molécula','reaccion','reacción'],
     'Física':               ['fisica','física','cinematica','cinemática','fuerza','movimiento','energia','energía'],
     'Ciencias Sociales':    ['sociales','historia','geografia','geografía','social','politica','política','economia','economía'],
-    'Inglés':               ['ingles','inglés','english','reading','writing'],
-    'Filosofía':            ['filosofia','filosofía','etica','ética','logica','lógica'],
-    'Lenguaje':             ['lenguaje','lengua','comunicacion','comunicación','ortografia','ortografía'],
+    'Inglés':               ['ingles','inglés','english','reading','writing','listening','grammar','vocabulary'],
+    'Filosofía':            ['filosofia','filosofía','etica','ética','logica','lógica','argumentacion','argumentación'],
+    'Lenguaje':             ['lenguaje','lengua','comunicacion','comunicación','ortografia','ortografía','gramatica','gramática','redaccion','redacción'],
+    'Estadística':          ['estadistica','estadística','probabilidad','datos','grafica estadistica','gráfica estadística','moda','mediana','media'],
+    'Trigonometría':        ['trigonometria','trigonometría','seno','coseno','tangente','angulos trigon'],
+    'Ciencias Sociales':    ['ciencias sociales','sociales','historia','geografia','geografía','social','politica','política','economia','economía','constitucion','constitución','democracia'],
 };
 function _areaDeHoja(hoja) {
     if (!hoja) return null;
@@ -3125,6 +3146,8 @@ async function cargarResultadosICFES() {
     tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Cargando datos…</td></tr>`;
     stats.innerHTML = '';
     try {
+        // Sincronizar mapeo desde Firestore
+        await syncHojaMapeoFirestore();
         // Cargar ambas colecciones en paralelo
         const [snapDiag, snapTall] = await Promise.all([
             getDocs(collection(db,'diagnostico_colegios')),
@@ -3147,26 +3170,35 @@ async function cargarResultadosICFES() {
             const o = document.createElement('option'); o.value = a; o.textContent = a; sel.appendChild(o);
         });
 
-        // Poblar mapeo manual (para _hoja sin taller match)
-        const sinMatch = [...new Set(_riDatos.map(r=>r._hoja||'').filter(Boolean))].filter(h => !_areaDeHoja(h));
-        const mapeoBody = document.getElementById('ri-mapeo-body');
+        // Poblar mapeo — mostrar TODOS los formularios (sin área Y con área) para poder editarlos
+        const todasHojas = [...new Set(_riDatos.map(r=>r._hoja||'').filter(Boolean))];
+        const sinMatch   = todasHojas.filter(h => !_areaDeHoja(h));
+        const conArea    = todasHojas.filter(h =>  _areaDeHoja(h));
+        const mapeoBody  = document.getElementById('ri-mapeo-body');
         if (mapeoBody) {
-            const mapeo = getHojaMapeo();
-            mapeoBody.innerHTML = sinMatch.length ? `
-                <p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.4);margin-bottom:.6rem;">
-                    Estas pestañas no tienen taller asociado. Asígnales un área manualmente:
-                </p>
-                ${sinMatch.map(h=>`
-                <div style="display:grid;grid-template-columns:1.5fr 1fr auto;gap:.5rem;align-items:center;margin-bottom:.4rem;">
-                    <span style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${h}">${h}</span>
-                    <input type="text" id="mapeo-${CSS.escape(h)}" placeholder="Ej: Física, Matemáticas…"
-                        value="${mapeo[h]||''}"
-                        style="font-family:var(--fuente-t);font-size:.62rem;background:#0a1e32;border:1px solid rgba(255,255,255,.12);color:#e8f0f8;border-radius:4px;padding:.3rem .5rem;">
-                    <button onclick="guardarMapeoHoja('${h.replace(/'/g,"\\'")}',document.getElementById('mapeo-${CSS.escape(h)}').value)"
-                        style="font-family:var(--fuente-t);font-size:.55rem;background:var(--teal);color:#000;border:none;border-radius:4px;padding:.3rem .6rem;cursor:pointer;font-weight:700;">✓</button>
-                </div>`).join('')}
-                <button onclick="guardarTodoMapeo()" style="font-family:var(--fuente-t);font-size:.6rem;background:var(--naranja);color:#fff;border:none;border-radius:5px;padding:.4rem 1rem;cursor:pointer;font-weight:700;margin-top:.4rem;">💾 Guardar todo</button>`
-            : `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);">✅ Todos los formularios tienen área asignada desde los talleres.</p>`;
+            const mapeo   = getHojaMapeo();
+            const optAreas = _AREAS_DISPONIBLES.map(a=>`<option value="${a}">${a}</option>`).join('');
+            const filaHoja = (h, urgente) => {
+                const areaActual = _areaDeHoja(h) || '';
+                const eid = 'mapsel-' + CSS.escape(h);
+                return `<div style="display:grid;grid-template-columns:1fr 180px auto;gap:.5rem;align-items:center;padding:.45rem .6rem;border-radius:5px;background:${urgente?'rgba(255,94,0,.06)':'rgba(255,255,255,.02)'};margin-bottom:.3rem;">
+                    <span style="font-family:var(--fuente-t);font-size:.62rem;color:${urgente?'rgba(255,180,50,.8)':'rgba(255,255,255,.5)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${h}">
+                        ${urgente?'⚠️ ':''}${h}
+                    </span>
+                    <select id="${eid}" style="font-family:var(--fuente-t);font-size:.62rem;background:#0a1e32;color:#e8f0f8;border:1px solid ${urgente?'rgba(255,94,0,.4)':'rgba(255,255,255,.15)'};border-radius:5px;padding:.3rem .5rem;">
+                        <option value="">— Sin área —</option>
+                        ${_AREAS_DISPONIBLES.map(a=>`<option value="${a}"${areaActual===a?' selected':''}>${a}</option>`).join('')}
+                    </select>
+                    <button onclick="guardarMapeoHoja('${h.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}', document.getElementById('${eid}').value)"
+                        style="font-family:var(--fuente-t);font-size:.6rem;background:var(--teal);color:#000;border:none;border-radius:5px;padding:.3rem .7rem;cursor:pointer;font-weight:800;white-space:nowrap;">💾 Guardar</button>
+                </div>`;
+            };
+            mapeoBody.innerHTML = todasHojas.length === 0
+                ? `<p style="font-family:var(--fuente-t);font-size:.62rem;color:rgba(255,255,255,.3);text-align:center;padding:.75rem;">Sin datos aún.</p>`
+                : `${sinMatch.length ? `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,180,50,.8);margin-bottom:.6rem;">⚠️ ${sinMatch.length} formulario${sinMatch.length!==1?'s':''} sin área. Asigna cada uno:</p>` : ''}
+                   ${sinMatch.map(h => filaHoja(h, true)).join('')}
+                   ${conArea.length && sinMatch.length ? `<div style="border-top:1px solid rgba(255,255,255,.07);margin:.6rem 0;"></div><p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.3);margin-bottom:.4rem;">✅ Ya tienen área (editable):</p>` : ''}
+                   ${conArea.map(h => filaHoja(h, false)).join('')}`;
         }
 
         renderResultadosICFES();
@@ -3175,17 +3207,12 @@ async function cargarResultadosICFES() {
     }
 }
 
-window.guardarMapeoHoja = function(hoja, area) {
-    const m = getHojaMapeo(); m[hoja] = area.trim(); setHojaMapeo(m);
-    cargarResultadosICFES();
-    notif('Área guardada',`"${hoja}" → "${area.trim()||hoja}"`, '✅','success');
-};
-window.guardarTodoMapeo = function() {
-    const hojas = [...new Set(_riDatos.map(r=>r._hoja||'').filter(Boolean))];
+window.guardarMapeoHoja = async function(hoja, area) {
     const m = getHojaMapeo();
-    hojas.forEach(h => { const el = document.getElementById('mapeo-'+CSS.escape(h)); if(el&&el.value.trim()) m[h]=el.value.trim(); });
-    setHojaMapeo(m); cargarResultadosICFES();
-    notif('Áreas guardadas','Mapeo actualizado.','✅','success');
+    if (area.trim()) { m[hoja] = area.trim(); } else { delete m[hoja]; }
+    await guardarHojaMapeoFirestore(m);
+    cargarResultadosICFES();
+    notif('Área guardada', area.trim() ? `"${hoja}" → "${area.trim()}"` : `"${hoja}" quitada del mapeo`, '✅','success');
 };
 
 function renderResultadosICFES() {
@@ -3273,20 +3300,48 @@ function renderResultadosICFES() {
         const filasForms = e.formularios
             .sort((a,b)=>{ const da=new Date(String(b.fecha).replace(/[-/]/g,'-')), db=new Date(String(a.fecha).replace(/[-/]/g,'-')); return isNaN(da)||isNaN(db)?0:da-db; })
             .map(f=>{
-                const p = _pct(f.pts); const pc = isNaN(p)?null:Math.round(p);
-                const pts_m = String(f.pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
-                const correctas   = pts_m ? pts_m[1] : (pc!=null?`${pc}%`:'—');
-                const incorrectas = pts_m ? (parseFloat(pts_m[2])-parseFloat(pts_m[1])) : '—';
-                const aColor = AREA_COLOR[f.area]||'var(--teal)';
-                return `<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:.4rem;align-items:center;padding:.3rem .6rem;background:rgba(255,255,255,.02);border-radius:4px;margin-bottom:.2rem;">
-                    <span style="font-family:var(--fuente-t);font-size:.62rem;font-weight:700;color:${aColor};">
-                        ${f.hoja && f.hoja !== f.area ? f.hoja : f.area}
-                        ${f.hoja && f.hoja !== f.area ? `<span style="font-size:.48rem;font-weight:700;background:rgba(255,94,0,.12);color:var(--naranja);border-radius:3px;padding:.1rem .3rem;margin-left:.3rem;vertical-align:middle;">${f.area}</span>` : ''}
+                // ── Parseo robusto del puntaje ──────────────────────────────
+                const ptsStr = String(f.pts||'');
+                const pts_m  = ptsStr.match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
+                let correctas_n, total_n, incorrectas_n, pct_val;
+                if (pts_m) {
+                    correctas_n   = parseFloat(pts_m[1]);
+                    total_n       = parseFloat(pts_m[2]);
+                    incorrectas_n = Math.round(total_n - correctas_n);
+                    pct_val       = Math.round(correctas_n / total_n * 100);
+                } else if (!isNaN(parseFloat(ptsStr))) {
+                    // Solo número: asumimos que es puntuación sobre 100
+                    correctas_n   = parseFloat(ptsStr);
+                    total_n       = 100;
+                    incorrectas_n = Math.round(100 - correctas_n);
+                    pct_val       = Math.round(correctas_n);
+                } else {
+                    correctas_n = total_n = incorrectas_n = pct_val = null;
+                }
+                const pctColor = pct_val != null ? _pcolor(pct_val) : 'rgba(240,244,248,.4)';
+                const aColor   = AREA_COLOR[f.area] || 'var(--teal)';
+                const areaLabel = f.area !== '(sin área)' ? f.area : '';
+                const hojaLabel = f.hoja || f.area;
+
+                return `<div style="display:grid;grid-template-columns:1.7fr 0.9fr 1.1fr 0.75fr 1.4fr;gap:.4rem;align-items:center;padding:.35rem .6rem;background:rgba(255,255,255,.02);border-radius:4px;margin-bottom:.25rem;">
+                    <!-- Área -->
+                    <div style="overflow:hidden;">
+                        <span style="font-family:var(--fuente-t);font-size:.62rem;font-weight:700;color:${aColor};display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${hojaLabel}">${hojaLabel}</span>
+                        ${areaLabel && hojaLabel!==areaLabel ? `<span style="font-size:.48rem;font-weight:700;background:rgba(255,94,0,.12);color:var(--naranja);border-radius:3px;padding:.1rem .3rem;">${areaLabel}</span>` : ''}
+                    </div>
+                    <!-- Puntaje bruto -->
+                    <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${pctColor};text-align:center;">${ptsStr||'—'}</span>
+                    <!-- Correctas: número + porcentaje -->
+                    <div style="text-align:center;">
+                        <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:#86efac;">✅ ${correctas_n!=null?Math.round(correctas_n):'—'}</span>
+                        ${pct_val!=null?`<span style="font-family:var(--fuente-t);font-size:.55rem;color:#86efac;margin-left:.25rem;opacity:.8;">(${pct_val}%)</span>`:''}
+                    </div>
+                    <!-- Incorrectas -->
+                    <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${incorrectas_n!=null&&incorrectas_n>0?'#fca5a5':'rgba(255,255,255,.3)'};text-align:center;">
+                        ${incorrectas_n!=null?`❌ ${incorrectas_n}`:'—'}
                     </span>
-                    <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${_pcolor(p)};text-align:center;">${f.pts}</span>
-                    <span style="font-family:var(--fuente-t);font-size:.6rem;color:#86efac;text-align:center;">✅ ${correctas}</span>
-                    <span style="font-family:var(--fuente-t);font-size:.6rem;color:#fca5a5;text-align:center;">❌ ${incorrectas}</span>
-                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);white-space:nowrap;">${_fmtFecha(f.fecha)}</span>
+                    <!-- Fecha -->
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.3);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_fmtFecha(f.fecha)}</span>
                 </div>`;
             }).join('');
 
@@ -3310,12 +3365,12 @@ function renderResultadosICFES() {
                 <div style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:.4rem;">
                     📧 ${e.email} · 🪪 ${e.tipoId ? e.tipoId+' ' : ''}${e.cedula}
                 </div>
-                <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr auto;gap:.4rem;padding:.2rem .6rem;margin-bottom:.3rem;opacity:.4;">
-                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Área</span>
+                <div style="display:grid;grid-template-columns:1.7fr 0.9fr 1.1fr 0.75fr 1.4fr;gap:.4rem;padding:.25rem .6rem;margin-bottom:.3rem;opacity:.4;border-bottom:1px solid rgba(255,255,255,.06);">
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Área / Formulario</span>
                     <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Puntaje</span>
-                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Correctas</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Correctas (N · %)</span>
                     <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:center;">Incorrectas</span>
-                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;">Fecha</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;text-transform:uppercase;letter-spacing:1px;text-align:right;">Fecha</span>
                 </div>
                 ${filasForms}
             </td>
@@ -4752,7 +4807,7 @@ async function cargarInbox() {
             // Fallback al campo legacy "otroNombre" si el chat es antiguo
             const nombreOtro = (c.nombres && c.nombres[otroUid])
                 || (c.otroNombre && c.otroNombre !== currentUser.nombre ? c.otroNombre : null)
-                || c.ultimoAutorNombre
+                || (c.ultimoAutorUid && c.ultimoAutorUid !== currentUser.uid ? c.ultimoAutorNombre : null)
                 || 'Conversación';
 
             // Foto del otro (guardada cuando inicia/envía el mensaje)
@@ -5034,6 +5089,12 @@ window.logoutSession = function() {
     localStorage.removeItem('sesion_timestamp');
     window.location.href = "login.html";
 };
+
+/* ── Expose Firebase functions to non-module scripts ── */
+Object.assign(window, {
+    getDocs, collection, doc, getDoc, addDoc, setDoc, deleteDoc,
+    updateDoc, serverTimestamp, increment, where, query, orderBy, writeBatch, db
+});
 </script>
 <script>
     const dot=document.getElementById('cdot'), ring=document.getElementById('cring');
@@ -5524,12 +5585,17 @@ window.cargarTalleresTematicoAdmin = async function() {
     if (!lista) return;
     lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>';
     try {
-        const snap = await getDocs(query(collection(db,'talleres_tematicos'), orderBy('creadoEn','desc')));
+        const snap = await getDocs(collection(db,'talleres_tematicos'));
         if (snap.empty) {
             lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">No hay talleres todavía. Crea el primero.</p>';
             return;
         }
-        lista.innerHTML = snap.docs.map(d => {
+        const docs = snap.docs.slice().sort((a,b) => {
+            const ta = a.data().creadoEn?.toMillis?.()||0;
+            const tb = b.data().creadoEn?.toMillis?.()||0;
+            return tb-ta;
+        });
+        lista.innerHTML = docs.map(d => {
             const t = {id:d.id,...d.data()};
             const nd = (t.diapositivas||[]).length;
             return `<div class="banco-form-card" style="padding:.85rem 1rem;margin-bottom:.6rem;">
@@ -5906,11 +5972,14 @@ window.cargarTalleresTematicoEst = async function() {
     const gradoUsuario = String(currentUser.grado||'').replace(/[°ºo]/gi,'').trim();
     try {
         const [talleresSnap, compSnap] = await Promise.all([
-            getDocs(query(collection(db,'talleres_tematicos'), where('publicado','==',true), orderBy('creadoEn','desc'))),
+            getDocs(query(collection(db,'talleres_tematicos'), where('publicado','==',true))),
             currentUser.uid ? getDocs(query(collection(db,'talleres_tematicos_progreso'), where('uid','==',currentUser.uid))) : Promise.resolve({docs:[]})
         ]);
         const completados = new Set(compSnap.docs.map(d => d.data().tallerId));
-        const talleres = talleresSnap.docs.map(d => ({id:d.id,...d.data()})).filter(t => {
+        const talleres = talleresSnap.docs
+            .map(d => ({id:d.id,...d.data()}))
+            .sort((a,b) => { const ta = a.creadoEn?.toMillis?.()||0; const tb = b.creadoEn?.toMillis?.()||0; return tb-ta; })
+            .filter(t => {
             if (!t.grado||t.grado==='todos') return true;
             if (t.grado==='avanzado') return gradoUsuario==='10'||gradoUsuario==='11';
             return t.grado===gradoUsuario;
