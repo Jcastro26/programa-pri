@@ -18,6 +18,13 @@ const CAMPOS_PUNTOS  = ['puntuacion', 'puntaje', 'puntos'];
 const CAMPOS_TIPO_ID = ['tipo_de_identificacion', 'tipo_de_documento', 'tipo_id'];
 const CAMPOS_FECHA   = ['digite_la_fecha', 'digita_la_fecha', 'marca_temporal'];
 
+// ── EXTRAER ID DE FORMULARIO DESDE URL ───────────────────────────────────────
+function extractFormId(url) {
+    if (!url) return '';
+    const m = url.match(/\/forms\/d\/([^\/\?]+)/);
+    return m ? m[1] : '';
+}
+
 // ── 1. TRIGGER AUTOMÁTICO ────────────────────────────────────────────────────
 //    Se ejecuta cada vez que alguien envía un formulario.
 //    Instalar: Extensiones → Apps Script → Activadores → onFormSubmit (al enviar formulario)
@@ -30,6 +37,7 @@ function onFormSubmit(e) {
         // Construir objeto de datos con claves normalizadas
         const datos = {
             _hoja:             sheet.getName(),
+            _formId:           extractFormId(sheet.getFormUrl()),
             _timestamp_envio:  new Date().toISOString()
         };
         headers.forEach((h, i) => {
@@ -198,6 +206,7 @@ function sincronizarHistorico() {
     for (const row of lote) {
         const datos = {
             _hoja:            sheet.getName(),
+            _formId:          extractFormId(sheet.getFormUrl()),
             _sync_historico:  true,
             _timestamp_envio: new Date().toISOString()
         };
@@ -373,4 +382,70 @@ function limpiarClave(texto) {
         .replace(/^_|_$/g, '')
         .substring(0, 60)
         .toLowerCase();
+}
+
+// ── ENRIQUECER DOCUMENTOS EXISTENTES CON _formId ─────────────────────────────
+//    Ejecuta varias veces hasta que el log diga "ENRIQUECER COMPLETA".
+//    Necesario solo una vez para datos históricos que no tienen _formId.
+function enriquecerFormIds() {
+    const BATCH = 20;
+
+    // Construir mapa nombre_hoja → formId desde el Spreadsheet actual
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sheetMap = {};
+    ss.getSheets().forEach(function(s) {
+        const url = s.getFormUrl();
+        if (url) sheetMap[s.getName()] = extractFormId(url);
+    });
+    Logger.log('Mapa hojas→formId: ' + JSON.stringify(sheetMap));
+
+    const props      = PropertiesService.getScriptProperties();
+    const pageToken  = props.getProperty('enrich_token') || '';
+
+    const url = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE_PROJECT_ID +
+                '/databases/(default)/documents/' + COLECCION +
+                '?key=' + FIREBASE_API_KEY +
+                '&pageSize=' + BATCH +
+                (pageToken ? '&pageToken=' + encodeURIComponent(pageToken) : '');
+
+    const resp = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    const body = JSON.parse(resp.getContentText());
+
+    if (!body.documents || body.documents.length === 0) {
+        props.deleteProperty('enrich_token');
+        Logger.log('✅ ENRIQUECER COMPLETA — todos los documentos procesados.');
+        return;
+    }
+
+    let patched = 0;
+    for (const docFirestore of body.documents) {
+        const fields     = docFirestore.fields || {};
+        const hoja       = fields._hoja?._value   || fields._hoja?.stringValue  || '';
+        const formIdExistente = fields._formId?.stringValue || '';
+        const formId     = sheetMap[hoja] || '';
+
+        // Solo parchear si tenemos un formId nuevo y el doc no lo tiene ya
+        if (hoja && formId && formId !== formIdExistente) {
+            const docName  = docFirestore.name;
+            const patchUrl = 'https://firestore.googleapis.com/v1/' + docName +
+                             '?key=' + FIREBASE_API_KEY +
+                             '&updateMask.fieldPaths=_formId';
+            UrlFetchApp.fetch(patchUrl, {
+                method:      'PATCH',
+                contentType: 'application/json',
+                payload:     JSON.stringify({ fields: { _formId: { stringValue: formId } } }),
+                muteHttpExceptions: true
+            });
+            patched++;
+            Utilities.sleep(150);
+        }
+    }
+
+    if (body.nextPageToken) {
+        props.setProperty('enrich_token', body.nextPageToken);
+        Logger.log('📦 Lote procesado: ' + patched + ' docs enriquecidos. Ejecuta enriquecerFormIds() de nuevo.');
+    } else {
+        props.deleteProperty('enrich_token');
+        Logger.log('✅ ENRIQUECER COMPLETA. Docs enriquecidos en este lote: ' + patched);
+    }
 }

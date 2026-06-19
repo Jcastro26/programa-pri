@@ -340,8 +340,8 @@
             .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
 
             /* Foro / Chat — scroll táctil obligatorio en móvil */
-            .foro-messages{height:260px;overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;}
-            #inbox-chat-mensajes{height:clamp(220px,40vh,380px) !important;}
+            .foro-messages{height:clamp(240px,42vh,400px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
+            #inbox-chat-mensajes{height:clamp(240px,42vh,400px) !important;overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             .foro-input-row{flex-direction:column;}
             .btn-send{width:100%;}
 
@@ -1057,6 +1057,14 @@
                     <div style="display:flex;flex-direction:column;gap:.3rem;">
                         <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">Buscar (nombre, cédula o email)</label>
                         <input type="text" id="ri-buscar" oninput="renderResultadosICFES()" placeholder="Buscar..." style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;width:200px;">
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:.3rem;">
+                        <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">Ordenar por</label>
+                        <select id="ri-orden" onchange="renderResultadosICFES()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;">
+                            <option value="nombre">A → Z (nombre)</option>
+                            <option value="reciente">Últimos en responder</option>
+                            <option value="forms">Más formularios primero</option>
+                        </select>
                     </div>
                     <button class="btn-add secondary" style="height:2rem;font-size:.65rem;" onclick="cargarResultadosICFES()">🔄 Recargar</button>
                     <button class="btn-add" style="height:2rem;font-size:.65rem;" onclick="exportarResultadosCSV()">📥 Exportar CSV</button>
@@ -3120,12 +3128,16 @@ function _extraerEstudiante(r) {
     const fecha   = _px(r,'marca_temporal','_timestamp_envio','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
     const pts     = _px(r,'Puntuación','puntuacion','PUNTUACION','Puntaje');
     const tipoId  = _px(r,'tipo_de_identificacion','tipo_de_documento','tipo_id','Tipo de Identificación','TIPO DE IDENTIFICACION') || '';
-    const colegio = _px(r,
+    const colegioForm = _px(r,
         'nombre_del_colegio','nombre_colegio','colegio','COLEGIO','Colegio',
         'institucion_educativa','institucion','nombre_institucion',
         'nombre_de_la_institucion','Institución Educativa','INSTITUCION EDUCATIVA',
         '_colegio'
     ) || '';
+    // Si el formulario no tiene colegio, buscarlo en el perfil del usuario (cache cargado en cargarResultadosICFES)
+    const emailKey = (email||'').toLowerCase().trim();
+    const colegioCache = (!colegioForm && emailKey) ? ((window._riColegioCache||{})[emailKey] || '') : '';
+    const colegio = colegioForm || colegioCache;
     return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—', tipoId, colegio };
 }
 
@@ -3171,6 +3183,32 @@ function _areaDeHoja(hoja) {
     return null;
 }
 
+// Mapa lazy formId → área: usa TALLERES_SEED (hardcoded) + _riTalleres (Firestore)
+// Se reconstruye cada vez que se recargan los talleres
+let _fiaMap = null;
+function _getFiaMap() {
+    if (_fiaMap) return _fiaMap;
+    _fiaMap = {};
+    // TALLERES_SEED tiene todos los formIds registrados con su área
+    if (typeof TALLERES_SEED !== 'undefined') {
+        TALLERES_SEED.forEach(t => { if (t.formId) _fiaMap[t.formId] = t.area; });
+    }
+    // Los talleres de Firestore pueden tener formIds adicionales
+    _riTalleres.forEach(t => { if (t.formId && t.area) _fiaMap[t.formId] = t.area; });
+    return _fiaMap;
+}
+
+// Función principal: combina formId (si está en el doc) + nombre de hoja
+function _areaDeRegistro(r) {
+    // Primero intenta por formId guardado en el documento Firestore
+    if (r._formId) {
+        const a = _getFiaMap()[r._formId];
+        if (a) return a;
+    }
+    // Fallback al matching por nombre de hoja (keywords, Firestore talleres, etc.)
+    return _areaDeHoja(r._hoja);
+}
+
 async function cargarResultadosICFES() {
     const tbody = document.getElementById('ri-tbody');
     const stats = document.getElementById('ri-stats');
@@ -3186,15 +3224,39 @@ async function cargarResultadosICFES() {
         ]);
         _riDatos    = snapDiag.docs.map(d => ({ id:d.id, ...d.data() }));
         _riTalleres = snapTall.docs.map(d => ({ id:d.id, ...d.data() }));
+        _fiaMap     = null; // forzar reconstrucción con datos frescos de Firestore
 
         if (!_riDatos.length) {
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin datos. Ejecuta la sincronización del Apps Script.</td></tr>`;
             return;
         }
 
+        // ── Colegio cache: buscar en colección usuarios por email ─────────────
+        window._riColegioCache = {};
+        try {
+            const emailsSet = new Set();
+            _riDatos.forEach(r => {
+                const em = (r.correo_electronico||r.direccion_de_correo_electronico||r.email||'').toLowerCase().trim();
+                if (em) emailsSet.add(em);
+            });
+            const emailsArr = [...emailsSet].slice(0, 100); // max 100 emails únicos
+            for (let i = 0; i < emailsArr.length; i += 10) {
+                const batch = emailsArr.slice(i, i + 10);
+                try {
+                    const uSnap = await getDocs(query(collection(db,'usuarios'), where('correo','in', batch)));
+                    uSnap.forEach(ud => {
+                        const d = ud.data();
+                        const correo = (d.correo||'').toLowerCase().trim();
+                        const col = d.colegio || d.nombre_colegio || d.colegio_nombre || d.institucion || d.institucion_educativa || '';
+                        if (correo && col) window._riColegioCache[correo] = col;
+                    });
+                } catch(_) {}
+            }
+        } catch(_) {}
+
         // Poblar selector de áreas únicas (solo áreas asignadas, sin mostrar "(sin área)")
         const areasSet = new Set();
-        _riDatos.forEach(r => { const a = _areaDeHoja(r._hoja); if(a) areasSet.add(a); });
+        _riDatos.forEach(r => { const a = _areaDeRegistro(r); if(a) areasSet.add(a); });
         const sel = document.getElementById('ri-filtro-hoja');
         sel.innerHTML = '<option value="">Todas las áreas</option>';
         [...areasSet].sort().forEach(a => {
@@ -3203,7 +3265,7 @@ async function cargarResultadosICFES() {
 
         // Poblar selector de colegios únicos
         const colegiosSet = new Set();
-        _riDatos.forEach(r => { const c = _extraerEstudiante(r).colegio; if(c) colegiosSet.add(c); });
+        _riDatos.forEach(r => { const c = _extraerEstudiante(r).colegio; if(c && c.length > 1) colegiosSet.add(c); });
         const selCol = document.getElementById('ri-filtro-colegio');
         selCol.innerHTML = '<option value="">Todos los colegios</option>';
         [...colegiosSet].sort().forEach(c => {
@@ -3212,8 +3274,11 @@ async function cargarResultadosICFES() {
 
         // Poblar mapeo — mostrar TODOS los formularios (sin área Y con área) para poder editarlos
         const todasHojas = [...new Set(_riDatos.map(r=>r._hoja||'').filter(Boolean))];
-        const sinMatch   = todasHojas.filter(h => !_areaDeHoja(h));
-        const conArea    = todasHojas.filter(h =>  _areaDeHoja(h));
+        // Para el mapeo manual: crear un doc representativo por hoja para usar _areaDeRegistro
+        const _hojaRepMap = {};
+        _riDatos.forEach(r => { if(r._hoja && !_hojaRepMap[r._hoja]) _hojaRepMap[r._hoja] = r; });
+        const sinMatch   = todasHojas.filter(h => !_areaDeRegistro(_hojaRepMap[h]||{_hoja:h}));
+        const conArea    = todasHojas.filter(h =>  _areaDeRegistro(_hojaRepMap[h]||{_hoja:h}));
         const mapeoBody  = document.getElementById('ri-mapeo-body');
         if (mapeoBody) {
             const mapeo   = getHojaMapeo();
@@ -3265,7 +3330,7 @@ function renderResultadosICFES() {
     _riDatos.forEach(r => {
         const e = _extraerEstudiante(r);
         const clave = e.cedula !== '—' ? e.cedula : (e.email !== '—' ? e.email : 'anon-'+Math.random());
-        const areaRaw = _areaDeHoja(r._hoja);
+        const areaRaw = _areaDeRegistro(r);
         const area = areaRaw || '(sin área)';
         if (filtroArea && area !== filtroArea) return;
         if (!mapaEst[clave]) mapaEst[clave] = { ...e, formularios:[] };
@@ -3290,8 +3355,27 @@ function renderResultadosICFES() {
             (e.colegio||'').toLowerCase().includes(buscar)
         );
     }
-    // Ordenar por nombre
-    estudiantes.sort((a,b) => (a.nombre==='—'?a.email:a.nombre).localeCompare(b.nombre==='—'?b.email:b.nombre));
+    // Ordenar según selector
+    const orden = document.getElementById('ri-orden')?.value || 'nombre';
+    if (orden === 'reciente') {
+        // Fecha más reciente entre todos los formularios del estudiante
+        const _ultimaFecha = e => {
+            const fechas = e.formularios
+                .map(f => new Date(String(f.fecha).replace(/(\d{2})\/(\d{2})\/(\d{4})/,'$3-$2-$1')))
+                .filter(d => !isNaN(d.getTime()));
+            return fechas.length ? Math.max(...fechas.map(d=>d.getTime())) : 0;
+        };
+        estudiantes.sort((a,b) => _ultimaFecha(b) - _ultimaFecha(a));
+    } else if (orden === 'forms') {
+        estudiantes.sort((a,b) => b.formularios.length - a.formularios.length);
+    } else {
+        // Alfabético por nombre; los sin nombre van al final
+        estudiantes.sort((a,b) => {
+            const na = a.nombre==='—' ? 'zzz'+a.email : a.nombre;
+            const nb = b.nombre==='—' ? 'zzz'+b.email : b.nombre;
+            return na.localeCompare(nb, 'es');
+        });
+    }
 
     // KPIs
     const totalResp = estudiantes.reduce((s,e)=>s+e.formularios.length,0);
@@ -3381,6 +3465,24 @@ function renderResultadosICFES() {
         const promStr = prom!=null ? `${prom}%` : '—';
         const promColor = prom!=null ? _pcolor(prom) : 'rgba(240,244,248,.4)';
 
+        // Inferir total de preguntas por hoja = máximo puntaje visto en todos los datos
+        const _maxPorHoja = {};
+        _riDatos.forEach(rr => {
+            const pts = (rr.Puntuacion||rr.puntuacion||rr.PUNTUACION||rr.Puntaje||'');
+            const pm  = String(pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
+            if (pm) {
+                const tot = parseFloat(pm[2]);
+                if (!isNaN(tot) && rr._hoja) {
+                    if (!_maxPorHoja[rr._hoja] || tot > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = tot;
+                }
+            } else {
+                const n = parseFloat(pts);
+                if (!isNaN(n) && rr._hoja) {
+                    if (!_maxPorHoja[rr._hoja] || n > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = n;
+                }
+            }
+        });
+
         const filasForms = e.formularios
             .sort((a,b)=>{ const da=new Date(String(b.fecha).replace(/[-/]/g,'-')), db=new Date(String(a.fecha).replace(/[-/]/g,'-')); return isNaN(da)||isNaN(db)?0:da-db; })
             .map(f=>{
@@ -3394,11 +3496,11 @@ function renderResultadosICFES() {
                     incorrectas_n = Math.round(total_n - correctas_n);
                     pct_val       = Math.round(correctas_n / total_n * 100);
                 } else if (!isNaN(parseFloat(ptsStr))) {
-                    // Número suelto: mostramos como correctas sin % ni incorrectas
+                    // Número suelto: inferir total del máximo visto para esa hoja
                     correctas_n   = parseFloat(ptsStr);
-                    total_n       = null;
-                    incorrectas_n = null;
-                    pct_val       = null;
+                    total_n       = _maxPorHoja[f.hoja] || null;
+                    incorrectas_n = (total_n != null && total_n > 0) ? Math.max(0, Math.round(total_n - correctas_n)) : null;
+                    pct_val       = (total_n != null && total_n > 0) ? Math.round(correctas_n / total_n * 100) : null;
                 } else {
                     correctas_n = total_n = incorrectas_n = pct_val = null;
                 }
@@ -3478,7 +3580,7 @@ window.exportarResultadosCSV = function() {
     csv += 'Nombre,Tipo ID,Cédula/TI,Email,Formulario/Hoja,Área,Puntaje,Fecha\n';
     _riDatos.forEach(r => {
         const e    = _extraerEstudiante(r);
-        const area = _areaDeHoja(r._hoja) || '(sin área)';
+        const area = _areaDeRegistro(r) || '(sin área)';
         const hoja = (r._hoja || '').replace(/"/g,'""');
         csv += `"${e.nombre}","${e.tipoId}","${e.cedula}","${e.email}","${hoja}","${area}","${e.pts}","${String(e.fecha).slice(0,10)}"\n`;
     });
