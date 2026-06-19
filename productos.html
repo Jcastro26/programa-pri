@@ -6,6 +6,8 @@
     <title>Tienda de Recompensas | PROGRAMA-PRI</title>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- EmailJS (notificaciones de compra) -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         :root {
             --azul-deep: #021a36; --azul-panel: #062040; --azul-card: #041830;
@@ -185,6 +187,52 @@
             .grid-productos { grid-template-columns: 1fr; }
             .prod-card-libretas { grid-column: span 1 !important; }
         }
+
+        /* ── WOMPI PAYMENTS ─────────────────────────────────────────────── */
+        .precio-cop { font-family:'Montserrat',sans-serif; font-size:.68rem; font-weight:700; color:rgba(34,197,94,.85); letter-spacing:.5px; margin-top:.15rem; }
+        .btn-comprar { font-family:'Montserrat',sans-serif; font-size:.58rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; background:linear-gradient(135deg,#0ea5e9,#22c55e); color:#fff; border:none; padding:.6rem 1rem; cursor:pointer; transition:all .2s ease; white-space:nowrap; border-radius:.65rem; }
+        .btn-comprar:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(14,165,233,.35); }
+        .prod-footer-btns { display:flex; flex-direction:column; align-items:flex-end; gap:.35rem; }
+        /* Wompi modal */
+        .wompi-form-field { display:flex; flex-direction:column; gap:.3rem; margin-bottom:.85rem; }
+        .wompi-form-field label { font-family:'Montserrat',sans-serif; font-size:.52rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.35); }
+        .wompi-form-field input { background:rgba(2,26,54,.8); border:1px solid rgba(255,255,255,.1); color:#f0f4f8; font-family:'Lora',serif; font-size:.85rem; padding:.6rem .9rem; outline:none; transition:border-color .2s; width:100%; box-sizing:border-box; }
+        .wompi-form-field input:focus { border-color:var(--teal); }
+        .wompi-product-preview { background:rgba(14,165,233,.05); border:1px solid rgba(14,165,233,.2); padding:1rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; gap:.75rem; flex-wrap:wrap; }
+        .wompi-prod-name { font-family:'Montserrat',sans-serif; font-size:.8rem; font-weight:900; color:var(--blanco); flex:1; }
+        .wompi-prod-price { font-family:'Montserrat',sans-serif; font-size:1.2rem; font-weight:900; color:var(--teal); white-space:nowrap; }
+        .wompi-methods { display:flex; align-items:center; gap:.4rem; margin-top:.85rem; flex-wrap:wrap; }
+        .wompi-methods-label { font-family:'Montserrat',sans-serif; font-size:.5rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,.25); margin-right:.25rem; }
+        .wompi-method-badge { font-family:'Montserrat',sans-serif; font-size:.5rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); color:rgba(255,255,255,.5); padding:.22rem .5rem; }
+        .btn-wompi-pay { width:100%; padding:1rem; font-family:'Montserrat',sans-serif; font-size:.75rem; font-weight:900; letter-spacing:2px; text-transform:uppercase; background:linear-gradient(135deg,#0ea5e9,#22c55e); color:#fff; border:none; cursor:pointer; margin-top:1.25rem; transition:all .2s; }
+        .btn-wompi-pay:hover { box-shadow:0 6px 24px rgba(14,165,233,.4); transform:translateY(-1px); }
+        .btn-wompi-pay:disabled { background:rgba(255,255,255,.08); color:rgba(255,255,255,.3); cursor:not-allowed; transform:none; box-shadow:none; }
+        .wompi-disclaimer { font-family:'Montserrat',sans-serif; font-size:.52rem; color:rgba(255,255,255,.22); text-align:center; margin-top:.65rem; line-height:1.6; }
+        /* Éxito pago */
+        .pago-exito-row { display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid rgba(255,255,255,.05); font-size:.82rem; }
+        .pago-exito-row .pev-label { font-family:'Montserrat',sans-serif; font-size:.55rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,.3); }
+        .pago-exito-row .pev-val { color:var(--blanco); font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:700; text-align:right; max-width:65%; word-break:break-all; }
+        .pago-exito-ref-box { font-family:'Montserrat',sans-serif; font-size:.65rem; background:rgba(34,197,94,.07); border:1px solid rgba(34,197,94,.2); color:rgba(34,197,94,.85); padding:.55rem .85rem; margin:.85rem 0; letter-spacing:1px; text-align:center; word-break:break-all; }
+        /* Admin tabs */
+        .admin-tabs { display:flex; gap:.5rem; margin-bottom:1.25rem; flex-wrap:wrap; }
+        .admin-tab { font-family:'Montserrat',sans-serif; font-size:.6rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:rgba(255,255,255,.4); padding:.5rem 1rem; cursor:pointer; transition:all .2s; }
+        .admin-tab.activo { background:rgba(255,94,0,.1); border-color:var(--naranja); color:var(--naranja); }
+        /* Orden card */
+        .orden-card { background:rgba(14,165,233,.04); border:1px solid rgba(14,165,233,.12); padding:.85rem 1rem; margin-bottom:.5rem; }
+        .orden-ref { font-family:'Montserrat',sans-serif; font-size:.58rem; color:var(--teal); letter-spacing:1px; margin-bottom:.25rem; }
+        .orden-nombre { font-family:'Montserrat',sans-serif; font-size:.78rem; font-weight:900; color:var(--blanco); }
+        .orden-meta { font-family:'Montserrat',sans-serif; font-size:.6rem; color:rgba(255,255,255,.33); margin-top:.25rem; }
+        .orden-estado { display:inline-block; font-family:'Montserrat',sans-serif; font-size:.5rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; padding:.18rem .5rem; margin-left:.5rem; vertical-align:middle; }
+        .estado-aprobado { background:rgba(34,197,94,.1); color:var(--verde); }
+        .estado-pendiente { background:rgba(255,215,0,.08); color:var(--oro); }
+        .estado-rechazado { background:rgba(239,68,68,.1); color:#fca5a5; }
+        .admin-prod-field select { background:rgba(2,26,54,.8); border:1px solid rgba(255,255,255,.1); color:#f0f4f8; font-family:'Lora',serif; font-size:.85rem; padding:.6rem .9rem; outline:none; width:100%; }
+        @media (max-width:640px) {
+            .wompi-product-preview { flex-direction:column; align-items:flex-start; }
+            .modal-box { padding:1.5rem; }
+            .prod-footer-btns { align-items:stretch; }
+            .btn-comprar { text-align:center; }
+        }
     </style>
 </head>
 <body>
@@ -229,23 +277,46 @@
         <p id="hero-sub">Canjea los puntos acumulados en pre-tests, talleres y capacitaciones por material académico, herramientas y premios reales.</p>
     </div>
 
-    <!-- PANEL ADMIN: Agregar producto (visible solo para admin) -->
+    <!-- PANEL ADMIN: Agregar producto + Órdenes (visible solo para admin) -->
     <div id="admin-prod-panel" class="admin-prod-panel" style="display:none;">
-        <h3>➕ Agregar Nuevo Producto</h3>
-        <div class="admin-prod-grid">
-            <div class="admin-prod-field"><label>Emoji</label><input type="text" id="ap-emoji" placeholder="🎁" maxlength="4"></div>
-            <div class="admin-prod-field"><label>Nombre del Producto</label><input type="text" id="ap-nombre" placeholder="Ej: Kit Escolar Tumaco"></div>
-            <div class="admin-prod-field"><label>Puntos</label><input type="number" id="ap-pts" placeholder="500" min="1"></div>
+        <div class="admin-tabs">
+            <button class="admin-tab activo" id="admin-tab-productos" onclick="verTabAdmin('productos')">➕ Agregar Producto</button>
+            <button class="admin-tab" id="admin-tab-ordenes" onclick="verTabAdmin('ordenes')">🧾 Órdenes de Pago</button>
         </div>
-        <div class="admin-prod-field"><label>Badge / Etiqueta</label><input type="text" id="ap-badge" placeholder="Ej: Premio Principal"></div>
-        <div class="admin-prod-field"><label>Descripción</label><textarea id="ap-desc" rows="2" placeholder="Descripción para los estudiantes…"></textarea></div>
-        <div class="admin-prod-field">
-            <label>Imagen del Producto <span style="font-weight:400;opacity:.5;">(opcional, max ~300 KB)</span></label>
-            <input type="file" id="ap-img" accept="image/*" onchange="previsualizarImgProductos(this)" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#e8f0f8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:4px;padding:.4rem;width:100%;cursor:pointer;">
-            <img id="ap-img-preview" style="display:none;width:90px;height:90px;object-fit:cover;border-radius:6px;margin-top:.5rem;border:1px solid rgba(255,255,255,0.12);" alt="Preview">
+
+        <!-- Tab: Agregar Producto -->
+        <div class="admin-panel-seccion" id="admin-sec-productos">
+            <h3 style="font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(255,94,0,0.9);margin-bottom:1rem;">➕ Nuevo Producto</h3>
+            <div class="admin-prod-grid">
+                <div class="admin-prod-field"><label>Emoji</label><input type="text" id="ap-emoji" placeholder="🎁" maxlength="4"></div>
+                <div class="admin-prod-field"><label>Nombre del Producto</label><input type="text" id="ap-nombre" placeholder="Ej: Kit Escolar Tumaco"></div>
+                <div class="admin-prod-field"><label>Puntos (Canje)</label><input type="number" id="ap-pts" placeholder="500" min="1"></div>
+            </div>
+            <div class="admin-prod-field">
+                <label>Precio en Pesos COP <span style="font-weight:400;opacity:.5;">(dejar en 0 si solo se canjea con puntos)</span></label>
+                <input type="number" id="ap-precio-cop" placeholder="Ej: 35000" min="0" style="max-width:200px;">
+            </div>
+            <div class="admin-prod-field"><label>Badge / Etiqueta</label><input type="text" id="ap-badge" placeholder="Ej: Premio Principal"></div>
+            <div class="admin-prod-field"><label>Descripción</label><textarea id="ap-desc" rows="2" placeholder="Descripción para los estudiantes…"></textarea></div>
+            <div class="admin-prod-field">
+                <label>Imagen del Producto <span style="font-weight:400;opacity:.5;">(opcional, max ~300 KB)</span></label>
+                <input type="file" id="ap-img" accept="image/*" onchange="previsualizarImgProductos(this)" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#e8f0f8;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:4px;padding:.4rem;width:100%;cursor:pointer;">
+                <img id="ap-img-preview" style="display:none;width:90px;height:90px;object-fit:cover;border-radius:6px;margin-top:.5rem;border:1px solid rgba(255,255,255,0.12);" alt="Preview">
+            </div>
+            <button class="btn-admin-save" onclick="agregarProductoDesdeProductosHtml()">💾 Guardar Producto</button>
+            <span id="ap-status" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#86efac;margin-left:1rem;display:none;"></span>
         </div>
-        <button class="btn-admin-save" onclick="agregarProductoDesdeProductosHtml()">💾 Guardar Producto</button>
-        <span id="ap-status" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:#86efac;margin-left:1rem;display:none;"></span>
+
+        <!-- Tab: Órdenes de Pago -->
+        <div class="admin-panel-seccion" id="admin-sec-ordenes" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;">
+                <h3 style="font-family:'Montserrat',sans-serif;font-size:.75rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:rgba(56,189,248,0.9);margin:0;">🧾 Órdenes de Pago</h3>
+                <button class="btn-admin-save" style="margin-top:0;" onclick="cargarOrdenesAdmin()">↻ Actualizar</button>
+            </div>
+            <div id="ordenes-lista">
+                <p style="color:rgba(255,255,255,.3);font-family:'Montserrat',sans-serif;font-size:.7rem;">Haz clic en "Actualizar" para cargar las órdenes.</p>
+            </div>
+        </div>
     </div>
 
     <!-- PRODUCTOS -->
@@ -295,6 +366,85 @@
     </div>
 </div>
 
+<!-- MODAL PAGO WOMPI (formulario datos del comprador) -->
+<div class="modal-overlay" id="modal-wompi">
+    <div class="modal-box" style="max-width:480px;">
+        <button class="modal-close-btn" onclick="cerrarModalWompi()">✕</button>
+        <div class="m-icon">💳</div>
+        <h3>Pago Seguro</h3>
+
+        <!-- Preview del producto -->
+        <div class="wompi-product-preview">
+            <div class="wompi-prod-name" id="wompi-prod-nombre">—</div>
+            <div class="wompi-prod-price" id="wompi-prod-precio">—</div>
+        </div>
+
+        <!-- Datos del comprador -->
+        <div class="wompi-form-field">
+            <label>Nombre completo *</label>
+            <input type="text" id="wompi-nombre" placeholder="Tu nombre completo" autocomplete="name">
+        </div>
+        <div class="wompi-form-field">
+            <label>Correo electrónico * <span style="opacity:.5;">(recibirás confirmación aquí)</span></label>
+            <input type="email" id="wompi-email" placeholder="tucorreo@ejemplo.com" autocomplete="email">
+        </div>
+        <div class="wompi-form-field">
+            <label>Teléfono <span style="opacity:.5;">(para Nequi o PSE)</span></label>
+            <input type="tel" id="wompi-tel" placeholder="3001234567" autocomplete="tel">
+        </div>
+
+        <!-- Métodos aceptados -->
+        <div class="wompi-methods">
+            <span class="wompi-methods-label">Acepta:</span>
+            <span class="wompi-method-badge">💳 Débito</span>
+            <span class="wompi-method-badge">💳 Crédito</span>
+            <span class="wompi-method-badge">📱 Nequi</span>
+            <span class="wompi-method-badge">🏦 PSE</span>
+            <span class="wompi-method-badge">🏦 Bancolombia</span>
+        </div>
+
+        <button class="btn-wompi-pay" id="btn-wompi-pay" onclick="procesarPagoWompi()">
+            🔒 Ir al Pago Seguro →
+        </button>
+        <p class="wompi-disclaimer">Serás redirigido al portal de pagos certificado de Wompi (Bancolombia). Tu información financiera nunca pasa por nuestros servidores. Pago procesado con cifrado SSL.</p>
+    </div>
+</div>
+
+<!-- MODAL PAGO EXITOSO -->
+<div class="modal-overlay" id="modal-pago-exito">
+    <div class="modal-box" style="max-width:460px;">
+        <button class="modal-close-btn" onclick="cerrarModalPagoExito()">✕</button>
+        <div class="m-icon">🎉</div>
+        <h3>¡Pago Aprobado!</h3>
+        <p style="margin-bottom:1rem;">Tu compra fue procesada exitosamente. Recibirás un correo de confirmación con los detalles del pedido.</p>
+
+        <div class="pago-exito-row">
+            <span class="pev-label">Producto</span>
+            <span class="pev-val" id="exito-prod-nombre">—</span>
+        </div>
+        <div class="pago-exito-row">
+            <span class="pev-label">Total pagado</span>
+            <span class="pev-val" id="exito-precio" style="color:var(--teal);">—</span>
+        </div>
+        <div class="pago-exito-row">
+            <span class="pev-label">Comprador</span>
+            <span class="pev-val" id="exito-comprador">—</span>
+        </div>
+        <div class="pago-exito-row" style="border-bottom:none;">
+            <span class="pev-label">Confirmación enviada a</span>
+            <span class="pev-val" id="exito-email" style="color:var(--verde);">—</span>
+        </div>
+
+        <div class="pago-exito-ref-box">
+            🔢 Orden: <strong id="exito-order-id">—</strong> &nbsp;·&nbsp; 📋 Ref: <strong id="exito-ref">—</strong>
+        </div>
+
+        <p style="font-size:.75rem;color:rgba(255,255,255,.4);margin-bottom:1.25rem;">Un coordinador del Programa PRI se contactará contigo en las próximas horas hábiles para coordinar la entrega.</p>
+
+        <button class="btn-confirm" onclick="cerrarModalPagoExito()">¡Perfecto, gracias!</button>
+    </div>
+</div>
+
 <footer class="footer-industrial">
     <div class="footer-container">
         <div class="footer-brand-panel">
@@ -328,6 +478,36 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIGURACIÓN WOMPI + EMAILJS
+// ⚠️ REEMPLAZA ESTAS CLAVES CON TUS VALORES REALES ANTES DE PUBLICAR
+// ─────────────────────────────────────────────────────────────────────────────
+// Wompi: crea cuenta en https://wompi.com → Dashboard → Desarrolladores
+// • LLAVE PÚBLICA TEST: empieza con "pub_test_"
+// • LLAVE PÚBLICA PROD: empieza con "pub_prod_"  ← usar en producción
+// • LLAVE INTEGRIDAD: en Dashboard → Desarrolladores → Eventos → Llave de integridad
+const WOMPI_PUBLIC_KEY    = 'pub_test_XldUHkFB8BQhlJUKrKv5iyScP0JZ5QaM';
+const WOMPI_INTEGRITY_KEY = 'test_integrity_REEMPLAZAR';
+const WOMPI_CHECKOUT_URL  = 'https://checkout.wompi.co/p/';
+// EmailJS: crea cuenta en https://www.emailjs.com → My Account
+// • SERVICE_ID: pestaña "Email Services" → tu servicio Gmail/Outlook
+// • TEMPLATE_ID: pestaña "Email Templates" → tu plantilla de confirmación
+// • PUBLIC_KEY: pestaña "Account" → "Public Key"
+// Variables de plantilla recomendadas: {{to_name}}, {{to_email}}, {{producto}},
+//   {{precio}}, {{referencia}}, {{fecha}}
+const EMAILJS_SERVICE_ID        = 'service_REEMPLAZAR';
+const EMAILJS_TEMPLATE_ID       = 'template_REEMPLAZAR';     // plantilla para el comprador
+const EMAILJS_TEMPLATE_ADMIN_ID = 'template_REEMPLAZAR_ADMIN'; // plantilla para notificar al admin
+const EMAILJS_PUBLIC_KEY        = 'REEMPLAZAR_CON_TU_PUBLIC_KEY';
+// Correo del administrador que recibirá la notificación de cada venta
+const ADMIN_EMAIL               = 'programapri_bog@unal.edu.co';
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Inicializar EmailJS
+if (window.emailjs) {
+    try { window.emailjs.init(EMAILJS_PUBLIC_KEY); } catch(_) {}
+}
+
 const firebaseConfig = {
     apiKey: "AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30",
     authDomain: "programa-pri-2d395.firebaseapp.com",
@@ -343,6 +523,7 @@ const auth = getAuth(app);
 
 const sesionRaw = localStorage.getItem('usuario_sesion_activa');
 let usuario = sesionRaw ? JSON.parse(sesionRaw) : null;
+let _productosMap = {}; // mapa id → producto para pagos
 
 // ── CARGAR PRODUCTOS DESDE FIRESTORE ─────────────────────────
 async function cargarProductos() {
@@ -356,7 +537,12 @@ async function cargarProductos() {
             return;
         }
         const prods = [];
-        snap.forEach(d => prods.push({ id: d.id, ...d.data() }));
+        _productosMap = {};
+        snap.forEach(d => {
+            const pd = { id: d.id, ...d.data() };
+            prods.push(pd);
+            _productosMap[d.id] = pd;
+        });
         prods.sort((a, b) => (a.orden || 99) - (b.orden || 99));
 
         const renderCard = p => {
@@ -366,8 +552,12 @@ async function cargarProductos() {
                 <div class="prod-no-disponible">
                     <div class="prod-nd-stamp">NO DISPONIBLE</div>
                 </div>` : '';
-            const btnHtml = disp
+            const btnCanjearHtml = disp
                 ? `<button class="btn-canjear" data-nombre="${p.nombre}" data-costo="${p.pts}">Canjear</button>`
+                : '';
+            const tienePreCOP = p.precioCOP && p.precioCOP > 0 && disp;
+            const btnComprarHtml = tienePreCOP
+                ? `<button class="btn-comprar" onclick="iniciarPago('${p.id}')">💳 ${formatCOP(p.precioCOP)}</button>`
                 : '';
             const imgHtml = p.imagen
                 ? `<img src="${p.imagen}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" loading="lazy">`
@@ -382,8 +572,14 @@ async function cargarProductos() {
                         <p>${p.descripcion || ''}</p>
                     </div>
                     <div class="prod-footer">
-                        <div class="prod-price">${p.pts} <sup>PTS</sup></div>
-                        ${btnHtml}
+                        <div>
+                            <div class="prod-price">${p.pts} <sup>PTS</sup></div>
+                            ${tienePreCOP ? `<div class="precio-cop">o ${formatCOP(p.precioCOP)}</div>` : ''}
+                        </div>
+                        <div class="prod-footer-btns">
+                            ${btnCanjearHtml}
+                            ${btnComprarHtml}
+                        </div>
                     </div>
                 </div>`;
         };
@@ -406,9 +602,15 @@ async function cargarProductos() {
                         <span class="lib-label">Atardecer</span>
                     </div>
                 </div>
-                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
-                    <div class="prod-price">200 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Libreta Corporativa PRI" data-costo="200">Canjear puntos</button>
+                <div class="prod-footer" style="justify-content:center;gap:.75rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div>
+                        <div class="prod-price">200 <sup>PTS</sup></div>
+                        <div class="precio-cop">o $25.000 COP</div>
+                    </div>
+                    <div class="prod-footer-btns">
+                        <button class="btn-canjear" data-nombre="Libreta Corporativa PRI" data-costo="200">Canjear puntos</button>
+                        <button class="btn-comprar" onclick="iniciarPago('__libreta__')">💳 Comprar $25.000</button>
+                    </div>
                     <a href="tienda.html" class="btn-tienda-libreta">
                         <span class="btn-pulse-ring"></span>
                         🛒 Ver en Tienda PRI
@@ -434,9 +636,15 @@ async function cargarProductos() {
                         <span class="lib-label">Diseño 02</span>
                     </div>
                 </div>
-                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
-                    <div class="prod-price">250 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Taza Oficial PRI" data-costo="250">Canjear puntos</button>
+                <div class="prod-footer" style="justify-content:center;gap:.75rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div>
+                        <div class="prod-price">250 <sup>PTS</sup></div>
+                        <div class="precio-cop">o $35.000 COP</div>
+                    </div>
+                    <div class="prod-footer-btns">
+                        <button class="btn-canjear" data-nombre="Taza Oficial PRI" data-costo="250">Canjear puntos</button>
+                        <button class="btn-comprar" onclick="iniciarPago('__taza__')">💳 Comprar $35.000</button>
+                    </div>
                     <a href="tienda.html" class="btn-tienda-libreta">
                         <span class="btn-pulse-ring"></span>
                         ☕ Ver en Tienda PRI
@@ -462,9 +670,15 @@ async function cargarProductos() {
                         <span class="lib-label">Diseño 02</span>
                     </div>
                 </div>
-                <div class="prod-footer" style="justify-content:center;gap:1rem;flex-wrap:wrap;padding-top:0.5rem">
-                    <div class="prod-price">300 <sup>PTS</sup></div>
-                    <button class="btn-canjear" data-nombre="Totebag Oficial PRI" data-costo="300">Canjear puntos</button>
+                <div class="prod-footer" style="justify-content:center;gap:.75rem;flex-wrap:wrap;padding-top:0.5rem">
+                    <div>
+                        <div class="prod-price">300 <sup>PTS</sup></div>
+                        <div class="precio-cop">o $40.000 COP</div>
+                    </div>
+                    <div class="prod-footer-btns">
+                        <button class="btn-canjear" data-nombre="Totebag Oficial PRI" data-costo="300">Canjear puntos</button>
+                        <button class="btn-comprar" onclick="iniciarPago('__totebag__')">💳 Comprar $40.000</button>
+                    </div>
                     <a href="tienda.html" class="btn-tienda-libreta">
                         <span class="btn-pulse-ring"></span>
                         🛍️ Ver en Tienda PRI
@@ -509,6 +723,7 @@ const esAdmin = usuario?.uid === 'admin-jcastrogo' || usuario?.rol === 'admin';
 if (esAdmin) document.getElementById('admin-prod-panel').style.display = 'block';
 
 signInAnonymously(auth).catch(() => {}).finally(() => { cargarProductos().then(() => {
+    detectarRedirectWompi(); // Procesar retorno de Wompi si aplica
     if (!usuario) {
         // ── MODO VISITANTE ──────────────────────────────────────────
         document.getElementById('banner-visitante').style.display = 'flex';
@@ -574,6 +789,8 @@ window.agregarProductoDesdeProductosHtml = async function() {
     const status = document.getElementById('ap-status');
     status.textContent = 'Guardando…'; status.style.display = 'inline';
 
+    const precioCOP = parseInt(document.getElementById('ap-precio-cop').value) || 0;
+
     try {
         await addDoc(collection(db, 'productos'), {
             emoji, nombre, pts, badge,
@@ -581,10 +798,11 @@ window.agregarProductoDesdeProductosHtml = async function() {
             descripcion: desc,
             disponible: true,
             imagen,
+            precioCOP,
             orden: 99
         });
         status.textContent = '✅ Producto agregado';
-        ['ap-emoji','ap-nombre','ap-pts','ap-badge','ap-desc'].forEach(id => {
+        ['ap-emoji','ap-nombre','ap-pts','ap-precio-cop','ap-badge','ap-desc'].forEach(id => {
             document.getElementById(id).value = '';
         });
         imgInput.value = '';
@@ -746,6 +964,350 @@ document.getElementById('modal-confirm').addEventListener('click', function(e) {
 document.getElementById('modal-info').addEventListener('click', function(e) {
     if (e.target === this) cerrarModalInfo();
 });
+document.getElementById('modal-wompi').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModalWompi();
+});
+document.getElementById('modal-pago-exito').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModalPagoExito();
+});
+
+// ── FORMATO PESOS COLOMBIANOS ─────────────────────────────────────────────
+function formatCOP(n) {
+    return '$' + Number(n).toLocaleString('es-CO') + ' COP';
+}
+
+// ── ADMIN: TABS ───────────────────────────────────────────────────────────
+window.verTabAdmin = function(tab) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('activo'));
+    document.querySelectorAll('.admin-panel-seccion').forEach(s => s.style.display = 'none');
+    document.getElementById(`admin-tab-${tab}`).classList.add('activo');
+    document.getElementById(`admin-sec-${tab}`).style.display = 'block';
+    if (tab === 'ordenes') cargarOrdenesAdmin();
+};
+
+// ── WOMPI: GENERAR FIRMA SHA-256 ──────────────────────────────────────────
+async function generarFirmaWompi(referencia, montoCentavos, moneda) {
+    const cadena = `${referencia}${montoCentavos}${moneda}${WOMPI_INTEGRITY_KEY}`;
+    const encoder = new TextEncoder();
+    const data = encoder.encode(cadena);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+// ── WOMPI: ABRIR MODAL DE PAGO ────────────────────────────────────────────
+let _prodActualPago = null;
+
+window.iniciarPago = function(prodId) {
+    const prod = _productosMap[prodId];
+    if (!prod) return;
+    if (!prod.precioCOP || prod.precioCOP <= 0) return;
+
+    _prodActualPago = prod;
+    document.getElementById('wompi-prod-nombre').textContent = prod.nombre;
+    document.getElementById('wompi-prod-precio').textContent = formatCOP(prod.precioCOP);
+
+    // Pre-llenar con datos del usuario si está logueado
+    if (usuario) {
+        document.getElementById('wompi-nombre').value = usuario.nombre || '';
+        document.getElementById('wompi-email').value = usuario.correo || '';
+        document.getElementById('wompi-tel').value = usuario.contacto || usuario.tel || '';
+    } else {
+        document.getElementById('wompi-nombre').value = '';
+        document.getElementById('wompi-email').value = '';
+        document.getElementById('wompi-tel').value = '';
+    }
+
+    const btn = document.getElementById('btn-wompi-pay');
+    btn.disabled = false;
+    btn.textContent = '🔒 Ir al Pago Seguro →';
+
+    document.getElementById('modal-wompi').classList.add('open');
+};
+
+window.cerrarModalWompi = function() {
+    document.getElementById('modal-wompi').classList.remove('open');
+    _prodActualPago = null;
+};
+
+// ── WOMPI: PROCESAR → REDIRIGIR AL CHECKOUT ──────────────────────────────
+window.procesarPagoWompi = async function() {
+    const nombre = document.getElementById('wompi-nombre').value.trim();
+    const email  = document.getElementById('wompi-email').value.trim();
+    const tel    = document.getElementById('wompi-tel').value.trim();
+
+    if (!nombre) { toast('Nombre requerido', 'Ingresa tu nombre completo.', '⚠️', 'warn'); return; }
+    if (!email || !email.includes('@')) { toast('Correo inválido', 'Ingresa un correo electrónico válido.', '⚠️', 'warn'); return; }
+
+    const prod = _prodActualPago;
+    if (!prod) return;
+
+    const btn = document.getElementById('btn-wompi-pay');
+    btn.disabled = true;
+    btn.textContent = '⏳ Preparando pago seguro…';
+
+    try {
+        const ts = Date.now();
+        const prodIdCorto = prod.id.length > 6 ? prod.id.slice(-6) : prod.id;
+        const referencia  = `PRI-${prodIdCorto}-${ts}`;
+        const montoCentavos = Math.round(prod.precioCOP * 100);
+
+        // ID legible para el admin (ej: ORD-20240618-0047)
+        const fecha   = new Date();
+        const yyyymmdd = `${fecha.getFullYear()}${String(fecha.getMonth()+1).padStart(2,'0')}${String(fecha.getDate()).padStart(2,'0')}`;
+        const orderId = `ORD-${yyyymmdd}-${String(ts).slice(-4)}`;
+
+        // Guardar orden pendiente en Firestore ANTES de redirigir
+        await addDoc(collection(db, 'ordenes_tienda'), {
+            orderId,
+            referencia,
+            productoId: prod.id,
+            productoNombre: prod.nombre,
+            precioCOP: prod.precioCOP,
+            montoCentavos,
+            comprador: { nombre, email, tel: tel || '' },
+            uid: usuario?.uid || null,
+            estado: 'pendiente',
+            creadoEn: serverTimestamp()
+        });
+
+        // Firma de integridad (SHA-256 client-side — previene manipulación del monto)
+        const firma = await generarFirmaWompi(referencia, montoCentavos, 'COP');
+
+        // URL de retorno (esta misma página sin parámetros)
+        const urlBase = window.location.href.split('?')[0];
+
+        // Construir URL del checkout Wompi
+        const params = new URLSearchParams({
+            'public-key'              : WOMPI_PUBLIC_KEY,
+            'currency'                : 'COP',
+            'amount-in-cents'         : montoCentavos,
+            'reference'               : referencia,
+            'signature:integrity'     : firma,
+            'redirect-url'            : urlBase,
+            'customer-data:email'     : email,
+            'customer-data:full-name' : nombre,
+        });
+        if (tel) params.set('customer-data:phone-number', tel);
+
+        // Redirigir al portal de pagos de Wompi
+        window.location.href = `${WOMPI_CHECKOUT_URL}?${params.toString()}`;
+
+    } catch(err) {
+        console.error('Error preparando pago:', err);
+        toast('Error al preparar el pago', 'Intenta de nuevo. Si persiste, contacta al equipo PRI.', '❌', 'error');
+        btn.disabled = false;
+        btn.textContent = '🔒 Ir al Pago Seguro →';
+    }
+};
+
+// ── WOMPI: DETECTAR RETORNO DEL CHECKOUT ─────────────────────────────────
+// Wompi redirige de vuelta con: ?id=TX_ID&status=APPROVED&reference=REF
+async function detectarRedirectWompi() {
+    const params = new URLSearchParams(window.location.search);
+    const transaccionId = params.get('id');
+    const status        = params.get('status');
+    const referencia    = params.get('reference');
+
+    if (!transaccionId || !status || !referencia) return; // No es un redirect de Wompi
+
+    // Limpiar la URL inmediatamente para evitar reinicios dobles
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    if (status === 'APPROVED') {
+        try {
+            // Buscar la orden por referencia
+            const q = query(collection(db, 'ordenes_tienda'), where('referencia', '==', referencia));
+            const snap = await getDocs(q);
+
+            if (!snap.empty) {
+                const ordenDoc = snap.docs[0];
+                const orden    = { id: ordenDoc.id, ...ordenDoc.data() };
+
+                // Actualizar estado en Firestore
+                await updateDoc(doc(db, 'ordenes_tienda', ordenDoc.id), {
+                    estado        : 'aprobado',
+                    transaccionId : transaccionId,
+                    fechaPago     : serverTimestamp()
+                });
+
+                // Enviar email de confirmación al comprador
+                enviarEmailCompra({
+                    ...orden,
+                    transaccionId,
+                    email  : orden.comprador?.email  || '',
+                    nombre : orden.comprador?.nombre || ''
+                });
+
+                // Notificar al administrador
+                enviarEmailAdmin({
+                    ...orden,
+                    transaccionId
+                });
+
+                // Mostrar modal de éxito
+                mostrarExitoPago(orden, transaccionId);
+            } else {
+                // Orden no encontrada, igual mostrar mensaje de éxito
+                toast('¡Pago aprobado! 🎉', 'Recibirás un correo de confirmación.', '✅', 'success');
+            }
+        } catch(err) {
+            console.error('Error confirmando pago:', err);
+            toast('¡Pago aprobado! 🎉', 'Tu pago fue procesado. Recibirás confirmación por correo.', '✅', 'success');
+        }
+
+    } else if (status === 'DECLINED' || status === 'ERROR') {
+        // Actualizar estado a rechazado
+        try {
+            const q = query(collection(db, 'ordenes_tienda'), where('referencia', '==', referencia));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+                await updateDoc(doc(db, 'ordenes_tienda', snap.docs[0].id), {
+                    estado           : 'rechazado',
+                    transaccionId    : transaccionId,
+                    fechaActualizacion: serverTimestamp()
+                });
+            }
+        } catch(_) {}
+        toast('Pago rechazado', 'El pago no fue procesado. Puedes intentarlo de nuevo.', '❌', 'error');
+
+    } else if (status === 'PENDING') {
+        toast('Pago pendiente', 'Tu pago está siendo revisado por el banco. Te notificaremos por correo.', '⏳', 'info');
+    }
+}
+
+// ── WOMPI: MODAL DE ÉXITO ─────────────────────────────────────────────────
+function mostrarExitoPago(orden, transaccionId) {
+    document.getElementById('exito-prod-nombre').textContent  = orden.productoNombre || '—';
+    document.getElementById('exito-comprador').textContent    = orden.comprador?.nombre || '—';
+    document.getElementById('exito-email').textContent        = orden.comprador?.email || '—';
+    document.getElementById('exito-ref').textContent          = orden.referencia || '—';
+    document.getElementById('exito-precio').textContent       = formatCOP(orden.precioCOP || 0);
+    document.getElementById('exito-order-id').textContent     = orden.orderId || '—';
+    document.getElementById('modal-pago-exito').classList.add('open');
+}
+
+window.cerrarModalPagoExito = function() {
+    document.getElementById('modal-pago-exito').classList.remove('open');
+};
+
+// ── EMAILJS: CONFIRMAR COMPRA POR CORREO ─────────────────────────────────
+// Plantilla EmailJS sugerida — crea en https://www.emailjs.com/
+// Variables que puedes usar en la plantilla:
+//   {{to_name}}       Nombre del comprador
+//   {{to_email}}      Correo (EmailJS lo usa para enviar)
+//   {{producto}}      Nombre del producto comprado
+//   {{precio}}        Precio en COP (ej: $35.000 COP)
+//   {{referencia}}    Ref de pago Wompi
+//   {{transaccion}}   ID de transacción Wompi
+//   {{fecha}}         Fecha de compra
+//   {{programa}}      "Programa PRI - Universidad Nacional de Colombia"
+async function enviarEmailCompra(orden) {
+    if (!window.emailjs) { console.warn('EmailJS no está cargado.'); return; }
+    if (!orden.email) return;
+    try {
+        await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            to_name     : orden.nombre || 'Comprador',
+            to_email    : orden.email,
+            order_id    : orden.orderId   || '—',
+            producto    : orden.productoNombre || '—',
+            precio      : formatCOP(orden.precioCOP || 0),
+            referencia  : orden.referencia || '—',
+            transaccion : orden.transaccionId || '—',
+            fecha       : new Date().toLocaleDateString('es-CO', { dateStyle: 'full' }),
+            programa    : 'Programa PRI — Universidad Nacional de Colombia'
+        });
+        console.log('Email de confirmación enviado a', orden.email);
+    } catch(err) {
+        // No bloquear el flujo si falla el email — el pago ya fue aprobado
+        console.warn('Email no enviado (revisar config EmailJS):', err?.text || err);
+    }
+}
+
+// ── EMAILJS: NOTIFICACIÓN AL ADMINISTRADOR ───────────────────────────────
+// Crea en EmailJS una segunda plantilla (template_REEMPLAZAR_ADMIN) con variables:
+//   {{order_id}}, {{to_email}}, {{comprador_nombre}}, {{comprador_email}},
+//   {{comprador_tel}}, {{producto}}, {{precio}}, {{referencia}}, {{transaccion}}, {{fecha}}
+async function enviarEmailAdmin(orden) {
+    if (!window.emailjs || EMAILJS_TEMPLATE_ADMIN_ID.includes('REEMPLAZAR')) return;
+    if (!ADMIN_EMAIL) return;
+    try {
+        await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ADMIN_ID, {
+            to_email         : ADMIN_EMAIL,
+            order_id         : orden.orderId          || '—',
+            comprador_nombre : orden.comprador?.nombre || '—',
+            comprador_email  : orden.comprador?.email  || '—',
+            comprador_tel    : orden.comprador?.tel    || '—',
+            producto         : orden.productoNombre    || '—',
+            precio           : formatCOP(orden.precioCOP || 0),
+            referencia       : orden.referencia        || '—',
+            transaccion      : orden.transaccionId     || '—',
+            fecha            : new Date().toLocaleString('es-CO', { dateStyle: 'full', timeStyle: 'short' })
+        });
+        console.log('Notificación admin enviada');
+    } catch(err) {
+        console.warn('Email admin no enviado:', err?.text || err);
+    }
+}
+
+// ── ADMIN: CARGAR ÓRDENES DE PAGO ────────────────────────────────────────
+window.cargarOrdenesAdmin = async function() {
+    const cont = document.getElementById('ordenes-lista');
+    cont.innerHTML = '<p style="color:rgba(255,255,255,.35);font-family:Montserrat,sans-serif;font-size:.7rem;">Cargando…</p>';
+    try {
+        const q    = query(collection(db, 'ordenes_tienda'), orderBy('creadoEn', 'desc'));
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            cont.innerHTML = '<p style="color:rgba(255,255,255,.3);font-family:Montserrat,sans-serif;font-size:.7rem;padding:1rem 0;">No hay órdenes de pago registradas aún.</p>';
+            return;
+        }
+        const claseEstado = { aprobado: 'estado-aprobado', pendiente: 'estado-pendiente', rechazado: 'estado-rechazado' };
+        let html = '';
+        snap.forEach(d => {
+            const o     = d.data();
+            const fecha = o.creadoEn?.toDate ? o.creadoEn.toDate().toLocaleString('es-CO') : '—';
+            const cls   = claseEstado[o.estado] || 'estado-pendiente';
+            html += `
+                <div class="orden-card">
+                    <div class="orden-ref">
+                        <strong style="color:var(--blanco);">${o.orderId || '—'}</strong>
+                        <span style="color:rgba(255,255,255,.25);margin-left:.5rem;">· ${fecha}</span>
+                    </div>
+                    <div class="orden-nombre">
+                        ${o.productoNombre || '—'} — <strong style="color:var(--teal);">${formatCOP(o.precioCOP || 0)}</strong>
+                        <span class="orden-estado ${cls}">${o.estado}</span>
+                    </div>
+                    <div class="orden-meta">
+                        👤 ${o.comprador?.nombre || '—'} &nbsp;
+                        ✉️ ${o.comprador?.email || '—'} &nbsp;
+                        📱 ${o.comprador?.tel || '—'}
+                    </div>
+                    <div class="orden-meta" style="margin-top:.2rem;font-size:.55rem;color:rgba(255,255,255,.2);">
+                        Ref: ${o.referencia || '—'}
+                        ${o.transaccionId ? ` · ID Wompi: ${o.transaccionId}` : ''}
+                    </div>
+                </div>`;
+        });
+        cont.innerHTML = html;
+    } catch(err) {
+        cont.innerHTML = `<p style="color:#fca5a5;font-family:Montserrat,sans-serif;font-size:.7rem;">Error al cargar: ${err.message}</p>`;
+    }
+};
+
+// ── PRECIOS COP DE PRODUCTOS ESPECIALES ──────────────────────────────────
+// Cambia estos valores cuando quieras ajustar precios
+const PRECIO_LIBRETA  = 25000;   // $25.000 COP
+const PRECIO_TAZA     = 35000;   // $35.000 COP
+const PRECIO_TOTEBAG  = 40000;   // $40.000 COP
+
+// Registrar los productos especiales en el mapa para que iniciarPago funcione
+_productosMap['__libreta__'] = { id: '__libreta__', nombre: 'Libreta Corporativa PRI',   precioCOP: PRECIO_LIBRETA  };
+_productosMap['__taza__']    = { id: '__taza__',    nombre: 'Taza Oficial PRI',           precioCOP: PRECIO_TAZA     };
+_productosMap['__totebag__'] = { id: '__totebag__', nombre: 'Totebag Oficial PRI',        precioCOP: PRECIO_TOTEBAG  };
+
+// ── ARRANCAR DETECCIÓN DE REDIRECT WOMPI ─────────────────────────────────
+// (Se ejecuta después de que Firebase esté listo, al final de signInAnonymously)
 </script>
 
 <script>

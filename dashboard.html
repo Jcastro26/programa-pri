@@ -112,9 +112,12 @@
         .btn-rate{margin-left:auto;font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;color:var(--oro);background:none;border:none;cursor:pointer;flex-shrink:0;transition:color 0.2s;}
         .btn-rate:hover{color:white;}
         /* FORO */
-        .foro-messages{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:0.6rem;padding:1rem;background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);margin-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--naranja) transparent;}
-        .foro-messages::-webkit-scrollbar{width:4px;}
-        .foro-messages::-webkit-scrollbar-thumb{background:var(--naranja);}
+        .foro-messages{height:320px;overflow-y:scroll;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;gap:0.6rem;padding:1rem;background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);margin-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--naranja) transparent;}
+        .foro-messages::-webkit-scrollbar{width:5px;}
+        .foro-messages::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);}
+        .foro-messages::-webkit-scrollbar-thumb{background:var(--naranja);border-radius:4px;}
+        /* inbox chat: altura responsiva para llenar el panel disponible */
+        #inbox-chat-mensajes{height:clamp(240px,45vh,420px);}
         #ti-lista::-webkit-scrollbar{width:4px;}
         #ti-lista::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);border-radius:2px;}
         #ti-lista::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.4);border-radius:2px;}
@@ -336,8 +339,9 @@
             .qa-label{font-size:.6rem;}
             .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
 
-            /* Foro */
-            .foro-messages{height:260px;}
+            /* Foro / Chat — scroll táctil obligatorio en móvil */
+            .foro-messages{height:260px;overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;}
+            #inbox-chat-mensajes{height:clamp(220px,40vh,380px) !important;}
             .foro-input-row{flex-direction:column;}
             .btn-send{width:100%;}
 
@@ -1288,6 +1292,77 @@
                 <div id="est-cuestionarios-lista"><p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p></div>
             </div>
         </div>
+
+        <!-- PANEL: TALLERES TEMÁTICOS (ESTUDIANTE) -->
+        <div class="panel" id="panel-talleres-tematicos">
+            <p class="panel-title">Capacitaciones</p>
+            <h2 class="panel-heading">Talleres <em>Temáticos</em></h2>
+            <p class="panel-desc">Estudia de forma interactiva, diapositiva por diapositiva. Completa cada taller para ganar puntos y continúa con el cuestionario correspondiente.</p>
+            <div class="section-box">
+                <p class="section-box-title">📖 Talleres Disponibles</p>
+                <div id="tt-lista-est"><p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando talleres…</p></div>
+            </div>
+        </div>
+
+        <!-- PANEL: TALLERES TEMÁTICOS (ADMIN) -->
+        <div class="panel" id="panel-talleres-tematicos-admin">
+            <p class="panel-title">Gestión</p>
+            <h2 class="panel-heading">Talleres <em>Temáticos</em></h2>
+            <p class="panel-desc">Diseña talleres interactivos con diapositivas, imágenes y explicaciones animadas. Los estudiantes los leen de forma guiada y ganan puntos al completarlos.</p>
+
+            <!-- Editor oculto por defecto -->
+            <div id="tt-editor-cont" style="display:none;">
+                <div class="section-box" style="border-color:rgba(255,94,0,.35);background:rgba(255,94,0,.02);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem;">
+                        <p class="section-box-title" style="margin:0;" id="tt-editor-label">Nuevo Taller Temático</p>
+                        <button onclick="cerrarEditorTallerTematico()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:1.3rem;cursor:pointer;line-height:1;">✕</button>
+                    </div>
+                    <div class="form-add" style="margin-bottom:1.25rem;">
+                        <div class="fa-group" style="grid-column:1/-1"><label>Título del Taller</label><input type="text" id="tt-titulo" placeholder="ej: Números Racionales — Módulo 1"></div>
+                        <div class="fa-group"><label>Área</label>
+                            <select id="tt-area">
+                                <option>Matemáticas</option><option>Geometría</option><option>Álgebra</option>
+                                <option>Trigonometría</option><option>Estadística</option><option>Lectura Crítica</option>
+                                <option>Ciencias Naturales</option><option>General</option>
+                            </select>
+                        </div>
+                        <div class="fa-group"><label>Grado objetivo</label>
+                            <select id="tt-grado">
+                                <option value="todos">Todos (8°–11°)</option>
+                                <option value="8">Solo 8°</option><option value="9">Solo 9°</option>
+                                <option value="10">Solo 10°</option><option value="11">Solo 11° / ICFES</option>
+                                <option value="avanzado">10° y 11°</option>
+                            </select>
+                        </div>
+                        <div class="fa-group"><label>Puntos al completar</label><input type="number" id="tt-puntos" value="50" min="5" max="500" step="5"></div>
+                        <div class="fa-group" style="grid-column:1/-1"><label>Descripción breve</label><textarea id="tt-desc" rows="2" placeholder="¿Qué aprenderán? ¿Qué competencias trabaja este taller?"></textarea></div>
+                        <div class="fa-group" style="grid-column:1/-1"><label>Cuestionario al finalizar (opcional)</label>
+                            <select id="tt-formulario-id" style="width:100%;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.45rem .6rem;font-family:var(--fuente-t);font-size:.68rem;">
+                                <option value="">— Sin cuestionario asociado —</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p class="section-box-title" style="margin:.25rem 0 .75rem;border-top:1px solid rgba(255,255,255,.06);padding-top:.8rem;">🖼️ Diapositivas del Taller</p>
+                    <div id="tt-diapos-builder"></div>
+                    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;">
+                        <button class="btn-add" style="background:rgba(56,189,248,.1);color:var(--teal);border:1px solid rgba(56,189,248,.25);" onclick="agregarDiapoBuilder()">➕ Agregar Diapositiva</button>
+                        <button class="btn-add" onclick="guardarTallerTematico()">💾 Guardar Taller</button>
+                        <button class="btn-add" style="background:rgba(255,255,255,.05);" onclick="cerrarEditorTallerTematico()">✕ Cancelar</button>
+                    </div>
+                    <input type="hidden" id="tt-editando-id" value="">
+                </div>
+            </div>
+
+            <!-- Botón nuevo + lista -->
+            <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+                <button class="btn-add" onclick="mostrarEditorTallerTematico()">➕ Nuevo Taller</button>
+            </div>
+            <div class="section-box">
+                <p class="section-box-title">📋 Talleres en Firebase</p>
+                <div id="tt-lista-admin"><p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p></div>
+            </div>
+        </div>
+
     </main>
 </div>
 
@@ -1669,6 +1744,7 @@ function construirMenu(rol) {
             {label:'🎁 Premios', fn:()=>{activarPanel('panel-premios-admin');cargarPremiosAdmin();}},
             {label:'🛒 Tienda', fn:()=>{activarPanel('panel-gestion-tienda');cargarGestionTienda();}},
             {label:'📐 Banco Mat.', fn:()=>{activarPanel('panel-banco-mat');cargarBancoMat();}},
+            {label:'📖 Talleres Temáticos', fn:()=>{activarPanel('panel-talleres-tematicos-admin');cargarTalleresTematicoAdmin();}},
             {label:'➕ Contenido', fn:()=>activarPanel('panel-admin-add')},
             {label:'💬 Foro Global', fn:()=>{activarPanel('panel-foro-admin');cargarForoAdmin();}},
             {label:'📬 Mensajes', fn:()=>{activarPanel('panel-inbox');cargarInbox();}},
@@ -1707,6 +1783,7 @@ function construirMenu(rol) {
             {label:'🛡️ Retos', fn:()=>{activarPanel('panel-retos');cargarRetosCompletados().then(()=>cargarRetos());}},
             {label:'📚 Talleres', fn:()=>{activarPanel('panel-material');cargarTalleresEstudiante();cargarCompletadosEstudiante();cargarTutores();}},
             {label:'📣 Capacitación', fn:()=>activarPanel('panel-capacitaciones-sol')},
+            {label:'📖 Talleres Temáticos', fn:()=>{activarPanel('panel-talleres-tematicos');cargarTalleresTematicoEst();}},
             {label:'📐 Cuestionarios', fn:()=>{activarPanel('panel-cuestionarios-est');cargarCuestionariosEst();}},
             {label:'🎁 Productos', fn:()=>{activarPanel('panel-productos');initProductos();}},
             {label:'💬 Foro', fn:()=>{activarPanel('panel-foro');cargarForo();}},
@@ -2364,11 +2441,19 @@ window.enviarMensajeForo = async function() {
         if (chatPrivadoCon) {
             const chatId = [currentUser.uid, chatPrivadoCon.uid].sort().join('_');
             await setDoc(doc(db,"chats_privados",chatId), {
-                participantes:[currentUser.uid, chatPrivadoCon.uid],
+                participantes: [currentUser.uid, chatPrivadoCon.uid],
                 ultimoAutorUid: currentUser.uid,
                 ultimoAutorNombre: currentUser.nombre || 'Usuario',
-                // Guardar nombre del otro para mostrarlo como título del hilo
-                otroNombre: chatPrivadoCon.nombre || 'Usuario',
+                // Mapa bidireccional: cada uid → su propio nombre
+                nombres: {
+                    [currentUser.uid]: currentUser.nombre || 'Usuario',
+                    [chatPrivadoCon.uid]: chatPrivadoCon.nombre || 'Usuario'
+                },
+                // Mapa bidireccional: cada uid → su propia foto
+                fotos: {
+                    [currentUser.uid]: currentUser.fotoUrl || '',
+                    [chatPrivadoCon.uid]: chatPrivadoCon.fotoUrl || ''
+                },
                 ultimoMensaje: msg.slice(0,80),
                 ultimoTimestamp: serverTimestamp()
             }, {merge:true});
@@ -2940,6 +3025,18 @@ const _pct = raw => {
 };
 const _pcolor = p => isNaN(p)?'rgba(240,244,248,.4)':p>=70?'#86efac':p>=40?'#fbbf24':'#fca5a5';
 
+// Formatea cualquier fecha a "06 abr. 2024 · 11:15"
+function _fmtFecha(raw) {
+    if (!raw || raw === '—') return '—';
+    try {
+        const d = new Date(String(raw));
+        if (isNaN(d.getTime())) return String(raw).slice(0,16);
+        const fecha = d.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});
+        const hora  = d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+        return `${fecha} · ${hora}`;
+    } catch { return String(raw).slice(0,16); }
+}
+
 function _extraerEstudiante(r) {
     const cedula  = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula'));
     const email   = _px(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email');
@@ -2952,9 +3049,9 @@ function _extraerEstudiante(r) {
 
 // Devuelve el área del taller que tiene ese _hoja como título, o el mapeo manual
 const _AREA_KEYWORDS = {
-    'Lectura Crítica':      ['lectura','critica','critico','comprension','comprensión','texto','lector'],
-    'Matemáticas':          ['matematica','matemática','calculo','álgebra','algebra','aritmetica','aritmética','numeracion','numeración'],
-    'Geometría':            ['geometria','geometría','trigonometria','trigonometría','figuras','espacial'],
+    'Lectura Crítica':      ['lectura','critica','critico','comprension','comprensión','texto','lector','narrativo','literario'],
+    'Matemáticas':          ['matematica','matemática','calculo','álgebra','algebra','aritmetica','aritmética','numeracion','numeración','fraccion','fracción','porcentaje','racional','irracional','ecuacion','ecuación','funcion','función','competencia','exito','éxito','icfes mat'],
+    'Geometría':            ['geometria','geometría','trigonometria','trigonometría','figuras','espacial','angulo','ángulo','triangulo','triángulo','circulo','círculo','perimetro','perímetro','area geom'],
     'Ciencias Naturales':   ['ciencias naturales','natural','naturales'],
     'Biología':             ['biologia','biología','ecologia','ecología','celula','célula','genetica','genética'],
     'Química':              ['quimica','química','elemento','molecula','molécula','reaccion','reacción'],
@@ -2972,13 +3069,16 @@ function _areaDeHoja(hoja) {
     // 2. match parcial en talleres
     const t2 = _riTalleres.find(t => hoja.toLowerCase().includes((t.titulo||'').toLowerCase().slice(0,8)) && t.titulo.length > 4);
     if (t2?.area) return t2.area;
-    // 3. mapeo manual
+    // 3. mapeo manual (localStorage)
     if (getHojaMapeo()[hoja]) return getHojaMapeo()[hoja];
-    // 4. auto-detección por palabras clave en el nombre de la hoja
+    // 4. auto-detección por palabras clave
     const hojaL = hoja.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
     for (const [area, kws] of Object.entries(_AREA_KEYWORDS)) {
         if (kws.some(k => hojaL.includes(k.normalize('NFD').replace(/[̀-ͯ]/g,'')))) return area;
     }
+    // 5. Nombre genérico de Google Forms ("Respuestas de formulario N") → Matemáticas
+    //    (todos los formularios de este programa son de competencias matemáticas)
+    if (/respuestas\s+de\s+formulario\s*\d*/i.test(hojaL)) return 'Matemáticas';
     return null;
 }
 
@@ -3149,7 +3249,7 @@ function renderResultadosICFES() {
                     <span style="font-family:var(--fuente-t);font-size:.65rem;font-weight:900;color:${_pcolor(p)};text-align:center;">${f.pts}</span>
                     <span style="font-family:var(--fuente-t);font-size:.6rem;color:#86efac;text-align:center;">✅ ${correctas}</span>
                     <span style="font-family:var(--fuente-t);font-size:.6rem;color:#fca5a5;text-align:center;">❌ ${incorrectas}</span>
-                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);white-space:nowrap;">${String(f.fecha)}</span>
+                    <span style="font-family:var(--fuente-t);font-size:.5rem;color:rgba(255,255,255,.25);white-space:nowrap;">${_fmtFecha(f.fecha)}</span>
                 </div>`;
             }).join('');
 
@@ -4606,19 +4706,31 @@ async function cargarInbox() {
         cont.innerHTML = '';
         snap.forEach(d => {
             const c = d.data();
-            // Verificación defensiva: solo mostrar chats donde el usuario actual es participante
             if (!(c.participantes||[]).includes(currentUser.uid)) return;
-            const otroUid = (c.participantes||[]).find(u => u !== currentUser.uid) || '';
-            // Mostrar nombre del OTRO participante (no del último emisor)
-            const ultimoMsg    = c.ultimoMensaje || '—';
-            const ultimoAutor  = c.otroNombre || c.ultimoAutorNombre || 'Conversación';
-            const inicial = (ultimoAutor||'?')[0].toUpperCase();
-            const esc = (s) => (s||'').replace(/'/g,"\\'");
+            const otroUid   = (c.participantes||[]).find(u => u !== currentUser.uid) || '';
+            const ultimoMsg = c.ultimoMensaje || '—';
+
+            // ── Nombre correcto del OTRO participante ──────────────────────
+            // Primero buscamos en el mapa "nombres" (nuevo sistema bidireccional)
+            // Fallback al campo legacy "otroNombre" si el chat es antiguo
+            const nombreOtro = (c.nombres && c.nombres[otroUid])
+                || (c.otroNombre && c.otroNombre !== currentUser.nombre ? c.otroNombre : null)
+                || c.ultimoAutorNombre
+                || 'Conversación';
+
+            // Foto del otro (guardada cuando inicia/envía el mensaje)
+            const fotoOtro  = c.fotos?.[otroUid] || '';
+            const inicial   = (nombreOtro||'?')[0].toUpperCase();
+            const esc       = (s) => (s||'').replace(/'/g,"\\'");
+            const avatarInner = fotoOtro
+                ? `<img src="${fotoOtro}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                : inicial;
+
             cont.insertAdjacentHTML('beforeend',`
-                <div class="inbox-thread" onclick="abrirConversacionInbox('${esc(otroUid)}','${esc(ultimoAutor)}','${d.id}')">
-                    <div class="inbox-avatar">${inicial}</div>
+                <div class="inbox-thread" onclick="abrirConversacionInbox('${esc(otroUid)}','${esc(nombreOtro)}','${d.id}')">
+                    <div class="inbox-avatar">${avatarInner}</div>
                     <div class="inbox-info">
-                        <p class="inbox-name">${ultimoAutor}</p>
+                        <p class="inbox-name">${nombreOtro}</p>
                         <p class="inbox-preview">${ultimoMsg}</p>
                     </div>
                 </div>`);
@@ -4658,10 +4770,23 @@ window.enviarMensajeInbox = async function() {
     const msg = inp.value.trim(); if (!msg || !inboxChatId) return;
     inp.value = '';
     // Actualizar doc raíz con último mensaje (evita N+1 al cargar inbox)
+    const _inboxOtroUid = inboxChatUid || '';
+    // Recuperar nombre del otro desde el header del chat activo
+    const _inboxOtroNombre = document.getElementById('inbox-chat-nombre')?.textContent || 'Usuario';
     await setDoc(doc(db,"chats_privados",inboxChatId), {
-        participantes: [currentUser.uid, ...(inboxChatUid ? [inboxChatUid] : [])],
+        participantes: [currentUser.uid, ...(_inboxOtroUid ? [_inboxOtroUid] : [])],
         ultimoAutorUid: currentUser.uid,
         ultimoAutorNombre: currentUser.nombre || 'Usuario',
+        // Mapa bidireccional de nombres y fotos
+        ...(_inboxOtroUid ? {
+            nombres: {
+                [currentUser.uid]: currentUser.nombre || 'Usuario',
+                [_inboxOtroUid]: _inboxOtroNombre
+            },
+            fotos: {
+                [currentUser.uid]: currentUser.fotoUrl || '',
+            }
+        } : {}),
         ultimoMensaje: msg.slice(0, 80),
         ultimoTimestamp: serverTimestamp()
     }, {merge:true});
@@ -4704,8 +4829,8 @@ window.buscarUsuarioChat = async function() {
         resultados.forEach(u => {
             const esc = s => (s||'').replace(/'/g,"\\'");
             cont.insertAdjacentHTML('beforeend',`
-                <div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:0.4rem;cursor:pointer;" onclick="iniciarNuevaConv('${u.id}','${esc(u.nombre)}')">
-                    <div style="width:32px;height:32px;background:rgba(255,94,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;color:var(--naranja);flex-shrink:0;">${(u.nombre||'?')[0].toUpperCase()}</div>
+                <div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:0.4rem;cursor:pointer;" onclick="iniciarNuevaConv('${u.id}','${esc(u.nombre)}','${esc(u.fotoUrl||'')}')">
+                    <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,94,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;color:var(--naranja);flex-shrink:0;overflow:hidden;">${u.fotoUrl ? `<img src="${u.fotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.nombre||'?')[0].toUpperCase()}</div>
                     <div>
                         <p style="font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:700;color:var(--blanco);margin:0;">${u.nombre||'—'}</p>
                         <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:0;">${u.rol||'—'}</p>
@@ -4715,11 +4840,21 @@ window.buscarUsuarioChat = async function() {
     } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
 };
 
-window.iniciarNuevaConv = function(uid, nombre) {
+window.iniciarNuevaConv = function(uid, nombre, fotoUrl) {
     document.getElementById('inbox-buscador').style.display = 'none';
     const chatId = [currentUser.uid, uid].sort().join('_');
-    // Pre-crear documento del chat
-    setDoc(doc(db,"chats_privados",chatId), {participantes:[currentUser.uid,uid]}, {merge:true}).catch(()=>{});
+    // Pre-crear documento del chat con nombres y fotos bidireccionales
+    setDoc(doc(db,"chats_privados",chatId), {
+        participantes: [currentUser.uid, uid],
+        nombres: {
+            [currentUser.uid]: currentUser.nombre || 'Usuario',
+            [uid]: nombre || 'Usuario'
+        },
+        fotos: {
+            [currentUser.uid]: currentUser.fotoUrl || '',
+            [uid]: fotoUrl || ''
+        }
+    }, {merge:true}).catch(()=>{});
     // Abrir directamente
     abrirConversacionInbox(uid, nombre, chatId);
 };
@@ -5336,6 +5471,435 @@ function _mostrarResultadosQuiz(detalles, correctas, preguntas, pct) {
         <button class="btn-add" onclick="cerrarCuestionario();cargarCuestionariosEst();" style="width:100%;margin-top:1rem;">↩ Volver a Cuestionarios</button>`;
 }
 
+/* ══════════════════════════════════════════════════
+   TALLERES TEMÁTICOS  ·  Admin + Estudiante
+══════════════════════════════════════════════════ */
+let _ttEditandoId = null;
+let _ttDiaposCount = 0;
+let _ttDiapoIdx = 0;
+let _ttViewer = null;
+let _ttDiapoActual = 0;
+let _ttCompletado = false;
+
+/* ─── ADMIN: cargar lista ─── */
+window.cargarTalleresTematicoAdmin = async function() {
+    const lista = document.getElementById('tt-lista-admin');
+    if (!lista) return;
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>';
+    try {
+        const snap = await getDocs(query(collection(db,'talleres_tematicos'), orderBy('creadoEn','desc')));
+        if (snap.empty) {
+            lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">No hay talleres todavía. Crea el primero.</p>';
+            return;
+        }
+        lista.innerHTML = snap.docs.map(d => {
+            const t = {id:d.id,...d.data()};
+            const nd = (t.diapositivas||[]).length;
+            return `<div class="banco-form-card" style="padding:.85rem 1rem;margin-bottom:.6rem;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.6rem;">
+                    <div style="flex:1;min-width:0;">
+                        <p class="banco-titulo" style="margin:0 0 .25rem;">${t.titulo||'—'}</p>
+                        <p class="banco-meta">${t.area||'—'} · Grado ${t.grado||'todos'} · ${nd} diapositiva${nd!==1?'s':''} · ${t.puntos||50} PTS</p>
+                        ${t.formularioBancoId?`<p class="banco-meta" style="color:var(--teal);margin-top:.2rem;">📝 Incluye cuestionario</p>`:''}
+                        <p class="banco-meta" style="margin-top:.25rem;color:${t.publicado?'var(--verde)':'rgba(255,94,0,.7)'};">${t.publicado?'✅ Publicado':'⏸ Borrador'}</p>
+                    </div>
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0;">
+                        <button class="btn-module" onclick="editarTallerTematico('${t.id}')" style="background:rgba(56,189,248,.1);color:var(--teal);border-color:rgba(56,189,248,.25);">✏️ Editar</button>
+                        <button class="btn-module" onclick="togglePublicarTT('${t.id}',${!t.publicado})"
+                            style="background:${t.publicado?'rgba(255,94,0,.08)':'rgba(16,185,129,.08)'};color:${t.publicado?'var(--naranja)':'#10b981'};border-color:${t.publicado?'rgba(255,94,0,.25)':'rgba(16,185,129,.3)'};">
+                            ${t.publicado?'⏸ Ocultar':'▶ Publicar'}</button>
+                        <button class="btn-module" onclick="eliminarTallerTematico('${t.id}')" style="background:rgba(239,68,68,.08);color:#f87171;border-color:rgba(239,68,68,.2);">🗑</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        lista.innerHTML = `<p style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">${e.message}</p>`;
+    }
+};
+
+/* ─── ADMIN: mostrar editor ─── */
+window.mostrarEditorTallerTematico = async function(id) {
+    _ttEditandoId = id || null;
+    _ttDiaposCount = 0;
+    _ttDiapoIdx = 0;
+    document.getElementById('tt-editando-id').value = id || '';
+    document.getElementById('tt-editor-label').textContent = id ? 'Editar Taller Temático' : 'Nuevo Taller Temático';
+    document.getElementById('tt-diapos-builder').innerHTML = '';
+
+    // Populate formularios dropdown
+    try {
+        const sel = document.getElementById('tt-formulario-id');
+        sel.innerHTML = '<option value="">— Sin cuestionario asociado —</option>';
+        const fs = await getDocs(query(collection(db,'formularios_banco'), where('publicado','==',true)));
+        fs.forEach(d => {
+            const f = d.data();
+            const opt = document.createElement('option');
+            opt.value = d.id;
+            opt.textContent = `${f.titulo||d.id}`;
+            sel.appendChild(opt);
+        });
+    } catch(e) {}
+
+    if (id) {
+        try {
+            const snap = await getDoc(doc(db,'talleres_tematicos',id));
+            if (snap.exists()) {
+                const t = snap.data();
+                document.getElementById('tt-titulo').value = t.titulo||'';
+                document.getElementById('tt-area').value = t.area||'Matemáticas';
+                document.getElementById('tt-grado').value = t.grado||'todos';
+                document.getElementById('tt-puntos').value = t.puntos||50;
+                document.getElementById('tt-desc').value = t.descripcion||'';
+                document.getElementById('tt-formulario-id').value = t.formularioBancoId||'';
+                (t.diapositivas||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)).forEach(d => agregarDiapoBuilder(d));
+            }
+        } catch(e) {}
+    } else {
+        document.getElementById('tt-titulo').value = '';
+        document.getElementById('tt-desc').value = '';
+        document.getElementById('tt-puntos').value = '50';
+        agregarDiapoBuilder();
+    }
+
+    document.getElementById('tt-editor-cont').style.display = 'block';
+    setTimeout(() => document.getElementById('tt-editor-cont').scrollIntoView({behavior:'smooth',block:'start'}), 80);
+};
+
+window.cerrarEditorTallerTematico = function() {
+    document.getElementById('tt-editor-cont').style.display = 'none';
+    _ttEditandoId = null;
+};
+
+/* ─── ADMIN: slide builder ─── */
+window.agregarDiapoBuilder = function(data) {
+    const idx = _ttDiapoIdx++;
+    _ttDiaposCount++;
+    const div = document.createElement('div');
+    div.className = 'tt-diapo-item';
+    div.dataset.idx = idx;
+    div.innerHTML = `
+        <div class="tt-diapo-header">
+            <p class="tt-diapo-label">Diapositiva <span class="tt-diapo-num">${_ttDiaposCount}</span></p>
+            <button type="button" onclick="eliminarDiapoBuilder(this)" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171;border-radius:5px;padding:.15rem .5rem;font-size:.7rem;cursor:pointer;">✕ Quitar</button>
+        </div>
+        <div class="form-add" style="gap:.55rem;">
+            <div class="fa-group" style="grid-column:1/-1">
+                <label>Título de la diapositiva</label>
+                <input type="text" id="ttd-titulo-${idx}" value="${(data&&data.titulo)||''}" placeholder="ej: ¿Qué son los números racionales?">
+            </div>
+            <div class="fa-group" style="grid-column:1/-1">
+                <label>Contenido / Explicación</label>
+                <textarea id="ttd-contenido-${idx}" rows="6" placeholder="Escribe aquí la explicación. Usa saltos de línea para párrafos.">${(data&&data.contenido)||''}</textarea>
+            </div>
+            <div class="fa-group" style="grid-column:1/-1">
+                <label>Imagen (opcional)</label>
+                <input type="file" id="ttd-file-${idx}" accept="image/*" onchange="previewDiapoImg(${idx})"
+                    style="font-family:var(--fuente-t);font-size:.62rem;background:rgba(2,26,54,.8);border:1px solid rgba(255,255,255,.1);color:var(--blanco);padding:.35rem .5rem;border-radius:6px;width:100%;cursor:pointer;">
+                ${(data&&data.imagen)?`<img id="ttd-preview-${idx}" class="tt-img-preview" src="${data.imagen}" style="display:block;max-height:80px;margin-top:.4rem;">`
+                                     :`<img id="ttd-preview-${idx}" class="tt-img-preview" src="" style="display:none;">`}
+                <input type="hidden" id="ttd-imgurl-${idx}" value="${(data&&data.imagen)||''}">
+            </div>
+        </div>`;
+    document.getElementById('tt-diapos-builder').appendChild(div);
+    renumerarDiapos();
+};
+
+window.eliminarDiapoBuilder = function(btn) {
+    if (_ttDiaposCount <= 1) { notif('Mínimo 1','Debe haber al menos una diapositiva.','⚠️','warning'); return; }
+    btn.closest('.tt-diapo-item').remove();
+    _ttDiaposCount--;
+    renumerarDiapos();
+};
+
+function renumerarDiapos() {
+    document.querySelectorAll('#tt-diapos-builder .tt-diapo-item .tt-diapo-num').forEach((el,i) => { el.textContent = i+1; });
+    _ttDiaposCount = document.querySelectorAll('#tt-diapos-builder .tt-diapo-item').length;
+}
+
+window.previewDiapoImg = function(idx) {
+    const file = document.getElementById(`ttd-file-${idx}`)?.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const img = document.getElementById(`ttd-preview-${idx}`);
+        if (img) { img.src = e.target.result; img.style.display = 'block'; }
+    };
+    reader.readAsDataURL(file);
+};
+
+/* ─── ADMIN: guardar taller ─── */
+window.guardarTallerTematico = async function() {
+    const titulo = document.getElementById('tt-titulo').value.trim();
+    if (!titulo) { notif('Campo requerido','Ingresa un título para el taller.','⚠️','warning'); return; }
+    const items = document.querySelectorAll('#tt-diapos-builder .tt-diapo-item');
+    if (!items.length) { notif('Sin diapositivas','Agrega al menos una diapositiva.','⚠️','warning'); return; }
+
+    const btns = document.querySelectorAll('#tt-editor-cont button');
+    btns.forEach(b => b.disabled = true);
+    const saveBtn = [...btns].find(b => b.textContent.includes('Guardar'));
+    if (saveBtn) saveBtn.textContent = '⏳ Guardando…';
+
+    try {
+        const diapositivas = [];
+        for (let i = 0; i < items.length; i++) {
+            const idx = items[i].dataset.idx;
+            const tituloD = document.getElementById(`ttd-titulo-${idx}`)?.value?.trim()||'';
+            const contenido = document.getElementById(`ttd-contenido-${idx}`)?.value?.trim()||'';
+            let imgUrl = document.getElementById(`ttd-imgurl-${idx}`)?.value||'';
+            const fileEl = document.getElementById(`ttd-file-${idx}`);
+            if (fileEl?.files?.[0]) {
+                imgUrl = await subirImagenCloudinary(fileEl.files[0]);
+                const urlEl = document.getElementById(`ttd-imgurl-${idx}`);
+                if (urlEl) urlEl.value = imgUrl;
+            }
+            diapositivas.push({ titulo:tituloD, contenido, imagen:imgUrl||null, orden:i });
+        }
+
+        const selForm = document.getElementById('tt-formulario-id');
+        const datos = {
+            titulo,
+            area: document.getElementById('tt-area').value,
+            grado: document.getElementById('tt-grado').value,
+            puntos: parseInt(document.getElementById('tt-puntos').value)||50,
+            descripcion: document.getElementById('tt-desc').value.trim(),
+            formularioBancoId: selForm.value||null,
+            formularioBancoTitulo: selForm.value ? (selForm.options[selForm.selectedIndex]?.text||null) : null,
+            diapositivas,
+            creadoEn: serverTimestamp(),
+        };
+
+        const editId = document.getElementById('tt-editando-id').value;
+        if (editId) {
+            await updateDoc(doc(db,'talleres_tematicos',editId), datos);
+            notif('Actualizado',`"${titulo}" guardado.`,'✅','success');
+        } else {
+            datos.publicado = false;
+            await addDoc(collection(db,'talleres_tematicos'), datos);
+            notif('Creado',`"${titulo}" creado como borrador. Publícalo cuando esté listo.`,'🎉','success');
+        }
+        cerrarEditorTallerTematico();
+        cargarTalleresTematicoAdmin();
+    } catch(e) {
+        notif('Error',e.message,'❌','error');
+        btns.forEach(b => b.disabled = false);
+        if (saveBtn) saveBtn.textContent = '💾 Guardar Taller';
+    }
+};
+
+window.togglePublicarTT = async function(id, estado) {
+    try {
+        await updateDoc(doc(db,'talleres_tematicos',id), { publicado: estado });
+        notif('Listo', estado?'Taller publicado para estudiantes.':'Taller ocultado.','✅','success');
+        cargarTalleresTematicoAdmin();
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+window.editarTallerTematico = function(id) {
+    document.getElementById('tt-editor-cont').style.display = 'none';
+    mostrarEditorTallerTematico(id);
+};
+
+window.eliminarTallerTematico = async function(id) {
+    if (!confirm('¿Eliminar este taller? Esta acción no se puede deshacer.')) return;
+    try {
+        await deleteDoc(doc(db,'talleres_tematicos',id));
+        notif('Eliminado','Taller eliminado.','✅','success');
+        cargarTalleresTematicoAdmin();
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+/* ─── ESTUDIANTE: cargar lista ─── */
+window.cargarTalleresTematicoEst = async function() {
+    const lista = document.getElementById('tt-lista-est');
+    if (!lista) return;
+    lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando talleres…</p>';
+    const gradoUsuario = String(currentUser.grado||'').replace(/[°ºo]/gi,'').trim();
+    try {
+        const [talleresSnap, compSnap] = await Promise.all([
+            getDocs(query(collection(db,'talleres_tematicos'), where('publicado','==',true), orderBy('creadoEn','desc'))),
+            currentUser.uid ? getDocs(query(collection(db,'talleres_tematicos_progreso'), where('uid','==',currentUser.uid))) : Promise.resolve({docs:[]})
+        ]);
+        const completados = new Set(compSnap.docs.map(d => d.data().tallerId));
+        const talleres = talleresSnap.docs.map(d => ({id:d.id,...d.data()})).filter(t => {
+            if (!t.grado||t.grado==='todos') return true;
+            if (t.grado==='avanzado') return gradoUsuario==='10'||gradoUsuario==='11';
+            return t.grado===gradoUsuario;
+        });
+        if (!talleres.length) {
+            lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:2rem;">No hay talleres disponibles para tu grado todavía. ¡Pronto habrá nuevo contenido!</p>';
+            return;
+        }
+        lista.innerHTML = talleres.map(t => {
+            const hecho = completados.has(t.id);
+            const nd = (t.diapositivas||[]).length;
+            return `<div class="tt-card${hecho?' tt-card-done':''}" onclick="abrirTallerViewer('${t.id}')">
+                <div style="flex:1;min-width:0;">
+                    <p class="tt-card-titulo">${t.titulo||'—'}</p>
+                    <p class="tt-card-meta">${t.area||'—'} · Grado ${t.grado||'todos'} · ${nd} diapositiva${nd!==1?'s':''}</p>
+                    ${t.descripcion?`<p style="font-family:var(--fuente-t);font-size:.63rem;color:rgba(255,255,255,.48);margin:.35rem 0 0;line-height:1.5;">${t.descripcion}</p>`:''}
+                    <div style="display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.5rem;">
+                        ${hecho
+                            ?`<span class="tt-done-badge">✅ Completado</span>`
+                            :`<span class="tt-pts-badge">+${t.puntos||50} PTS</span>`}
+                        ${t.formularioBancoId?`<span style="display:inline-flex;align-items:center;gap:.2rem;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);color:var(--teal);font-family:var(--fuente-t);font-size:.55rem;font-weight:700;letter-spacing:.8px;padding:.18rem .5rem;border-radius:4px;">📝 + cuestionario</span>`:''}
+                    </div>
+                </div>
+                <button class="btn-module" style="background:var(--naranja);color:#fff;border:none;flex-shrink:0;align-self:center;white-space:nowrap;">${hecho?'🔄 Repasar':'▶ Iniciar'}</button>
+            </div>`;
+        }).join('');
+    } catch(e) {
+        lista.innerHTML = `<p style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">${e.message}</p>`;
+    }
+};
+
+/* ─── VIEWER: abrir ─── */
+window.abrirTallerViewer = async function(id) {
+    try {
+        const snap = await getDoc(doc(db,'talleres_tematicos',id));
+        if (!snap.exists()) { notif('Error','Taller no encontrado.','❌','error'); return; }
+        _ttViewer = {id,...snap.data()};
+        _ttDiapoActual = 0;
+        _ttCompletado = false;
+
+        if (currentUser.uid) {
+            const cp = await getDoc(doc(db,'talleres_tematicos_progreso',`${currentUser.uid}_${id}`));
+            _ttCompletado = cp.exists();
+        }
+
+        const diapos = _ttViewer.diapositivas||[];
+        if (!diapos.length) { notif('Sin contenido','Este taller no tiene diapositivas todavía.','ℹ️','info'); return; }
+
+        document.getElementById('tt-viewer-area').textContent = _ttViewer.area||'';
+        document.getElementById('tt-viewer-titulo-taller').textContent = _ttViewer.titulo||'';
+
+        const area = document.getElementById('tt-slide-area');
+        area.style.opacity = '1';
+        area.style.transform = 'translateX(0)';
+        area.style.transition = '';
+
+        _ttRenderDiapo(0);
+        _ttUpdateNav();
+        _ttRenderDots();
+
+        document.getElementById('modal-taller-viewer').classList.add('open');
+    } catch(e) { notif('Error',e.message,'❌','error'); }
+};
+
+function _ttRenderDiapo(index) {
+    const diapos = _ttViewer?.diapositivas||[];
+    const d = diapos[index];
+    if (!d) return;
+    const esUltima = index === diapos.length - 1;
+    const area = document.getElementById('tt-slide-area');
+    area.innerHTML = `
+        ${d.imagen?`<img src="${d.imagen}" alt="${d.titulo||''}" class="tt-slide-img">` : ''}
+        ${d.titulo?`<p class="tt-slide-titulo">${d.titulo}</p>` : ''}
+        <p class="tt-slide-body">${(d.contenido||'').replace(/\n/g,'<br>')}</p>
+        ${esUltima ? `<div id="tt-completion-zone" style="margin-top:1.75rem;padding:1.25rem;background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.22);border-radius:10px;text-align:center;">
+            ${_ttCompletado
+                ?`<p style="font-family:var(--fuente-t);font-size:.72rem;color:#10b981;margin:0 0 .75rem;">✅ Ya completaste este taller. ¡Bien hecho!</p>`
+                :`<p style="font-family:var(--fuente-t);font-size:.72rem;color:#86efac;margin:0 0 .75rem;">🎉 ¡Llegaste al final! Completa el taller y gana <strong style="color:#10b981;">+${_ttViewer.puntos||50} PTS</strong>.</p>`
+            }
+            <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;">
+                ${!_ttCompletado?`<button class="btn-add" id="tt-btn-completar" onclick="completarTallerTematico()" style="background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.4);">✅ Completar y ganar puntos</button>`:''}
+                ${_ttViewer.formularioBancoId?`<button class="btn-add" onclick="cerrarTallerViewer();setTimeout(()=>{activarPanel('panel-cuestionarios-est');cargarCuestionariosEst();setTimeout(()=>iniciarCuestionario('${_ttViewer.formularioBancoId}'),500);},350);" style="background:rgba(56,189,248,.1);color:var(--teal);border:1px solid rgba(56,189,248,.3);">📝 Ir al cuestionario →</button>`:''}
+            </div>
+        </div>` : ''}`;
+    area.scrollTop = 0;
+}
+
+function _ttRenderDots() {
+    const cont = document.getElementById('tt-progress-dots');
+    const diapos = _ttViewer?.diapositivas||[];
+    cont.innerHTML = diapos.map((_,i) =>
+        `<span class="tt-dot${i===_ttDiapoActual?' active':(i<_ttDiapoActual?' done':'')}" onclick="navDiapoTo(${i})" title="Diapositiva ${i+1}"></span>`
+    ).join('') + `<span style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.3);margin-left:.6rem;letter-spacing:.5px;">${_ttDiapoActual+1} / ${diapos.length}</span>`;
+}
+
+function _ttUpdateNav() {
+    const diapos = _ttViewer?.diapositivas||[];
+    const ant = document.getElementById('tt-btn-ant');
+    const sig = document.getElementById('tt-btn-sig');
+    const counter = document.getElementById('tt-counter');
+    if (ant) ant.style.visibility = _ttDiapoActual===0?'hidden':'visible';
+    if (sig) sig.style.visibility = _ttDiapoActual===diapos.length-1?'hidden':'visible';
+    if (counter) counter.textContent = `${_ttDiapoActual+1} de ${diapos.length}`;
+}
+
+window.navDiapo = async function(delta) {
+    const diapos = _ttViewer?.diapositivas||[];
+    const next = _ttDiapoActual + delta;
+    if (next < 0 || next >= diapos.length) return;
+    const area = document.getElementById('tt-slide-area');
+    area.style.transition = 'opacity .18s ease, transform .18s ease';
+    area.style.opacity = '0';
+    area.style.transform = `translateX(${delta>0?'22px':'-22px'})`;
+    await new Promise(r => setTimeout(r, 185));
+    _ttDiapoActual = next;
+    _ttRenderDiapo(next);
+    _ttUpdateNav();
+    _ttRenderDots();
+    area.style.transition = 'none';
+    area.style.transform = `translateX(${delta>0?'-14px':'14px'})`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        area.style.transition = 'opacity .22s ease, transform .22s ease';
+        area.style.opacity = '1';
+        area.style.transform = 'translateX(0)';
+    }));
+};
+
+window.navDiapoTo = function(index) {
+    const diapos = _ttViewer?.diapositivas||[];
+    if (index < 0 || index >= diapos.length || index === _ttDiapoActual) return;
+    const area = document.getElementById('tt-slide-area');
+    area.style.transition = 'opacity .15s ease';
+    area.style.opacity = '0';
+    setTimeout(() => {
+        _ttDiapoActual = index;
+        _ttRenderDiapo(index);
+        _ttUpdateNav();
+        _ttRenderDots();
+        area.style.transition = 'opacity .2s ease';
+        area.style.opacity = '1';
+    }, 155);
+};
+
+window.cerrarTallerViewer = function() {
+    document.getElementById('modal-taller-viewer').classList.remove('open');
+    _ttViewer = null;
+};
+
+/* ─── ESTUDIANTE: completar ─── */
+window.completarTallerTematico = async function() {
+    if (_ttCompletado || !currentUser.uid || !_ttViewer) return;
+    const btn = document.getElementById('tt-btn-completar');
+    if (btn) { btn.disabled=true; btn.textContent='⏳ Guardando…'; }
+    try {
+        const progId = `${currentUser.uid}_${_ttViewer.id}`;
+        await setDoc(doc(db,'talleres_tematicos_progreso',progId), {
+            uid: currentUser.uid,
+            tallerId: _ttViewer.id,
+            tallerTitulo: _ttViewer.titulo||'',
+            puntosGanados: _ttViewer.puntos||50,
+            completadoEn: serverTimestamp()
+        });
+        await updateDoc(doc(db,'usuarios',currentUser.uid), { puntos: increment(_ttViewer.puntos||50) });
+        _ttCompletado = true;
+        notif('¡Completado!',`+${_ttViewer.puntos||50} PTS ganados. ¡Excelente trabajo!`,'🎉','success');
+        const zone = document.getElementById('tt-completion-zone');
+        if (zone) {
+            zone.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.75rem;color:#10b981;margin:0 0 .75rem;font-weight:700;">✅ ¡Completado! Ganaste +${_ttViewer.puntos||50} PTS.</p>
+                <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;">
+                    ${_ttViewer.formularioBancoId?`<button class="btn-add" onclick="cerrarTallerViewer();setTimeout(()=>{activarPanel('panel-cuestionarios-est');cargarCuestionariosEst();setTimeout(()=>iniciarCuestionario('${_ttViewer.formularioBancoId}'),500);},350);" style="background:rgba(56,189,248,.1);color:var(--teal);border:1px solid rgba(56,189,248,.3);">📝 Ir al cuestionario →</button>`:''}
+                </div>`;
+        }
+    } catch(e) {
+        notif('Error',e.message,'❌','error');
+        if (btn) { btn.disabled=false; btn.textContent='✅ Completar y ganar puntos'; }
+    }
+};
+
 window.cerrarCuestionario = function() {
     document.getElementById('modal-cuestionario').classList.remove('open');
     setTimeout(() => {
@@ -5359,5 +5923,29 @@ window.cerrarCuestionario = function() {
     }, 350);
 };
 </script>
+
+<!-- MODAL: TALLER TEMÁTICO VIEWER -->
+<div class="modal-overlay" id="modal-taller-viewer">
+    <div id="tt-viewer-box" style="background:var(--azul-panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;max-width:680px;width:96vw;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;position:relative;margin:auto;">
+        <!-- Header -->
+        <div style="padding:.9rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;gap:.75rem;">
+            <div style="min-width:0;flex:1;">
+                <p id="tt-viewer-area" style="font-family:var(--fuente-t);font-size:.52rem;letter-spacing:3px;color:var(--naranja);text-transform:uppercase;margin:0 0 .2rem;font-weight:700;"></p>
+                <p id="tt-viewer-titulo-taller" style="font-family:var(--fuente-t);font-size:.72rem;font-weight:700;color:rgba(255,255,255,.55);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
+            </div>
+            <button onclick="cerrarTallerViewer()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.5);width:30px;height:30px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;">✕</button>
+        </div>
+        <!-- Progress dots -->
+        <div id="tt-progress-dots" style="padding:.5rem 1.25rem;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:.3rem;flex-wrap:wrap;align-items:center;flex-shrink:0;min-height:32px;"></div>
+        <!-- Slide content -->
+        <div id="tt-slide-area" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1.25rem 1.5rem 1rem;min-height:0;scrollbar-width:thin;scrollbar-color:var(--naranja) transparent;"></div>
+        <!-- Footer nav -->
+        <div style="padding:.65rem 1.25rem;border-top:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:rgba(0,0,0,.18);">
+            <button id="tt-btn-ant" class="btn-add" onclick="navDiapo(-1)" style="background:rgba(255,255,255,.06);min-width:105px;font-size:.62rem;">← Anterior</button>
+            <p id="tt-counter" style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.35);margin:0;"></p>
+            <button id="tt-btn-sig" class="btn-add" onclick="navDiapo(1)" style="min-width:105px;font-size:.62rem;">Siguiente →</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>

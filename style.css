@@ -994,9 +994,14 @@ h1, h2, h3 {
 /* ========================================================================== */
 @media (max-width: 768px) {
     
-    /* 1. Botón hamburguesa — visible y con label MENÚ */
+    /* Ocultar el contenedor <nav> en móvil para que no genere espacio fantasma
+       (los .nav-links son position:fixed y no necesitan el <nav> visible) */
+    .navbar nav { display: none !important; }
+
+    /* 1. Botón hamburguesa — visible, pegado a la derecha con margin-left:auto */
     .menu-toggle {
         display: flex !important;
+        margin-left: auto;          /* ← empuja el toggle al extremo derecho */
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -6045,4 +6050,174 @@ html, body {
         touch-action: none;
         pointer-events: none;
     }
+}
+
+/* ══════════════════════════════════════════════════
+   TALLERES TEMÁTICOS  ·  Cards + Viewer + Builder
+══════════════════════════════════════════════════ */
+
+/* Student taller cards */
+.tt-card {
+    background: var(--azul-panel);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: .75rem;
+    cursor: pointer;
+    transition: border-color .2s, transform .15s, background .2s, box-shadow .2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.tt-card:hover {
+    border-color: rgba(255,94,0,.45);
+    background: rgba(255,94,0,.03);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(255,94,0,.1);
+}
+.tt-card-done {
+    border-color: rgba(16,185,129,.3) !important;
+    background: rgba(16,185,129,.02) !important;
+}
+.tt-card-done:hover {
+    border-color: rgba(16,185,129,.5) !important;
+    background: rgba(16,185,129,.05) !important;
+    box-shadow: 0 6px 18px rgba(16,185,129,.08) !important;
+}
+.tt-card-titulo {
+    font-family: var(--fuente-t);
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--blanco);
+    margin: 0 0 .3rem;
+    line-height: 1.3;
+}
+.tt-card-meta {
+    font-family: var(--fuente-t);
+    font-size: .6rem;
+    color: rgba(255,255,255,.38);
+    letter-spacing: .5px;
+    margin: 0;
+}
+.tt-pts-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255,94,0,.12);
+    border: 1px solid rgba(255,94,0,.28);
+    color: var(--naranja);
+    font-family: var(--fuente-t);
+    font-size: .55rem;
+    font-weight: 700;
+    letter-spacing: .8px;
+    padding: .18rem .5rem;
+    border-radius: 4px;
+}
+.tt-done-badge {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(16,185,129,.12);
+    border: 1px solid rgba(16,185,129,.3);
+    color: #10b981;
+    font-family: var(--fuente-t);
+    font-size: .55rem;
+    font-weight: 700;
+    letter-spacing: .8px;
+    padding: .18rem .5rem;
+    border-radius: 4px;
+}
+
+/* Slide viewer modal */
+#tt-slide-area::-webkit-scrollbar { width: 4px; }
+#tt-slide-area::-webkit-scrollbar-track { background: transparent; }
+#tt-slide-area::-webkit-scrollbar-thumb { background: var(--naranja); border-radius: 2px; }
+
+.tt-slide-titulo {
+    font-family: var(--fuente-t);
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: var(--naranja);
+    margin: 0 0 .9rem;
+    line-height: 1.3;
+}
+.tt-slide-body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: .91rem;
+    color: rgba(255,255,255,.82);
+    line-height: 1.85;
+}
+.tt-slide-img {
+    width: 100%;
+    max-height: 260px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.1);
+    margin-bottom: 1.1rem;
+    display: block;
+    background: rgba(0,0,0,.2);
+}
+
+/* Progress dots */
+.tt-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.14);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    border: none;
+    outline: none;
+}
+.tt-dot.active {
+    background: var(--naranja);
+    transform: scale(1.35);
+}
+.tt-dot.done {
+    background: #10b981;
+}
+.tt-dot:hover { background: rgba(255,255,255,.35); }
+
+/* Admin slide builder */
+.tt-diapo-item {
+    background: rgba(255,255,255,.025);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 8px;
+    padding: .8rem 1rem;
+    margin-bottom: .75rem;
+    transition: border-color .2s;
+}
+.tt-diapo-item:hover { border-color: rgba(255,255,255,.12); }
+.tt-diapo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .65rem;
+    flex-wrap: wrap;
+    gap: .4rem;
+}
+.tt-diapo-label {
+    font-family: var(--fuente-t);
+    font-size: .6rem;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0;
+}
+.tt-img-preview {
+    max-height: 75px;
+    border-radius: 5px;
+    margin-top: .45rem;
+    border: 1px solid rgba(255,255,255,.1);
+    object-fit: contain;
+}
+
+@media (max-width: 768px) {
+    .tt-card { padding: .85rem 1rem; }
+    .tt-card-titulo { font-size: .8rem; }
+    .tt-slide-titulo { font-size: .95rem; }
+    .tt-slide-body { font-size: .85rem; line-height: 1.75; }
+    .tt-slide-img { max-height: 190px; }
 }
