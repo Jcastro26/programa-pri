@@ -422,7 +422,7 @@
         /* Inbox */
         .inbox-thread{background:var(--azul-card);border:1px solid rgba(255,255,255,0.06);padding:1rem;margin-bottom:0.5rem;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:1rem;}
         .inbox-thread:hover{border-color:rgba(56,189,248,0.3);}
-        .inbox-avatar{width:36px;height:36px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--teal);flex-shrink:0;}
+        .inbox-avatar{width:42px;height:42px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.85rem;font-weight:900;color:var(--teal);flex-shrink:0;}
         .inbox-info{flex:1;min-width:0;}
         .inbox-name{font-family:var(--fuente-t);font-size:0.75rem;font-weight:700;color:var(--blanco);margin-bottom:0.2rem;}
         .inbox-preview{font-size:0.72rem;color:rgba(255,255,255,0.4);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -3311,17 +3311,19 @@ function renderResultadosICFES() {
             <div style="font-family:var(--fuente-t);font-size:1.1rem;font-weight:900;color:var(--teal);">${val}</div>
         </div>`).join('');
 
-    // Gráfico 1: promedio por área (excluye "(sin área)")
+    // Gráfico 1: promedio por área (incluye "(sin área)" si no hay áreas configuradas)
     const porArea = {};
     estudiantes.forEach(e => e.formularios.forEach(f => {
         const p = _pct(f.pts); if(isNaN(p)) return;
-        if(f.area === '(sin área)') return;
         if(!porArea[f.area]) porArea[f.area]={suma:0,n:0};
         porArea[f.area].suma+=p; porArea[f.area].n++;
     }));
+    // Si hay áreas reales, ocultar "(sin área)" del gráfico; si no hay ninguna, mostrarla
+    const hayAreasReales = Object.keys(porArea).some(k => k !== '(sin área)');
+    if (hayAreasReales) delete porArea['(sin área)'];
     const labelsArea  = Object.keys(porArea).sort();
     const valoresArea = labelsArea.map(a=>(porArea[a].suma/porArea[a].n).toFixed(1));
-    const coloresArea = valoresArea.map(v=>parseFloat(v)>=70?'rgba(134,239,172,.7)':parseFloat(v)>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
+    const coloresArea = labelsArea.map((a,i)=> a==='(sin área)'?'rgba(150,150,180,.5)':parseFloat(valoresArea[i])>=70?'rgba(134,239,172,.7)':parseFloat(valoresArea[i])>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
     const canvasArea  = document.getElementById('ri-chart');
     canvasArea.width  = Math.max(labelsArea.length*60,400);
     if(_riChart) _riChart.destroy();
@@ -3392,8 +3394,11 @@ function renderResultadosICFES() {
                     incorrectas_n = Math.round(total_n - correctas_n);
                     pct_val       = Math.round(correctas_n / total_n * 100);
                 } else if (!isNaN(parseFloat(ptsStr))) {
-                    // Número sin total conocido → no inventamos correctas/incorrectas/%
-                    correctas_n = total_n = incorrectas_n = pct_val = null;
+                    // Número suelto: mostramos como correctas sin % ni incorrectas
+                    correctas_n   = parseFloat(ptsStr);
+                    total_n       = null;
+                    incorrectas_n = null;
+                    pct_val       = null;
                 } else {
                     correctas_n = total_n = incorrectas_n = pct_val = null;
                 }
@@ -4880,37 +4885,87 @@ async function cargarInbox() {
         const snap = await getDocs(query(collection(db,"chats_privados"), where("participantes","array-contains", currentUser.uid)));
         if (snap.empty) { cont.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Sin mensajes privados aún. Usa el foro para iniciar una conversación.</p>'; return; }
         cont.innerHTML = '';
+        const lookupsNecesarios = []; // threads que necesitan lookup async
+
         snap.forEach(d => {
             const c = d.data();
             if (!(c.participantes||[]).includes(currentUser.uid)) return;
             const otroUid   = (c.participantes||[]).find(u => u !== currentUser.uid) || '';
             const ultimoMsg = c.ultimoMensaje || '—';
 
-            // ── Nombre correcto del OTRO participante ──────────────────────
-            // Primero buscamos en el mapa "nombres" (nuevo sistema bidireccional)
-            // Fallback al campo legacy "otroNombre" si el chat es antiguo
-            const nombreOtro = (c.nombres && c.nombres[otroUid])
-                || (c.otroNombre && c.otroNombre !== currentUser.nombre ? c.otroNombre : null)
-                || (c.ultimoAutorUid && c.ultimoAutorUid !== currentUser.uid ? c.ultimoAutorNombre : null)
-                || 'Conversación';
+            // Nombre: ignorar si coincide con el nombre del admin (mal guardado)
+            const nombreEnMapa  = c.nombres?.[otroUid];
+            const nombreValido  = (n) => n && n !== 'Conversación' && n !== currentUser.nombre;
+            const nombreOtro = (nombreValido(nombreEnMapa) ? nombreEnMapa : null)
+                || (nombreValido(c.otroNombre) ? c.otroNombre : null)
+                || (c.ultimoAutorUid && c.ultimoAutorUid !== currentUser.uid && nombreValido(c.ultimoAutorNombre) ? c.ultimoAutorNombre : null)
+                || null; // null = necesita lookup
 
-            // Foto del otro (guardada cuando inicia/envía el mensaje)
+            // Foto del otro
             const fotoOtro  = c.fotos?.[otroUid] || '';
-            const inicial   = (nombreOtro||'?')[0].toUpperCase();
+            const displayNombre = nombreOtro || '…';
+            const inicial   = (displayNombre)[0].toUpperCase();
             const esc       = (s) => (s||'').replace(/'/g,"\\'");
             const avatarInner = fotoOtro
-                ? `<img src="${fotoOtro}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`
+                ? `<img src="${fotoOtro}" alt="" style="width:100%;height:100%;object-fit:cover;">`
                 : inicial;
 
             cont.insertAdjacentHTML('beforeend',`
-                <div class="inbox-thread" onclick="abrirConversacionInbox('${esc(otroUid)}','${esc(nombreOtro)}','${d.id}')">
-                    <div class="inbox-avatar">${avatarInner}</div>
+                <div class="inbox-thread" id="inbox-thread-${d.id}" onclick="abrirConversacionInbox('${esc(otroUid)}','${esc(nombreOtro||'')}','${d.id}')">
+                    <div class="inbox-avatar" id="inbox-av-${d.id}">${avatarInner}</div>
                     <div class="inbox-info">
-                        <p class="inbox-name">${nombreOtro}</p>
+                        <p class="inbox-name" id="inbox-nm-${d.id}">${displayNombre}</p>
                         <p class="inbox-preview">${ultimoMsg}</p>
                     </div>
                 </div>`);
+
+            // Si no hay nombre válido o no hay foto, hacer lookup en usuarios
+            if (!nombreOtro || !fotoOtro) {
+                lookupsNecesarios.push({ chatId: d.id, otroUid, nombreOtro, fotoOtro });
+            }
         });
+
+        // Lookups async en paralelo
+        if (lookupsNecesarios.length) {
+            Promise.all(lookupsNecesarios.map(async ({ chatId, otroUid, nombreOtro, fotoOtro }) => {
+                try {
+                    const uSnap = await getDoc(doc(db, 'usuarios', otroUid));
+                    if (!uSnap.exists()) return;
+                    const ud = uSnap.data();
+                    const realName = ud.nombre || ud.nombres || '';
+                    const realFoto = ud.foto || ud.fotoPerfil || ud.photoURL || '';
+
+                    // Actualizar DOM
+                    const nmEl = document.getElementById(`inbox-nm-${chatId}`);
+                    const avEl = document.getElementById(`inbox-av-${chatId}`);
+                    const thEl = document.getElementById(`inbox-thread-${chatId}`);
+
+                    if (nmEl && realName && realName !== currentUser.nombre) {
+                        nmEl.textContent = realName;
+                    }
+                    if (avEl) {
+                        if (realFoto) {
+                            avEl.innerHTML = `<img src="${realFoto}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
+                        } else if (realName) {
+                            avEl.textContent = realName[0].toUpperCase();
+                        }
+                    }
+                    // Actualizar onclick con nombre real
+                    if (thEl && realName) {
+                        const esc = (s) => (s||'').replace(/'/g,"\\'");
+                        thEl.setAttribute('onclick', `abrirConversacionInbox('${esc(otroUid)}','${esc(realName)}','${chatId}')`);
+                    }
+
+                    // Persistir en Firestore para carga futura sin lookup
+                    const updates = {};
+                    if (realName && realName !== currentUser.nombre) updates[`nombres.${otroUid}`] = realName;
+                    if (realFoto) updates[`fotos.${otroUid}`] = realFoto;
+                    if (Object.keys(updates).length) {
+                        updateDoc(doc(db,'chats_privados',chatId), updates).catch(()=>{});
+                    }
+                } catch(_) {}
+            }));
+        }
     } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
 }
 
