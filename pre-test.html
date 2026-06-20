@@ -465,6 +465,8 @@
                     <option>IE Mercedes Ábrego</option>
                     <option>IE Francisco José de Caldas</option>
                     <option>IE Ciudadela Educativa del Pacífico</option>
+                    <option>IE Ciudadela Mixta</option>
+                    <option>IE General Santander</option>
                     <option>IE José María Córdoba</option>
                     <option>IE Nuestra Señora de Fátima</option>
                     <option>IE Simón Bolívar</option>
@@ -625,7 +627,7 @@
     <!-- Header pregunta -->
     <div class="quiz-header">
         <span class="quiz-area-tag" id="quiz-area">Matemáticas</span>
-        <div class="timer" id="timer-display">⏱ 45s</div>
+        <div class="timer" id="timer-display">⏱ 2:00</div>
     </div>
 
     <!-- Cuerpo -->
@@ -834,7 +836,7 @@
               if (p.q && p.o && typeof p.a === 'number') {
                   PREGUNTAS.push({
                       q: p.q, o: p.o, a: p.a,
-                      tiempoCad: p.t || p.tiempoCad || 45,
+                      tiempoCad: p.t || p.tiempoCad || 120,
                       explicacion: p.e || p.explicacion || '',
                       area: AREA_META[p.area] ? AREA_META[p.area].nombre : (p.area||'General'),
                       areaKey: p.area||'mat',
@@ -877,7 +879,7 @@
 
       PREGUNTAS = bancoBuild.map((p, idx) => ({
           ...p,
-          tiempoCad: p.t || p.tiempoCad || 50,
+          tiempoCad: p.t || p.tiempoCad || 120,
           explicacion: p.e || p.explicacion || '',
           area: AREA_META[p.area] ? AREA_META[p.area].nombre : p.area,
           areaKey: p.area,
@@ -1249,20 +1251,38 @@ function iniciarTimer(segundos) {
 
 function actualizarTimerDisplay() {
     const el = document.getElementById('timer-display');
-    el.textContent = `⏱ ${tiempoRestante}s`;
+    const min = Math.floor(tiempoRestante / 60);
+    const sec = tiempoRestante % 60;
+    el.textContent = `⏱ ${min}:${String(sec).padStart(2, '0')}`;
     el.className = 'timer';
-    if (tiempoRestante <= 10) el.classList.add('danger');
-    else if (tiempoRestante <= 20) el.classList.add('warning');
+    if (tiempoRestante <= 20) el.classList.add('danger');
+    else if (tiempoRestante <= 40) el.classList.add('warning');
 }
 
 function tiempoAgotado() {
-    // No bloquear las opciones — el estudiante DEBE seleccionar una para continuar
+    clearInterval(timerInterval);
+    // Deshabilitar opciones para que no puedan seleccionar después
+    document.querySelectorAll('.option-btn').forEach((b, i) => {
+        b.disabled = true;
+        const p = PREGUNTAS[indice];
+        if (i === p.a) b.classList.add('correct'); // mostrar respuesta correcta
+    });
+    // Registrar la pregunta como no respondida (incorrecta)
+    if (!respuestas.find(r => r.pregunta === indice)) {
+        respuestas.push({
+            pregunta: indice,
+            respondida: false,
+            correcta: false,
+            area: PREGUNTAS[indice].areaKey,
+            tiempoUsado: PREGUNTAS[indice].tiempoCad
+        });
+    }
     const fb = document.getElementById('feedback-bar');
     fb.style.display = 'flex';
     fb.className = 'feedback-bar wrong';
-    fb.textContent = '⏰ ¡Tiempo agotado! Selecciona una opción para continuar.';
-    // Reiniciar el timer con unos segundos extra para que el usuario pueda seleccionar
-    timerInterval = setInterval(() => {}, 99999); // detener tick
+    fb.textContent = `⏰ ¡Tiempo agotado! La respuesta correcta era: ${PREGUNTAS[indice].o[PREGUNTAS[indice].a]}`;
+    // Mostrar botón siguiente para que pueda continuar
+    document.getElementById('btn-siguiente').classList.remove('hidden');
 }
 
 // ── SELECCIONAR OPCIÓN ───────────────────────────────────────────
@@ -1298,6 +1318,15 @@ function mostrarFeedback(esCorrecta, msg, _) {
 
 // ── SIGUIENTE ────────────────────────────────────────────────────
 window.siguientePregunta = function() {
+    // Bloqueo de seguridad: no avanzar sin respuesta registrada
+    const yaRespondida = respuestas.find(r => r.pregunta === indice);
+    if (!yaRespondida) {
+        const fb = document.getElementById('feedback-bar');
+        fb.style.display = 'flex';
+        fb.className = 'feedback-bar wrong';
+        fb.textContent = '⚠️ Debes seleccionar una opción antes de continuar.';
+        return;
+    }
     indice++;
     cargarPregunta();
 };
