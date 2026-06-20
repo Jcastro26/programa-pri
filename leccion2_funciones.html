@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lección 2 · Funciones y Gráficas — Programa PRI</title>
+<link rel="icon" type="image/png" href="logo.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#06101f;--card:#0d1e38;--purple:#7c3aed;--ps:rgba(124,58,237,.15);--orange:#ff5e00;--teal:#38bdf8;--green:#10b981;--red:#ef4444;--text:#e8f4ff;--muted:#6b9ab8;--border:rgba(255,255,255,.09);}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+#app{display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+#topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+#prog-track{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange));border-radius:2px;transition:width .5s ease;}
+#slide-card{flex:1;background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+#slide-inner{flex:1;padding:2rem;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;}
+#nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s;}
+.nav-btn:hover:not(:disabled){background:var(--purple);border-color:var(--purple);transform:translateY(-1px);}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+#dots{display:flex;gap:6px;align-items:center;}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .25s;}
+.dot.active{background:var(--purple);transform:scale(1.4);}
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;}
+.s-title{font-size:1.75rem;font-weight:900;line-height:1.2;margin-bottom:.4rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.s-sub{font-size:.88rem;color:var(--muted);margin-bottom:1.2rem;}
+.formula{background:var(--ps);border:1px solid rgba(124,58,237,.35);border-radius:12px;padding:.9rem 1.4rem;font-size:1.2rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.9rem 0;}
+.area{background:rgba(0,0,0,.25);border-radius:12px;padding:1rem;margin:.8rem 0;display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+.sl-row{display:flex;align-items:center;gap:.9rem;width:100%;max-width:400px;}
+.sl-lbl{font-size:.75rem;color:var(--muted);min-width:22px;}
+input[type=range]{flex:1;accent-color:var(--purple);}
+.sl-val{font-weight:700;color:var(--teal);min-width:24px;font-size:.85rem;}
+.step{display:flex;align-items:flex-start;gap:.7rem;margin:.45rem 0;font-size:.87rem;line-height:1.5;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.q-q{font-size:.93rem;font-weight:600;margin-bottom:.9rem;}
+.q-opts{display:flex;flex-direction:column;gap:.45rem;}
+.q-opt{padding:.65rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);cursor:pointer;font-size:.84rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
+.q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
+.q-fb{margin-top:.65rem;font-size:.82rem;padding:.5rem .75rem;border-radius:8px;display:none;}
+.q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
+.q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
+details summary{color:#a78bfa;font-size:.84rem;cursor:pointer;margin-top:.35rem;}
+details div{color:#86efac;margin-top:.25rem;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.22);text-transform:uppercase;">PROGRAMA·PRI · MATEMÁTICAS</span>
+    <span id="counter" style="font-size:.7rem;color:var(--muted);">1 / 6</span>
+  </div>
+  <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
+  <div id="slide-card"><div id="slide-inner"></div></div>
+  <div id="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Anterior</button>
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+<script>
+const TOTAL=6;let cur=0,busy=false;const qAns=[null,null,null];
+const quiz=[
+  {q:'Para f(x)=2x+3, ¿cuál es el valor de f(4)?',opts:['8','10','11','14'],ok:2,fb:'f(4) = 2(4)+3 = 8+3 = 11 ✓'},
+  {q:'¿Qué coeficiente determina si una parábola abre hacia arriba o abajo?',opts:['b','c','a','todos'],ok:2,fb:'El coeficiente "a" en f(x)=ax²+bx+c: si a>0 abre arriba, si a<0 abre abajo ✓'},
+  {q:'¿En qué punto corta al eje Y la función f(x)=3x²-5x+2?',opts:['x=2','y=2','y=3','y=-5'],ok:1,fb:'El eje Y se corta cuando x=0: f(0)=0-0+2=2, entonces y=2 ✓'}
+];
+function render(){[s0,s1,s2,s3,s4,s5][cur](document.getElementById('slide-inner'));}
+function anim(){[a0,a1,a2,a3,a4,a5][cur]();}
+function go(d){if(busy)return;const n=cur+d;if(n<0||n>=TOTAL)return;busy=true;
+  const el=document.getElementById('slide-inner');
+  gsap.to(el,{opacity:0,x:d<0?50:-50,duration:.28,ease:'power2.in',onComplete:()=>{
+    cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-50:50},{opacity:1,x:0,duration:.35,ease:'power2.out',onComplete:()=>{anim();busy=false;}});
+  }});
+}
+function upd(){
+  document.getElementById('counter').textContent=`${cur+1} / ${TOTAL}`;
+  document.getElementById('prog-fill').style.width=`${((cur+1)/TOTAL)*100}%`;
+  document.getElementById('btn-prev').disabled=cur===0;document.getElementById('btn-next').disabled=cur===TOTAL-1;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+function mkDots(){const c=document.getElementById('dots');for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>{if(!busy){const dr=i-cur;if(!dr)return;cur=i-dr;go(dr);}};c.appendChild(d);}}
+function s0(el){el.innerHTML=`<div style="text-align:center;padding:.5rem 0;">
+<div class="s-tag">Lección 2 · Matemáticas ICFES</div>
+<div class="s-title" id="t0" style="font-size:1.9rem;">Funciones y Gráficas</div>
+<div class="s-sub" id="s0">Líneas, parábolas y cómo cambian sus coeficientes</div>
+<div id="i0" style="font-size:2.4rem;margin:1rem 0;">📈 📉 🔢</div>
+<div id="o0" style="background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1.1rem;max-width:460px;margin:0 auto;text-align:left;">
+<div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.65rem;">🎯 OBJETIVOS</div>
+${['Entender qué es una función matemática','Graficar líneas rectas f(x)=mx+b','Explorar parábolas f(x)=ax²+bx+c','Ver cómo cada coeficiente cambia la gráfica'].map(o=>`<div class="obj" style="display:flex;gap:.5rem;align-items:flex-start;margin:.3rem 0;font-size:.8rem;color:#c4b5fd;">✦ <span>${o}</span></div>`).join('')}
+</div></div>`;}
+function a0(){gsap.timeline().from('#t0',{y:-35,opacity:0,duration:.6,ease:'power3.out'}).from('#s0',{y:-18,opacity:0,duration:.4},'-=.2').from('#i0',{scale:.2,opacity:0,duration:.5,ease:'back.out(2)'}).from('.obj',{x:-25,opacity:0,duration:.4,stagger:.12});}
+function s1(el){el.innerHTML=`<div>
+<div class="s-tag">Concepto Base</div>
+<div class="s-title" id="t1">¿Qué es una Función?</div>
+<div class="s-sub">Relación donde a cada entrada le corresponde exactamente UNA salida</div>
+<div class="formula" id="f1">f(x) = y &nbsp;→&nbsp; por cada x hay un solo y</div>
+<div id="st1" class="step"><div class="step-n">1</div><div><strong>Notación:</strong> f(x) se lee "f de x". La x es la variable de entrada (dominio), y la salida es el rango.</div></div>
+<div id="st2" class="step"><div class="step-n">2</div><div><strong>Ejemplo lineal:</strong> f(x) = 2x + 1<br>x=0 → f(0)=1 &nbsp; x=1 → f(1)=3 &nbsp; x=2 → f(2)=5</div></div>
+<div id="st3" class="step"><div class="step-n">3</div><div><strong>¿Cómo verificar?</strong> Prueba vertical: si una línea vertical toca la gráfica en más de un punto, <span style="color:#fca5a5">NO es función</span>.</div></div>
+<div id="e1" style="background:rgba(56,189,248,.07);border-left:3px solid var(--teal);padding:.7rem 1rem;border-radius:0 8px 8px 0;margin:.7rem 0;font-size:.87rem;"><span style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);">⚡ TURNO</span><br>¿Es función? {(1,2),(2,4),(2,5)}<details><summary>Ver respuesta</summary><div>NO: x=2 tiene DOS salidas (4 y 5)</div></details></div>
+</div>`;}
+function a1(){gsap.timeline().from('#t1',{y:-28,opacity:0,duration:.5,ease:'power2.out'}).from('#f1',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from(['#st1','#st2','#st3'],{x:-25,opacity:0,duration:.35,stagger:.2}).from('#e1',{y:15,opacity:0,duration:.35});}
+function s2(el){
+  el.innerHTML=`<div>
+<div class="s-tag">Función Lineal · Visualización Interactiva</div>
+<div class="s-title" id="t2">Línea Recta: f(x) = mx + b</div>
+<div class="formula" id="f2">m = pendiente &nbsp;·&nbsp; b = punto de corte en Y</div>
+<div class="area" id="ar2">
+<svg id="lin-svg" width="280" height="200" viewBox="-5 -5 285 205">
+<line x1="0" y1="100" x2="280" y2="100" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+<line x1="140" y1="0" x2="140" y2="200" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+<text x="142" y="12" fill="rgba(255,255,255,.3)" font-size="10">Y</text>
+<text x="265" y="107" fill="rgba(255,255,255,.3)" font-size="10">X</text>
+${Array.from({length:11},(_,i)=>`<line x1="${i*28}" y1="97" x2="${i*28}" y2="103" stroke="rgba(255,255,255,.2)" stroke-width="1"/>`).join('')}
+${Array.from({length:9},(_,i)=>`<line x1="137" y1="${i*25}" x2="143" y2="${i*25}" stroke="rgba(255,255,255,.2)" stroke-width="1"/>`).join('')}
+<line id="lin-line" x1="0" y1="100" x2="280" y2="100" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+<circle id="lin-b" cx="140" cy="100" r="5" fill="#ff5e00"/>
+<text id="lin-label" x="8" y="15" fill="#c4b5fd" font-size="11" font-weight="bold">f(x) = 1x + 0</text>
+</svg>
+<div id="lin-info" style="font-family:monospace;font-size:.9rem;color:#c4b5fd;line-height:2;text-align:center;"></div>
+<div class="sl-row"><span class="sl-lbl" style="color:#38bdf8;">m</span><input type="range" min="-4" max="4" step=".5" value="1" id="sl-m" oninput="updLin()"><span class="sl-val" id="vm">1</span></div>
+<div class="sl-row"><span class="sl-lbl" style="color:#ff5e00;">b</span><input type="range" min="-4" max="4" step=".5" value="0" id="sl-b" oninput="updLin()"><span class="sl-val" id="vb">0</span></div>
+</div></div>`;
+  setTimeout(updLin,80);
+}
+function updLin(){
+  const m=parseFloat(document.getElementById('sl-m').value),b=parseFloat(document.getElementById('sl-b').value);
+  document.getElementById('vm').textContent=m;document.getElementById('vb').textContent=b;
+  const cx=140,cy=100,sc=28;
+  const y0=cy-b*sc,yEnd=cy-(m*5+b)*sc;
+  const x0=0,x1=280;
+  const ya=cy-(m*((0-cx)/sc)+b)*sc;
+  const yb=cy-(m*((280-cx)/sc)+b)*sc;
+  const ln=document.getElementById('lin-line');if(ln){ln.setAttribute('x1',0);ln.setAttribute('y1',ya);ln.setAttribute('x2',280);ln.setAttribute('y2',yb);}
+  const bp=document.getElementById('lin-b');if(bp){bp.setAttribute('cx',cx);bp.setAttribute('cy',cy-b*sc);}
+  const lbl=document.getElementById('lin-label');if(lbl)lbl.textContent=`f(x) = ${m}x + ${b}`;
+  const inf=document.getElementById('lin-info');if(inf)inf.innerHTML=`Pendiente: <strong style="color:#38bdf8;">${m}</strong> &nbsp; Corte Y: <strong style="color:#ff5e00;">${b}</strong><br>f(1)=${m+b} &nbsp; f(-1)=${-m+b}`;
+}
+function a2(){gsap.timeline().from('#t2',{y:-28,opacity:0,duration:.5}).from('#f2',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from('#ar2',{y:22,opacity:0,duration:.42});}
+function s3(el){
+  el.innerHTML=`<div>
+<div class="s-tag">Función Cuadrática · Visualización Interactiva</div>
+<div class="s-title" id="t3">Parábola: f(x) = ax² + bx + c</div>
+<div class="formula" id="f3">a → apertura &nbsp; b → desplazamiento &nbsp; c → corte Y</div>
+<div class="area" id="ar3">
+<svg id="par-svg" width="280" height="200" viewBox="-5 -5 285 205">
+<line x1="0" y1="100" x2="280" y2="100" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+<line x1="140" y1="0" x2="140" y2="200" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+<path id="par-path" d="" fill="none" stroke="#7c3aed" stroke-width="2.5"/>
+<circle id="par-vertex" cx="140" cy="100" r="5" fill="#ff5e00"/>
+<text id="par-label" x="8" y="15" fill="#c4b5fd" font-size="11" font-weight="bold">f(x)=x²</text>
+</svg>
+<div id="par-info" style="font-family:monospace;font-size:.87rem;color:#c4b5fd;line-height:2;text-align:center;"></div>
+<div class="sl-row"><span class="sl-lbl" style="color:#a78bfa;">a</span><input type="range" min="-3" max="3" step=".5" value="1" id="pa" oninput="updPar()"><span class="sl-val" id="pva">1</span></div>
+<div class="sl-row"><span class="sl-lbl" style="color:#38bdf8;">b</span><input type="range" min="-4" max="4" step=".5" value="0" id="pb" oninput="updPar()"><span class="sl-val" id="pvb">0</span></div>
+<div class="sl-row"><span class="sl-lbl" style="color:#ff5e00;">c</span><input type="range" min="-4" max="4" step=".5" value="0" id="pc" oninput="updPar()"><span class="sl-val" id="pvc">0</span></div>
+</div></div>`;
+  setTimeout(updPar,80);
+}
+function updPar(){
+  const a=parseFloat(document.getElementById('pa').value),b=parseFloat(document.getElementById('pb').value),c=parseFloat(document.getElementById('pc').value);
+  document.getElementById('pva').textContent=a;document.getElementById('pvb').textContent=b;document.getElementById('pvc').textContent=c;
+  const cx=140,cy=100,sc=28;
+  const pts=[];
+  for(let xi=-5;xi<=5;xi+=.1){
+    const y=a*xi*xi+b*xi+c;
+    const px=cx+xi*sc,py=cy-y*sc;
+    if(py>-10&&py<210)pts.push(`${pts.length===0?'M':'L'}${px.toFixed(1)},${py.toFixed(1)}`);
+    else if(pts.length)pts.push('M');
+  }
+  const pp=document.getElementById('par-path');if(pp)pp.setAttribute('d',pts.filter(p=>p!=='M').join(' '));
+  const vx=-b/(2*a||.001),vy=a*vx*vx+b*vx+c;
+  const vpx=cx+vx*sc,vpy=cy-vy*sc;
+  const vv=document.getElementById('par-vertex');if(vv&&vpx>0&&vpx<280&&vpy>0&&vpy<200){vv.setAttribute('cx',vpx.toFixed(1));vv.setAttribute('cy',vpy.toFixed(1));}
+  const lbl=document.getElementById('par-label');if(lbl)lbl.textContent=`f(x)=${a}x²${b>=0?'+':''}${b}x${c>=0?'+':''}${c}`;
+  const inf=document.getElementById('par-info');if(inf)inf.innerHTML=`Vértice: <strong style="color:#ff5e00;">(${vx.toFixed(1)}, ${vy.toFixed(1)})</strong> · ${a>0?'Abre ↑':'Abre ↓'}<br>Corte Y: <strong style="color:#c4b5fd;">${c}</strong>`;
+}
+function a3(){gsap.timeline().from('#t3',{y:-28,opacity:0,duration:.5}).from('#f3',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from('#ar3',{y:22,opacity:0,duration:.42});}
+function s4(el){el.innerHTML=`<div>
+<div class="s-tag">Resumen · Tipos de Funciones</div>
+<div class="s-title" id="t4">Lo que Debes Dominar</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.5rem;">
+${[['📏','Lineal','f(x) = mx + b','Línea recta. m=pendiente, b=origen'],['📐','Cuadrática','f(x) = ax² + bx + c','Parábola. a decide apertura'],['📊','Dominio','x válidas de la función','Evita raíces de negativos y ÷0'],['📉','Rango','Valores posibles de y','El "rango" de salidas']].map(([ic,nm,fml,desc],i)=>`<div class="nc${i+1}" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:.9rem;"><div style="font-size:1.3rem;">${ic}</div><div style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--orange);margin:.3rem 0;text-transform:uppercase;">${nm}</div><div style="font-family:monospace;font-size:.9rem;color:#c4b5fd;">${fml}</div><div style="font-size:.72rem;color:var(--muted);margin-top:.25rem;">${desc}</div></div>`).join('')}
+</div>
+<div id="tip4" style="margin-top:.75rem;background:rgba(255,94,0,.1);border:1px solid rgba(255,94,0,.28);border-radius:10px;padding:.7rem 1rem;font-size:.8rem;">💡 <strong>Truco ICFES:</strong> La pendiente m también representa la "tasa de cambio": cuánto sube Y por cada unidad que avanza X</div>
+</div>`;}
+function a4(){gsap.timeline().from('#t4',{y:-28,opacity:0,duration:.5}).from(['.nc1','.nc2','.nc3','.nc4'],{y:25,opacity:0,duration:.42,stagger:.15}).from('#tip4',{x:-15,opacity:0,duration:.35});}
+function s5(el){
+  el.innerHTML=`<div>
+<div class="s-tag">Mini Quiz · 3 Preguntas</div>
+<div class="s-title" id="t5">¿Cuánto aprendiste?</div>
+<div id="qw"></div>
+<div id="qf" style="display:none;text-align:center;padding:.8rem 0;">
+<div id="qs" style="font-size:2.6rem;font-weight:900;margin-bottom:.35rem;"></div>
+<div id="qm" style="color:var(--muted);font-size:.88rem;margin-bottom:.9rem;"></div>
+<button onclick="rQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.3rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button>
+</div></div>`;rQ2(0);}
+function rQ2(i){if(i>=quiz.length){setTimeout(showSc,400);return;}const q=quiz[i];const w=document.getElementById('qw');if(!w)return;
+w.innerHTML=`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem;">Pregunta ${i+1} de ${quiz.length}</div><div class="q-q">${q.q}</div><div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div><div class="q-fb" id="qf${i}"></div>`;
+gsap.from('.q-opt',{x:-16,opacity:0,duration:.28,stagger:.07});}
+function ansQ(qi,oi){if(qAns[qi]!==null)return;qAns[qi]=oi;const q=quiz[qi];
+document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});
+const fb=document.getElementById(`qf${qi}`);if(fb){fb.className='q-fb '+(oi===q.ok?'ok':'bad');fb.textContent=(oi===q.ok?'✅ ':'❌ ')+q.fb;}
+setTimeout(()=>rQ2(qi+1),2100);}
+function showSc(){const ok=qAns.filter((a,i)=>a===quiz[i].ok).length;const w=document.getElementById('qw');const f=document.getElementById('qf');if(w)w.innerHTML='';if(f){f.style.display='block';const e=ok===quiz.length?'🏆':ok>=2?'⭐':'📚';document.getElementById('qs').textContent=`${e} ${ok}/${quiz.length}`;document.getElementById('qm').textContent=ok===quiz.length?'¡Perfecto!':ok>=2?'¡Bien! Practica más.':'Repasa la lección.';gsap.from('#qf',{scale:.8,opacity:0,duration:.45,ease:'back.out(1.7)'}); }}
+function rQ(){qAns.fill(null);document.getElementById('qf').style.display='none';rQ2(0);}
+function a5(){gsap.from('#t5',{y:-28,opacity:0,duration:.5});}
+mkDots();render();anim();
+</script>
+</body>
+</html>

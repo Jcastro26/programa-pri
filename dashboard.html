@@ -121,10 +121,16 @@
         .foro-messages::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);}
         .foro-messages::-webkit-scrollbar-thumb{background:var(--naranja);border-radius:4px;}
         /* inbox chat: altura responsiva para llenar el panel disponible */
-        #inbox-chat-mensajes{height:clamp(300px,55vh,600px);}
+        #inbox-chat-mensajes{height:clamp(300px,55vh,600px);overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
         /* Desktop: el chat ocupa todo el ancho del panel */
         #inbox-chat-box{width:100%;}
         #inbox-chat-box>.section-box{flex:1;min-width:0;width:100%;}
+        /* Inbox chat pantalla completa en TODOS los dispositivos — comportamiento WhatsApp */
+        #inbox-chat-box.inbox-open{position:fixed !important;inset:0 !important;z-index:3500 !important;background:var(--azul-panel) !important;display:flex !important;flex-direction:column !important;overflow:hidden !important;}
+        #inbox-chat-box.inbox-open .section-box{flex:1 !important;display:flex !important;flex-direction:column !important;overflow:hidden !important;border-radius:0 !important;border:none !important;height:100% !important;padding:0 !important;}
+        #inbox-chat-box.inbox-open #inbox-chat-mensajes{flex:1 !important;height:auto !important;min-height:0 !important;max-height:none !important;overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
+        #inbox-chat-box.inbox-open .chat-priv-header{flex-shrink:0;}
+        #inbox-chat-box.inbox-open .foro-input-row+div,#inbox-chat-box.inbox-open>div>.foro-input-row{flex-shrink:0;}
         #ti-lista::-webkit-scrollbar{width:4px;}
         #ti-lista::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);border-radius:2px;}
         #ti-lista::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.4);border-radius:2px;}
@@ -968,7 +974,14 @@
                     <div class="fa-group"><label>Sesión #</label><input type="number" id="ti-sesion" min="1" max="20" placeholder="1"></div>
                     <div class="fa-group"><label>Módulo</label><input type="text" id="ti-modulo" placeholder="ej: 1B"></div>
                     <div class="fa-group" style="grid-column:1/-1"><label>Form ID (parte del URL de Google Forms)</label><input type="text" id="ti-formid" placeholder="1FAIpQLSf..."></div>
-                    <div class="fa-group" style="grid-column:1/-1"><label style="color:#fbbf24;">📊 Nombre de pestaña en Google Sheets (para resultados ICFES)</label><input type="text" id="ti-hojacalculo" placeholder="ej: Respuestas de formulario 26  —  encuéntralo en la pestaña inferior del Sheet"></div>
+                    <div class="fa-group" style="grid-column:1/-1">
+                        <label style="color:#fbbf24;">📊 Nombre de pestaña en Google Sheets (para resultados ICFES)
+                            <span id="hoja-detectar-btn" onclick="detectarHojasDisponibles(true)" style="cursor:pointer;font-size:.55rem;color:#86efac;font-weight:700;margin-left:.6rem;letter-spacing:1px;text-transform:uppercase;border:1px solid #86efac;border-radius:4px;padding:1px 6px;vertical-align:middle;">🔍 Detectar</span>
+                        </label>
+                        <input type="text" id="ti-hojacalculo" list="hoja-datalist" placeholder="Haz clic en 🔍 Detectar para ver los nombres disponibles…" autocomplete="off">
+                        <datalist id="hoja-datalist"></datalist>
+                        <div id="hojas-disponibles-lista" style="display:none;margin-top:.4rem;padding:.4rem .6rem;background:rgba(134,239,172,0.06);border:1px solid rgba(134,239,172,0.2);border-radius:6px;font-family:var(--fuente-t);font-size:.58rem;color:#a8c4d8;line-height:1.7;"></div>
+                    </div>
                     <div class="fa-group"><label>Fecha límite (opcional)</label><input type="datetime-local" id="ti-fechalimite"></div>
                     <div class="fa-group" style="justify-content:center;flex-direction:row;align-items:center;gap:.5rem;">
                         <input type="checkbox" id="ti-habilitado" checked style="width:1rem;height:1rem;accent-color:var(--naranja);">
@@ -3041,42 +3054,55 @@ window.verDetalleEstudiante = async function(uid) {
 
 // PRETEST DATA
 function cargarPretestData() {
-    // Intentar con orderBy; si falla (índice no creado), reintentar sin él
-    const _procesar = snap => {
-        const tbody = document.getElementById('pretest-tbody');
+    const tbody = document.getElementById('pretest-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Cargando…</td></tr>';
+
+    // Siempre carga sin orderBy (no requiere índice compuesto) y ordena en JS
+    getDocs(collection(db,'muestras_pretest')).then(snap => {
+        // Convertir a array y ordenar por fecha descendente en JS
+        const docs = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+        docs.sort((a, b) => {
+            const ta = a.fechaMuestra ? (typeof a.fechaMuestra.toDate==='function' ? a.fechaMuestra.toDate().getTime() : 0) : 0;
+            const tb = b.fechaMuestra ? (typeof b.fechaMuestra.toDate==='function' ? b.fechaMuestra.toDate().getTime() : 0) : 0;
+            return tb - ta;
+        });
+
         tbody.innerHTML = '';
         let total=0, sumPct=0, colegios=new Set(), registrados=0;
-        snap.forEach(d => {
-            const r = d.data(); total++;
-            const pct = parseInt(r.porcentaje)||0; sumPct += pct;
+        for (const r of docs) {
+            total++;
+            const pct = parseInt(r.porcentaje) || 0; sumPct += pct;
             if (r.colegio) colegios.add(r.colegio);
             if (r.registrado) registrados++;
-            const fecha = r.fechaMuestra ? new Date(r.fechaMuestra.toDate()).toLocaleDateString() : '—';
+            const fechaFmt = r.fechaMuestra && typeof r.fechaMuestra.toDate==='function'
+                ? r.fechaMuestra.toDate().toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})
+                : '—';
+            const pctColor = pct >= 70 ? '#86efac' : pct >= 40 ? '#fbbf24' : '#fca5a5';
             tbody.insertAdjacentHTML('beforeend',`<tr>
                 <td><span class="name-cell">${r.nombre||'—'}</span></td>
-                <td>${r.colegio||'—'}</td><td>${r.grado||'—'}</td><td>${r.municipio||'—'}</td>
-                <td style="font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--teal)">${r.porcentaje||'—'}</td>
-                <td style="font-size:0.75rem;color:#86efac">${(r.fortalezas||[]).join(', ')||'—'}</td>
-                <td style="font-size:0.75rem;color:#fca5a5">${(r.falencias||[]).join(', ')||'—'}</td>
+                <td style="font-size:.7rem;">${r.colegio||'—'}</td>
+                <td style="font-size:.7rem;">${r.grado||'—'}</td>
+                <td style="font-size:.7rem;">${r.municipio||'—'}</td>
+                <td style="font-family:var(--fuente-t);font-size:.85rem;font-weight:900;color:${pctColor};">${r.porcentaje!=null?r.porcentaje+'%':'—'}</td>
+                <td style="font-size:.7rem;color:#86efac;">${(r.fortalezas||[]).join(', ')||'—'}</td>
+                <td style="font-size:.7rem;color:#fca5a5;">${(r.falencias||[]).join(', ')||'—'}</td>
                 <td><span class="badge ${r.registrado?'verde':'amarillo'}">${r.registrado?'Sí':'No'}</span></td>
-                <td style="font-size:0.7rem;color:rgba(255,255,255,0.4)">${fecha}</td>
+                <td style="font-size:.65rem;color:rgba(255,255,255,.4);">${fechaFmt}</td>
             </tr>`);
-        });
-        if (!total) tbody.innerHTML='<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Sin datos aún.</td></tr>';
-        document.getElementById('pt-total').textContent = total;
-        document.getElementById('pt-prom').textContent = total ? Math.round(sumPct/total)+'%' : '0%';
-        document.getElementById('pt-colegios').textContent = colegios.size;
-        document.getElementById('pt-registrados').textContent = registrados;
-    };
-    getDocs(query(collection(db,"muestras_pretest"), orderBy("fechaMuestra","desc")))
-        .then(_procesar)
-        .catch(() => {
-            // Sin índice de fechaMuestra — cargar sin ordenar
-            getDocs(collection(db,"muestras_pretest")).then(_procesar).catch(err => {
-                const tbody = document.getElementById('pretest-tbody');
-                if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">Error: ${err.message}</td></tr>`;
-            });
-        });
+        }
+        if (!total) {
+            tbody.innerHTML='<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin datos aún. Pide a los estudiantes que completen el Pre-Test en pre-test.html.</td></tr>';
+        }
+        document.getElementById('pt-total').textContent        = total;
+        document.getElementById('pt-prom').textContent         = total ? Math.round(sumPct/total)+'%' : '0%';
+        document.getElementById('pt-colegios').textContent     = colegios.size;
+        document.getElementById('pt-registrados').textContent  = registrados;
+    }).catch(err => {
+        tbody.innerHTML = `<tr><td colspan="9" style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">
+            ⚠️ Error al cargar: ${err.message}
+        </td></tr>`;
+    });
 }
 
 window.exportarPreTestCSV = function() {
@@ -3222,6 +3248,18 @@ const _pcolor = p => isNaN(p)?'rgba(240,244,248,.4)':p>=70?'#86efac':p>=40?'#fbb
 function _fmtFecha(raw) {
     if (!raw || raw === '—') return '—';
     try {
+        // Firestore Timestamp
+        if (typeof raw === 'object' && typeof raw.toDate === 'function') {
+            const d = raw.toDate();
+            const fecha = d.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});
+            const hora  = d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+            return `${fecha} · ${hora}`;
+        }
+        if (typeof raw === 'object' && raw.seconds) {
+            const d = new Date(raw.seconds * 1000);
+            return d.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) + ' · ' +
+                   d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+        }
         const d = new Date(String(raw));
         if (isNaN(d.getTime())) return String(raw).slice(0,16);
         const fecha = d.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'});
@@ -3297,25 +3335,65 @@ function normalizarColegio(raw) {
 }
 // ──────────────────────────────────────────────────────────────────────────────
 
+// Extrae la fecha de un registro SIN convertir Timestamps a String
+// (para que _parseFechaRobusta en el sort pueda manejarlos correctamente)
+function _extraerFechaRaw(r) {
+    const FECHA_KEYS = ['_timestamp_envio','marca_temporal','Marca temporal','digita_la_fecha',
+                        'digite_la_fecha','DIGITE LA FECHA','fecha','Fecha','timestamp','fechaMuestra'];
+    for (const k of FECHA_KEYS) {
+        const v = r[k];
+        if (v === undefined || v === null) continue;
+        // Firestore Timestamp → devolverlo tal cual para que _parseFechaRobusta lo convierta
+        if (typeof v === 'object' && typeof v.toDate === 'function') return v;
+        const s = String(v).trim();
+        if (s && s !== 'undefined' && s !== 'null') return s;
+    }
+    return '—';
+}
+
+// Detecta el colegio en CUALQUIER campo del registro usando múltiples estrategias
+function _extraerColegioDeRegistro(r) {
+    // 1. Campos con nombre exacto conocido
+    const COLEGIO_KEYS = [
+        'nombre_del_colegio','nombre_colegio','colegio','COLEGIO','Colegio','_colegio',
+        'institucion_educativa','institucion','nombre_institucion','nombre_de_la_institucion',
+        'Institución Educativa','INSTITUCION EDUCATIVA','institucion_educativa_nombre',
+        'nombre_del_colegio_o_institucion','colegio_o_institucion','nombre_colegio_institucion',
+    ];
+    for (const k of COLEGIO_KEYS) {
+        const v = r[k];
+        if (v && String(v).trim().length > 2) return String(v).trim();
+    }
+    // 2. Buscar en TODOS los campos — cualquier clave que mencione colegio/institución
+    const COLEGIO_KW = ['colegio','instituci','plantel','escuela','academia','liceo'];
+    for (const [k, v] of Object.entries(r)) {
+        if (!v || typeof v !== 'string' || v.length < 3) continue;
+        const kl = k.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        if (COLEGIO_KW.some(kw => kl.includes(kw))) return v.trim();
+    }
+    // 3. Buscar en valores de tipo texto que parezcan un nombre de institución
+    for (const [k, v] of Object.entries(r)) {
+        if (!v || typeof v !== 'string' || v.length < 10) continue;
+        const vl = v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+        if (COLEGIO_KW.some(kw => vl.startsWith(kw)) || vl.includes(' tumaco') || vl.includes('ie ')) return v.trim();
+    }
+    return '';
+}
+
 function _extraerEstudiante(r) {
-    const cedula  = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula'));
-    const email   = _px(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email');
-    const nombre  = _px(r,'nombre_completo','columna_3','Columna 3','NOMBRE COMPLETO','nombre');
-    const fecha   = _px(r,'_timestamp_envio','marca_temporal','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
-    const pts     = _px(r,'Puntuación','puntuacion','PUNTUACION','Puntaje');
+    const cedula  = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula','Número de cédula','Número de identificación'));
+    const email   = _px(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email','correo');
+    const nombre  = _px(r,'nombre_completo','columna_3','Columna 3','NOMBRE COMPLETO','nombre','Nombre','Nombre completo');
+    const fecha   = _extraerFechaRaw(r);   // ← valor crudo, NO String(), para que el sort funcione
+    const pts     = _px(r,'Puntuación','Puntuacion','puntuacion','PUNTUACION','Puntaje','puntaje','Score','score','porcentaje');
     const tipoId  = _px(r,'tipo_de_identificacion','tipo_de_documento','tipo_id','Tipo de Identificación','TIPO DE IDENTIFICACION') || '';
-    const colegioForm = _px(r,
-        'nombre_del_colegio','nombre_colegio','colegio','COLEGIO','Colegio',
-        'institucion_educativa','institucion','nombre_institucion',
-        'nombre_de_la_institucion','Institución Educativa','INSTITUCION EDUCATIVA',
-        '_colegio'
-    ) || '';
+    const colegioForm = _extraerColegioDeRegistro(r);
     // Si el formulario no tiene colegio, buscarlo en el perfil del usuario (cache cargado en cargarResultadosICFES)
     const emailKey = (email||'').toLowerCase().trim();
     const colegioCache = (!colegioForm && emailKey) ? ((window._riColegioCache||{})[emailKey] || '') : '';
     const colegioRaw = colegioForm || colegioCache;
     const colegio = colegioRaw ? normalizarColegio(colegioRaw) : '';
-    return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—', tipoId, colegio };
+    return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha, pts:pts||'—', tipoId, colegio };
 }
 
 // Devuelve el área del taller que tiene ese _hoja como título, o el mapeo manual
@@ -3394,17 +3472,38 @@ async function cargarResultadosICFES() {
     try {
         // Sincronizar mapeo desde Firestore
         await syncHojaMapeoFirestore();
-        // Cargar ambas colecciones en paralelo
-        const [snapDiag, snapTall] = await Promise.all([
+        // Cargar las tres colecciones en paralelo (diagnostico + talleres + pre-test)
+        const [snapDiag, snapTall, snapPre] = await Promise.all([
             getDocs(collection(db,'diagnostico_colegios')),
-            getDocs(collection(db,'talleres'))
+            getDocs(collection(db,'talleres')),
+            getDocs(collection(db,'muestras_pretest'))
         ]);
-        _riDatos    = snapDiag.docs.map(d => ({ id:d.id, ...d.data() }));
+        const diagDatos = snapDiag.docs.map(d => ({ id:d.id, ...d.data() }));
+        // Convertir registros de pre-test al mismo formato que diagnostico_colegios
+        const pretestDatos = snapPre.docs.map(d => {
+            const r = d.data();
+            const fechaISO = r.fechaMuestra
+                ? (typeof r.fechaMuestra.toDate === 'function'
+                    ? r.fechaMuestra.toDate().toISOString()
+                    : String(r.fechaMuestra))
+                : '';
+            return {
+                id: d.id, _hoja: 'Pre-Test Diagnóstico', _source: 'pretest',
+                nombre_completo:    r.nombre || '',
+                correo_electronico: (r.correo || r.email || '').toLowerCase().trim(),
+                nombre_del_colegio: r.colegio || '',
+                grado:              r.grado   || '',
+                municipio:          r.municipio || '',
+                _timestamp_envio:   fechaISO,
+                Puntuacion:         r.porcentaje ? String(r.porcentaje) : ''
+            };
+        });
+        _riDatos    = [...diagDatos, ...pretestDatos];
         _riTalleres = snapTall.docs.map(d => ({ id:d.id, ...d.data() }));
         _fiaMap     = null; // forzar reconstrucción con datos frescos de Firestore
 
         if (!_riDatos.length) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin datos. Ejecuta la sincronización del Apps Script.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin datos aún. Ejecuta la sincronización del Apps Script o pide a estudiantes que completen el Pre-Test.</td></tr>`;
             return;
         }
 
@@ -3430,6 +3529,12 @@ async function cargarResultadosICFES() {
                 } catch(_) {}
             }
         } catch(_) {}
+
+        // Complementar el cache de colegios con datos del pre-test (tienen campo colegio explícito)
+        pretestDatos.forEach(r => {
+            const em = (r.correo_electronico||'').toLowerCase().trim();
+            if (em && r.nombre_del_colegio) window._riColegioCache[em] = r.nombre_del_colegio;
+        });
 
         // Poblar selector de áreas únicas (solo áreas asignadas, sin mostrar "(sin área)")
         const areasSet = new Set();
@@ -3664,6 +3769,32 @@ window.cerrarEstadisticasFormulario = function() {
     if (_sfChart) { _sfChart.destroy(); _sfChart = null; }
 };
 
+// Parseo robusto de fechas: acepta Timestamp de Firestore, ISO, y formato Google Forms (M/D/YYYY)
+function _parseFechaRobusta(f) {
+    if (!f || f === '—') return 0;
+    // Firestore Timestamp
+    if (typeof f === 'object' && typeof f.toDate === 'function') return f.toDate().getTime();
+    if (typeof f === 'object' && f.seconds) return f.seconds * 1000;
+    const s = String(f).trim();
+    if (!s || s === '—') return 0;
+    // ISO: YYYY-MM-DDT... o YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+        const ts = new Date(s).getTime();
+        return isNaN(ts) ? 0 : ts;
+    }
+    // Google Forms: M/D/YYYY H:MM:SS  ó  DD/MM/YYYY
+    const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}:\d{2}(?::\d{2})?))?/);
+    if (m1) {
+        const a = parseInt(m1[1], 10), b = parseInt(m1[2], 10), y = m1[3];
+        const tRaw = (m1[4] || '00:00:00').replace(/^(\d):/, '0$1:');
+        const [mes, dia] = (b > 12) ? [a, b] : (a > 12 ? [b, a] : [a, b]);
+        const ts = new Date(`${y}-${String(mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}T${tRaw}`).getTime();
+        return isNaN(ts) ? 0 : ts;
+    }
+    const ts = Date.parse(s);
+    return isNaN(ts) ? 0 : ts;
+}
+
 function renderResultadosICFES() {
     const filtroArea    = document.getElementById('ri-filtro-hoja')?.value    || '';
     const filtroColegio = document.getElementById('ri-filtro-colegio')?.value || '';
@@ -3702,36 +3833,6 @@ function renderResultadosICFES() {
     // Ordenar según selector
     const orden = document.getElementById('ri-orden')?.value || 'nombre';
     if (orden === 'reciente') {
-        // Fecha más reciente entre todos los formularios del estudiante
-        const _parseFechaRobusta = f => {
-            if (!f || f === '—') return 0;
-            if (typeof f === 'object' && typeof f.toDate === 'function') return f.toDate().getTime();
-            if (typeof f === 'object' && f.seconds) return f.seconds * 1000;
-            const s = String(f).trim();
-            if (!s || s === '—') return 0;
-            // ISO format: YYYY-MM-DD... (Apps Script _timestamp_envio)
-            if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
-                const ts = new Date(s).getTime();
-                return isNaN(ts) ? 0 : ts;
-            }
-            // Google Forms "Marca temporal": M/D/YYYY H:MM:SS (US format)
-            // También podría ser DD/MM/YYYY (usuario)
-            const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}:\d{2}(?::\d{2})?))?/);
-            if (m1) {
-                const a = parseInt(m1[1], 10), b = parseInt(m1[2], 10), y = m1[3];
-                const tRaw = m1[4] || '00:00:00';
-                // Zero-pad single-digit hour: "8:14:23" → "08:14:23" (ISO 8601 requirement)
-                const t = tRaw.replace(/^(\d):/, '0$1:');
-                // Si b>12 → a es mes (formato US: M/D/YYYY — Google Forms)
-                // Si a>12 → b es mes (formato EU: D/M/YYYY)
-                // Ambos ≤12 → asumir US (Google Forms por defecto)
-                const [mes, dia] = (b > 12) ? [a, b] : (a > 12 ? [b, a] : [a, b]);
-                const ts = new Date(`${y}-${String(mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}T${t}`).getTime();
-                return isNaN(ts) ? 0 : ts;
-            }
-            const ts = Date.parse(s);
-            return isNaN(ts) ? 0 : ts;
-        };
         const _ultimaFecha = e => {
             const ts = e.formularios.map(f => _parseFechaRobusta(f.fecha)).filter(t => t > 0);
             return ts.length ? Math.max(...ts) : 0;
@@ -3864,7 +3965,7 @@ function renderResultadosICFES() {
         const promColor = prom!=null ? _pcolor(prom) : 'rgba(240,244,248,.4)';
 
         const filasForms = e.formularios
-            .sort((a,b)=>{ const da=new Date(String(b.fecha).replace(/[-/]/g,'-')), db=new Date(String(a.fecha).replace(/[-/]/g,'-')); return isNaN(da)||isNaN(db)?0:da-db; })
+            .sort((a,b)=>{ const da=_parseFechaRobusta(b.fecha), db=_parseFechaRobusta(a.fecha); return db-da; })
             .map(f=>{
                 // ── Parseo robusto del puntaje ──────────────────────────────
                 const ptsStr = String(f.pts||'');
@@ -4137,17 +4238,69 @@ const TALLERES_SEED = [
 let TALLERES_ADMIN_DATA = [];
 let tallerEditandoId = null;
 
+// Mutex: evita llamadas concurrentes que disparan "INTERNAL ASSERTION FAILED: Unexpected state"
+// en Firestore SDK 10.7.x cuando getDocs se llama simultáneamente sobre la misma colección.
+let _cargandoTalleresAdmin = false;
 window.cargarTalleresAdmin = async function() {
+    if (_cargandoTalleresAdmin) return; // ya hay una carga en vuelo — ignorar
+    _cargandoTalleresAdmin = true;
+    const lista = document.getElementById('ti-lista');
     try {
-        const snap = await getDocs(collection(db,'talleres')); // sort in JS — no composite index needed
+        const snap = await getDocs(collection(db,'talleres'));
         TALLERES_ADMIN_DATA = snap.docs.map(d => ({ id:d.id, ...d.data() }))
             .sort((a,b) => (a.area||'').localeCompare(b.area||'') || ((a.sesion||0)-(b.sesion||0)));
         renderTalleresAdmin();
-        // cargarResumenEntregasICFES() — NO auto-cargar: lee toda diagnostico_colegios
-        // Solo carga cuando el admin hace clic en "🔄 Actualizar"
     } catch(e) {
-        document.getElementById('ti-lista').innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#f87171;">Error: ${e.message}</p>`;
+        // "Unexpected state" es un bug transitorio del SDK — reintentar una vez tras 600ms
+        if (e.message && e.message.includes('Unexpected state')) {
+            setTimeout(async () => {
+                _cargandoTalleresAdmin = false;
+                try {
+                    const snap2 = await getDocs(collection(db,'talleres'));
+                    TALLERES_ADMIN_DATA = snap2.docs.map(d => ({ id:d.id, ...d.data() }))
+                        .sort((a,b) => (a.area||'').localeCompare(b.area||'') || ((a.sesion||0)-(b.sesion||0)));
+                    renderTalleresAdmin();
+                } catch(e2) {
+                    if (lista) lista.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:#f87171;">Error al cargar talleres: ${e2.message}</p>`;
+                }
+            }, 600);
+            return;
+        }
+        if (lista) lista.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:#f87171;">Error: ${e.message}</p>`;
+    } finally {
+        _cargandoTalleresAdmin = false;
     }
+};
+
+// ── Detectar nombres de pestañas disponibles en la DB ─────────────────────────
+// Lee todos los _hoja únicos de diagnostico_colegios y los expone en el datalist
+// del formulario de taller. Llamar con showList=true para mostrar el panel visual.
+window.detectarHojasDisponibles = async function(showList = false) {
+    try {
+        const snap = await getDocs(collection(db,'diagnostico_colegios'));
+        const hojas = new Set();
+        snap.forEach(d => { const h = d.data()._hoja; if (h) hojas.add(h); });
+        // Poblar datalist
+        const dl = document.getElementById('hoja-datalist');
+        if (dl) {
+            dl.innerHTML = [...hojas].sort().map(h => `<option value="${h.replace(/"/g,'&quot;')}">`).join('');
+        }
+        if (showList) {
+            const lista = document.getElementById('hojas-disponibles-lista');
+            if (lista) {
+                if (!hojas.size) {
+                    lista.innerHTML = '<span style="color:rgba(255,255,255,.3);">Sin registros en la base de datos aún.</span>';
+                } else {
+                    lista.innerHTML = `<strong style="color:#86efac;">Pestañas detectadas en la DB (${hojas.size}):</strong><br>` +
+                        [...hojas].sort().map(h => {
+                            const n = snap.docs.filter(d=>d.data()._hoja===h).length;
+                            return `<span style="cursor:pointer;color:#7dd3fc;text-decoration:underline;" onclick="document.getElementById('ti-hojacalculo').value=this.getAttribute('data-h')" data-h="${h.replace(/"/g,'&quot;')}">${h}</span> <span style="color:rgba(255,255,255,.3);">(${n} respuestas)</span>`;
+                        }).join('<br>');
+                }
+                lista.style.display = 'block';
+            }
+        }
+    } catch(e) { console.warn('detectarHojasDisponibles:', e); }
 };
 
 // ── Resumen de todas las entregas reales (diagnostico_colegios) ──
@@ -6684,122 +6837,96 @@ window.seedTalleresTemáticos = async function() {
     }
 };
 
-/* ─── SEED: talleres interactivos de matemáticas ─── */
+/* ─── SEED: talleres interactivos — usa IDs determinísticos para evitar duplicados ─── */
+// El ID de cada taller = "tt_" + nombre del archivo sin extensión (ej: tt_taller_fisica)
+// Esto garantiza que correr el seed de nuevo ACTUALIZA en vez de duplicar.
 window.seedTalleresInteractivos = async function() {
     const TALLERES_INTERACTIVOS = [
-        {
-            titulo: 'Números y Álgebra 🔢',
-            area: 'Matemáticas',
-            grado: 'todos',
-            puntos: 80,
-            descripcion: 'Múltiplos, divisores, factores primos y números racionales e irracionales. Juegos interactivos tipo ICFES.',
-            tipo: 'interactivo',
-            url: 'taller_mat_numeros.html',
-            publicado: true
-        },
-        {
-            titulo: 'Estadística y Probabilidad 📊',
-            area: 'Matemáticas',
-            grado: 'todos',
-            puntos: 80,
-            descripcion: 'Probabilidad, ruleta experimental, tablas de datos, gráficas y preguntas reales ICFES.',
-            tipo: 'interactivo',
-            url: 'taller_mat_probabilidad.html',
-            publicado: true
-        },
-        {
-            titulo: '¿Cómo crear mi primer proyecto? 💡',
-            area: 'Competencias Ciudadanas',
-            grado: 'todos',
-            puntos: 90,
-            descripcion: 'Aprende a diseñar un proyecto social paso a paso: objetivo, población, actividades e indicadores. Taller conversacional interactivo.',
-            tipo: 'interactivo',
-            url: 'taller_primer_proyecto.html',
-            publicado: true
-        },
-        {
-            titulo: 'Lectura Crítica 📖',
-            area: 'Lectura Crítica',
-            grado: 'todos',
-            puntos: 120,
-            descripcion: 'Tipos de texto, propósito comunicativo, presuposición, conectores, textos discontinuos, argumentación, falacias y voces narrativas. Temario completo ICFES.',
-            tipo: 'interactivo',
-            url: 'taller_lectura_critica.html',
-            publicado: true
-        },
-        {
-            titulo: 'English 🇬🇧',
-            area: 'Inglés',
-            grado: 'todos',
-            puntos: 120,
-            descripcion: 'Main idea, vocabulary in context, verb tenses, conditionals, connectors, inference, language functions and passive voice. Full ICFES English syllabus.',
-            tipo: 'interactivo',
-            url: 'taller_ingles.html',
-            publicado: true
-        },
-        {
-            titulo: 'Biología 🧬',
-            area: 'Ciencias Naturales',
-            grado: 'todos',
-            puntos: 120,
-            descripcion: 'Célula eucariota y procariota, fotosíntesis, genética mendeliana, cromosomas, ecosistemas, relaciones ecológicas, evolución y sistemas del cuerpo humano.',
-            tipo: 'interactivo',
-            url: 'taller_biologia.html',
-            publicado: true
-        },
-        {
-            titulo: 'Química ⚗️',
-            area: 'Ciencias Naturales',
-            grado: 'todos',
-            puntos: 120,
-            descripcion: 'Cambios físicos y químicos, tabla periódica, enlace químico, balanceo de ecuaciones, pH, tipos de reacciones, estequiometría y química orgánica.',
-            tipo: 'interactivo',
-            url: 'taller_quimica.html',
-            publicado: true
-        },
-        {
-            titulo: 'Geometría y Medición 📐',
-            area: 'Matemáticas',
-            grado: 'todos',
-            puntos: 120,
-            descripcion: 'Áreas y perímetros, Teorema de Pitágoras, ángulos, sólidos geométricos, transformaciones, escala y semejanza, trigonometría SOH-CAH-TOA.',
-            tipo: 'interactivo',
-            url: 'taller_geometria.html',
-            publicado: true
-        },
-        {
-            titulo: 'Ciencias Sociales 🌎',
-            area: 'Ciencias Sociales',
-            grado: 'todos',
-            puntos: 120,
-            descripcion: 'Colombia precolombina, conquista y colonia, independencia, Constitución 1991, geografía, economía, siglo XX (Bogotazo) y mecanismos de participación.',
-            tipo: 'interactivo',
-            url: 'taller_sociales.html',
-            publicado: true
-        },
-        {
-            titulo: 'Física ⚡',
-            area: 'Ciencias Naturales',
-            grado: 'todos',
-            puntos: 120,
-            descripcion: 'Cinemática (MRU, MRUV), Leyes de Newton, trabajo y energía, ondas, calor y transferencia, Ley de Ohm, presión y movimiento circular.',
-            tipo: 'interactivo',
-            url: 'taller_fisica.html',
-            publicado: true
-        }
+        // ── Talleres de chat interactivo ──────────────────────────────────────
+        { titulo:'Números y Álgebra 🔢',             area:'Matemáticas',           grado:'todos', puntos:80,  url:'taller_mat_numeros.html',         descripcion:'Múltiplos, divisores, factores primos y números racionales e irracionales. Juegos interactivos tipo ICFES.' },
+        { titulo:'Estadística y Probabilidad 📊',    area:'Matemáticas',           grado:'todos', puntos:80,  url:'taller_mat_probabilidad.html',     descripcion:'Probabilidad, ruleta experimental, tablas de datos, gráficas y preguntas reales ICFES.' },
+        { titulo:'¿Cómo crear mi primer proyecto? 💡', area:'Competencias Ciudadanas', grado:'todos', puntos:90, url:'taller_primer_proyecto.html',    descripcion:'Aprende a diseñar un proyecto social paso a paso: objetivo, población, actividades e indicadores.' },
+        { titulo:'Lectura Crítica 📖',               area:'Lectura Crítica',        grado:'todos', puntos:120, url:'taller_lectura_critica.html',      descripcion:'Tipos de texto, propósito comunicativo, presuposición, conectores, argumentación, falacias y voces narrativas. Temario completo ICFES.' },
+        { titulo:'English 🇬🇧',                       area:'Inglés',                grado:'todos', puntos:120, url:'taller_ingles.html',               descripcion:'Main idea, vocabulary in context, verb tenses, conditionals, connectors, inference, language functions and passive voice.' },
+        { titulo:'Biología 🧬',                      area:'Ciencias Naturales',    grado:'todos', puntos:120, url:'taller_biologia.html',             descripcion:'Célula, fotosíntesis, genética mendeliana, ecosistemas, evolución y sistemas del cuerpo humano.' },
+        { titulo:'Química ⚗️',                        area:'Ciencias Naturales',    grado:'todos', puntos:120, url:'taller_quimica.html',              descripcion:'Cambios físicos y químicos, tabla periódica, enlace químico, balanceo, pH, estequiometría y química orgánica.' },
+        { titulo:'Geometría y Medición 📐',          area:'Matemáticas',           grado:'todos', puntos:120, url:'taller_geometria.html',            descripcion:'Áreas y perímetros, Teorema de Pitágoras, ángulos, sólidos, transformaciones, escala y trigonometría SOH-CAH-TOA.' },
+        { titulo:'Ciencias Sociales 🌎',             area:'Ciencias Sociales',     grado:'todos', puntos:120, url:'taller_sociales.html',             descripcion:'Colombia precolombina, conquista, independencia, Constitución 1991, geografía, economía y mecanismos de participación.' },
+        { titulo:'Física ⚡',                         area:'Ciencias Naturales',    grado:'todos', puntos:120, url:'taller_fisica.html',               descripcion:'Cinemática (MRU, MRUV), Leyes de Newton, trabajo y energía, ondas, calor, Ley de Ohm y movimiento circular.' },
+        // ── Lecciones de presentación animada ─────────────────────────────────
+        { titulo:'Lección 1 · Álgebra Básica 🔢',              area:'Matemáticas',       grado:'todos', puntos:60, url:'leccion1_algebra.html',                    descripcion:'Factorización visual y productos notables. Factor común, diferencia de cuadrados y trinomio cuadrado perfecto. ICFES Matemáticas.' },
+        { titulo:'Lección 2 · Funciones y Gráficas 📈',        area:'Matemáticas',       grado:'todos', puntos:60, url:'leccion2_funciones.html',                   descripcion:'Funciones lineales y cuadráticas. Graficador interactivo de líneas y parábolas — cambia coeficientes en tiempo real.' },
+        { titulo:'Lección 3 · Trigonometría Esencial 📐',      area:'Matemáticas',       grado:'todos', puntos:60, url:'leccion3_trigonometria_esencial.html',       descripcion:'SOH-CAH-TOA, ángulos especiales (30°,45°,60°,90°) e identidades fundamentales. Círculo unitario y triángulos rectángulos.' },
+        { titulo:'Lección 4 · Introducción al Cálculo ∞',      area:'Matemáticas',       grado:'todos', puntos:60, url:'leccion4_introduccion_al_calculo.html',      descripcion:'Límites y derivadas — el concepto visual de la pendiente instantánea. Regla del poder, máximos y mínimos.' },
+        { titulo:'Lección 5 · Cinemática 🏃',                  area:'Ciencias Naturales',grado:'todos', puntos:60, url:'leccion5_cinematica.html',                  descripcion:'MRU y MRUV. Posición, velocidad y aceleración. Caída libre y movimiento parabólico con vectores.' },
+        { titulo:'Lección 6 · Dinámica 💪',                    area:'Ciencias Naturales',grado:'todos', puntos:60, url:'leccion6_dinamica.html',                    descripcion:'Las 3 Leyes de Newton, diagramas de cuerpo libre, fuerza normal y fricción. F=ma en práctica.' },
+        { titulo:'Lección 7 · Estática ⚖️',                    area:'Ciencias Naturales',grado:'todos', puntos:60, url:'leccion7_estatica.html',                    descripcion:'Equilibrio de fuerzas y torques. Clases de palancas y ventaja mecánica. Condición ΣF=0, Στ=0.' },
+        { titulo:'Lección 8 · Estructura Atómica ⚛️',          area:'Ciencias Naturales',grado:'todos', puntos:60, url:'leccion8_estructura_atomica.html',           descripcion:'Núcleo, protones, neutrones y electrones. Configuración electrónica (Aufbau, Pauli, Hund) y tabla periódica.' },
+        { titulo:'Lección 9 · Enlaces Químicos 🔗',            area:'Ciencias Naturales',grado:'todos', puntos:60, url:'leccion9_enlaces_quimicos.html',             descripcion:'Regla del octeto, enlace iónico (transferencia e⁻) y covalente (compartir e⁻). Simple, doble y triple.' },
+        { titulo:'Lección 10 · Reacciones Químicas ⚗️',        area:'Ciencias Naturales',grado:'todos', puntos:60, url:'leccion10_reacciones_quimicas.html',         descripcion:'Balanceo de ecuaciones, tipos de reacciones, estequiometría y reactivo limitante. Conservación de la masa.' },
+        { titulo:'Lección 11 · Lógica y Algoritmos 💻',        area:'Programación',      grado:'todos', puntos:60, url:'leccion11_logica_y_algoritmos.html',          descripcion:'Pensamiento computacional: descomposición, abstracción y patrones. Diagramas de flujo animados.' },
+        { titulo:'Lección 12 · Estructuras de Control 🔀',     area:'Programación',      grado:'todos', puntos:60, url:'leccion12_estructuras_de_control.html',       descripcion:'If-Else, ciclos For y While. Cuándo usar cada uno y cómo evitar bucles infinitos.' },
+        { titulo:'Lección 13 · Variables y Estructuras 📦',    area:'Programación',      grado:'todos', puntos:60, url:'leccion13_variables_y_estructuras.html',      descripcion:'Variables, constantes, tipos de datos (Number, String, Boolean), arreglos y objetos en JavaScript.' },
+        { titulo:'Lección 14 · Estructura del Argumento 📝',   area:'Lectura Crítica',   grado:'todos', puntos:60, url:'leccion14_estructura_del_argumento.html',     descripcion:'Tesis, premisas y conclusión. Argumentos deductivos, inductivos y por analogía. Preparación Saber 11.' },
+        { titulo:'Lección 15 · Falacias Argumentativas ⚠️',    area:'Lectura Crítica',   grado:'todos', puntos:60, url:'leccion15_falacias_argumentativas.html',      descripcion:'Ad hominem, hombre de paja, pendiente resbaladiza, falsa dicotomía y generalización apresurada.' },
+        { titulo:'Lección 16 · Orientación Vocacional 🎯',     area:'Vocacional',        grado:'todos', puntos:60, url:'leccion16_orientacion_vocacional.html',       descripcion:'Test RIASEC interactivo. Descubre tu perfil vocacional: Realista, Investigador, Artístico, Social, Emprendedor o Convencional.' },
     ];
+
+    // Derivar ID canónico desde la URL del archivo (sin extensión, prefijo "tt_")
+    const canonId = url => 'tt_' + (url||'').replace('.html','').replace(/[^a-z0-9_]/gi,'_').toLowerCase();
+
+    const btn = document.querySelector('[onclick="seedTalleresInteractivos()"]');
+    if (btn) btn.disabled = true;
     try {
-        const existSnap = await getDocs(collection(db,'talleres_tematicos'));
-        const existentes = new Set(existSnap.docs.map(d => (d.data().titulo||'').toLowerCase()));
-        let creados = 0;
-        for (const t of TALLERES_INTERACTIVOS) {
-            if (existentes.has((t.titulo||'').toLowerCase())) continue;
-            await addDoc(collection(db,'talleres_tematicos'), {...t, creadoEn: serverTimestamp()});
-            creados++;
+        // 1. Cargar todos los docs existentes
+        const snap = await getDocs(collection(db,'talleres_tematicos'));
+        const allDocs = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+
+        // 2. Agrupar por URL — detectar duplicados
+        const byUrl = {};
+        allDocs.forEach(d => {
+            if (!d.url) return;
+            (byUrl[d.url] = byUrl[d.url] || []).push(d.id);
+        });
+
+        // 3. Para cada URL canónica: eliminar todos los docs existentes con esa URL
+        //    (los reemplazaremos con el ID canónico via setDoc)
+        let eliminados = 0;
+        for (const [url, ids] of Object.entries(byUrl)) {
+            const cid = canonId(url);
+            for (const id of ids) {
+                // Eliminar si NO tiene el ID canónico (son duplicados con ID aleatorio)
+                if (id !== cid) {
+                    await deleteDoc(doc(db,'talleres_tematicos', id));
+                    eliminados++;
+                }
+            }
         }
-        notif('Talleres interactivos', `${creados} taller${creados!==1?'es':''} añadido${creados!==1?'s':''} 🎮`, '✅', 'success');
-        cargarTalleresTematicoAdmin();
+
+        // 4. Upsert con setDoc + ID canónico (crea si no existe, actualiza si existe)
+        let actualizados = 0, creados = 0;
+        for (const t of TALLERES_INTERACTIVOS) {
+            const cid = canonId(t.url);
+            const existe = allDocs.some(d => d.id === cid);
+            await setDoc(doc(db,'talleres_tematicos', cid), {
+                ...t,
+                tipo: 'interactivo',
+                publicado: true,
+                actualizadoEn: serverTimestamp(),
+                ...(existe ? {} : { creadoEn: serverTimestamp() })
+            }, { merge: true });
+            existe ? actualizados++ : creados++;
+        }
+
+        const msg = [
+            creados   ? `${creados} nuevo${creados!==1?'s':''}` : '',
+            actualizados ? `${actualizados} actualizado${actualizados!==1?'s':''}` : '',
+            eliminados   ? `${eliminados} duplicado${eliminados!==1?'s':''} eliminado${eliminados!==1?'s':''}` : '',
+        ].filter(Boolean).join(' · ');
+        notif('Talleres interactivos', msg || 'Todo al día ✓', '✅', 'success');
+        cargarTalleresTematicoAdmin(); // refresca el panel de talleres temáticos
     } catch(e) { notif('Error', e.message, '❌', 'error'); }
+    finally { if (btn) btn.disabled = false; }
 };
 
 /* ─── ESTUDIANTE: cargar lista ─── */
