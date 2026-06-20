@@ -1134,6 +1134,7 @@
                             <option value="">Todos los grupos</option>
                             <option>General</option><option>G1</option><option>G2</option><option>Rehabilitación</option>
                         </select>
+                        <button class="btn-table" onclick="actualizarTitulosDesdeHoja()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.3);color:#7dd3fc;" title="Copia el campo hojaCalculo al título de cada taller">✏️ Títulos = hojaCalculo</button>
                         <button class="btn-table" onclick="reemplazarTalleresDesdeHojas()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.35);color:#fca5a5;" title="Borra todos los talleres actuales y crea nuevos desde los nombres de pestañas en diagnostico_colegios">🔄 Reemplazar desde hojas</button>
                     </div>
                 </div>
@@ -5931,6 +5932,37 @@ window._mhActualizarConteo = function() {
     selects.forEach(s => { if (s.value) asignados++; });
     const el = document.getElementById('_mh_count');
     if (el) el.textContent = `${asignados} / ${selects.length} asignados`;
+};
+
+// ── Copiar hojaCalculo → titulo en todos los talleres que la tienen ───────────
+window.actualizarTitulosDesdeHoja = async function() {
+    const talleres = TALLERES_ADMIN_DATA || [];
+    const conHoja  = talleres.filter(t => t.hojaCalculo && t.hojaCalculo.trim() && t.titulo !== t.hojaCalculo);
+
+    if (!conHoja.length) {
+        notif('Sin cambios', 'Todos los títulos ya coinciden con su hoja, o no hay hojas asignadas.', 'ℹ️', 'info');
+        return;
+    }
+
+    const lista = conHoja.map(t => `• "${t.titulo||t.id}"  →  "${t.hojaCalculo}"`).join('\n');
+    if (!confirm(`Se actualizarán ${conHoja.length} títulos:\n\n${lista.slice(0,1200)}${lista.length>1200?'\n…y más':''}.\n\n¿Continuar?`)) return;
+
+    try {
+        const BATCH_SIZE = 400;
+        for (let i = 0; i < conHoja.length; i += BATCH_SIZE) {
+            const batch = writeBatch(db);
+            conHoja.slice(i, i + BATCH_SIZE).forEach(t => {
+                batch.update(doc(db, 'talleres', t.id), { titulo: t.hojaCalculo });
+            });
+            await batch.commit();
+        }
+        // Actualizar caché local
+        conHoja.forEach(t => { t.titulo = t.hojaCalculo; });
+        renderTalleresAdmin();
+        notif('Títulos actualizados', `${conHoja.length} talleres renombrados.`, '✏️', 'success');
+    } catch(err) {
+        notif('Error', err.message, '❌', 'error');
+    }
 };
 
 // ── Reemplazar TODA la colección talleres desde _hoja de diagnostico_colegios ──
