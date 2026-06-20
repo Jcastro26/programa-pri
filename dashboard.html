@@ -794,6 +794,7 @@
                 <button class="export-btn" onclick="exportarPreTestCSV()">📊 Exportar Pre-Tests CSV</button>
                 <button class="export-btn" style="background:linear-gradient(135deg,#1a3a2a,#0d2a1a);border-color:rgba(134,239,172,.35);color:#86efac;" onclick="importarPreTestDesdeSheets()">⬇️ Importar Pre-Test</button>
                 <button id="btn-import-icfes" class="export-btn" style="background:linear-gradient(135deg,#1a2a3a,#0d1a2a);border-color:rgba(134,172,239,.35);color:#93c5fd;" onclick="importarICFESDesdeSheets()">⬇️ Importar ICFES</button>
+                <button class="export-btn" style="background:linear-gradient(135deg,#2a1a0d,#1a0d00);border-color:rgba(251,191,36,.3);color:#fbbf24;font-size:.58rem;" onclick="normalizarColegiosEnFirestore()" title="Unifica variantes del mismo colegio en todos los registros">🔧 Unificar colegios</button>
                 <span id="import-status" style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,.4);display:none;"></span>
                 <span id="import-icfes-status" style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,.4);display:none;"></span>
             </div>
@@ -3091,7 +3092,9 @@ function cargarPretestData() {
         for (const r of docs) {
             total++;
             const pct = parseInt(r.porcentaje) || 0; sumPct += pct;
-            if (r.colegio) colegios.add(r.colegio);
+            // Normalizar colegio al mostrar → junta variantes del mismo colegio
+            const colegioNorm = typeof normalizarColegio === 'function' ? normalizarColegio(r.colegio||'') : (r.colegio||'');
+            if (colegioNorm) colegios.add(colegioNorm);
             if (r.registrado) registrados++;
             const fechaFmt = r.fechaMuestra && typeof r.fechaMuestra.toDate==='function'
                 ? r.fechaMuestra.toDate().toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})
@@ -3099,7 +3102,7 @@ function cargarPretestData() {
             const pctColor = pct >= 70 ? '#86efac' : pct >= 40 ? '#fbbf24' : '#fca5a5';
             tbody.insertAdjacentHTML('beforeend',`<tr>
                 <td><span class="name-cell">${r.nombre||'—'}</span></td>
-                <td style="font-size:.7rem;">${r.colegio||'—'}</td>
+                <td style="font-size:.7rem;">${colegioNorm||'—'}</td>
                 <td style="font-size:.7rem;">${r.grado||'—'}</td>
                 <td style="font-size:.7rem;">${r.municipio||'—'}</td>
                 <td style="font-family:var(--fuente-t);font-size:.85rem;font-weight:900;color:${pctColor};">${r.porcentaje!=null?r.porcentaje+'%':'—'}</td>
@@ -3356,8 +3359,9 @@ window.importarPreTestDesdeSheets = async function(opts = {}) {
         const puntM    = puntStr.match(/(\d+)\s*\/\s*(\d+)/);
         const porcentaje = puntM ? Math.round((parseInt(puntM[1]) / parseInt(puntM[2])) * 100) : null;
 
-        // Colegio: primer IE no vacía
-        const colegio = allIEIdx.map(i => s(cols[i])).find(v => v && v.length > 2 && !/^\d+$/.test(v)) || '';
+        // Colegio: primer IE no vacía → normalizar para unificar variantes del mismo colegio
+        const _colegioRaw = allIEIdx.map(i => s(cols[i])).find(v => v && v.length > 2 && !/^\d+$/.test(v)) || '';
+        const colegio = typeof normalizarColegio === 'function' ? normalizarColegio(_colegioRaw) || _colegioRaw : _colegioRaw;
 
         // Grado: preferir valor específico ("Onceavo grado", "Cuarto Semestre") sobre categoría ("GRADO ESCOLAR", "PREGRADO")
         const CATEGORIAS_GENERALES = ['grado escolar','pregrado','técnico','tecnólogo','graduado','próximo a graduarse','posgrado','universitario','bachiller'];
@@ -3422,6 +3426,68 @@ window.importarPreTestDesdeSheets = async function(opts = {}) {
     }
     _pretestImportandoAuto = false;
     return importados;
+};
+
+// ──────────────────────────────────────────────────────────────────────────
+// NORMALIZAR COLEGIOS EN FIRESTORE — corrige variantes del mismo colegio
+// en todos los documentos de muestras_pretest
+// ──────────────────────────────────────────────────────────────────────────
+window.normalizarColegiosEnFirestore = async function() {
+    const statusEl = document.getElementById('import-status');
+    function setStatus(msg, color) {
+        if (!statusEl) return;
+        statusEl.style.display = 'inline';
+        statusEl.style.color   = color || 'rgba(255,255,255,.5)';
+        statusEl.textContent   = msg;
+    }
+    setStatus('Leyendo registros…', '#fbbf24');
+
+    let snap;
+    try {
+        snap = await getDocs(collection(db, 'muestras_pretest'));
+    } catch(e) {
+        setStatus(`❌ ${e.message}`, '#fca5a5');
+        return;
+    }
+
+    const toUpdate = [];
+    snap.forEach(docSnap => {
+        const data = docSnap.data();
+        const raw  = data.colegio || '';
+        const norm = typeof normalizarColegio === 'function' ? normalizarColegio(raw) : raw;
+        // Solo actualizar si el nombre cambió y el normalizado no está vacío
+        if (norm && norm !== raw) {
+            toUpdate.push({ ref: docSnap.ref, colegio: norm });
+        }
+    });
+
+    if (toUpdate.length === 0) {
+        setStatus('✅ Todos los colegios ya están unificados.', '#86efac');
+        return;
+    }
+
+    setStatus(`Actualizando ${toUpdate.length} registros…`, '#fbbf24');
+
+    // Firestore batch: máx 500 ops por batch
+    let actualizados = 0, errores = 0;
+    const BATCH_SIZE = 400;
+    for (let i = 0; i < toUpdate.length; i += BATCH_SIZE) {
+        const chunk = toUpdate.slice(i, i + BATCH_SIZE);
+        const batch = writeBatch(db);
+        chunk.forEach(({ ref, colegio }) => batch.update(ref, { colegio }));
+        try {
+            await batch.commit();
+            actualizados += chunk.length;
+            setStatus(`Actualizando… ${actualizados}/${toUpdate.length}`, '#fbbf24');
+        } catch(e) {
+            console.warn('normalizarColegios batch error', e);
+            errores += chunk.length;
+        }
+    }
+
+    const msg = `✅ ${actualizados} colegios unificados${errores ? ` · ${errores} errores` : ''}`;
+    setStatus(msg, errores ? '#fbbf24' : '#86efac');
+    if (actualizados > 0) setTimeout(() => cargarPretestData(), 800);
 };
 
 // ──────────────────────────────────────────────────────────────────────────
