@@ -1124,7 +1124,7 @@
             <div class="section-box" style="overflow:visible;">
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
                     <p class="section-box-title" style="margin:0;">📋 Talleres en Firebase</p>
-                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;">
                         <select id="ti-filter-area" onchange="renderTalleresAdmin()" style="font-family:var(--fuente-t);font-size:0.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:.3rem .5rem;">
                             <option value="">Todas las áreas</option>
                             <option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option>
@@ -1134,6 +1134,7 @@
                             <option value="">Todos los grupos</option>
                             <option>General</option><option>G1</option><option>G2</option><option>Rehabilitación</option>
                         </select>
+                        <button class="btn-table" onclick="autoVincularHojas()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(134,239,172,.08);border-color:rgba(134,239,172,.3);color:#86efac;" title="Vincula automáticamente cada taller con el nombre de pestaña en Google Sheets que coincida con su título">🔗 Auto-vincular hojas</button>
                     </div>
                 </div>
                 <div id="ti-lista" style="max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,0.35) rgba(255,255,255,0.05);">
@@ -5725,6 +5726,150 @@ window.detectarHojasDisponibles = async function(showList = false) {
             }
         }
     } catch(e) { console.warn('detectarHojasDisponibles:', e); }
+};
+
+// ── Auto-vincular talleres con pestañas de Google Sheets ─────────────────────
+// Lee todos los _hoja únicos de diagnostico_colegios, cruza con titulo/nombre
+// de cada taller y hace batch-update del campo hojaCalculo en Firestore.
+window.autoVincularHojas = async function() {
+    // Modal de progreso
+    let modal = document.getElementById('_avh_modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = '_avh_modal';
+        modal.style.cssText = 'display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;';
+        modal.innerHTML = `<div style="background:#0d1f35;border:1px solid rgba(56,189,248,.3);border-radius:14px;padding:1.5rem;max-width:560px;width:92%;max-height:80vh;overflow-y:auto;">
+            <p style="font-family:var(--fuente-t);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--teal);margin-bottom:.75rem;">🔗 Auto-vincular hojas</p>
+            <div id="_avh_body" style="font-family:var(--fuente-t);font-size:.7rem;color:rgba(255,255,255,.7);line-height:1.7;"></div>
+            <div id="_avh_actions" style="display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;"></div>
+        </div>`;
+        document.body.appendChild(modal);
+    }
+    const body = document.getElementById('_avh_body');
+    const actions = document.getElementById('_avh_actions');
+    body.innerHTML = '<span style="color:rgba(255,255,255,.4);">Analizando talleres y pestañas disponibles…</span>';
+    actions.innerHTML = '';
+    modal.style.display = 'flex';
+
+    try {
+        // 1. Leer _hoja únicos de diagnostico_colegios
+        const dcSnap = await getDocs(collection(db,'diagnostico_colegios'));
+        const hojas = new Set();
+        dcSnap.forEach(d => { const h = d.data()._hoja; if (h && h.trim()) hojas.add(h.trim()); });
+
+        if (!hojas.size) {
+            body.innerHTML = '<span style="color:#fca5a5;">No hay registros en <code>diagnostico_colegios</code> aún. Cuando los estudiantes entreguen los formularios, las pestañas aparecerán aquí.</span>';
+            actions.innerHTML = `<button class="btn-table" onclick="document.getElementById('_avh_modal').style.display='none'">Cerrar</button>`;
+            return;
+        }
+
+        // 2. Normalizar para comparar
+        const norm = s => (s||'').toLowerCase().trim()
+            .normalize('NFD').replace(/[̀-ͯ]/g,'')
+            .replace(/\s+/g,' ');
+
+        const hojasNorm = new Map(); // normalizada → original
+        hojas.forEach(h => hojasNorm.set(norm(h), h));
+
+        // 3. Cruzar con talleres
+        const talleres = TALLERES_ADMIN_DATA || [];
+        const matches  = []; // { id, titulo, hojaActual, hojaMatch }
+        const sinMatch = []; // { id, titulo, hojaActual }
+
+        for (const t of talleres) {
+            const titulo = (t.titulo || t.nombre || '').trim();
+            const actual = t.hojaCalculo || '';
+            const nTitulo = norm(titulo);
+
+            // Intentar match exacto normalizado
+            let match = hojasNorm.get(nTitulo) || null;
+
+            // Si no hay match exacto, buscar coincidencia parcial (hoja contiene título o viceversa)
+            if (!match) {
+                for (const [hn, horig] of hojasNorm) {
+                    if (hn.includes(nTitulo) || nTitulo.includes(hn)) {
+                        match = horig; break;
+                    }
+                }
+            }
+
+            if (match) {
+                matches.push({ id:t.id, titulo, hojaActual:actual, hojaMatch:match });
+            } else {
+                sinMatch.push({ id:t.id, titulo, hojaActual:actual });
+            }
+        }
+
+        // 4. Separar: nuevas vinculaciones vs ya vinculadas (confirmadas)
+        const nuevas   = matches.filter(m => m.hojaActual !== m.hojaMatch);
+        const yaOk     = matches.filter(m => m.hojaActual === m.hojaMatch);
+
+        // 5. Mostrar preview
+        const rowStyle = 'padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.05);';
+        let html = '';
+
+        if (nuevas.length) {
+            html += `<p style="color:#86efac;margin-bottom:.4rem;">✅ ${nuevas.length} taller${nuevas.length!==1?'es':''} para vincular:</p>`;
+            html += nuevas.map(m => `<div style="${rowStyle}">
+                <span style="color:#e8f0f8;">${m.titulo}</span>
+                ${m.hojaActual ? `<span style="color:rgba(255,255,255,.3);font-size:.6rem;"> (era: ${m.hojaActual})</span>` : ''}
+                <br><span style="color:var(--teal);font-size:.65rem;">→ ${m.hojaMatch}</span>
+            </div>`).join('');
+        }
+        if (yaOk.length) {
+            html += `<p style="color:rgba(255,255,255,.35);margin:.6rem 0 .3rem;">🔒 ${yaOk.length} ya vinculados correctamente.</p>`;
+        }
+        if (sinMatch.length) {
+            html += `<details style="margin-top:.5rem;"><summary style="color:#fbbf24;cursor:pointer;font-size:.65rem;">⚠️ ${sinMatch.length} sin coincidencia (expandir)</summary>
+                <div style="margin-top:.4rem;">${sinMatch.map(m=>`<div style="${rowStyle}color:rgba(255,255,255,.4);">${m.titulo}${m.hojaActual?` <span style="color:#86efac;font-size:.6rem;">[ya tiene: ${m.hojaActual}]</span>`:''}</div>`).join('')}</div>
+            </details>`;
+        }
+        html += `<p style="margin-top:.75rem;font-size:.62rem;color:rgba(255,255,255,.3);">Pestañas detectadas en la DB: ${hojas.size}</p>`;
+
+        body.innerHTML = html || '<span style="color:rgba(255,255,255,.3);">No hay talleres para actualizar.</span>';
+
+        if (!nuevas.length) {
+            actions.innerHTML = `<button class="btn-table" onclick="document.getElementById('_avh_modal').style.display='none'">Cerrar</button>`;
+            return;
+        }
+
+        actions.innerHTML = `
+            <button class="btn-add" id="_avh_btn_ok">🔗 Vincular ${nuevas.length} taller${nuevas.length!==1?'es':''}</button>
+            <button class="btn-table" onclick="document.getElementById('_avh_modal').style.display='none'">Cancelar</button>
+        `;
+
+        document.getElementById('_avh_btn_ok').onclick = async () => {
+            document.getElementById('_avh_btn_ok').disabled = true;
+            document.getElementById('_avh_btn_ok').textContent = 'Guardando…';
+            try {
+                // Escribir en lotes de 500 (límite Firestore)
+                const BATCH_SIZE = 400;
+                for (let i = 0; i < nuevas.length; i += BATCH_SIZE) {
+                    const lote = nuevas.slice(i, i + BATCH_SIZE);
+                    const batch = writeBatch(db);
+                    lote.forEach(m => batch.update(doc(db,'talleres',m.id), { hojaCalculo: m.hojaMatch }));
+                    await batch.commit();
+                }
+                // Actualizar caché local
+                nuevas.forEach(m => {
+                    const t = TALLERES_ADMIN_DATA.find(x=>x.id===m.id);
+                    if (t) t.hojaCalculo = m.hojaMatch;
+                });
+                renderTalleresAdmin();
+                body.innerHTML = `<span style="color:#86efac;">✅ ${nuevas.length} taller${nuevas.length!==1?'es':''} vinculados correctamente.</span>`;
+                actions.innerHTML = `<button class="btn-table" onclick="document.getElementById('_avh_modal').style.display='none'">Cerrar</button>`;
+                notif('Hojas vinculadas', `${nuevas.length} talleres actualizados.`, '🔗', 'success');
+            } catch(err) {
+                body.innerHTML += `<p style="color:#fca5a5;margin-top:.5rem;">Error: ${err.message}</p>`;
+                document.getElementById('_avh_btn_ok').disabled = false;
+                document.getElementById('_avh_btn_ok').textContent = '🔗 Reintentar';
+            }
+        };
+
+    } catch(err) {
+        body.innerHTML = `<span style="color:#fca5a5;">Error: ${err.message}</span>`;
+        actions.innerHTML = `<button class="btn-table" onclick="document.getElementById('_avh_modal').style.display='none'">Cerrar</button>`;
+    }
 };
 
 // ── Resumen de todas las entregas reales (diagnostico_colegios) ──
