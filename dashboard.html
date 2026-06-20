@@ -1106,11 +1106,8 @@
                     <div class="fa-group"><label>Módulo</label><input type="text" id="ti-modulo" placeholder="ej: 1B"></div>
                     <div class="fa-group" style="grid-column:1/-1"><label>Form ID (parte del URL de Google Forms)</label><input type="text" id="ti-formid" placeholder="1FAIpQLSf..."></div>
                     <div class="fa-group" style="grid-column:1/-1">
-                        <label style="color:#fbbf24;">📊 Nombre de pestaña en Google Sheets (para resultados ICFES)
-                            <span id="hoja-detectar-btn" onclick="detectarHojasDisponibles(true)" style="cursor:pointer;font-size:.55rem;color:#86efac;font-weight:700;margin-left:.6rem;letter-spacing:1px;text-transform:uppercase;border:1px solid #86efac;border-radius:4px;padding:1px 6px;vertical-align:middle;">🔍 Detectar</span>
-                        </label>
-                        <input type="text" id="ti-hojacalculo" list="hoja-datalist" placeholder="Haz clic en 🔍 Detectar para ver los nombres disponibles…" autocomplete="off">
-                        <datalist id="hoja-datalist"></datalist>
+                        <label style="color:#fbbf24;">📊 Nombre de pestaña en Google Sheets (para resultados ICFES)</label>
+                        <input type="text" id="ti-hojacalculo" placeholder="ej: Sesión 1 - Biología" autocomplete="off">
                         <div id="hojas-disponibles-lista" style="display:none;margin-top:.4rem;padding:.4rem .6rem;background:rgba(134,239,172,0.06);border:1px solid rgba(134,239,172,0.2);border-radius:6px;font-family:var(--fuente-t);font-size:.58rem;color:#a8c4d8;line-height:1.7;"></div>
                     </div>
                     <div class="fa-group"><label>Fecha límite (opcional)</label><input type="datetime-local" id="ti-fechalimite"></div>
@@ -1142,6 +1139,7 @@
                             <option value="">Todos los grupos</option>
                             <option>General</option><option>G1</option><option>G2</option><option>Rehabilitación</option>
                         </select>
+                        <button class="btn-table" onclick="limpiarDiagnosticoViejos()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#fca5a5;" title="Borra documentos de diagnostico_colegios con _hoja = Respuestas de formulario X">🗑️ Limpiar respuestas viejas</button>
                         <button class="btn-table" onclick="actualizarTitulosDesdeHoja()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.3);color:#7dd3fc;" title="Copia el campo hojaCalculo al título de cada taller">✏️ Títulos = hojaCalculo</button>
                         <button class="btn-table" onclick="reemplazarTalleresDesdeHojas()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.35);color:#fca5a5;" title="Borra todos los talleres actuales y crea nuevos desde los nombres de pestañas en diagnostico_colegios">🔄 Reemplazar desde hojas</button>
                     </div>
@@ -5758,6 +5756,45 @@ window.detectarHojasDisponibles = async function(showList = false) {
 // ── Auto-vincular talleres con pestañas de Google Sheets ─────────────────────
 // Lee todos los _hoja únicos de diagnostico_colegios, cruza con titulo/nombre
 // de cada taller y hace batch-update del campo hojaCalculo en Firestore.
+// ── Limpiar diagnostico_colegios: borrar docs con _hoja vieja ────────────────
+window.limpiarDiagnosticoViejos = async function() {
+    const btn = document.querySelector('[onclick="limpiarDiagnosticoViejos()"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'Buscando…'; }
+    try {
+        const snap = await getDocs(collection(db, 'diagnostico_colegios'));
+        const viejos = snap.docs.filter(d => {
+            const h = (d.data()._hoja || '').toLowerCase();
+            return h.includes('respuestas de formulario') || h.includes('respuesta de formulario');
+        });
+
+        if (!viejos.length) {
+            notif('Sin datos viejos', 'No hay documentos con _hoja "Respuestas de formulario X".', 'ℹ️', 'info');
+            if (btn) { btn.disabled = false; btn.textContent = '🗑️ Limpiar respuestas viejas'; }
+            return;
+        }
+
+        if (!confirm(`Se van a borrar ${viejos.length} documentos de diagnostico_colegios con _hoja "Respuestas de formulario X".\n\nEsto no se puede deshacer. ¿Continuar?`)) {
+            if (btn) { btn.disabled = false; btn.textContent = '🗑️ Limpiar respuestas viejas'; }
+            return;
+        }
+
+        const BATCH_SIZE = 400;
+        let borrados = 0;
+        for (let i = 0; i < viejos.length; i += BATCH_SIZE) {
+            const batch = writeBatch(db);
+            viejos.slice(i, i + BATCH_SIZE).forEach(d => batch.delete(d.ref));
+            await batch.commit();
+            borrados += Math.min(BATCH_SIZE, viejos.length - i);
+        }
+
+        notif('Limpieza completa', `${borrados} documentos viejos eliminados.`, '🗑️', 'success');
+    } catch(err) {
+        notif('Error', err.message, '❌', 'error');
+    } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '🗑️ Limpiar respuestas viejas'; }
+    }
+};
+
 // ── Auto-vincular (legacy – reemplazado por mapeoManualHojas) ─────────────
 window.autoVincularHojas = function() { mapeoManualHojas(); };
 
