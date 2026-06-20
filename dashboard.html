@@ -798,6 +798,17 @@
                 <span id="import-status" style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,.4);display:none;"></span>
                 <span id="import-icfes-status" style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,.4);display:none;"></span>
             </div>
+            <!-- Gráficas de áreas -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem;" id="pt-charts-wrap">
+                <div class="section-box" style="padding:1rem;">
+                    <p class="section-box-title" style="margin-bottom:.75rem;">📊 Promedio por área</p>
+                    <canvas id="pt-chart-areas" height="220"></canvas>
+                </div>
+                <div class="section-box" style="padding:1rem;">
+                    <p class="section-box-title" style="margin-bottom:.75rem;">🎯 Áreas de refuerzo (nº estudiantes)</p>
+                    <canvas id="pt-chart-falencias" height="220"></canvas>
+                </div>
+            </div>
             <div class="section-box" style="padding:0;overflow:visible;margin-top:1rem;">
                 <div class="admin-table-wrap">
                     <table>
@@ -3089,25 +3100,50 @@ function cargarPretestData() {
 
         tbody.innerHTML = '';
         let total=0, sumPct=0, colegios=new Set(), registrados=0;
+        // Acumuladores para gráficas por área
+        const areaSum = {}, areaCnt = {}, areaFalencia = {};
+
         for (const r of docs) {
             total++;
             const pct = parseInt(r.porcentaje) || 0; sumPct += pct;
-            // Normalizar colegio al mostrar → junta variantes del mismo colegio
             const colegioNorm = typeof normalizarColegio === 'function' ? normalizarColegio(r.colegio||'') : (r.colegio||'');
             if (colegioNorm) colegios.add(colegioNorm);
             if (r.registrado) registrados++;
+
+            // Acumular desglose por área para gráficas
+            const desglose = r.desglosePorArea || {};
+            for (const [area, datos] of Object.entries(desglose)) {
+                if (!areaSum[area]) { areaSum[area] = 0; areaCnt[area] = 0; areaFalencia[area] = 0; }
+                areaSum[area] += (datos.pct || 0);
+                areaCnt[area]++;
+                if ((datos.pct || 0) < 60) areaFalencia[area]++;
+            }
+            // También sumar desde fortalezas/falencias si no hay desglose detallado
+            if (!Object.keys(desglose).length) {
+                (r.falencias||[]).forEach(a => {
+                    if (!areaSum[a]) { areaSum[a] = 0; areaCnt[a] = 0; areaFalencia[a] = 0; }
+                    areaCnt[a]++; areaFalencia[a]++;
+                });
+                (r.fortalezas||[]).forEach(a => {
+                    if (!areaSum[a]) { areaSum[a] = 0; areaCnt[a] = 0; areaFalencia[a] = 0; }
+                    areaSum[a] += 80; areaCnt[a]++;
+                });
+            }
+
             const fechaFmt = r.fechaMuestra && typeof r.fechaMuestra.toDate==='function'
                 ? r.fechaMuestra.toDate().toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})
                 : '—';
             const pctColor = pct >= 70 ? '#86efac' : pct >= 40 ? '#fbbf24' : '#fca5a5';
+            const fortalezasTxt = (r.fortalezas||[]).length ? (r.fortalezas).join(', ') : 'Desarrollando habilidades';
+            const falenciasTxt  = (r.falencias||[]).length  ? (r.falencias).join(', ')  : 'Sin áreas débiles';
             tbody.insertAdjacentHTML('beforeend',`<tr>
                 <td><span class="name-cell">${r.nombre||'—'}</span></td>
                 <td style="font-size:.7rem;">${colegioNorm||'—'}</td>
                 <td style="font-size:.7rem;">${r.grado||'—'}</td>
                 <td style="font-size:.7rem;">${r.municipio||'—'}</td>
                 <td style="font-family:var(--fuente-t);font-size:.85rem;font-weight:900;color:${pctColor};">${r.porcentaje!=null?r.porcentaje+'%':'—'}</td>
-                <td style="font-size:.7rem;color:#86efac;">${(r.fortalezas||[]).join(', ')||'—'}</td>
-                <td style="font-size:.7rem;color:#fca5a5;">${(r.falencias||[]).join(', ')||'—'}</td>
+                <td style="font-size:.7rem;color:${(r.fortalezas||[]).length?'#86efac':'rgba(255,255,255,.3);font-style:italic'};">${fortalezasTxt}</td>
+                <td style="font-size:.7rem;color:${(r.falencias||[]).length?'#fca5a5':'rgba(255,255,255,.3);font-style:italic'};">${falenciasTxt}</td>
                 <td><span class="badge ${r.registrado?'verde':'amarillo'}">${r.registrado?'Sí':'No'}</span></td>
                 <td style="font-size:.65rem;color:rgba(255,255,255,.4);">${fechaFmt}</td>
             </tr>`);
@@ -3119,11 +3155,89 @@ function cargarPretestData() {
         document.getElementById('pt-prom').textContent         = total ? Math.round(sumPct/total)+'%' : '0%';
         document.getElementById('pt-colegios').textContent     = colegios.size;
         document.getElementById('pt-registrados').textContent  = registrados;
+
+        // ── Renderizar gráficas de áreas ──────────────────────────────────
+        _renderPtCharts(areaSum, areaCnt, areaFalencia);
     }).catch(err => {
         tbody.innerHTML = `<tr><td colspan="9" style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">
             ⚠️ Error al cargar: ${err.message}
         </td></tr>`;
     });
+}
+
+// ── Gráficas de Pre-Test por área ─────────────────────────────────────────
+let _ptChartAreas = null, _ptChartFalencias = null;
+function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
+    if (!Object.keys(areaCnt).length) return;
+
+    // Ordenar áreas por promedio descendente
+    const areas = Object.keys(areaCnt).sort((a,b) => (areaSum[b]/areaCnt[b]) - (areaSum[a]/areaCnt[a]));
+    const promedios = areas.map(a => Math.round(areaSum[a] / areaCnt[a]));
+    const falencias = areas.map(a => areaFalencia[a] || 0);
+
+    // Colores por posición (gradiente naranja→teal)
+    const COLORS = ['#ff5e00','#fbbf24','#86efac','#22d3ee','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#60a5fa'];
+    const bgColors = areas.map((_,i) => COLORS[i % COLORS.length] + 'cc');
+    const borderColors = areas.map((_,i) => COLORS[i % COLORS.length]);
+
+    const chartOpts = {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { ticks: { color:'rgba(255,255,255,.5)', font:{size:9} }, grid: { color:'rgba(255,255,255,.05)' } },
+            y: { ticks: { color:'rgba(255,255,255,.5)', font:{size:9} }, grid: { color:'rgba(255,255,255,.08)' }, beginAtZero:true }
+        }
+    };
+
+    // Gráfica 1: Promedio por área
+    const ctx1 = document.getElementById('pt-chart-areas');
+    if (ctx1) {
+        if (_ptChartAreas) { _ptChartAreas.destroy(); _ptChartAreas = null; }
+        _ptChartAreas = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: areas,
+                datasets: [{
+                    label: '% Promedio',
+                    data: promedios,
+                    backgroundColor: bgColors,
+                    borderColor: borderColors,
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: { ...chartOpts,
+                scales: { ...chartOpts.scales,
+                    y: { ...chartOpts.scales.y, max: 100,
+                        ticks: { ...chartOpts.scales.y.ticks, callback: v => v+'%' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Gráfica 2: Nº estudiantes con cada área como falencia
+    const ctx2 = document.getElementById('pt-chart-falencias');
+    if (ctx2) {
+        if (_ptChartFalencias) { _ptChartFalencias.destroy(); _ptChartFalencias = null; }
+        // Ordenar por más falencias primero
+        const areasFal = [...areas].sort((a,b) => (areaFalencia[b]||0) - (areaFalencia[a]||0));
+        _ptChartFalencias = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: areasFal,
+                datasets: [{
+                    label: 'Estudiantes',
+                    data: areasFal.map(a => areaFalencia[a] || 0),
+                    backgroundColor: areasFal.map((_,i) => '#fca5a5cc'),
+                    borderColor: areasFal.map((_,i) => '#fca5a5'),
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: chartOpts
+        });
+    }
 }
 
 // ──────────────────────────────────────────────────────────────────────────
