@@ -6446,11 +6446,14 @@ window.filtrarTalleresAdmin = function(filtro) {
     _renderTalleresAdmin(_ttAllDocs, filtro);
 };
 
+let _cargandoTalleresTematicoAdmin = false;
 window.cargarTalleresTematicoAdmin = async function() {
+    if (_cargandoTalleresTematicoAdmin) return;
+    _cargandoTalleresTematicoAdmin = true;
     const lista = document.getElementById('tt-lista-admin');
-    if (!lista) return;
+    if (!lista) { _cargandoTalleresTematicoAdmin = false; return; }
     lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>';
-    try {
+    const _doLoad = async () => {
         const snap = await getDocs(collection(db,'talleres_tematicos'));
         if (snap.empty) {
             lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">No hay talleres todavía. Crea el primero.</p>';
@@ -6462,8 +6465,22 @@ window.cargarTalleresTematicoAdmin = async function() {
             return tb-ta;
         });
         _renderTalleresAdmin(_ttAllDocs, _ttFiltroActivo);
+    };
+    try {
+        await _doLoad();
     } catch(e) {
+        if (e.message && e.message.includes('Unexpected state')) {
+            setTimeout(async () => {
+                _cargandoTalleresTematicoAdmin = false;
+                try { await _doLoad(); } catch(e2) {
+                    lista.innerHTML = `<p style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">${e2.message}</p>`;
+                }
+            }, 600);
+            return;
+        }
         lista.innerHTML = `<p style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">${e.message}</p>`;
+    } finally {
+        _cargandoTalleresTematicoAdmin = false;
     }
 };
 
