@@ -668,6 +668,109 @@
             <p class="panel-title" id="perfil-panel-title">Mi Cuenta</p>
             <h2 class="panel-heading" id="perfil-panel-heading">Mi <em>Perfil</em></h2>
             <p class="panel-desc" id="perfil-panel-desc">Actualiza tu foto y datos de perfil.</p>
+
+            <!-- ── Datos Personales (todos los roles) ── -->
+            <div class="section-box" id="seccion-datos-personales">
+                <p class="section-box-title">📋 Datos Personales</p>
+                <div id="dp-alerta-incompleto" style="display:none;background:rgba(255,94,0,.1);border:1px solid rgba(255,94,0,.4);border-radius:10px;padding:.75rem 1rem;margin-bottom:1rem;font-family:var(--fuente-t);font-size:.7rem;color:var(--naranja);">
+                    ⚠️ Completa tus datos para aparecer correctamente en la base de datos y acceder a todos los beneficios.
+                </div>
+                <div class="form-add">
+                    <div class="fa-group">
+                        <label>Nombre completo</label>
+                        <input type="text" id="dp-nombre" placeholder="Tu nombre completo">
+                    </div>
+                    <div class="fa-group">
+                        <label>Teléfono / WhatsApp</label>
+                        <input type="tel" id="dp-tel" placeholder="Ej: 3001234567">
+                    </div>
+                    <div class="fa-group">
+                        <label>Institución / Colegio / Universidad</label>
+                        <select id="dp-colegio">
+                            <option value="" disabled selected>Selecciona tu institución</option>
+                            <optgroup label="── IE Tumaco (públicas) ──">
+                                <option>IE Liceo del Pacífico</option><option>IE Ciudadela Educativa del Pacífico</option>
+                                <option>IE Ciudadela Mixta</option><option>IE General Santander</option>
+                                <option>IE Santa Teresita</option><option>IE Nuestra Señora del Carmen</option>
+                                <option>IE La Inmaculada</option><option>IE El Divino Niño</option>
+                                <option>IE Técnica Industrial</option><option>IE Sagrado Corazón de Jesús</option>
+                                <option>IE San Felipe Neri</option><option>IE El Cocal</option>
+                                <option>IE El Pajal</option><option>IE Integrado de La Barra</option>
+                                <option>IE Río Chagüí</option><option>IE Imbilí</option>
+                                <option>IE Integrado del Río Mejicano</option><option>IE Integrado del Río Rosario</option>
+                                <option>IE Alto Mira y Frontera</option><option>IE Bajo Mira y Frontera</option>
+                                <option>IE Integrado del Río Caunapí</option><option>IE Integrado del Río Güelmambí</option>
+                                <option>IE Las Varas</option><option>IE La Guayacana</option>
+                                <option>IE Ángel María Bejarano</option><option>IE Misional Santa Teresita</option>
+                            </optgroup>
+                            <optgroup label="── Colegios privados ──">
+                                <option>Colegio Los Amigos de la Ciencia</option>
+                                <option>Colegio Nuestra Señora de la Consolación</option>
+                                <option>Colegio Pedagógico del Pacífico</option>
+                            </optgroup>
+                            <optgroup label="── Universidades e institutos ──">
+                                <option>Universidad Nacional de Colombia</option>
+                                <option>Universidad de Nariño</option>
+                                <option>Universidad del Pacífico</option>
+                                <option>SENA</option><option>UNAD</option>
+                                <option>Politécnico Colombiano Jaime Isaza Cadavid</option>
+                                <option>Universidad Cooperativa de Colombia</option>
+                                <option>Universidad Mariana</option>
+                                <option>Universidad Antonio Nariño</option>
+                            </optgroup>
+                            <optgroup label="── Otra ──">
+                                <option value="__otra__">Otra (especificar)</option>
+                            </optgroup>
+                        </select>
+                        <input type="text" id="dp-colegio-otro" placeholder="Nombre de tu institución" style="display:none;margin-top:.5rem;">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                        <div class="fa-group">
+                            <label>Departamento</label>
+                            <select id="dp-depto" onchange="dpActualizarMunicipios()">
+                                <option value="Nariño" selected>Nariño</option>
+                                <option>Antioquia</option><option>Bogotá D.C.</option><option>Valle del Cauca</option>
+                                <option>Cauca</option><option>Cundinamarca</option><option>Atlántico</option>
+                                <option>Bolívar</option><option>Santander</option><option>Córdoba</option>
+                                <option>Boyacá</option><option>Cesar</option><option>Tolima</option>
+                                <option>Meta</option><option>Huila</option><option>Risaralda</option>
+                                <option>Caldas</option><option>Quindío</option><option>Chocó</option>
+                                <option>Magdalena</option><option>Sucre</option><option>La Guajira</option>
+                                <option>Norte de Santander</option><option>Putumayo</option>
+                            </select>
+                        </div>
+                        <div class="fa-group">
+                            <label>Municipio</label>
+                            <select id="dp-municipio"></select>
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                        <div class="fa-group">
+                            <label>Grado / Nivel</label>
+                            <select id="dp-grado">
+                                <option value="" disabled selected>Selecciona</option>
+                                <option value="8">8°</option><option value="9">9°</option>
+                                <option value="10">10°</option><option value="11">11°</option>
+                                <option value="Egresado">Egresado bachillerato</option>
+                                <option value="Pregrado">Pregrado</option>
+                                <option value="Posgrado">Posgrado</option>
+                            </select>
+                        </div>
+                        <div class="fa-group">
+                            <label>Estrato</label>
+                            <select id="dp-estrato">
+                                <option value="" disabled selected>Selecciona</option>
+                                <option value="0">Estrato 0</option><option value="1">Estrato 1</option>
+                                <option value="2">Estrato 2</option><option value="3">Estrato 3</option>
+                                <option value="4">Estrato 4 o más</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-add" onclick="guardarDatosPersonales()">💾 Guardar Datos</button>
+            </div>
+
+            <!-- ── Foto de Perfil ── -->
             <div class="section-box">
                 <p class="section-box-title">📸 Foto de Perfil</p>
                 <div class="upload-section" style="text-align:center;">
@@ -1492,6 +1595,89 @@
     </main>
 </div>
 
+<!-- MODAL: PERFIL INCOMPLETO (Google login sin datos) -->
+<div id="modal-perfil-incompleto" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9900;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+    <div style="background:#062040;border:1px solid rgba(255,94,0,.5);border-radius:16px;padding:2rem;max-width:500px;width:94vw;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.7);">
+        <div style="height:3px;background:linear-gradient(90deg,var(--naranja),var(--oro));position:absolute;top:0;left:0;right:0;border-radius:16px 16px 0 0;"></div>
+        <p style="font-family:var(--fuente-t);font-size:.55rem;letter-spacing:3px;color:var(--naranja);text-transform:uppercase;margin-bottom:.5rem;">Datos requeridos</p>
+        <h3 style="font-family:var(--fuente-t);font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:.4rem;">¡Completa tu <span style="color:var(--naranja)">Perfil</span>!</h3>
+        <p style="font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:1.5rem;line-height:1.6;">Parece que iniciaste sesión con Google y algunos datos están incompletos. Necesitamos esta información para registrarte correctamente.</p>
+        <div class="form-add">
+            <div class="fa-group"><label>Institución / Colegio *</label>
+                <select id="mp-colegio" onchange="document.getElementById('mp-colegio-otro').style.display=this.value==='__otra__'?'':'none'">
+                    <option value="" disabled selected>Selecciona tu institución</option>
+                    <optgroup label="── IE Tumaco (públicas) ──">
+                        <option>IE Liceo del Pacífico</option><option>IE Ciudadela Educativa del Pacífico</option>
+                        <option>IE Ciudadela Mixta</option><option>IE General Santander</option>
+                        <option>IE Santa Teresita</option><option>IE Nuestra Señora del Carmen</option>
+                        <option>IE La Inmaculada</option><option>IE El Divino Niño</option>
+                        <option>IE Técnica Industrial</option><option>IE Sagrado Corazón de Jesús</option>
+                        <option>IE Misional Santa Teresita</option><option>IE El Pajal</option>
+                        <option>IE Integrado de La Barra</option><option>IE Alto Mira y Frontera</option>
+                        <option>IE Bajo Mira y Frontera</option><option>IE La Guayacana</option>
+                        <option>IE Ángel María Bejarano</option>
+                    </optgroup>
+                    <optgroup label="── Colegios privados ──">
+                        <option>Colegio Los Amigos de la Ciencia</option>
+                        <option>Colegio Nuestra Señora de la Consolación</option>
+                    </optgroup>
+                    <optgroup label="── Universidades e institutos ──">
+                        <option>Universidad Nacional de Colombia</option>
+                        <option>Universidad de Nariño</option><option>Universidad del Pacífico</option>
+                        <option>SENA</option><option>UNAD</option>
+                        <option>Universidad Cooperativa de Colombia</option>
+                        <option>Universidad Mariana</option>
+                    </optgroup>
+                    <optgroup label="── Otra ──"><option value="__otra__">Otra (especificar)</option></optgroup>
+                </select>
+                <input type="text" id="mp-colegio-otro" placeholder="Nombre de tu institución" style="display:none;margin-top:.5rem;">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                <div class="fa-group"><label>Departamento *</label>
+                    <select id="mp-depto" onchange="mpActualizarMunicipios()">
+                        <option value="Nariño" selected>Nariño</option>
+                        <option>Antioquia</option><option>Bogotá D.C.</option><option>Valle del Cauca</option>
+                        <option>Cauca</option><option>Cundinamarca</option><option>Atlántico</option>
+                        <option>Bolívar</option><option>Santander</option><option>Córdoba</option>
+                        <option>Norte de Santander</option><option>Putumayo</option><option>Chocó</option>
+                        <option>Meta</option><option>Risaralda</option><option>Caldas</option>
+                    </select>
+                </div>
+                <div class="fa-group"><label>Municipio *</label>
+                    <select id="mp-municipio"></select>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                <div class="fa-group"><label>Grado / Nivel *</label>
+                    <select id="mp-grado">
+                        <option value="" disabled selected>Selecciona</option>
+                        <option value="8">8°</option><option value="9">9°</option>
+                        <option value="10">10°</option><option value="11">11°</option>
+                        <option value="Egresado">Egresado bachillerato</option>
+                        <option value="Pregrado">Pregrado</option>
+                        <option value="Posgrado">Posgrado</option>
+                    </select>
+                </div>
+                <div class="fa-group"><label>Estrato *</label>
+                    <select id="mp-estrato">
+                        <option value="" disabled selected>Selecciona</option>
+                        <option value="0">Estrato 0</option><option value="1">Estrato 1</option>
+                        <option value="2">Estrato 2</option><option value="3">Estrato 3</option>
+                        <option value="4">Estrato 4 o más</option>
+                    </select>
+                </div>
+            </div>
+            <div class="fa-group"><label>Teléfono / WhatsApp</label>
+                <input type="tel" id="mp-tel" placeholder="Ej: 3001234567">
+            </div>
+        </div>
+        <div style="display:flex;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap;">
+            <button class="btn-add" style="flex:1;" onclick="guardarPerfilModal()">✅ Guardar y Continuar</button>
+            <button class="btn-add secondary" style="flex:0 0 auto;" onclick="document.getElementById('modal-perfil-incompleto').style.display='none'" title="Completar después">Ahora no</button>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL CUESTIONARIO ESTUDIANTE -->
 <div class="modal-overlay" id="modal-cuestionario">
     <div class="modal-box" style="max-width:640px;width:95vw;max-height:88vh;overflow-y:auto;" id="quiz-modal-box">
@@ -1841,6 +2027,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     construirMenu(rol);
     iniciarBadgeInbox();
+    // Verificar si el perfil está completo (muestra modal si no)
+    _checkPerfilCompleto();
 });
 
 // ===================== MENU =====================
@@ -6324,10 +6512,12 @@ window.adaptarPanelFoto = function() {
     const esMentor = rol === 'docente' || rol === 'voluntario';
     const heading = document.getElementById('perfil-panel-heading');
     const desc = document.getElementById('perfil-panel-desc');
-    const camposMentor = document.querySelector('#panel-mi-perfil .form-add');
-    const btnActualizar = document.querySelector('#panel-mi-perfil .btn-add.secondary');
-    if (heading) heading.innerHTML = esMentor ? 'Mi <em>Perfil</em> de Mentor' : 'Mi <em>Foto</em> de Perfil';
-    if (desc) desc.textContent = esMentor ? 'Actualiza tu foto, descripción y materias. Visible en la página de Docentes.' : 'Sube tu foto de perfil para que aparezca en el foro y el chat.';
+    // Los campos de mentor están en el segundo .form-add (dentro de la sección foto)
+    const seccFoto = document.querySelector('#panel-mi-perfil .section-box:nth-child(3)');
+    const camposMentor = seccFoto ? seccFoto.querySelector('.form-add') : null;
+    const btnActualizar = seccFoto ? seccFoto.querySelector('.btn-add.secondary') : null;
+    if (heading) heading.innerHTML = esMentor ? 'Mi <em>Perfil</em> de Mentor' : 'Mi <em>Perfil</em>';
+    if (desc) desc.textContent = esMentor ? 'Actualiza tu foto, descripción y materias. Visible en la página de Docentes.' : 'Mantén tus datos actualizados para acceder a todos los beneficios del programa.';
     if (camposMentor) camposMentor.style.display = esMentor ? '' : 'none';
     if (btnActualizar) btnActualizar.style.display = esMentor ? '' : 'none';
     // Cargar foto actual desde Firestore
@@ -6339,6 +6529,8 @@ window.adaptarPanelFoto = function() {
             prev.src = fotoUrl; prev.style.display = 'block';
         }
     }).catch(()=>{});
+    // Cargar datos personales
+    cargarDatosPersonales();
 };
 
 function cargarPerfilDocente() {
@@ -6834,6 +7026,198 @@ window.logoutSession = function() {
     localStorage.removeItem('usuario_sesion_activa');
     localStorage.removeItem('sesion_timestamp');
     window.location.href = "login.html";
+};
+
+// ── Municipios para selectores de perfil (Dashboard) ─────────────────────
+const _DP_MUNICIPIOS = {
+    'Nariño': ['Tumaco','Pasto','Ipiales','Tumaco (Vereda El Bajo Mira)','Tumaco (Vereda Alto Mira)','Tumaco (Vereda La Guayacana)','Barbacoas','Tumaco (Vereda Las Varas)','Tumaco (Vereda Imbilí)','La Unión','El Charco','Samaniego','La Cruz','Túquerres','Ancuya','Cumbal','Linares','Olaya Herrera','Francisco Pizarro','Roberto Payán'],
+    'Antioquia': ['Medellín','Bello','Itagüí','Envigado','Apartadó','Turbo','Rionegro','Caucasia','Montería','Soledad'],
+    'Bogotá D.C.': ['Bogotá'],
+    'Valle del Cauca': ['Cali','Buenaventura','Palmira','Tuluá','Buga','Cartago','Jamundí','Yumbo'],
+    'Cauca': ['Popayán','Santander de Quilichao','Miranda','Puerto Tejada','Guapi','Timbiquí'],
+    'Cundinamarca': ['Soacha','Facatativá','Zipaquirá','Chía','Mosquera','Fusagasugá','Girardot'],
+    'Atlántico': ['Barranquilla','Soledad','Malambo','Sabanalarga'],
+    'Bolívar': ['Cartagena','Magangué','El Carmen de Bolívar','Mompox'],
+    'Santander': ['Bucaramanga','Floridablanca','Girón','Piedecuesta','Barrancabermeja'],
+    'Córdoba': ['Montería','Cereté','Lorica','Sahagún','Montelíbano'],
+    'Norte de Santander': ['Cúcuta','Ocaña','Pamplona','Tibú'],
+    'Putumayo': ['Mocoa','Puerto Asís','Orito','Villagarzón'],
+    'Chocó': ['Quibdó','Istmina','Tadó','Riosucio'],
+    'Meta': ['Villavicencio','Acacías','Granada','San Martín'],
+    'Risaralda': ['Pereira','Dosquebradas','Santa Rosa de Cabal'],
+    'Caldas': ['Manizales','La Dorada','Riosucio'],
+};
+function _dpMunicipiosLista(depto) {
+    return _DP_MUNICIPIOS[depto] || [depto];
+}
+function _dpLlenarMunicipios(selectDepto, selectMunicipio, valorActual) {
+    const depto = selectDepto.value || 'Nariño';
+    const lista = _dpMunicipiosLista(depto);
+    selectMunicipio.innerHTML = '<option value="" disabled selected>Selecciona municipio</option>' +
+        lista.map(m => `<option value="${m}">${m}</option>`).join('');
+    if (valorActual && lista.includes(valorActual)) selectMunicipio.value = valorActual;
+    else if (depto === 'Nariño') selectMunicipio.value = 'Tumaco';
+}
+window.dpActualizarMunicipios = function() {
+    _dpLlenarMunicipios(
+        document.getElementById('dp-depto'),
+        document.getElementById('dp-municipio'),
+        ''
+    );
+};
+window.mpActualizarMunicipios = function() {
+    _dpLlenarMunicipios(
+        document.getElementById('mp-depto'),
+        document.getElementById('mp-municipio'),
+        ''
+    );
+};
+// Listener para "Otra institución" en panel perfil
+document.addEventListener('DOMContentLoaded', () => {
+    const dpColegio = document.getElementById('dp-colegio');
+    if (dpColegio) dpColegio.addEventListener('change', () => {
+        document.getElementById('dp-colegio-otro').style.display = dpColegio.value === '__otra__' ? '' : 'none';
+    });
+    // Inicializar selectores de municipio
+    const dpDepto = document.getElementById('dp-depto');
+    const dpMun = document.getElementById('dp-municipio');
+    if (dpDepto && dpMun) _dpLlenarMunicipios(dpDepto, dpMun, 'Tumaco');
+    const mpDepto = document.getElementById('mp-depto');
+    const mpMun = document.getElementById('mp-municipio');
+    if (mpDepto && mpMun) _dpLlenarMunicipios(mpDepto, mpMun, 'Tumaco');
+});
+
+// ── Cargar datos personales en panel perfil ───────────────────────────────
+window.cargarDatosPersonales = async function() {
+    if (!currentUser?.uid) return;
+    try {
+        const snap = await getDoc(doc(db, 'usuarios', currentUser.uid));
+        const d = snap.exists() ? snap.data() : {};
+        // Pre-llenar campos
+        const _set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+        _set('dp-nombre', d.nombre || currentUser.nombre || '');
+        _set('dp-tel', d.tel || currentUser.tel || '');
+        _set('dp-grado', d.grado || '');
+        _set('dp-estrato', d.estrato || '');
+        // Colegio
+        const colegioVal = d.colegio || '';
+        const dpColegio = document.getElementById('dp-colegio');
+        if (dpColegio && colegioVal) {
+            const optMatch = [...dpColegio.options].find(o => o.value === colegioVal || o.text === colegioVal);
+            if (optMatch) dpColegio.value = optMatch.value;
+            else {
+                dpColegio.value = '__otra__';
+                const otro = document.getElementById('dp-colegio-otro');
+                if (otro) { otro.style.display = ''; otro.value = colegioVal; }
+            }
+        }
+        // Municipio
+        const munVal = d.municipio || 'Tumaco';
+        const deptoVal = d.departamento || 'Nariño';
+        const dpDepto = document.getElementById('dp-depto');
+        const dpMun = document.getElementById('dp-municipio');
+        if (dpDepto) { dpDepto.value = deptoVal; _dpLlenarMunicipios(dpDepto, dpMun, munVal); }
+
+        // Mostrar alerta si datos incompletos
+        const incompleto = !colegioVal || !munVal || !d.grado;
+        const alertEl = document.getElementById('dp-alerta-incompleto');
+        if (alertEl) alertEl.style.display = incompleto ? '' : 'none';
+    } catch(e) { console.warn('[DP] Error al cargar datos:', e.message); }
+};
+
+// ── Guardar datos personales desde panel perfil ───────────────────────────
+window.guardarDatosPersonales = async function() {
+    if (!currentUser?.uid) return;
+    const _g = id => document.getElementById(id)?.value?.trim() || '';
+    const dpColegio = document.getElementById('dp-colegio');
+    const colegio = dpColegio?.value === '__otra__'
+        ? _g('dp-colegio-otro')
+        : (dpColegio?.value || '');
+    const municipio = _g('dp-municipio') || 'Tumaco';
+    const departamento = _g('dp-depto') || 'Nariño';
+    const grado = _g('dp-grado');
+    const estrato = _g('dp-estrato');
+    const tel = _g('dp-tel');
+    const nombre = _g('dp-nombre');
+
+    if (!colegio || !municipio || !grado) {
+        notif('Datos incompletos', 'Institución, municipio y grado son obligatorios.', '⚠️', 'warn');
+        return;
+    }
+    try {
+        const payload = { municipio, departamento, colegio, grado, estrato, tel };
+        if (nombre) payload.nombre = nombre;
+        await setDoc(doc(db, 'usuarios', currentUser.uid), payload, { merge: true });
+        // Actualizar currentUser y localStorage
+        Object.assign(currentUser, payload);
+        localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        // Ocultar alerta
+        const alertEl = document.getElementById('dp-alerta-incompleto');
+        if (alertEl) alertEl.style.display = 'none';
+        notif('Perfil actualizado', 'Tus datos han sido guardados correctamente.', '✅', 'success');
+    } catch(e) { notif('Error al guardar', e.message, '❌', 'error'); }
+};
+
+// ── Modal perfil incompleto ───────────────────────────────────────────────
+function _checkPerfilCompleto() {
+    if (!currentUser || currentUser.rol === 'admin') return;
+    const yaVisto = sessionStorage.getItem('perfil_modal_visto');
+    if (yaVisto) return;
+    const faltaMunicipio = !currentUser.municipio;
+    const faltaColegio   = !currentUser.colegio;
+    const faltaGrado     = !currentUser.grado;
+    if (faltaMunicipio || faltaColegio || faltaGrado) {
+        sessionStorage.setItem('perfil_modal_visto', '1');
+        // Pequeño delay para que el dashboard cargue primero
+        setTimeout(() => {
+            const modal = document.getElementById('modal-perfil-incompleto');
+            if (modal) modal.style.display = 'flex';
+            // Prellenar si hay datos parciales
+            const _set = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+            _set('mp-tel', currentUser.tel || '');
+            _set('mp-grado', currentUser.grado || '');
+            _set('mp-estrato', currentUser.estrato || '');
+            const mpDepto = document.getElementById('mp-depto');
+            const mpMun = document.getElementById('mp-municipio');
+            if (mpDepto && mpMun) _dpLlenarMunicipios(mpDepto, mpMun, currentUser.municipio || 'Tumaco');
+            const mpColegio = document.getElementById('mp-colegio');
+            if (mpColegio && currentUser.colegio) {
+                const opt = [...mpColegio.options].find(o => o.value === currentUser.colegio || o.text === currentUser.colegio);
+                if (opt) mpColegio.value = opt.value;
+            }
+        }, 1200);
+    }
+}
+
+window.guardarPerfilModal = async function() {
+    if (!currentUser?.uid) return;
+    const _g = id => document.getElementById(id)?.value?.trim() || '';
+    const mpColegio = document.getElementById('mp-colegio');
+    const colegio = mpColegio?.value === '__otra__'
+        ? _g('mp-colegio-otro')
+        : (mpColegio?.value || '');
+    const municipio = _g('mp-municipio') || 'Tumaco';
+    const departamento = _g('mp-depto') || 'Nariño';
+    const grado = _g('mp-grado');
+    const estrato = _g('mp-estrato');
+    const tel = _g('mp-tel');
+
+    if (!colegio || !municipio || !grado) {
+        notif('Datos incompletos', 'Institución, municipio y grado son obligatorios.', '⚠️', 'warn');
+        return;
+    }
+    try {
+        const payload = { municipio, departamento, colegio, grado, estrato, tel };
+        await setDoc(doc(db, 'usuarios', currentUser.uid), payload, { merge: true });
+        Object.assign(currentUser, payload);
+        localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        document.getElementById('modal-perfil-incompleto').style.display = 'none';
+        notif('¡Perfil completado!', 'Tus datos han sido guardados. Bienvenido al Programa PRI.', '🎉', 'success');
+        // Refrescar base global si admin lo tiene abierto
+        if (typeof cargarAdmin === 'function' && document.getElementById('panel-admin-global')?.classList.contains('active')) {
+            setTimeout(cargarAdmin, 500);
+        }
+    } catch(e) { notif('Error al guardar', e.message, '❌', 'error'); }
 };
 
 /* ── Expose Firebase functions to non-module scripts ── */
