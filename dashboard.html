@@ -3110,40 +3110,58 @@ function cargarPretestData() {
             if (colegioNorm) colegios.add(colegioNorm);
             if (r.registrado) registrados++;
 
-            // Acumular desglose por área para gráficas
+            // Normalizar municipio
+            const municipioNorm = typeof normalizarMunicipio === 'function'
+                ? normalizarMunicipio(r.municipio||'') || (r.municipio||'—')
+                : (r.municipio||'—');
+
+            // Acumular desglose por área para gráficas (usando nombres completos)
             const desglose = r.desglosePorArea || {};
-            for (const [area, datos] of Object.entries(desglose)) {
+            for (const [areaKey, datos] of Object.entries(desglose)) {
+                const area = _nombreArea(areaKey);
                 if (!areaSum[area]) { areaSum[area] = 0; areaCnt[area] = 0; areaFalencia[area] = 0; }
                 areaSum[area] += (datos.pct || 0);
                 areaCnt[area]++;
                 if ((datos.pct || 0) < 60) areaFalencia[area]++;
             }
-            // También sumar desde fortalezas/falencias si no hay desglose detallado
             if (!Object.keys(desglose).length) {
-                (r.falencias||[]).forEach(a => {
-                    if (!areaSum[a]) { areaSum[a] = 0; areaCnt[a] = 0; areaFalencia[a] = 0; }
+                (r.falencias||[]).forEach(ak => {
+                    const a = _nombreArea(ak);
+                    if (!areaSum[a]) { areaSum[a]=0; areaCnt[a]=0; areaFalencia[a]=0; }
                     areaCnt[a]++; areaFalencia[a]++;
                 });
-                (r.fortalezas||[]).forEach(a => {
-                    if (!areaSum[a]) { areaSum[a] = 0; areaCnt[a] = 0; areaFalencia[a] = 0; }
-                    areaSum[a] += 80; areaCnt[a]++;
+                (r.fortalezas||[]).forEach(ak => {
+                    const a = _nombreArea(ak);
+                    if (!areaSum[a]) { areaSum[a]=0; areaCnt[a]=0; areaFalencia[a]=0; }
+                    areaSum[a]+=80; areaCnt[a]++;
                 });
             }
 
             const fechaFmt = r.fechaMuestra && typeof r.fechaMuestra.toDate==='function'
-                ? r.fechaMuestra.toDate().toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})
+                ? r.fechaMuestra.toDate().toLocaleDateString('es-CO',{day:'2-digit',month:'short'})
                 : '—';
             const pctColor = pct >= 70 ? '#86efac' : pct >= 40 ? '#fbbf24' : '#fca5a5';
-            const fortalezasTxt = (r.fortalezas||[]).length ? (r.fortalezas).join(', ') : 'Desarrollando habilidades';
-            const falenciasTxt  = (r.falencias||[]).length  ? (r.falencias).join(', ')  : 'Sin áreas débiles';
+
+            // Fortalezas / falencias — texto abreviado + tooltip completo
+            const forts = (r.fortalezas||[]).map(a => _nombreArea(a));
+            const falens = (r.falencias||[]).map(a => _nombreArea(a));
+            const fortalezasFull = forts.length ? forts.join(', ') : 'Desarrollando habilidades';
+            const falenciasFull  = falens.length ? falens.join(', ')  : 'Sin áreas débiles';
+            const _abrev = (txt, n=28) => txt.length > n ? txt.slice(0,n)+'…' : txt;
+            const fortalezasColor = forts.length ? '#86efac' : 'rgba(255,255,255,.3)';
+            const falenciasColor  = falens.length ? '#fca5a5'  : 'rgba(255,255,255,.3)';
+
+            // Colegio abreviado
+            const _colegioAbrev = colegioNorm.length > 20 ? colegioNorm.slice(0,20)+'…' : colegioNorm;
+
             tbody.insertAdjacentHTML('beforeend',`<tr>
-                <td><span class="name-cell">${r.nombre||'—'}</span></td>
-                <td style="font-size:.7rem;">${colegioNorm||'—'}</td>
+                <td><span class="name-cell" title="${r.nombre||''}">${r.nombre||'—'}</span></td>
+                <td style="font-size:.7rem;" title="${colegioNorm||''}">${_colegioAbrev||'—'}</td>
                 <td style="font-size:.7rem;">${r.grado||'—'}</td>
-                <td style="font-size:.7rem;">${r.municipio||'—'}</td>
+                <td style="font-size:.7rem;">${municipioNorm}</td>
                 <td style="font-family:var(--fuente-t);font-size:.85rem;font-weight:900;color:${pctColor};">${r.porcentaje!=null?r.porcentaje+'%':'—'}</td>
-                <td style="font-size:.7rem;color:${(r.fortalezas||[]).length?'#86efac':'rgba(255,255,255,.3);font-style:italic'};">${fortalezasTxt}</td>
-                <td style="font-size:.7rem;color:${(r.falencias||[]).length?'#fca5a5':'rgba(255,255,255,.3);font-style:italic'};">${falenciasTxt}</td>
+                <td style="font-size:.68rem;color:${fortalezasColor};font-style:${forts.length?'normal':'italic'};" title="${fortalezasFull}">${_abrev(fortalezasFull)}</td>
+                <td style="font-size:.68rem;color:${falenciasColor};font-style:${falens.length?'normal':'italic'};" title="${falenciasFull}">${_abrev(falenciasFull)}</td>
                 <td><span class="badge ${r.registrado?'verde':'amarillo'}">${r.registrado?'Sí':'No'}</span></td>
                 <td style="font-size:.65rem;color:rgba(255,255,255,.4);">${fechaFmt}</td>
             </tr>`);
@@ -3170,21 +3188,36 @@ let _ptChartAreas = null, _ptChartFalencias = null;
 function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
     if (!Object.keys(areaCnt).length) return;
 
+    // Las claves ya vienen normalizadas con _nombreArea desde el acumulador
     // Ordenar áreas por promedio descendente
     const areas = Object.keys(areaCnt).sort((a,b) => (areaSum[b]/areaCnt[b]) - (areaSum[a]/areaCnt[a]));
     const promedios = areas.map(a => Math.round(areaSum[a] / areaCnt[a]));
     const falencias = areas.map(a => areaFalencia[a] || 0);
+    // Abreviar etiquetas largas para los ejes
+    const labelsCortos = areas.map(a => a.length > 16 ? a.slice(0,14)+'…' : a);
 
     // Colores por posición (gradiente naranja→teal)
     const COLORS = ['#ff5e00','#fbbf24','#86efac','#22d3ee','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#60a5fa'];
     const bgColors = areas.map((_,i) => COLORS[i % COLORS.length] + 'cc');
     const borderColors = areas.map((_,i) => COLORS[i % COLORS.length]);
 
+    const _xTick = { color:'rgba(255,255,255,.5)', font:{size:9},
+        maxRotation: 0, callback: function(val, i) {
+            // etiqueta corta en eje X (ya en labelsCortos)
+            const lbl = this.getLabelForValue(val);
+            return lbl && lbl.length > 14 ? lbl.slice(0,12)+'…' : lbl;
+        }
+    };
     const chartOpts = {
         responsive: true,
-        plugins: { legend: { display: false } },
+        plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: {
+                title: items => areas[items[0].dataIndex] // tooltip muestra nombre completo
+            }}
+        },
         scales: {
-            x: { ticks: { color:'rgba(255,255,255,.5)', font:{size:9} }, grid: { color:'rgba(255,255,255,.05)' } },
+            x: { ticks: _xTick, grid: { color:'rgba(255,255,255,.05)' } },
             y: { ticks: { color:'rgba(255,255,255,.5)', font:{size:9} }, grid: { color:'rgba(255,255,255,.08)' }, beginAtZero:true }
         }
     };
@@ -3196,7 +3229,7 @@ function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
         _ptChartAreas = new Chart(ctx1, {
             type: 'bar',
             data: {
-                labels: areas,
+                labels: labelsCortos,
                 datasets: [{
                     label: '% Promedio',
                     data: promedios,
@@ -3207,6 +3240,10 @@ function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
                 }]
             },
             options: { ...chartOpts,
+                plugins: { ...chartOpts.plugins, tooltip: { callbacks: {
+                    title: items => areas[items[0].dataIndex],
+                    label: items => ` ${items.raw}% promedio`
+                }}},
                 scales: { ...chartOpts.scales,
                     y: { ...chartOpts.scales.y, max: 100,
                         ticks: { ...chartOpts.scales.y.ticks, callback: v => v+'%' }
@@ -3220,22 +3257,25 @@ function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
     const ctx2 = document.getElementById('pt-chart-falencias');
     if (ctx2) {
         if (_ptChartFalencias) { _ptChartFalencias.destroy(); _ptChartFalencias = null; }
-        // Ordenar por más falencias primero
-        const areasFal = [...areas].sort((a,b) => (areaFalencia[b]||0) - (areaFalencia[a]||0));
+        const areasFal   = [...areas].sort((a,b) => (areaFalencia[b]||0) - (areaFalencia[a]||0));
+        const labsFalCortos = areasFal.map(a => a.length > 14 ? a.slice(0,12)+'…' : a);
         _ptChartFalencias = new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: areasFal,
+                labels: labsFalCortos,
                 datasets: [{
                     label: 'Estudiantes',
                     data: areasFal.map(a => areaFalencia[a] || 0),
-                    backgroundColor: areasFal.map((_,i) => '#fca5a5cc'),
-                    borderColor: areasFal.map((_,i) => '#fca5a5'),
+                    backgroundColor: areasFal.map(() => '#fca5a5cc'),
+                    borderColor: areasFal.map(() => '#fca5a5'),
                     borderWidth: 1,
                     borderRadius: 6,
                 }]
             },
-            options: chartOpts
+            options: { ...chartOpts, plugins: { ...chartOpts.plugins, tooltip: { callbacks: {
+                title: items => areasFal[items[0].dataIndex],
+                label: items => ` ${items.raw} estudiante${items.raw!==1?'s':''}`
+            }}}}
         });
     }
 }
@@ -4054,6 +4094,74 @@ function normalizarColegio(raw) {
     // Sin match → Title Case del original
     return raw.trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
+// ── Normalización de municipios ───────────────────────────────────────────────
+const _MUNICIPIO_MAP = {
+    // Tumaco y variantes
+    'tumaco': 'Tumaco', 'san andres de tumaco': 'Tumaco',
+    'tumaco narino': 'Tumaco', 'tumaco nariño': 'Tumaco',
+    'tumaco, narino': 'Tumaco', 'tumaco, nariño': 'Tumaco',
+    'tumaco colombia': 'Tumaco',
+    // Veredas Tumaco → siguen siendo Tumaco para agrupación
+    'el bajo mira': 'Tumaco', 'alto mira': 'Tumaco', 'la guayacana': 'Tumaco',
+    'la espriella': 'Tumaco', 'llorente': 'Tumaco', 'chilvi': 'Tumaco',
+    'el pailon': 'Tumaco', 'rio chagui': 'Tumaco', 'caunapi': 'Tumaco',
+    'imbili': 'Tumaco', 'san luis': 'Tumaco', 'la balsa': 'Tumaco',
+    // Pasto
+    'pasto': 'Pasto', 'san juan de pasto': 'Pasto',
+    // Otros Nariño
+    'ipiales': 'Ipiales', 'tuquerres': 'Túquerres',
+    'barbacoas': 'Barbacoas', 'el charco': 'El Charco',
+    'la tola': 'La Tola', 'mosquera': 'Mosquera',
+    'olaya herrera': 'Olaya Herrera', 'bocas de satinga': 'Olaya Herrera',
+    'roberto payan': 'Roberto Payán', 'maguí payan': 'Magüí Payán',
+    // Ciudades nacionales
+    'bogota': 'Bogotá', 'bogotá': 'Bogotá', 'bogota d.c.': 'Bogotá',
+    'medellin': 'Medellín', 'medellín': 'Medellín', 'medellin antioquia': 'Medellín',
+    'cali': 'Cali', 'cali colombia': 'Cali', 'cali valle': 'Cali',
+    'barranquilla': 'Barranquilla', 'bucaramanga': 'Bucaramanga',
+    'cartagena': 'Cartagena', 'pereira': 'Pereira',
+    'cucuta': 'Cúcuta', 'cúcuta': 'Cúcuta', 'manizales': 'Manizales',
+    'neiva': 'Neiva', 'ibague': 'Ibagué', 'ibagué': 'Ibagué',
+    'villavicencio': 'Villavicencio', 'popayan': 'Popayán', 'popayán': 'Popayán',
+    'mocoa': 'Mocoa', 'puerto asis': 'Puerto Asís',
+    'quibdo': 'Quibdó', 'valledupar': 'Valledupar',
+    'buenaventura': 'Buenaventura', 'palmira': 'Palmira',
+    'nariño': 'Nariño (dpto.)',  // solo el departamento sin municipio
+    'colombia': '',   // ignorar si solo dice "colombia"
+};
+function normalizarMunicipio(raw) {
+    if (!raw || !raw.trim()) return '';
+    const n = raw.trim().toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g,'')
+        .replace(/\s+/g,' ').trim();
+    // Quitamos sufijos de departamento comunes para lookup
+    const sinDepto = n
+        .replace(/,?\s*(narino|nariño|antioquia|valle|bogota|colombia)$/,'').trim();
+    if (_MUNICIPIO_MAP[n] !== undefined) return _MUNICIPIO_MAP[n];
+    if (_MUNICIPIO_MAP[sinDepto] !== undefined) return _MUNICIPIO_MAP[sinDepto];
+    // Title Case del original (primera parte antes de la coma)
+    const base = raw.split(',')[0].trim();
+    return base.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
+// ── Mapeo claves internas de área → nombre completo ───────────────────────────
+const _AREA_NOMBRE = {
+    mat: 'Matemáticas', cien: 'Ciencias Naturales', lec: 'Lectura Crítica',
+    soc: 'Ciencias Sociales', qui: 'Química', fis: 'Física',
+    ing: 'Inglés', fil: 'Filosofía', pol: 'C. Políticas y Econ.',
+    inf: 'Informática',
+    // Nombres ya completos (Sheets import) → identidad
+    'Matemáticas Básicas': 'Matemáticas Básicas',
+    'Cálculo I': 'Cálculo I', 'Programación': 'Programación',
+    'Álgebra Lineal': 'Álgebra Lineal', 'Ciencias Naturales': 'Ciencias Naturales',
+    'Matemáticas': 'Matemáticas', 'Lectura Crítica': 'Lectura Crítica',
+    'Física': 'Física', 'Química': 'Química', 'Inglés': 'Inglés',
+    'Ciencias Sociales': 'Ciencias Sociales',
+    'C. Políticas y Económicas': 'C. Políticas y Econ.',
+    'Filosofía': 'Filosofía', 'Informática': 'Informática',
+};
+function _nombreArea(key) { return _AREA_NOMBRE[key] || key; }
+
 // ──────────────────────────────────────────────────────────────────────────────
 
 // Extrae la fecha de un registro SIN convertir Timestamps a String

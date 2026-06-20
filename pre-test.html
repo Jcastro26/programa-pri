@@ -167,6 +167,13 @@
         .timer.danger { color: var(--rojo); animation: pulse 1s infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+        /* Anti-trampas: sin selección de texto durante el quiz */
+        #pantalla-quiz, #pantalla-areas {
+            user-select: none; -webkit-user-select: none;
+            -moz-user-select: none; -ms-user-select: none;
+        }
+        @media print { body { display: none !important; } }
+
         /* Pregunta */
         .quiz-body { padding: 1.5rem 2rem 2rem; }
         .question-num {
@@ -405,8 +412,40 @@
             <input type="tel" id="aspirante-tel" placeholder="300 123 4567" required autocomplete="tel">
         </div>
         <div class="field">
-            <label>Ciudad</label>
-            <input type="text" id="aspirante-ciudad" value="Tumaco, Nariño" placeholder="Ciudad">
+            <label>Departamento</label>
+            <select id="aspirante-depto" onchange="actualizarMunicipios()">
+                <option value="" disabled selected>Selecciona departamento</option>
+                <option value="Nariño" selected>Nariño</option>
+                <option value="Antioquia">Antioquia</option>
+                <option value="Atlántico">Atlántico</option>
+                <option value="Bogotá D.C.">Bogotá D.C.</option>
+                <option value="Bolívar">Bolívar</option>
+                <option value="Boyacá">Boyacá</option>
+                <option value="Caldas">Caldas</option>
+                <option value="Cauca">Cauca</option>
+                <option value="Cesar">Cesar</option>
+                <option value="Chocó">Chocó</option>
+                <option value="Córdoba">Córdoba</option>
+                <option value="Cundinamarca">Cundinamarca</option>
+                <option value="Huila">Huila</option>
+                <option value="La Guajira">La Guajira</option>
+                <option value="Magdalena">Magdalena</option>
+                <option value="Meta">Meta</option>
+                <option value="Norte de Santander">Norte de Santander</option>
+                <option value="Putumayo">Putumayo</option>
+                <option value="Quindío">Quindío</option>
+                <option value="Risaralda">Risaralda</option>
+                <option value="Santander">Santander</option>
+                <option value="Sucre">Sucre</option>
+                <option value="Tolima">Tolima</option>
+                <option value="Valle del Cauca">Valle del Cauca</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Municipio / Vereda *</label>
+            <select id="aspirante-ciudad" required>
+                <option value="" disabled selected>Selecciona municipio</option>
+            </select>
         </div>
     </div>
     <div class="form-row">
@@ -743,6 +782,77 @@
         </div>`;
   };
 
+  // ── Datos de municipios por departamento ──────────────────────────────
+  const _MUNICIPIOS = {
+    'Nariño': [
+        '── Tumaco y sus veredas ──',
+        'Tumaco','Vereda El Bajo Mira','Vereda Alto Mira','Vereda La Guayacana',
+        'Vereda La Espriella','Vereda Llorente','Vereda Chilví','Vereda El Pailón',
+        'Vereda Río Chagüí','Vereda Caunapi','Vereda Imbilí','Vereda Caunapí',
+        'Vereda San Luis','Vereda La Balsa','Vereda Tangareal',
+        '── Otros municipios de Nariño ──',
+        'Pasto','Ipiales','Tumaco','Túquerres','La Unión','Samaniego',
+        'Barbacoas','El Charco','La Tola','Mosquera','Olaya Herrera (Bocas de Satinga)',
+        'Francisco Pizarro (Salahonda)','Roberto Payán','Santa Bárbara','Magüí Payán',
+        'Cumbal','Guachucal','Pupiales','Aldana','Contadero','Cuaspud','Funes',
+        'Gualmatán','Iles','Imués','Linares','Los Andes (Sotomayor)','Mallama',
+        'Ospina','Puerres','Ricaurte','Sandoná','Santa Cruz','Sapuyes','Tangua',
+        'Taminango','Yacuanquer','Providencia','Policarpa','Leiva','Colón',
+        'La Cruz','Belén','Buesaco','Chachagüí','El Peñol','El Rosario',
+        'El Tablón','La Florida','Nariño (municipio)','San Bernardo',
+        'San Lorenzo','San Pablo','San Pedro de Cartago','Sotomayor','Arboleda',
+        'Albán','La Llanada','Cumbitara',
+    ],
+    'Antioquia': ['Medellín','Bello','Itagüí','Envigado','Apartadó','Turbo','Rionegro','Caucasia','Montería','Quibdó'],
+    'Atlántico': ['Barranquilla','Soledad','Malambo','Sabanalarga','Baranoa'],
+    'Bogotá D.C.': ['Bogotá'],
+    'Bolívar': ['Cartagena','Magangué','Mompós','Turbaco','El Carmen de Bolívar'],
+    'Boyacá': ['Tunja','Duitama','Sogamoso','Chiquinquirá','Paipa'],
+    'Caldas': ['Manizales','Villamaría','La Dorada','Riosucio','Salamina'],
+    'Cauca': ['Popayán','Santander de Quilichao','Guapi','Timbiquí','El Tambo','Miranda','Padilla','Piendamó'],
+    'Cesar': ['Valledupar','Aguachica','Codazzi','La Paz','Bosconia'],
+    'Chocó': ['Quibdó','Istmina','Tadó','Riosucio','Bagadó','Acandí'],
+    'Córdoba': ['Montería','Lorica','Sahagún','Cereté','Montelíbano'],
+    'Cundinamarca': ['Soacha','Fusagasugá','Girardot','Facatativá','Zipaquirá','Chía','Mosquera'],
+    'Huila': ['Neiva','Pitalito','Garzón','La Plata','Campoalegre'],
+    'La Guajira': ['Riohacha','Maicao','Uribia','Manaure','San Juan del Cesar'],
+    'Magdalena': ['Santa Marta','Ciénaga','Fundación','El Banco','Plato'],
+    'Meta': ['Villavicencio','Acacías','Granada','San Martín','Puerto López'],
+    'Norte de Santander': ['Cúcuta','Ocaña','Pamplona','Villa del Rosario','Los Patios'],
+    'Putumayo': ['Mocoa','Puerto Asís','Orito','Valle del Guamuez (La Hormiga)','Puerto Leguízamo'],
+    'Quindío': ['Armenia','Calarcá','Montenegro','La Tebaida','Quimbaya'],
+    'Risaralda': ['Pereira','Dosquebradas','Santa Rosa de Cabal','La Virginia','Marsella'],
+    'Santander': ['Bucaramanga','Floridablanca','Girón','Piedecuesta','Barrancabermeja'],
+    'Sucre': ['Sincelejo','Corozal','Sampués','San Marcos','Tolú'],
+    'Tolima': ['Ibagué','Espinal','Melgar','Honda','Chaparral'],
+    'Valle del Cauca': ['Cali','Buenaventura','Palmira','Tuluá','Buga','Cartago','Yumbo','Jamundí'],
+  };
+
+  window.actualizarMunicipios = function() {
+    const depto = document.getElementById('aspirante-depto').value;
+    const sel   = document.getElementById('aspirante-ciudad');
+    const lista = _MUNICIPIOS[depto] || [];
+    sel.innerHTML = '<option value="" disabled selected>Selecciona municipio</option>';
+    lista.forEach(m => {
+        if (m.startsWith('──')) {
+            const og = document.createElement('optgroup');
+            og.label = m.replace(/^──\s*/, '').replace(/\s*──$/, '');
+            sel.appendChild(og);
+        } else {
+            const o = document.createElement('option');
+            o.value = m; o.textContent = m;
+            sel.appendChild(o);
+        }
+    });
+  };
+  // Cargar Nariño por defecto
+  window.actualizarMunicipios();
+  // Preseleccionar Tumaco
+  setTimeout(() => {
+    const s = document.getElementById('aspirante-ciudad');
+    if (s) s.value = 'Tumaco';
+  }, 50);
+
   // Mostrar/ocultar campos según rol
   window.actualizarCamposRol = function() {
       const rol = document.getElementById('aspirante-rol').value;
@@ -779,7 +889,9 @@
       const tel = document.getElementById('aspirante-tel').value.trim();
       const colegio = _leerColegio();
       const rol = document.getElementById('aspirante-rol').value;
-      const ciudad = document.getElementById('aspirante-ciudad').value.trim() || 'Tumaco, Nariño';
+      const _municipio = document.getElementById('aspirante-ciudad').value.trim() || 'Tumaco';
+      const _depto     = document.getElementById('aspirante-depto')?.value.trim() || 'Nariño';
+      const ciudad = _municipio ? `${_municipio}, ${_depto}` : 'Tumaco, Nariño';
       const docTipo = document.getElementById('aspirante-doc-tipo').value;
       const docNum = document.getElementById('aspirante-doc-num').value.trim();
 
@@ -916,59 +1028,59 @@ const AREA_META = {
 // ================================================================
 const BANCO_G8 = [
   // MATEMÁTICAS (13) — respuestas: 0,1,2,3,0,1,2,3,0,1,2,3,0
-  {area:"mat",t:55,q:"Una empresa tiene 240 empleados. El 35% trabaja en producción y el 25% en ventas. ¿Cuántos empleados están en otros departamentos?",o:["96","84","60","108"],a:0,e:"Producción: 240×0.35=84. Ventas: 240×0.25=60. Otros: 240−84−60=96."},
-  {area:"mat",t:55,q:"Resuelve la inequación: 2x − 5 > x + 3",o:["x > 3","x > 8","x < 8","x > −2"],a:1,e:"Despejando x: 2x−x > 3+5 → x > 8."},
-  {area:"mat",t:55,q:"¿Cuánto es el MCD de 36 y 48?",o:["6","8","12","18"],a:2,e:"Factores de 36: 2²×3². Factores de 48: 2⁴×3. MCD = 2²×3 = 12."},
-  {area:"mat",t:55,q:"¿Cuál es la descomposición en factores primos de 84?",o:["2×42","4×21","2²×21","2²×3×7"],a:3,e:"84÷2=42÷2=21÷3=7. Entonces 84 = 2²×3×7."},
-  {area:"mat",t:55,q:"En un juego de 30 preguntas, Pedro responde bien el 70% y gana 5 pts por acierto y pierde 2 por error. ¿Cuántos puntos obtiene?",o:["87","105","96","75"],a:0,e:"Aciertos: 21; errores: 9. Puntaje: 21×5 − 9×2 = 105−18 = 87."},
-  {area:"mat",t:55,q:"Un polígono regular tiene 8 lados. ¿Cuánto mide cada ángulo interior?",o:["120°","135°","140°","150°"],a:1,e:"Ángulo interior = (n−2)×180°/n = (8−2)×180°/8 = 6×22.5° = 135°."},
-  {area:"mat",t:55,q:"Si 3/4 de un número es igual a 42, ¿cuánto es el 60% de ese número?",o:["28","33","33.6","36"],a:2,e:"Número = 42×4/3 = 56. El 60% de 56 = 33.6."},
-  {area:"mat",t:55,q:"Un precio sube 15% y luego baja 15%. Respecto al precio inicial, el artículo ahora cuesta:",o:["lo mismo","2.25% más","15% menos","2.25% menos"],a:3,e:"1.15×0.85 = 0.9775, o sea 97.75% del original: 2.25% menos."},
-  {area:"mat",t:55,q:"La media de 5 números es 14. Si se añaden 2 números cuya suma es 28, ¿cuál es la nueva media?",o:["14","13","15","16"],a:0,e:"Suma original: 70. Nueva suma: 70+28=98. Nueva media: 98÷7=14."},
-  {area:"mat",t:55,q:"¿Cuál es la factorización de x² − 9?",o:["(x−9)(x+1)","(x−3)(x+3)","(x−3)²","x(x−9)"],a:1,e:"Diferencia de cuadrados: a²−b² = (a−b)(a+b). Con a=x, b=3: (x−3)(x+3)."},
-  {area:"mat",t:55,q:"Si f(x) = 2x² − 3 y g(x) = x + 5, ¿cuánto es f(2) + g(3)?",o:["11","17","13","15"],a:2,e:"f(2)=2(4)−3=5. g(3)=3+5=8. Total=5+8=13."},
-  {area:"mat",t:55,q:"Una pelota sigue h(t) = −t² + 6t. ¿A cuántos segundos llega a su altura máxima?",o:["2 s","4 s","6 s","3 s"],a:3,e:"Máximo en t = −b/(2a) = −6/(2×−1) = 3 s."},
-  {area:"mat",t:55,q:"Si el triple de un número disminuido en 7 es igual al doble aumentado en 5, ¿cuál es el número?",o:["12","10","14","8"],a:0,e:"3x−7=2x+5 → x=12."},
+  {area:"mat",t:120,q:"Una empresa tiene 240 empleados. El 35% trabaja en producción y el 25% en ventas. ¿Cuántos empleados están en otros departamentos?",o:["96","84","60","108"],a:0,e:"Producción: 240×0.35=84. Ventas: 240×0.25=60. Otros: 240−84−60=96."},
+  {area:"mat",t:120,q:"Resuelve la inequación: 2x − 5 > x + 3",o:["x > 3","x > 8","x < 8","x > −2"],a:1,e:"Despejando x: 2x−x > 3+5 → x > 8."},
+  {area:"mat",t:120,q:"¿Cuánto es el MCD de 36 y 48?",o:["6","8","12","18"],a:2,e:"Factores de 36: 2²×3². Factores de 48: 2⁴×3. MCD = 2²×3 = 12."},
+  {area:"mat",t:120,q:"¿Cuál es la descomposición en factores primos de 84?",o:["2×42","4×21","2²×21","2²×3×7"],a:3,e:"84÷2=42÷2=21÷3=7. Entonces 84 = 2²×3×7."},
+  {area:"mat",t:120,q:"En un juego de 30 preguntas, Pedro responde bien el 70% y gana 5 pts por acierto y pierde 2 por error. ¿Cuántos puntos obtiene?",o:["87","105","96","75"],a:0,e:"Aciertos: 21; errores: 9. Puntaje: 21×5 − 9×2 = 105−18 = 87."},
+  {area:"mat",t:120,q:"Un polígono regular tiene 8 lados. ¿Cuánto mide cada ángulo interior?",o:["120°","135°","140°","150°"],a:1,e:"Ángulo interior = (n−2)×180°/n = (8−2)×180°/8 = 6×22.5° = 135°."},
+  {area:"mat",t:120,q:"Si 3/4 de un número es igual a 42, ¿cuánto es el 60% de ese número?",o:["28","33","33.6","36"],a:2,e:"Número = 42×4/3 = 56. El 60% de 56 = 33.6."},
+  {area:"mat",t:120,q:"Un precio sube 15% y luego baja 15%. Respecto al precio inicial, el artículo ahora cuesta:",o:["lo mismo","2.25% más","15% menos","2.25% menos"],a:3,e:"1.15×0.85 = 0.9775, o sea 97.75% del original: 2.25% menos."},
+  {area:"mat",t:120,q:"La media de 5 números es 14. Si se añaden 2 números cuya suma es 28, ¿cuál es la nueva media?",o:["14","13","15","16"],a:0,e:"Suma original: 70. Nueva suma: 70+28=98. Nueva media: 98÷7=14."},
+  {area:"mat",t:120,q:"¿Cuál es la factorización de x² − 9?",o:["(x−9)(x+1)","(x−3)(x+3)","(x−3)²","x(x−9)"],a:1,e:"Diferencia de cuadrados: a²−b² = (a−b)(a+b). Con a=x, b=3: (x−3)(x+3)."},
+  {area:"mat",t:120,q:"Si f(x) = 2x² − 3 y g(x) = x + 5, ¿cuánto es f(2) + g(3)?",o:["11","17","13","15"],a:2,e:"f(2)=2(4)−3=5. g(3)=3+5=8. Total=5+8=13."},
+  {area:"mat",t:120,q:"Una pelota sigue h(t) = −t² + 6t. ¿A cuántos segundos llega a su altura máxima?",o:["2 s","4 s","6 s","3 s"],a:3,e:"Máximo en t = −b/(2a) = −6/(2×−1) = 3 s."},
+  {area:"mat",t:120,q:"Si el triple de un número disminuido en 7 es igual al doble aumentado en 5, ¿cuál es el número?",o:["12","10","14","8"],a:0,e:"3x−7=2x+5 → x=12."},
   // LECTURA CRÍTICA (12) — respuestas: 1,2,3,0,1,2,3,0,1,2,3,0
-  {area:"lec",t:55,q:"Lee: 'A pesar de que la pobreza aumentó, el gobierno redujo el gasto en programas sociales.' La postura implícita del autor es:",o:["Neutra, solo informa","Crítica hacia la política social del gobierno","A favor de las medidas de austeridad","Sin intención argumentativa"],a:1,e:"La contradicción entre aumento de pobreza y reducción del gasto sugiere una crítica implícita."},
-  {area:"lec",t:55,q:"La función del conector 'no obstante' en 'Los estudiantes protestaron; no obstante, la medida fue aprobada' es:",o:["Indicar causa","Agregar información","Contrastar dos ideas","Concluir el argumento"],a:2,e:"'No obstante' opone dos ideas: la protesta vs. la aprobación de la medida. Es adversativo."},
-  {area:"lec",t:55,q:"'La luna llora sobre el río' es un ejemplo de:",o:["Hipérbole","Símil","Antítesis","Personificación"],a:3,e:"Se atribuye al astro una acción humana (llorar). Eso es personificación o prosopopeya."},
-  {area:"lec",t:55,q:"Un texto en el que el narrador conoce los pensamientos de todos los personajes usa:",o:["Narrador omnisciente","Narrador en primera persona","Narrador testigo","Narrador protagonista"],a:0,e:"El narrador omnisciente tiene visión total: conoce pensamientos, sentimientos y acciones de todos."},
-  {area:"lec",t:55,q:"¿Cuál de estos textos tiene como propósito principal persuadir al lector?",o:["Una enciclopedia científica","Un editorial de opinión sobre derechos humanos","Un cuento infantil","Un informe estadístico"],a:1,e:"El editorial argumenta y defiende una postura para convencer. Los otros informan o narran."},
-  {area:"lec",t:55,q:"La palabra 'efímero' en el contexto 'su fama efímera no sobrevivió al olvido' significa:",o:["Eterno","Brillante","De corta duración","Injusto"],a:2,e:"Efímero: que dura muy poco tiempo. Lo contrario de permanente o eterno."},
-  {area:"lec",t:55,q:"En la oración pasiva 'El libro fue leído por los estudiantes', el sujeto gramatical es:",o:["Los estudiantes","Leído","Por los estudiantes","El libro"],a:3,e:"En voz pasiva, el sujeto gramatical recibe la acción. 'El libro' es el sujeto; 'los estudiantes' es el agente."},
-  {area:"lec",t:55,q:"Texto: 'Los ríos bajan su caudal. Las lluvias cayeron 30%. Los nevados se derriten.' La idea que unifica estas frases es:",o:["El cambio climático altera el ciclo del agua","Los ríos son fuente de vida","Las lluvias son impredecibles","Los nevados son importantes para el turismo"],a:0,e:"Todas las evidencias apuntan a que el cambio climático está alterando el ciclo hidrológico."},
-  {area:"lec",t:55,q:"Una falacia ad hominem ocurre cuando se:",o:["Apoya un argumento con datos erróneos","Ataca a la persona en vez de refutar su argumento","Exagera las consecuencias de algo","Generaliza sin evidencia suficiente"],a:1,e:"Ad hominem: desacreditar al emisor en lugar de refutar su argumento con razones."},
-  {area:"lec",t:55,q:"¿Cuál es la diferencia entre un texto expositivo y uno argumentativo?",o:["El expositivo convence; el argumentativo informa","Son equivalentes en propósito","El expositivo informa con objetividad; el argumentativo defiende una postura","El expositivo usa narradores; el argumentativo no"],a:2,e:"El texto expositivo presenta información neutral; el argumentativo toma partido y defiende una tesis."},
-  {area:"lec",t:55,q:"La intertextualidad se produce cuando:",o:["Un texto narra hechos históricos","Un texto usa palabras técnicas","Un texto explica fenómenos científicos","Un texto hace referencia a otro texto u obra cultural"],a:3,e:"La intertextualidad es el diálogo explícito o implícito que un texto establece con otros textos."},
-  {area:"lec",t:55,q:"El modo subjuntivo en 'Ojalá que llegues a tiempo' expresa:",o:["Deseo o esperanza sobre algo incierto","Una orden directa","Un hecho pasado","Una condición cumplida"],a:0,e:"El subjuntivo en 'ojalá' expresa un deseo respecto a algo que no se sabe si ocurrirá."},
+  {area:"lec",t:120,q:"Lee: 'A pesar de que la pobreza aumentó, el gobierno redujo el gasto en programas sociales.' La postura implícita del autor es:",o:["Neutra, solo informa","Crítica hacia la política social del gobierno","A favor de las medidas de austeridad","Sin intención argumentativa"],a:1,e:"La contradicción entre aumento de pobreza y reducción del gasto sugiere una crítica implícita."},
+  {area:"lec",t:120,q:"La función del conector 'no obstante' en 'Los estudiantes protestaron; no obstante, la medida fue aprobada' es:",o:["Indicar causa","Agregar información","Contrastar dos ideas","Concluir el argumento"],a:2,e:"'No obstante' opone dos ideas: la protesta vs. la aprobación de la medida. Es adversativo."},
+  {area:"lec",t:120,q:"'La luna llora sobre el río' es un ejemplo de:",o:["Hipérbole","Símil","Antítesis","Personificación"],a:3,e:"Se atribuye al astro una acción humana (llorar). Eso es personificación o prosopopeya."},
+  {area:"lec",t:120,q:"Un texto en el que el narrador conoce los pensamientos de todos los personajes usa:",o:["Narrador omnisciente","Narrador en primera persona","Narrador testigo","Narrador protagonista"],a:0,e:"El narrador omnisciente tiene visión total: conoce pensamientos, sentimientos y acciones de todos."},
+  {area:"lec",t:120,q:"¿Cuál de estos textos tiene como propósito principal persuadir al lector?",o:["Una enciclopedia científica","Un editorial de opinión sobre derechos humanos","Un cuento infantil","Un informe estadístico"],a:1,e:"El editorial argumenta y defiende una postura para convencer. Los otros informan o narran."},
+  {area:"lec",t:120,q:"La palabra 'efímero' en el contexto 'su fama efímera no sobrevivió al olvido' significa:",o:["Eterno","Brillante","De corta duración","Injusto"],a:2,e:"Efímero: que dura muy poco tiempo. Lo contrario de permanente o eterno."},
+  {area:"lec",t:120,q:"En la oración pasiva 'El libro fue leído por los estudiantes', el sujeto gramatical es:",o:["Los estudiantes","Leído","Por los estudiantes","El libro"],a:3,e:"En voz pasiva, el sujeto gramatical recibe la acción. 'El libro' es el sujeto; 'los estudiantes' es el agente."},
+  {area:"lec",t:120,q:"Texto: 'Los ríos bajan su caudal. Las lluvias cayeron 30%. Los nevados se derriten.' La idea que unifica estas frases es:",o:["El cambio climático altera el ciclo del agua","Los ríos son fuente de vida","Las lluvias son impredecibles","Los nevados son importantes para el turismo"],a:0,e:"Todas las evidencias apuntan a que el cambio climático está alterando el ciclo hidrológico."},
+  {area:"lec",t:120,q:"Una falacia ad hominem ocurre cuando se:",o:["Apoya un argumento con datos erróneos","Ataca a la persona en vez de refutar su argumento","Exagera las consecuencias de algo","Generaliza sin evidencia suficiente"],a:1,e:"Ad hominem: desacreditar al emisor en lugar de refutar su argumento con razones."},
+  {area:"lec",t:120,q:"¿Cuál es la diferencia entre un texto expositivo y uno argumentativo?",o:["El expositivo convence; el argumentativo informa","Son equivalentes en propósito","El expositivo informa con objetividad; el argumentativo defiende una postura","El expositivo usa narradores; el argumentativo no"],a:2,e:"El texto expositivo presenta información neutral; el argumentativo toma partido y defiende una tesis."},
+  {area:"lec",t:120,q:"La intertextualidad se produce cuando:",o:["Un texto narra hechos históricos","Un texto usa palabras técnicas","Un texto explica fenómenos científicos","Un texto hace referencia a otro texto u obra cultural"],a:3,e:"La intertextualidad es el diálogo explícito o implícito que un texto establece con otros textos."},
+  {area:"lec",t:120,q:"El modo subjuntivo en 'Ojalá que llegues a tiempo' expresa:",o:["Deseo o esperanza sobre algo incierto","Una orden directa","Un hecho pasado","Una condición cumplida"],a:0,e:"El subjuntivo en 'ojalá' expresa un deseo respecto a algo que no se sabe si ocurrirá."},
   // CIENCIAS NATURALES (12) — respuestas: 2,3,0,1,2,3,0,1,2,3,0,1
-  {area:"cien",t:55,q:"¿Cuál es la principal diferencia entre la mitosis y la meiosis?",o:["La mitosis divide células cancerosas","La mitosis ocurre solo en animales","La mitosis produce 2 células idénticas; la meiosis produce 4 con la mitad de cromosomas","La meiosis produce células somáticas"],a:2,e:"Mitosis: duplicación → 2 células iguales. Meiosis: reducción → 4 células haploides (gametos)."},
-  {area:"cien",t:55,q:"En un ecosistema, si se extingue el depredador tope (como el jaguar), lo más probable es que:",o:["La biodiversidad aumente inmediatamente","Los descomponedores proliferen","El ecosistema permanezca igual","Las poblaciones de sus presas aumenten descontroladamente"],a:3,e:"Sin depredador tope, las presas se reproducen sin control (efecto cascada trófica)."},
-  {area:"cien",t:55,q:"Una mezcla heterogénea se diferencia de una homogénea porque:",o:["Sus componentes se distinguen a simple vista y no tienen composición uniforme","No puede separarse por métodos físicos","Sus componentes siempre son gaseosos","Tiene temperatura de ebullición constante"],a:0,e:"En la mezcla heterogénea se distinguen los componentes; en la homogénea, no (apariencia uniforme)."},
-  {area:"cien",t:55,q:"El sistema nervioso central está formado por:",o:["El corazón y el sistema linfático","El encéfalo y la médula espinal","Los nervios periféricos y las neuronas","Los riñones y la vejiga"],a:1,e:"SNC = encéfalo (cerebro, cerebelo, tronco) + médula espinal. El SNP son los nervios que salen de ahí."},
-  {area:"cien",t:55,q:"Si un organismo tiene 46 cromosomas en sus células somáticas, ¿cuántos tendrá en sus gametos?",o:["46","92","23","24"],a:2,e:"La meiosis reduce a la mitad: 46÷2=23 cromosomas en óvulos o espermatozoides."},
-  {area:"cien",t:55,q:"¿Cuál de los siguientes es un ejemplo de cambio FÍSICO?",o:["La fermentación del azúcar en alcohol","La oxidación del hierro (herrumbre)","La combustión de madera","El doblamiento de un alambre de cobre"],a:3,e:"En el cambio físico no hay nuevas sustancias. Doblar el alambre cambia su forma, no su composición."},
-  {area:"cien",t:55,q:"El efecto de isla de calor urbana ocurre porque:",o:["Las superficies de asfalto y concreto absorben más calor que la vegetación","Las ciudades tienen más lluvia","Los edificios bloquean el viento","El ozono se destruye en las ciudades"],a:0,e:"Asfalto y concreto retienen más calor que los ecosistemas naturales, elevando la temperatura urbana."},
-  {area:"cien",t:55,q:"¿Por qué los antibióticos NO son efectivos contra infecciones virales?",o:["Los virus son demasiado grandes","Los antibióticos actúan sobre estructuras bacterianas que los virus no poseen","Los virus se destruyen solos","Los antibióticos solo funcionan en el tracto digestivo"],a:1,e:"Los antibióticos atacan estructuras como la pared celular bacteriana. Los virus carecen de estas estructuras."},
-  {area:"cien",t:55,q:"La reacción global de la fotosíntesis es:",o:["CO₂ + H₂O → glucosa (sin liberar O₂)","O₂ + glucosa → CO₂ + H₂O + energía","6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂","Aminoácidos + luz → proteínas + O₂"],a:2,e:"La fotosíntesis convierte CO₂ y H₂O en glucosa usando luz, liberando oxígeno como subproducto."},
-  {area:"cien",t:55,q:"La homeostasis en los seres vivos se refiere a:",o:["El proceso de reproducción celular","La capacidad de responder a estímulos externos","La producción de energía en la mitocondria","El mantenimiento de condiciones internas estables pese a cambios externos"],a:3,e:"Homeostasis: capacidad del organismo de mantener temperatura, pH, glucemia, etc. dentro de rangos estables."},
-  {area:"cien",t:55,q:"En una cadena: Alga→Zooplancton→Pez pequeño→Atún→Tiburón. Si muere el zooplancton por contaminación, el efecto más probable es:",o:["Disminuyen los peces pequeños y todo lo que depende de ellos","El atún aumenta porque no tiene competencia","El tiburón se adapta y sobrevive","Las algas desaparecen porque pierden sus consumidores"],a:0,e:"Sin zooplancton, los peces pequeños no tienen alimento → disminuyen → afectan a atún y tiburón."},
-  {area:"cien",t:55,q:"Los organismos del dominio Archaea se distinguen de las bacterias porque:",o:["Son multicelulares","Pueden vivir en condiciones extremas y tienen bioquímica diferente","Tienen núcleo celular","Realizan fotosíntesis con clorofila"],a:1,e:"Las arqueas viven en ambientes extremos (volcanes, sal, ácido) y tienen lípidos de membrana y ARN diferentes."},
+  {area:"cien",t:120,q:"¿Cuál es la principal diferencia entre la mitosis y la meiosis?",o:["La mitosis divide células cancerosas","La mitosis ocurre solo en animales","La mitosis produce 2 células idénticas; la meiosis produce 4 con la mitad de cromosomas","La meiosis produce células somáticas"],a:2,e:"Mitosis: duplicación → 2 células iguales. Meiosis: reducción → 4 células haploides (gametos)."},
+  {area:"cien",t:120,q:"En un ecosistema, si se extingue el depredador tope (como el jaguar), lo más probable es que:",o:["La biodiversidad aumente inmediatamente","Los descomponedores proliferen","El ecosistema permanezca igual","Las poblaciones de sus presas aumenten descontroladamente"],a:3,e:"Sin depredador tope, las presas se reproducen sin control (efecto cascada trófica)."},
+  {area:"cien",t:120,q:"Una mezcla heterogénea se diferencia de una homogénea porque:",o:["Sus componentes se distinguen a simple vista y no tienen composición uniforme","No puede separarse por métodos físicos","Sus componentes siempre son gaseosos","Tiene temperatura de ebullición constante"],a:0,e:"En la mezcla heterogénea se distinguen los componentes; en la homogénea, no (apariencia uniforme)."},
+  {area:"cien",t:120,q:"El sistema nervioso central está formado por:",o:["El corazón y el sistema linfático","El encéfalo y la médula espinal","Los nervios periféricos y las neuronas","Los riñones y la vejiga"],a:1,e:"SNC = encéfalo (cerebro, cerebelo, tronco) + médula espinal. El SNP son los nervios que salen de ahí."},
+  {area:"cien",t:120,q:"Si un organismo tiene 46 cromosomas en sus células somáticas, ¿cuántos tendrá en sus gametos?",o:["46","92","23","24"],a:2,e:"La meiosis reduce a la mitad: 46÷2=23 cromosomas en óvulos o espermatozoides."},
+  {area:"cien",t:120,q:"¿Cuál de los siguientes es un ejemplo de cambio FÍSICO?",o:["La fermentación del azúcar en alcohol","La oxidación del hierro (herrumbre)","La combustión de madera","El doblamiento de un alambre de cobre"],a:3,e:"En el cambio físico no hay nuevas sustancias. Doblar el alambre cambia su forma, no su composición."},
+  {area:"cien",t:120,q:"El efecto de isla de calor urbana ocurre porque:",o:["Las superficies de asfalto y concreto absorben más calor que la vegetación","Las ciudades tienen más lluvia","Los edificios bloquean el viento","El ozono se destruye en las ciudades"],a:0,e:"Asfalto y concreto retienen más calor que los ecosistemas naturales, elevando la temperatura urbana."},
+  {area:"cien",t:120,q:"¿Por qué los antibióticos NO son efectivos contra infecciones virales?",o:["Los virus son demasiado grandes","Los antibióticos actúan sobre estructuras bacterianas que los virus no poseen","Los virus se destruyen solos","Los antibióticos solo funcionan en el tracto digestivo"],a:1,e:"Los antibióticos atacan estructuras como la pared celular bacteriana. Los virus carecen de estas estructuras."},
+  {area:"cien",t:120,q:"La reacción global de la fotosíntesis es:",o:["CO₂ + H₂O → glucosa (sin liberar O₂)","O₂ + glucosa → CO₂ + H₂O + energía","6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂","Aminoácidos + luz → proteínas + O₂"],a:2,e:"La fotosíntesis convierte CO₂ y H₂O en glucosa usando luz, liberando oxígeno como subproducto."},
+  {area:"cien",t:120,q:"La homeostasis en los seres vivos se refiere a:",o:["El proceso de reproducción celular","La capacidad de responder a estímulos externos","La producción de energía en la mitocondria","El mantenimiento de condiciones internas estables pese a cambios externos"],a:3,e:"Homeostasis: capacidad del organismo de mantener temperatura, pH, glucemia, etc. dentro de rangos estables."},
+  {area:"cien",t:120,q:"En una cadena: Alga→Zooplancton→Pez pequeño→Atún→Tiburón. Si muere el zooplancton por contaminación, el efecto más probable es:",o:["Disminuyen los peces pequeños y todo lo que depende de ellos","El atún aumenta porque no tiene competencia","El tiburón se adapta y sobrevive","Las algas desaparecen porque pierden sus consumidores"],a:0,e:"Sin zooplancton, los peces pequeños no tienen alimento → disminuyen → afectan a atún y tiburón."},
+  {area:"cien",t:120,q:"Los organismos del dominio Archaea se distinguen de las bacterias porque:",o:["Son multicelulares","Pueden vivir en condiciones extremas y tienen bioquímica diferente","Tienen núcleo celular","Realizan fotosíntesis con clorofila"],a:1,e:"Las arqueas viven en ambientes extremos (volcanes, sal, ácido) y tienen lípidos de membrana y ARN diferentes."},
   // CIENCIAS SOCIALES (13) — respuestas: 3,0,1,2,3,0,1,2,3,0,1,2,3
-  {area:"soc",t:55,q:"¿Cuál es una de las principales causas de la pobreza histórica en el Pacífico colombiano?",o:["La sobrepoblación sin recursos","El conflicto con Ecuador","La escasez de recursos naturales","El abandono histórico del Estado y el conflicto armado"],a:3,e:"El Pacífico tiene riqueza natural pero ha sufrido exclusión histórica, falta de inversión y violencia."},
-  {area:"soc",t:55,q:"El Grito de Independencia del 20 de julio de 1810 resultó en:",o:["El establecimiento de la Junta Suprema de Gobierno en Santa Fe y el inicio del proceso independentista","La firma del Acta definitiva de Independencia","La batalla de Boyacá que selló la libertad","El decreto de Bolívar proclamando la República"],a:0,e:"El 20 de julio creó la Junta Suprema de Gobierno, marcando el inicio formal del proceso independentista."},
-  {area:"soc",t:55,q:"La tutela es un mecanismo constitucional que sirve para:",o:["Elegir alcaldes en municipios pequeños","Proteger derechos fundamentales cuando son violados o amenazados","Reformar la Constitución mediante el pueblo","Exigir pagos pendientes al Estado"],a:1,e:"La tutela (art. 86 C.N.) protege derechos fundamentales de forma inmediata y sumaria."},
-  {area:"soc",t:55,q:"La inflación afecta más a los sectores de menores ingresos porque:",o:["Ellos generan menos impuestos al Estado","Ahorran en dólares y no en pesos","Destinan mayor proporción de sus ingresos al consumo de bienes básicos cuyos precios suben","Tienen más deudas bancarias a tasa variable"],a:2,e:"Los hogares pobres gastan casi todo en alimentos y servicios básicos: cuando suben los precios, su poder adquisitivo cae más."},
-  {area:"soc",t:55,q:"Según la Constitución de 1991, Colombia es un Estado Social de Derecho, lo que implica:",o:["Poderes absolutos del presidente","Leyes que solo protegen ciudadanos ricos","Estado sin intervención en asuntos sociales","El Estado garantiza derechos fundamentales y la dignidad de todos"],a:3,e:"El Estado Social de Derecho combina democracia con protección de derechos fundamentales para todos."},
-  {area:"soc",t:55,q:"Durante la Colonia en el Pacífico colombiano, los africanos esclavizados fueron traídos principalmente para:",o:["Trabajar en las minas de oro que los españoles explotaban","Desarrollar agricultura de exportación masiva","Construir iglesias coloniales en las ciudades","Pelear en conflictos entre colonias rivales"],a:0,e:"El oro del Pacífico impulsó la trata esclavista desde el siglo XVI; los africanos suplantaron la mano de obra indígena."},
-  {area:"soc",t:55,q:"¿Cuál de estos países NO pertenece a América del Sur?",o:["Perú","México","Bolivia","Paraguay"],a:1,e:"México forma parte de América del Norte/Central. Perú, Bolivia y Paraguay son países sudamericanos."},
-  {area:"soc",t:55,q:"La identidad cultural del Pacífico colombiano se expresa principalmente a través de:",o:["La tradición minera industrial moderna","La arquitectura colonial española","La música (chirimía, marimba), la gastronomía y las tradiciones afrodescendientes","El folclor andino y el vallenato costeño"],a:2,e:"El Pacífico tiene un patrimonio cultural afrodescendiente único: marimba, chirimía, rituales, gastronomía."},
-  {area:"soc",t:55,q:"El principio de 'soberanía popular' en una democracia significa que:",o:["El presidente posee el poder soberano","El ejército decide las leyes","Los jueces tienen la última palabra en todo","El poder emana del pueblo y se ejerce a través de sus representantes elegidos"],a:3,e:"La soberanía popular (art. 3 C.N.) establece que el pueblo es la fuente del poder político."},
-  {area:"soc",t:55,q:"El calentamiento global afecta a Colombia principalmente mediante:",o:["Cambios en patrones de lluvia, derretimiento de nevados e intensificación de El Niño/La Niña","La destrucción de sus fábricas industriales","El aumento del turismo extranjero masivo","La reducción de exportaciones de carbón y petróleo"],a:0,e:"Colombia es muy vulnerable al cambio climático por depender de recursos hídricos y tener alta biodiversidad."},
-  {area:"soc",t:55,q:"El coeficiente de Gini es un indicador que mide:",o:["El PIB per cápita del país","La desigualdad en la distribución del ingreso","El nivel de deuda externa","El índice de precios al consumidor"],a:1,e:"El Gini va de 0 (perfecta igualdad) a 1 (máxima desigualdad). Colombia tiene uno de los más altos de LatAm."},
-  {area:"soc",t:55,q:"¿Qué fue el Frente Nacional en Colombia (1958-1974)?",o:["Una alianza militar contra guerrillas","Un acuerdo económico con Estados Unidos","Un pacto entre liberales y conservadores para alternarse el poder y superar la Violencia bipartidista","Una organización guerrillera de izquierda"],a:2,e:"El Frente Nacional alternó la presidencia entre liberales y conservadores para terminar la guerra bipartidista."},
-  {area:"soc",t:55,q:"La globalización ha generado en países como Colombia:",o:["Uniformidad cultural total y desaparición de tradiciones","Aislamiento económico e industrial","Industrialización completa y fin de la pobreza","Mayor interconexión comercial pero también riesgo de dependencia económica y pérdida cultural"],a:3,e:"La globalización conecta mercados y culturas, pero también puede generar dependencia y homogenización cultural."},
+  {area:"soc",t:120,q:"¿Cuál es una de las principales causas de la pobreza histórica en el Pacífico colombiano?",o:["La sobrepoblación sin recursos","El conflicto con Ecuador","La escasez de recursos naturales","El abandono histórico del Estado y el conflicto armado"],a:3,e:"El Pacífico tiene riqueza natural pero ha sufrido exclusión histórica, falta de inversión y violencia."},
+  {area:"soc",t:120,q:"El Grito de Independencia del 20 de julio de 1810 resultó en:",o:["El establecimiento de la Junta Suprema de Gobierno en Santa Fe y el inicio del proceso independentista","La firma del Acta definitiva de Independencia","La batalla de Boyacá que selló la libertad","El decreto de Bolívar proclamando la República"],a:0,e:"El 20 de julio creó la Junta Suprema de Gobierno, marcando el inicio formal del proceso independentista."},
+  {area:"soc",t:120,q:"La tutela es un mecanismo constitucional que sirve para:",o:["Elegir alcaldes en municipios pequeños","Proteger derechos fundamentales cuando son violados o amenazados","Reformar la Constitución mediante el pueblo","Exigir pagos pendientes al Estado"],a:1,e:"La tutela (art. 86 C.N.) protege derechos fundamentales de forma inmediata y sumaria."},
+  {area:"soc",t:120,q:"La inflación afecta más a los sectores de menores ingresos porque:",o:["Ellos generan menos impuestos al Estado","Ahorran en dólares y no en pesos","Destinan mayor proporción de sus ingresos al consumo de bienes básicos cuyos precios suben","Tienen más deudas bancarias a tasa variable"],a:2,e:"Los hogares pobres gastan casi todo en alimentos y servicios básicos: cuando suben los precios, su poder adquisitivo cae más."},
+  {area:"soc",t:120,q:"Según la Constitución de 1991, Colombia es un Estado Social de Derecho, lo que implica:",o:["Poderes absolutos del presidente","Leyes que solo protegen ciudadanos ricos","Estado sin intervención en asuntos sociales","El Estado garantiza derechos fundamentales y la dignidad de todos"],a:3,e:"El Estado Social de Derecho combina democracia con protección de derechos fundamentales para todos."},
+  {area:"soc",t:120,q:"Durante la Colonia en el Pacífico colombiano, los africanos esclavizados fueron traídos principalmente para:",o:["Trabajar en las minas de oro que los españoles explotaban","Desarrollar agricultura de exportación masiva","Construir iglesias coloniales en las ciudades","Pelear en conflictos entre colonias rivales"],a:0,e:"El oro del Pacífico impulsó la trata esclavista desde el siglo XVI; los africanos suplantaron la mano de obra indígena."},
+  {area:"soc",t:120,q:"¿Cuál de estos países NO pertenece a América del Sur?",o:["Perú","México","Bolivia","Paraguay"],a:1,e:"México forma parte de América del Norte/Central. Perú, Bolivia y Paraguay son países sudamericanos."},
+  {area:"soc",t:120,q:"La identidad cultural del Pacífico colombiano se expresa principalmente a través de:",o:["La tradición minera industrial moderna","La arquitectura colonial española","La música (chirimía, marimba), la gastronomía y las tradiciones afrodescendientes","El folclor andino y el vallenato costeño"],a:2,e:"El Pacífico tiene un patrimonio cultural afrodescendiente único: marimba, chirimía, rituales, gastronomía."},
+  {area:"soc",t:120,q:"El principio de 'soberanía popular' en una democracia significa que:",o:["El presidente posee el poder soberano","El ejército decide las leyes","Los jueces tienen la última palabra en todo","El poder emana del pueblo y se ejerce a través de sus representantes elegidos"],a:3,e:"La soberanía popular (art. 3 C.N.) establece que el pueblo es la fuente del poder político."},
+  {area:"soc",t:120,q:"El calentamiento global afecta a Colombia principalmente mediante:",o:["Cambios en patrones de lluvia, derretimiento de nevados e intensificación de El Niño/La Niña","La destrucción de sus fábricas industriales","El aumento del turismo extranjero masivo","La reducción de exportaciones de carbón y petróleo"],a:0,e:"Colombia es muy vulnerable al cambio climático por depender de recursos hídricos y tener alta biodiversidad."},
+  {area:"soc",t:120,q:"El coeficiente de Gini es un indicador que mide:",o:["El PIB per cápita del país","La desigualdad en la distribución del ingreso","El nivel de deuda externa","El índice de precios al consumidor"],a:1,e:"El Gini va de 0 (perfecta igualdad) a 1 (máxima desigualdad). Colombia tiene uno de los más altos de LatAm."},
+  {area:"soc",t:120,q:"¿Qué fue el Frente Nacional en Colombia (1958-1974)?",o:["Una alianza militar contra guerrillas","Un acuerdo económico con Estados Unidos","Un pacto entre liberales y conservadores para alternarse el poder y superar la Violencia bipartidista","Una organización guerrillera de izquierda"],a:2,e:"El Frente Nacional alternó la presidencia entre liberales y conservadores para terminar la guerra bipartidista."},
+  {area:"soc",t:120,q:"La globalización ha generado en países como Colombia:",o:["Uniformidad cultural total y desaparición de tradiciones","Aislamiento económico e industrial","Industrialización completa y fin de la pobreza","Mayor interconexión comercial pero también riesgo de dependencia económica y pérdida cultural"],a:3,e:"La globalización conecta mercados y culturas, pero también puede generar dependencia y homogenización cultural."},
 ];
 
 // ================================================================
@@ -977,59 +1089,59 @@ const BANCO_G8 = [
 // ================================================================
 const BANCO_G9 = [
   // MATEMÁTICAS (13) — respuestas rotadas: 0,1,2,3,0,1,2,3,0,1,2,3,0
-  {area:"mat",t:55,q:"Factoriza completamente: x² + 5x + 6",o:["(x+2)(x+3)","(x+1)(x+6)","(x−2)(x−3)","(x+5)(x+1)"],a:0,e:"Buscar dos números con producto 6 y suma 5: 2 y 3. Entonces (x+2)(x+3)."},
-  {area:"mat",t:55,q:"¿Cuál es la pendiente de la recta y = 3x − 4?",o:["−4","3","−3","4"],a:1,e:"En y = mx + b, la pendiente m = 3 y el intercepto b = −4."},
-  {area:"mat",t:55,q:"Resuelve el sistema: x + y = 10, x − y = 2",o:["x=4, y=6","x=5, y=5","x=6, y=4","x=8, y=2"],a:2,e:"Sumando ambas ecuaciones: 2x=12 → x=6. Luego y=10−6=4."},
-  {area:"mat",t:55,q:"¿Cuál es la función lineal que pasa por (0,3) y tiene pendiente 2?",o:["y=3x+2","y=2x−3","y=x+3","y=2x+3"],a:3,e:"y=mx+b con m=2 y b=3 (el intercepto en y cuando x=0 es 3)."},
-  {area:"mat",t:55,q:"El discriminante de x² − 4x + 4 = 0 es:",o:["0","8","−8","16"],a:0,e:"Δ = b²−4ac = 16−4(1)(4) = 0. Con Δ=0, hay una raíz doble."},
-  {area:"mat",t:55,q:"Si f(x) = x² − 2, ¿cuánto es f(3)?",o:["9","7","11","5"],a:1,e:"f(3) = 3² − 2 = 9 − 2 = 7."},
-  {area:"mat",t:55,q:"¿Cuánto es el 60% de 450?",o:["240","280","270","300"],a:2,e:"450 × 0.60 = 270."},
-  {area:"mat",t:55,q:"Un tren viaja a 80 km/h. ¿Cuánto tarda en recorrer 200 km?",o:["2 h","3 h","4 h","2.5 h"],a:3,e:"Tiempo = distancia ÷ velocidad = 200 ÷ 80 = 2.5 horas."},
-  {area:"mat",t:55,q:"Simplifica: (a³b²)/(ab)",o:["a²b","a³b","ab²","a²b²"],a:0,e:"a³/a = a² y b²/b = b¹. Resultado: a²b."},
-  {area:"mat",t:55,q:"¿Cuál es el área de un trapecio con bases 8 y 12 cm y altura 5 cm?",o:["40 cm²","50 cm²","60 cm²","100 cm²"],a:1,e:"Área = ½(B+b)×h = ½(8+12)×5 = ½×100 = 50 cm²."},
-  {area:"mat",t:55,q:"La ecuación x² − 5x + 6 = 0 tiene raíces:",o:["x=−2 y x=−3","x=1 y x=6","x=2 y x=3","x=5 y x=1"],a:2,e:"Factorizando: (x−2)(x−3)=0 → x=2 o x=3."},
-  {area:"mat",t:55,q:"En un triángulo, dos ángulos miden 60° y 80°. El tercero mide:",o:["50°","60°","70°","40°"],a:3,e:"180° − 60° − 80° = 40°."},
-  {area:"mat",t:55,q:"¿Cuál es el valor de √144?",o:["12","14","11","16"],a:0,e:"√144 = 12, porque 12² = 144."},
+  {area:"mat",t:120,q:"Factoriza completamente: x² + 5x + 6",o:["(x+2)(x+3)","(x+1)(x+6)","(x−2)(x−3)","(x+5)(x+1)"],a:0,e:"Buscar dos números con producto 6 y suma 5: 2 y 3. Entonces (x+2)(x+3)."},
+  {area:"mat",t:120,q:"¿Cuál es la pendiente de la recta y = 3x − 4?",o:["−4","3","−3","4"],a:1,e:"En y = mx + b, la pendiente m = 3 y el intercepto b = −4."},
+  {area:"mat",t:120,q:"Resuelve el sistema: x + y = 10, x − y = 2",o:["x=4, y=6","x=5, y=5","x=6, y=4","x=8, y=2"],a:2,e:"Sumando ambas ecuaciones: 2x=12 → x=6. Luego y=10−6=4."},
+  {area:"mat",t:120,q:"¿Cuál es la función lineal que pasa por (0,3) y tiene pendiente 2?",o:["y=3x+2","y=2x−3","y=x+3","y=2x+3"],a:3,e:"y=mx+b con m=2 y b=3 (el intercepto en y cuando x=0 es 3)."},
+  {area:"mat",t:120,q:"El discriminante de x² − 4x + 4 = 0 es:",o:["0","8","−8","16"],a:0,e:"Δ = b²−4ac = 16−4(1)(4) = 0. Con Δ=0, hay una raíz doble."},
+  {area:"mat",t:120,q:"Si f(x) = x² − 2, ¿cuánto es f(3)?",o:["9","7","11","5"],a:1,e:"f(3) = 3² − 2 = 9 − 2 = 7."},
+  {area:"mat",t:120,q:"¿Cuánto es el 60% de 450?",o:["240","280","270","300"],a:2,e:"450 × 0.60 = 270."},
+  {area:"mat",t:120,q:"Un tren viaja a 80 km/h. ¿Cuánto tarda en recorrer 200 km?",o:["2 h","3 h","4 h","2.5 h"],a:3,e:"Tiempo = distancia ÷ velocidad = 200 ÷ 80 = 2.5 horas."},
+  {area:"mat",t:120,q:"Simplifica: (a³b²)/(ab)",o:["a²b","a³b","ab²","a²b²"],a:0,e:"a³/a = a² y b²/b = b¹. Resultado: a²b."},
+  {area:"mat",t:120,q:"¿Cuál es el área de un trapecio con bases 8 y 12 cm y altura 5 cm?",o:["40 cm²","50 cm²","60 cm²","100 cm²"],a:1,e:"Área = ½(B+b)×h = ½(8+12)×5 = ½×100 = 50 cm²."},
+  {area:"mat",t:120,q:"La ecuación x² − 5x + 6 = 0 tiene raíces:",o:["x=−2 y x=−3","x=1 y x=6","x=2 y x=3","x=5 y x=1"],a:2,e:"Factorizando: (x−2)(x−3)=0 → x=2 o x=3."},
+  {area:"mat",t:120,q:"En un triángulo, dos ángulos miden 60° y 80°. El tercero mide:",o:["50°","60°","70°","40°"],a:3,e:"180° − 60° − 80° = 40°."},
+  {area:"mat",t:120,q:"¿Cuál es el valor de √144?",o:["12","14","11","16"],a:0,e:"√144 = 12, porque 12² = 144."},
   // LECTURA CRÍTICA (12) — respuestas: 1,2,3,0,1,2,3,0,1,2,3,0
-  {area:"lec",t:55,q:"'A pesar del esfuerzo, el proyecto no avanzó.' ¿Qué tipo de conector se usa?",o:["Consecutivo","Adversativo (contrasta ideas)","Causal","Aditivo"],a:1,e:"'A pesar de' opone dos ideas (esfuerzo vs. no avance). Es un conector adversativo."},
-  {area:"lec",t:55,q:"En un texto argumentativo, la 'tesis' es:",o:["El ejemplo que apoya la idea","La conclusión del texto","La postura del autor que se defiende","Un hecho histórico"],a:2,e:"La tesis es la afirmación central que el autor defiende con argumentos y evidencias a lo largo del texto."},
-  {area:"lec",t:55,q:"¿Cuál de estos textos es un ejemplo de texto discontinuo?",o:["Un cuento","Una carta","Un artículo de opinión","Un mapa"],a:3,e:"Los textos discontinuos no tienen lectura lineal: mapas, gráficas, tablas, infografías."},
-  {area:"lec",t:55,q:"El propósito de un texto expositivo es:",o:["Informar y explicar de forma objetiva","Convencer al lector de una postura","Narrar una aventura","Expresar sentimientos personales"],a:0,e:"El texto expositivo presenta hechos e información de manera clara y objetiva sin tomar partido."},
-  {area:"lec",t:55,q:"'El mar llora sal.' ¿Qué figura retórica identifica en esta frase?",o:["Hipérbole","Personificación","Metáfora","Aliteración"],a:1,e:"Atribuir al mar la acción humana de llorar es personificación (o prosopopeya)."},
-  {area:"lec",t:55,q:"¿Qué es una oración subordinada?",o:["Una que tiene sujeto y predicado completos","Una oración muy corta","Una que depende de otra para tener sentido pleno","Una oración exclamativa"],a:2,e:"La oración subordinada depende de la oración principal para tener sentido: 'cuando llegues a casa'."},
-  {area:"lec",t:55,q:"En 'Juan compró un libro', el sujeto de la oración es:",o:["compró","un libro","Juan compró","Juan"],a:3,e:"El sujeto es quien realiza la acción verbal. 'Juan' es quien ejecuta la acción 'compró'."},
-  {area:"lec",t:55,q:"La ironía literaria ocurre cuando:",o:["Se dice lo contrario de lo que se piensa","Se exagera algo extremadamente","Se repiten sonidos similares","Se omite el sujeto de la oración"],a:0,e:"La ironía dice lo opuesto a lo que realmente se quiere comunicar, generalmente con intención crítica o humorística."},
-  {area:"lec",t:55,q:"'La luz del sol bañaba las montañas de oro.' ¿Qué figura usa?",o:["Símil","Metáfora","Aliteración","Elipsis"],a:1,e:"'De oro' compara directamente sin usar 'como': es una metáfora sobre el color dorado de la luz."},
-  {area:"lec",t:55,q:"¿Cuál es la diferencia entre 'haber' (verbo) y 'a ver' (preposición + infinitivo)?",o:["Son sinónimos","Solo se distinguen por tildes","'Haber' es auxiliar verbal; 'a ver' es expresión de mirar","Son lo mismo en todos los contextos"],a:2,e:"'Haber' funciona como auxiliar o impersonal ('hay', 'hubo'). 'A ver' equivale a 'vamos a ver/mirar'."},
-  {area:"lec",t:55,q:"El narrador omnisciente se caracteriza por:",o:["Solo narrar lo que ve directamente","Ser un personaje que narra su propia historia","No participar en la historia como personaje","Conocer pensamientos, acciones y sentimientos de todos los personajes"],a:3,e:"El narrador omnisciente tiene visión total de la historia, incluyendo la psicología de todos los personajes."},
-  {area:"lec",t:55,q:"¿Qué es la intertextualidad?",o:["La relación de un texto con otros textos y obras culturales","La extensión adecuada de un texto","El número de personajes en una obra","La puntuación correcta de un texto"],a:0,e:"La intertextualidad es la referencia explícita o implícita que un texto hace a otros textos o expresiones culturales."},
+  {area:"lec",t:120,q:"'A pesar del esfuerzo, el proyecto no avanzó.' ¿Qué tipo de conector se usa?",o:["Consecutivo","Adversativo (contrasta ideas)","Causal","Aditivo"],a:1,e:"'A pesar de' opone dos ideas (esfuerzo vs. no avance). Es un conector adversativo."},
+  {area:"lec",t:120,q:"En un texto argumentativo, la 'tesis' es:",o:["El ejemplo que apoya la idea","La conclusión del texto","La postura del autor que se defiende","Un hecho histórico"],a:2,e:"La tesis es la afirmación central que el autor defiende con argumentos y evidencias a lo largo del texto."},
+  {area:"lec",t:120,q:"¿Cuál de estos textos es un ejemplo de texto discontinuo?",o:["Un cuento","Una carta","Un artículo de opinión","Un mapa"],a:3,e:"Los textos discontinuos no tienen lectura lineal: mapas, gráficas, tablas, infografías."},
+  {area:"lec",t:120,q:"El propósito de un texto expositivo es:",o:["Informar y explicar de forma objetiva","Convencer al lector de una postura","Narrar una aventura","Expresar sentimientos personales"],a:0,e:"El texto expositivo presenta hechos e información de manera clara y objetiva sin tomar partido."},
+  {area:"lec",t:120,q:"'El mar llora sal.' ¿Qué figura retórica identifica en esta frase?",o:["Hipérbole","Personificación","Metáfora","Aliteración"],a:1,e:"Atribuir al mar la acción humana de llorar es personificación (o prosopopeya)."},
+  {area:"lec",t:120,q:"¿Qué es una oración subordinada?",o:["Una que tiene sujeto y predicado completos","Una oración muy corta","Una que depende de otra para tener sentido pleno","Una oración exclamativa"],a:2,e:"La oración subordinada depende de la oración principal para tener sentido: 'cuando llegues a casa'."},
+  {area:"lec",t:120,q:"En 'Juan compró un libro', el sujeto de la oración es:",o:["compró","un libro","Juan compró","Juan"],a:3,e:"El sujeto es quien realiza la acción verbal. 'Juan' es quien ejecuta la acción 'compró'."},
+  {area:"lec",t:120,q:"La ironía literaria ocurre cuando:",o:["Se dice lo contrario de lo que se piensa","Se exagera algo extremadamente","Se repiten sonidos similares","Se omite el sujeto de la oración"],a:0,e:"La ironía dice lo opuesto a lo que realmente se quiere comunicar, generalmente con intención crítica o humorística."},
+  {area:"lec",t:120,q:"'La luz del sol bañaba las montañas de oro.' ¿Qué figura usa?",o:["Símil","Metáfora","Aliteración","Elipsis"],a:1,e:"'De oro' compara directamente sin usar 'como': es una metáfora sobre el color dorado de la luz."},
+  {area:"lec",t:120,q:"¿Cuál es la diferencia entre 'haber' (verbo) y 'a ver' (preposición + infinitivo)?",o:["Son sinónimos","Solo se distinguen por tildes","'Haber' es auxiliar verbal; 'a ver' es expresión de mirar","Son lo mismo en todos los contextos"],a:2,e:"'Haber' funciona como auxiliar o impersonal ('hay', 'hubo'). 'A ver' equivale a 'vamos a ver/mirar'."},
+  {area:"lec",t:120,q:"El narrador omnisciente se caracteriza por:",o:["Solo narrar lo que ve directamente","Ser un personaje que narra su propia historia","No participar en la historia como personaje","Conocer pensamientos, acciones y sentimientos de todos los personajes"],a:3,e:"El narrador omnisciente tiene visión total de la historia, incluyendo la psicología de todos los personajes."},
+  {area:"lec",t:120,q:"¿Qué es la intertextualidad?",o:["La relación de un texto con otros textos y obras culturales","La extensión adecuada de un texto","El número de personajes en una obra","La puntuación correcta de un texto"],a:0,e:"La intertextualidad es la referencia explícita o implícita que un texto hace a otros textos o expresiones culturales."},
   // CIENCIAS NATURALES + FÍSICA (13) — respuestas: 1,2,3,0,1,2,3,0,1,2,3,0,1
-  {area:"cien",t:55,q:"La teoría de la evolución de las especies fue propuesta por:",o:["Gregor Mendel","Charles Darwin","Louis Pasteur","Isaac Newton"],a:1,e:"Darwin propuso la selección natural en 'El origen de las especies' (1859): los mejor adaptados sobreviven."},
-  {area:"cien",t:55,q:"¿Qué son los ecosistemas?",o:["Solo los seres vivos de un lugar","Solo el clima de una región","Conjunto de seres vivos e inorgánicos que interactúan en un espacio","El conjunto de ríos y montañas"],a:2,e:"Un ecosistema integra componentes bióticos (organismos) y abióticos (clima, suelo, agua) que interactúan."},
-  {area:"cien",t:55,q:"En la estructura atómica, los electrones se ubican en:",o:["El núcleo junto a protones","El interior del protón","Las capas del núcleo atómico","Orbitales alrededor del núcleo"],a:3,e:"Los electrones orbitan el núcleo en niveles de energía (orbitales); el núcleo contiene protones y neutrones."},
-  {area:"cien",t:55,q:"¿Qué fenómeno natural es la principal causa de los terremotos?",o:["El movimiento de las placas tectónicas","La rotación de la Tierra","Los cambios bruscos de temperatura","El flujo acelerado de los ríos"],a:0,e:"Las placas tectónicas se deslizan, chocan o separan; la energía liberada genera los sismos."},
-  {area:"cien",t:55,q:"La herencia genética se transmite de padres a hijos a través de:",o:["La sangre directamente","El ADN en los cromosomas de los gametos","El agua y los alimentos","La leche materna"],a:1,e:"El ADN contiene los genes que se transmiten mediante óvulo y espermatozoide en la reproducción sexual."},
-  {area:"cien",t:55,q:"¿A qué temperatura hierve el agua a nivel del mar (presión estándar)?",o:["90 °C","80 °C","100 °C","120 °C"],a:2,e:"El agua hierve a 100°C (373 K) a 1 atm. A mayor altitud, la presión baja y el punto de ebullición disminuye."},
-  {area:"fis",t:55,q:"¿Qué describe la Primera Ley de Newton (Ley de Inercia)?",o:["F = m × a","A toda acción hay una reacción igual y opuesta","La gravedad atrae los cuerpos hacia la Tierra","Un objeto en reposo permanece así a menos que actúe una fuerza neta"],a:3,e:"La inercia: los cuerpos mantienen su estado de reposo o movimiento rectilíneo uniforme sin fuerza externa."},
-  {area:"fis",t:55,q:"La fórmula correcta para la velocidad media es:",o:["v = d/t","v = d×t","v = t/d","v = d + t"],a:0,e:"Velocidad = distancia recorrida ÷ tiempo empleado. Unidad SI: m/s."},
-  {area:"fis",t:55,q:"La causa de la caída libre de los objetos es:",o:["El viento","La presión atmosférica","La gravedad terrestre (g ≈ 9.8 m/s²)","La temperatura del entorno"],a:2,e:"La fuerza gravitacional atrae todo cuerpo hacia el centro de la Tierra con aceleración g ≈ 9.8 m/s²."},
-  {area:"fis",t:55,q:"¿Qué es la energía cinética?",o:["La energía almacenada por posición","La energía del sol","La energía química almacenada","La energía de un objeto en movimiento"],a:3,e:"Ec = ½mv². La energía cinética depende de la masa y el cuadrado de la velocidad del objeto."},
-  {area:"fis",t:55,q:"Un carro recorre 150 km en 2 horas. ¿Cuál es su velocidad media?",o:["75 km/h","60 km/h","80 km/h","100 km/h"],a:0,e:"v = d/t = 150÷2 = 75 km/h."},
-  {area:"fis",t:55,q:"Las ondas sonoras se clasifican como:",o:["Ondas electromagnéticas transversales","Ondas mecánicas longitudinales","Ondas de luz visibles","Rayos gamma ionizantes"],a:1,e:"El sonido se propaga como compresiones y rarefacciones del medio material (onda mecánica longitudinal)."},
-  {area:"fis",t:55,q:"¿Cuál es la unidad de medida de la fuerza en el Sistema Internacional?",o:["Joule (J)","Watt (W)","Pascal (Pa)","Newton (N)"],a:3,e:"La fuerza se mide en Newtons (N). 1 N = 1 kg·m/s² (Segunda Ley de Newton)."},
+  {area:"cien",t:120,q:"La teoría de la evolución de las especies fue propuesta por:",o:["Gregor Mendel","Charles Darwin","Louis Pasteur","Isaac Newton"],a:1,e:"Darwin propuso la selección natural en 'El origen de las especies' (1859): los mejor adaptados sobreviven."},
+  {area:"cien",t:120,q:"¿Qué son los ecosistemas?",o:["Solo los seres vivos de un lugar","Solo el clima de una región","Conjunto de seres vivos e inorgánicos que interactúan en un espacio","El conjunto de ríos y montañas"],a:2,e:"Un ecosistema integra componentes bióticos (organismos) y abióticos (clima, suelo, agua) que interactúan."},
+  {area:"cien",t:120,q:"En la estructura atómica, los electrones se ubican en:",o:["El núcleo junto a protones","El interior del protón","Las capas del núcleo atómico","Orbitales alrededor del núcleo"],a:3,e:"Los electrones orbitan el núcleo en niveles de energía (orbitales); el núcleo contiene protones y neutrones."},
+  {area:"cien",t:120,q:"¿Qué fenómeno natural es la principal causa de los terremotos?",o:["El movimiento de las placas tectónicas","La rotación de la Tierra","Los cambios bruscos de temperatura","El flujo acelerado de los ríos"],a:0,e:"Las placas tectónicas se deslizan, chocan o separan; la energía liberada genera los sismos."},
+  {area:"cien",t:120,q:"La herencia genética se transmite de padres a hijos a través de:",o:["La sangre directamente","El ADN en los cromosomas de los gametos","El agua y los alimentos","La leche materna"],a:1,e:"El ADN contiene los genes que se transmiten mediante óvulo y espermatozoide en la reproducción sexual."},
+  {area:"cien",t:120,q:"¿A qué temperatura hierve el agua a nivel del mar (presión estándar)?",o:["90 °C","80 °C","100 °C","120 °C"],a:2,e:"El agua hierve a 100°C (373 K) a 1 atm. A mayor altitud, la presión baja y el punto de ebullición disminuye."},
+  {area:"fis",t:120,q:"¿Qué describe la Primera Ley de Newton (Ley de Inercia)?",o:["F = m × a","A toda acción hay una reacción igual y opuesta","La gravedad atrae los cuerpos hacia la Tierra","Un objeto en reposo permanece así a menos que actúe una fuerza neta"],a:3,e:"La inercia: los cuerpos mantienen su estado de reposo o movimiento rectilíneo uniforme sin fuerza externa."},
+  {area:"fis",t:120,q:"La fórmula correcta para la velocidad media es:",o:["v = d/t","v = d×t","v = t/d","v = d + t"],a:0,e:"Velocidad = distancia recorrida ÷ tiempo empleado. Unidad SI: m/s."},
+  {area:"fis",t:120,q:"La causa de la caída libre de los objetos es:",o:["El viento","La presión atmosférica","La gravedad terrestre (g ≈ 9.8 m/s²)","La temperatura del entorno"],a:2,e:"La fuerza gravitacional atrae todo cuerpo hacia el centro de la Tierra con aceleración g ≈ 9.8 m/s²."},
+  {area:"fis",t:120,q:"¿Qué es la energía cinética?",o:["La energía almacenada por posición","La energía del sol","La energía química almacenada","La energía de un objeto en movimiento"],a:3,e:"Ec = ½mv². La energía cinética depende de la masa y el cuadrado de la velocidad del objeto."},
+  {area:"fis",t:120,q:"Un carro recorre 150 km en 2 horas. ¿Cuál es su velocidad media?",o:["75 km/h","60 km/h","80 km/h","100 km/h"],a:0,e:"v = d/t = 150÷2 = 75 km/h."},
+  {area:"fis",t:120,q:"Las ondas sonoras se clasifican como:",o:["Ondas electromagnéticas transversales","Ondas mecánicas longitudinales","Ondas de luz visibles","Rayos gamma ionizantes"],a:1,e:"El sonido se propaga como compresiones y rarefacciones del medio material (onda mecánica longitudinal)."},
+  {area:"fis",t:120,q:"¿Cuál es la unidad de medida de la fuerza en el Sistema Internacional?",o:["Joule (J)","Watt (W)","Pascal (Pa)","Newton (N)"],a:3,e:"La fuerza se mide en Newtons (N). 1 N = 1 kg·m/s² (Segunda Ley de Newton)."},
   // CIENCIAS SOCIALES (12) — respuestas: 2,3,0,1,2,3,0,1,2,3,0,1
-  {area:"soc",t:55,q:"La Segunda Guerra Mundial (1939-1945) enfrentó:",o:["Una guerra civil en Europa","Una disputa entre España y Portugal","Potencias del Eje (Alemania, Italia, Japón) vs. los Aliados (UK, URSS, EEUU)","Una revolución en América Latina"],a:2,e:"Fue el conflicto más devastador: Eje vs. Aliados, con más de 70 millones de muertos."},
-  {area:"soc",t:55,q:"La Declaración Universal de Derechos Humanos fue adoptada por la ONU en:",o:["1945","1919","1960","1948"],a:3,e:"La DUDH fue adoptada el 10 de diciembre de 1948, como respuesta a los horrores de la IIGM."},
-  {area:"soc",t:55,q:"El rol fundamental de la Constitución en un Estado democrático es:",o:["Ser la norma suprema que regula derechos y poderes del Estado","Ser un listado de leyes ordinarias","Ordenar directamente al ejército","Controlar el comercio exterior"],a:0,e:"La Constitución es la 'ley de leyes': establece derechos fundamentales y organiza los poderes del Estado."},
-  {area:"soc",t:55,q:"La pobreza extrema se mide internacionalmente con base en:",o:["El PIB total del país","La pobreza extrema como vivir con menos de $2.15 USD al día","El acceso a internet","La tasa de empleo formal"],a:1,e:"El Banco Mundial (2022) define la pobreza extrema como ingresos inferiores a $2.15 USD diarios."},
-  {area:"soc",t:55,q:"La principal causa del desplazamiento forzado en Colombia es:",o:["La búsqueda voluntaria de empleo","La contaminación ambiental","El conflicto armado y la violencia de grupos ilegales","Las crisis económicas globales"],a:2,e:"El conflicto armado con guerrillas, paramilitares y bandas criminales ha generado millones de desplazados."},
-  {area:"soc",t:55,q:"La inflación se define como:",o:["Disminución del valor del dólar","Reducción del empleo formal","Aumento del salario mínimo","Aumento generalizado y sostenido de los precios"],a:3,e:"Inflación = pérdida del poder adquisitivo porque los precios suben y el dinero vale menos."},
-  {area:"soc",t:55,q:"La ONU fue fundada en 1945 principalmente para:",o:["Promover la paz y la seguridad internacional tras la IIGM","Impulsar la Primera Guerra Mundial","Administrar la Guerra Fría","Crear el libre comercio global"],a:0,e:"La ONU nació en San Francisco (1945) para garantizar la paz y evitar otra guerra mundial."},
-  {area:"soc",t:55,q:"¿Cuál de estos países NO comparte frontera terrestre con Colombia?",o:["Venezuela","Argentina","Perú","Ecuador"],a:1,e:"Colombia limita con Venezuela, Brasil, Perú, Ecuador y Panamá. Argentina está en el extremo sur del continente."},
-  {area:"soc",t:55,q:"La Reforma Agraria busca principalmente:",o:["Industrializar el campo colombiano","Eliminar cultivos de uso ilícito","Redistribuir la tierra para reducir la desigualdad entre propietarios","Privatizar los recursos naturales"],a:2,e:"La Reforma Agraria redistribuye la tierra a quienes la trabajan, reduciendo el latifundismo y la pobreza rural."},
-  {area:"soc",t:55,q:"La soberanía de un Estado significa:",o:["La fuerza militar del país","El presupuesto nacional total","El número de ciudadanos","El poder supremo e independiente de gobernarse a sí mismo"],a:3,e:"Soberanía: capacidad de un Estado de autogobernarse sin interferencia externa, reconocida internacionalmente."},
-  {area:"soc",t:55,q:"El Acuerdo de Paz de 2016 fue firmado entre el gobierno de Colombia y:",o:["Las FARC-EP","El ELN","Los grupos paramilitares","El cartel del narcotráfico"],a:0,e:"El Acuerdo de La Habana (2016) fue firmado entre el gobierno de Juan Manuel Santos y las FARC-EP."},
-  {area:"soc",t:55,q:"La revolución de las TIC ha transformado principalmente:",o:["El clima global","La comunicación, el acceso a la información y la economía digital","Las riquezas mineras del planeta","La geografía física de los continentes"],a:1,e:"Internet y los dispositivos digitales han revolucionado la comunicación, la educación y el comercio global."},
+  {area:"soc",t:120,q:"La Segunda Guerra Mundial (1939-1945) enfrentó:",o:["Una guerra civil en Europa","Una disputa entre España y Portugal","Potencias del Eje (Alemania, Italia, Japón) vs. los Aliados (UK, URSS, EEUU)","Una revolución en América Latina"],a:2,e:"Fue el conflicto más devastador: Eje vs. Aliados, con más de 70 millones de muertos."},
+  {area:"soc",t:120,q:"La Declaración Universal de Derechos Humanos fue adoptada por la ONU en:",o:["1945","1919","1960","1948"],a:3,e:"La DUDH fue adoptada el 10 de diciembre de 1948, como respuesta a los horrores de la IIGM."},
+  {area:"soc",t:120,q:"El rol fundamental de la Constitución en un Estado democrático es:",o:["Ser la norma suprema que regula derechos y poderes del Estado","Ser un listado de leyes ordinarias","Ordenar directamente al ejército","Controlar el comercio exterior"],a:0,e:"La Constitución es la 'ley de leyes': establece derechos fundamentales y organiza los poderes del Estado."},
+  {area:"soc",t:120,q:"La pobreza extrema se mide internacionalmente con base en:",o:["El PIB total del país","La pobreza extrema como vivir con menos de $2.15 USD al día","El acceso a internet","La tasa de empleo formal"],a:1,e:"El Banco Mundial (2022) define la pobreza extrema como ingresos inferiores a $2.15 USD diarios."},
+  {area:"soc",t:120,q:"La principal causa del desplazamiento forzado en Colombia es:",o:["La búsqueda voluntaria de empleo","La contaminación ambiental","El conflicto armado y la violencia de grupos ilegales","Las crisis económicas globales"],a:2,e:"El conflicto armado con guerrillas, paramilitares y bandas criminales ha generado millones de desplazados."},
+  {area:"soc",t:120,q:"La inflación se define como:",o:["Disminución del valor del dólar","Reducción del empleo formal","Aumento del salario mínimo","Aumento generalizado y sostenido de los precios"],a:3,e:"Inflación = pérdida del poder adquisitivo porque los precios suben y el dinero vale menos."},
+  {area:"soc",t:120,q:"La ONU fue fundada en 1945 principalmente para:",o:["Promover la paz y la seguridad internacional tras la IIGM","Impulsar la Primera Guerra Mundial","Administrar la Guerra Fría","Crear el libre comercio global"],a:0,e:"La ONU nació en San Francisco (1945) para garantizar la paz y evitar otra guerra mundial."},
+  {area:"soc",t:120,q:"¿Cuál de estos países NO comparte frontera terrestre con Colombia?",o:["Venezuela","Argentina","Perú","Ecuador"],a:1,e:"Colombia limita con Venezuela, Brasil, Perú, Ecuador y Panamá. Argentina está en el extremo sur del continente."},
+  {area:"soc",t:120,q:"La Reforma Agraria busca principalmente:",o:["Industrializar el campo colombiano","Eliminar cultivos de uso ilícito","Redistribuir la tierra para reducir la desigualdad entre propietarios","Privatizar los recursos naturales"],a:2,e:"La Reforma Agraria redistribuye la tierra a quienes la trabajan, reduciendo el latifundismo y la pobreza rural."},
+  {area:"soc",t:120,q:"La soberanía de un Estado significa:",o:["La fuerza militar del país","El presupuesto nacional total","El número de ciudadanos","El poder supremo e independiente de gobernarse a sí mismo"],a:3,e:"Soberanía: capacidad de un Estado de autogobernarse sin interferencia externa, reconocida internacionalmente."},
+  {area:"soc",t:120,q:"El Acuerdo de Paz de 2016 fue firmado entre el gobierno de Colombia y:",o:["Las FARC-EP","El ELN","Los grupos paramilitares","El cartel del narcotráfico"],a:0,e:"El Acuerdo de La Habana (2016) fue firmado entre el gobierno de Juan Manuel Santos y las FARC-EP."},
+  {area:"soc",t:120,q:"La revolución de las TIC ha transformado principalmente:",o:["El clima global","La comunicación, el acceso a la información y la economía digital","Las riquezas mineras del planeta","La geografía física de los continentes"],a:1,e:"Internet y los dispositivos digitales han revolucionado la comunicación, la educación y el comercio global."},
 ];
 
 // ================================================================
@@ -1038,46 +1150,46 @@ const BANCO_G9 = [
 // ================================================================
 const BANCO_G10 = [
   // MATEMÁTICAS - TRIGONOMETRÍA (8) — rotación: 0,1,2,3,0,1,2,3
-  {area:"mat",t:55,q:"En un triángulo rectángulo, el seno de un ángulo se define como:",o:["Cateto opuesto / Hipotenusa","Cateto adyacente / Hipotenusa","Cateto opuesto / Cateto adyacente","Hipotenusa / Cateto opuesto"],a:0,e:"sen(θ) = cateto opuesto ÷ hipotenusa. Mnemotécnico: SOH (S=O/H)."},
-  {area:"mat",t:55,q:"El coseno de 60° es igual a:",o:["0.866","0.5","1","0"],a:1,e:"cos(60°) = ½ = 0.5. Es uno de los valores trigonométricos exactos fundamentales."},
-  {area:"mat",t:50,q:"Si sen(θ) = 3/5, en un triángulo rectángulo, cos(θ) es:",o:["3/4","5/3","4/5","5/4"],a:2,e:"Por el Teorema de Pitágoras: si opuesto=3 e hipotenusa=5, adyacente=4. Cos(θ)=4/5."},
-  {area:"mat",t:55,q:"La tangente de 45° es igual a:",o:["0","√2","0.5","1"],a:3,e:"tan(45°) = sen(45°)/cos(45°) = (√2/2)/(√2/2) = 1."},
+  {area:"mat",t:120,q:"En un triángulo rectángulo, el seno de un ángulo se define como:",o:["Cateto opuesto / Hipotenusa","Cateto adyacente / Hipotenusa","Cateto opuesto / Cateto adyacente","Hipotenusa / Cateto opuesto"],a:0,e:"sen(θ) = cateto opuesto ÷ hipotenusa. Mnemotécnico: SOH (S=O/H)."},
+  {area:"mat",t:120,q:"El coseno de 60° es igual a:",o:["0.866","0.5","1","0"],a:1,e:"cos(60°) = ½ = 0.5. Es uno de los valores trigonométricos exactos fundamentales."},
+  {area:"mat",t:120,q:"Si sen(θ) = 3/5, en un triángulo rectángulo, cos(θ) es:",o:["3/4","5/3","4/5","5/4"],a:2,e:"Por el Teorema de Pitágoras: si opuesto=3 e hipotenusa=5, adyacente=4. Cos(θ)=4/5."},
+  {area:"mat",t:120,q:"La tangente de 45° es igual a:",o:["0","√2","0.5","1"],a:3,e:"tan(45°) = sen(45°)/cos(45°) = (√2/2)/(√2/2) = 1."},
   {area:"mat",t:60,q:"En un triángulo, el Teorema del Seno establece que:",o:["a/sen A = b/sen B = c/sen C","a² = b² + c²","a/b = sen C/sen A","sen A + sen B = 1"],a:0,e:"La Ley del Seno relaciona cada lado con el seno del ángulo opuesto en cualquier triángulo."},
-  {area:"mat",t:55,q:"¿Cuál es la identidad trigonométrica fundamental?",o:["sen θ + cos θ = 1","sen²θ + cos²θ = 1","sen θ × cos θ = 1","tan θ = 1"],a:1,e:"La identidad pitagórica es la base de la trigonometría: sen²θ + cos²θ = 1 siempre."},
-  {area:"mat",t:50,q:"La función y = 2sen(x) tiene amplitud:",o:["1","π","2","0.5"],a:2,e:"La amplitud de A·sen(x) es |A|. En y=2sen(x), A=2, amplitud=2."},
+  {area:"mat",t:120,q:"¿Cuál es la identidad trigonométrica fundamental?",o:["sen θ + cos θ = 1","sen²θ + cos²θ = 1","sen θ × cos θ = 1","tan θ = 1"],a:1,e:"La identidad pitagórica es la base de la trigonometría: sen²θ + cos²θ = 1 siempre."},
+  {area:"mat",t:120,q:"La función y = 2sen(x) tiene amplitud:",o:["1","π","2","0.5"],a:2,e:"La amplitud de A·sen(x) es |A|. En y=2sen(x), A=2, amplitud=2."},
   {area:"mat",t:60,q:"Si una escalera de 10 m forma un ángulo de 30° con el suelo, ¿a qué altura llega?",o:["8.66 m","10 m","7 m","5 m"],a:3,e:"Altura = 10 × sen(30°) = 10 × 0.5 = 5 m."},
   // FÍSICA - MECÁNICA (7) — rotación continua: 0,1,2,3,0,1,2
-  {area:"fis",t:55,q:"La Segunda Ley de Newton establece que la fuerza es igual a:",o:["F = m × a","F = m / a","F = a / m","F = m + a"],a:0,e:"F = ma: la fuerza neta sobre un objeto es igual a su masa por su aceleración."},
-  {area:"fis",t:55,q:"Un objeto de 5 kg es sometido a una fuerza de 20 N. ¿Cuál es su aceleración?",o:["25 m/s²","4 m/s²","100 m/s²","15 m/s²"],a:1,e:"a = F/m = 20/5 = 4 m/s²."},
-  {area:"fis",t:55,q:"¿Qué es la energía potencial gravitacional?",o:["Energía del movimiento","Energía química almacenada","Energía que tiene un objeto por su posición en altura","Energía del calor"],a:2,e:"Ep = mgh. Depende de la masa (m), la gravedad (g) y la altura (h) sobre el suelo."},
-  {area:"fis",t:55,q:"La conservación de la energía mecánica implica que:",o:["La energía siempre aumenta","La energía cinética siempre es mayor","El trabajo es siempre positivo","La energía total (cinética + potencial) se mantiene constante"],a:3,e:"Sin fricción, la energía mecánica total E=Ec+Ep se conserva en cada instante."},
+  {area:"fis",t:120,q:"La Segunda Ley de Newton establece que la fuerza es igual a:",o:["F = m × a","F = m / a","F = a / m","F = m + a"],a:0,e:"F = ma: la fuerza neta sobre un objeto es igual a su masa por su aceleración."},
+  {area:"fis",t:120,q:"Un objeto de 5 kg es sometido a una fuerza de 20 N. ¿Cuál es su aceleración?",o:["25 m/s²","4 m/s²","100 m/s²","15 m/s²"],a:1,e:"a = F/m = 20/5 = 4 m/s²."},
+  {area:"fis",t:120,q:"¿Qué es la energía potencial gravitacional?",o:["Energía del movimiento","Energía química almacenada","Energía que tiene un objeto por su posición en altura","Energía del calor"],a:2,e:"Ep = mgh. Depende de la masa (m), la gravedad (g) y la altura (h) sobre el suelo."},
+  {area:"fis",t:120,q:"La conservación de la energía mecánica implica que:",o:["La energía siempre aumenta","La energía cinética siempre es mayor","El trabajo es siempre positivo","La energía total (cinética + potencial) se mantiene constante"],a:3,e:"Sin fricción, la energía mecánica total E=Ec+Ep se conserva en cada instante."},
   {area:"fis",t:60,q:"¿Cuál es la unidad de energía en el Sistema Internacional?",o:["Joule (J)","Newton (N)","Watt (W)","Pascal (Pa)"],a:0,e:"El Joule es la unidad de energía: 1 J = 1 N·m = 1 kg·m²/s²."},
-  {area:"fis",t:55,q:"Un proyectil lanzado horizontalmente sigue una trayectoria:",o:["Circular","Parabólica","Recta","Elíptica"],a:1,e:"La combinación de movimiento uniforme horizontal y caída libre vertical produce una parábola."},
-  {area:"fis",t:55,q:"La potencia se define como:",o:["P = F/m","P = E × t","P = W/t (trabajo por unidad de tiempo)","P = m × v"],a:2,e:"Potencia = trabajo realizado ÷ tiempo empleado. Unidad: Watt (W) = J/s."},
+  {area:"fis",t:120,q:"Un proyectil lanzado horizontalmente sigue una trayectoria:",o:["Circular","Parabólica","Recta","Elíptica"],a:1,e:"La combinación de movimiento uniforme horizontal y caída libre vertical produce una parábola."},
+  {area:"fis",t:120,q:"La potencia se define como:",o:["P = F/m","P = E × t","P = W/t (trabajo por unidad de tiempo)","P = m × v"],a:2,e:"Potencia = trabajo realizado ÷ tiempo empleado. Unidad: Watt (W) = J/s."},
   // QUÍMICA INORGÁNICA (7) — rotación continua: 3,0,1,2,3,0,1
-  {area:"qui",t:55,q:"¿Qué indica el número atómico de un elemento?",o:["La masa del átomo","El número de neutrones","El número de electrones en la capa externa","La cantidad de protones en el núcleo"],a:3,e:"El número atómico (Z) = número de protones. Identifica al elemento en la tabla periódica."},
-  {area:"qui",t:55,q:"¿Qué son los isótopos?",o:["Átomos del mismo elemento con diferente número de neutrones","Átomos de diferentes elementos","Moléculas con misma fórmula","Iones de carga opuesta"],a:0,e:"Los isótopos tienen el mismo Z (mismo elemento) pero diferente A (diferente número de neutrones)."},
-  {area:"qui",t:55,q:"El enlace iónico se forma entre:",o:["Dos no-metales (compartición)","Un metal y un no-metal (transferencia de electrones)","Dos metales","Átomos iguales"],a:1,e:"En el enlace iónico, el metal cede electrones al no-metal: se forman catión (+) y anión (−)."},
-  {area:"qui",t:55,q:"Balancea: H₂ + O₂ → H₂O. La ecuación balanceada es:",o:["H₂ + O₂ → H₂O","H₂ + 2O₂ → H₂O","2H₂ + O₂ → 2H₂O","4H₂ + O₂ → H₂O"],a:2,e:"2H₂ + O₂ → 2H₂O conserva los átomos: 4H y 2O en cada lado."},
-  {area:"qui",t:55,q:"Un ácido, según Arrhenius, produce en agua:",o:["Iones OH⁻","Iones metálicos","Gases inertes","Iones H⁺ (protones)"],a:3,e:"Arrhenius definió ácidos como sustancias que liberan H⁺ en solución acuosa."},
+  {area:"qui",t:120,q:"¿Qué indica el número atómico de un elemento?",o:["La masa del átomo","El número de neutrones","El número de electrones en la capa externa","La cantidad de protones en el núcleo"],a:3,e:"El número atómico (Z) = número de protones. Identifica al elemento en la tabla periódica."},
+  {area:"qui",t:120,q:"¿Qué son los isótopos?",o:["Átomos del mismo elemento con diferente número de neutrones","Átomos de diferentes elementos","Moléculas con misma fórmula","Iones de carga opuesta"],a:0,e:"Los isótopos tienen el mismo Z (mismo elemento) pero diferente A (diferente número de neutrones)."},
+  {area:"qui",t:120,q:"El enlace iónico se forma entre:",o:["Dos no-metales (compartición)","Un metal y un no-metal (transferencia de electrones)","Dos metales","Átomos iguales"],a:1,e:"En el enlace iónico, el metal cede electrones al no-metal: se forman catión (+) y anión (−)."},
+  {area:"qui",t:120,q:"Balancea: H₂ + O₂ → H₂O. La ecuación balanceada es:",o:["H₂ + O₂ → H₂O","H₂ + 2O₂ → H₂O","2H₂ + O₂ → 2H₂O","4H₂ + O₂ → H₂O"],a:2,e:"2H₂ + O₂ → 2H₂O conserva los átomos: 4H y 2O en cada lado."},
+  {area:"qui",t:120,q:"Un ácido, según Arrhenius, produce en agua:",o:["Iones OH⁻","Iones metálicos","Gases inertes","Iones H⁺ (protones)"],a:3,e:"Arrhenius definió ácidos como sustancias que liberan H⁺ en solución acuosa."},
   {area:"qui",t:60,q:"La estequiometría estudia:",o:["Las proporciones cuantitativas en las reacciones químicas","La estructura del núcleo","Los estados de la materia","Las propiedades físicas de los elementos"],a:0,e:"La estequiometría calcula cantidades de reactivos y productos en una reacción balanceada."},
-  {area:"qui",t:55,q:"¿Cuántos electrones de valencia tiene el carbono (Z=6)?",o:["2","4","6","3"],a:1,e:"Carbono: configuración 2,4 → 4 electrones en la capa de valencia. Por eso forma 4 enlaces."},
+  {area:"qui",t:120,q:"¿Cuántos electrones de valencia tiene el carbono (Z=6)?",o:["2","4","6","3"],a:1,e:"Carbono: configuración 2,4 → 4 electrones en la capa de valencia. Por eso forma 4 enlaces."},
   // FILOSOFÍA (7) — rotación continua: 2,3,0,1,2,3,0
-  {area:"fil",t:50,q:"¿Qué es la epistemología?",o:["El estudio de los valores morales","La ciencia de la vida","La rama filosófica que estudia el conocimiento","El estudio del lenguaje"],a:2,e:"La epistemología investiga la naturaleza, el origen y los límites del conocimiento humano."},
-  {area:"fil",t:50,q:"Sócrates es conocido por el método de la:",o:["Deducción formal","Empirismo sensorial","Racionalismo matemático","Mayéutica (diálogo interrogativo)"],a:3,e:"La mayéutica socrática usaba preguntas para que el interlocutor descubriera el conocimiento por sí mismo."},
-  {area:"fil",t:50,q:"El utilitarismo de John Stuart Mill propone que una acción es buena si:",o:["Produce el mayor bienestar para el mayor número de personas","Sigue las normas divinas","Está de acuerdo con el orden natural","Es aprobada por la tradición"],a:0,e:"El utilitarismo mide la moralidad por las consecuencias: maximizar la felicidad colectiva."},
-  {area:"fil",t:50,q:"El 'Cogito ergo sum' ('Pienso, luego existo') fue formulado por:",o:["Aristóteles","René Descartes","Platón","Kant"],a:1,e:"Descartes llegó a esta certeza mínima: si dudo, pienso; si pienso, existo."},
-  {area:"fil",t:50,q:"La ética estudia principalmente:",o:["Las leyes físicas del universo","La composición química de los seres vivos","Los principios que guían la conducta humana","La estructura del lenguaje"],a:2,e:"La ética es la disciplina filosófica que reflexiona sobre el bien, el mal y cómo debemos actuar."},
-  {area:"fil",t:50,q:"El empirismo sostiene que el conocimiento proviene de:",o:["La razón pura","Dios","La tradición","La experiencia sensorial"],a:3,e:"Hume y Locke afirmaban que todo conocimiento se origina en los sentidos y la experiencia."},
-  {area:"fil",t:50,q:"¿Qué es el relativismo moral?",o:["La creencia de que la moralidad varía según la cultura o individuo","La idea de que existen leyes morales universales","El estudio de las normas jurídicas","La negación de toda ética"],a:0,e:"El relativismo niega la existencia de verdades morales absolutas: cada cultura define lo correcto."},
+  {area:"fil",t:120,q:"¿Qué es la epistemología?",o:["El estudio de los valores morales","La ciencia de la vida","La rama filosófica que estudia el conocimiento","El estudio del lenguaje"],a:2,e:"La epistemología investiga la naturaleza, el origen y los límites del conocimiento humano."},
+  {area:"fil",t:120,q:"Sócrates es conocido por el método de la:",o:["Deducción formal","Empirismo sensorial","Racionalismo matemático","Mayéutica (diálogo interrogativo)"],a:3,e:"La mayéutica socrática usaba preguntas para que el interlocutor descubriera el conocimiento por sí mismo."},
+  {area:"fil",t:120,q:"El utilitarismo de John Stuart Mill propone que una acción es buena si:",o:["Produce el mayor bienestar para el mayor número de personas","Sigue las normas divinas","Está de acuerdo con el orden natural","Es aprobada por la tradición"],a:0,e:"El utilitarismo mide la moralidad por las consecuencias: maximizar la felicidad colectiva."},
+  {area:"fil",t:120,q:"El 'Cogito ergo sum' ('Pienso, luego existo') fue formulado por:",o:["Aristóteles","René Descartes","Platón","Kant"],a:1,e:"Descartes llegó a esta certeza mínima: si dudo, pienso; si pienso, existo."},
+  {area:"fil",t:120,q:"La ética estudia principalmente:",o:["Las leyes físicas del universo","La composición química de los seres vivos","Los principios que guían la conducta humana","La estructura del lenguaje"],a:2,e:"La ética es la disciplina filosófica que reflexiona sobre el bien, el mal y cómo debemos actuar."},
+  {area:"fil",t:120,q:"El empirismo sostiene que el conocimiento proviene de:",o:["La razón pura","Dios","La tradición","La experiencia sensorial"],a:3,e:"Hume y Locke afirmaban que todo conocimiento se origina en los sentidos y la experiencia."},
+  {area:"fil",t:120,q:"¿Qué es el relativismo moral?",o:["La creencia de que la moralidad varía según la cultura o individuo","La idea de que existen leyes morales universales","El estudio de las normas jurídicas","La negación de toda ética"],a:0,e:"El relativismo niega la existencia de verdades morales absolutas: cada cultura define lo correcto."},
   // C. POLÍTICAS Y ECONÓMICAS (7) — rotación continua: 1,2,3,0,1,2,3
-  {area:"pol",t:50,q:"El Estado colombiano se organiza en tres ramas del poder público que son:",o:["Administrativa, Militar y Civil","Legislativa, Ejecutiva y Judicial","Federal, Departamental y Municipal","Presidencial, Senatorial y Ministerial"],a:1,e:"Art. 113 Constitución: Congreso (legislativa), Presidente (ejecutiva), Cortes (judicial)."},
-  {area:"pol",t:50,q:"La inflación descontrolada tiene como principal efecto:",o:["Aumento del empleo","Crecimiento económico","Pérdida del poder adquisitivo","Reducción de precios"],a:2,e:"Cuando los precios suben más rápido que los salarios, la gente puede comprar menos con el mismo dinero."},
-  {area:"pol",t:50,q:"¿Qué es el desempleo estructural?",o:["El que ocurre en épocas de recesión","El desempleo estacional","El que resulta de cambiar de trabajo voluntariamente","El causado por cambios tecnológicos o sectoriales permanentes"],a:3,e:"El desempleo estructural surge cuando las habilidades de los trabajadores no coinciden con las del mercado."},
-  {area:"pol",t:50,q:"¿Cuál es la función del Banco de la República en Colombia?",o:["Regular la política monetaria y emitir moneda","Cobrar impuestos","Dirigir el ejército","Construir obras públicas"],a:0,e:"El Banco de la República controla la inflación, emite dinero y es el banco de bancos del Estado."},
-  {area:"pol",t:50,q:"La democracia representativa funciona mediante:",o:["El voto directo en todas las decisiones","Elección de representantes que legislan en nombre del pueblo","El liderazgo de un partido único","La herencia del poder"],a:1,e:"En la democracia representativa, los ciudadanos eligen congresistas y gobernantes que los representan."},
-  {area:"pol",t:50,q:"El neoliberalismo económico propone principalmente:",o:["Mayor intervención estatal en la economía","Proteccionismo comercial","Libre mercado, privatización y reducción del Estado","Distribución igual de la riqueza"],a:2,e:"El neoliberalismo promueve la desregulación, las privatizaciones y la apertura comercial."},
-  {area:"pol",t:50,q:"Los tratados de libre comercio (TLC) buscan principalmente:",o:["Eliminar la moneda nacional","Privatizar la educación","Unificar leyes penales","Reducir aranceles para aumentar el comercio entre países"],a:3,e:"Los TLC reducen barreras arancelarias para facilitar el comercio bilateral o multilateral."},
+  {area:"pol",t:120,q:"El Estado colombiano se organiza en tres ramas del poder público que son:",o:["Administrativa, Militar y Civil","Legislativa, Ejecutiva y Judicial","Federal, Departamental y Municipal","Presidencial, Senatorial y Ministerial"],a:1,e:"Art. 113 Constitución: Congreso (legislativa), Presidente (ejecutiva), Cortes (judicial)."},
+  {area:"pol",t:120,q:"La inflación descontrolada tiene como principal efecto:",o:["Aumento del empleo","Crecimiento económico","Pérdida del poder adquisitivo","Reducción de precios"],a:2,e:"Cuando los precios suben más rápido que los salarios, la gente puede comprar menos con el mismo dinero."},
+  {area:"pol",t:120,q:"¿Qué es el desempleo estructural?",o:["El que ocurre en épocas de recesión","El desempleo estacional","El que resulta de cambiar de trabajo voluntariamente","El causado por cambios tecnológicos o sectoriales permanentes"],a:3,e:"El desempleo estructural surge cuando las habilidades de los trabajadores no coinciden con las del mercado."},
+  {area:"pol",t:120,q:"¿Cuál es la función del Banco de la República en Colombia?",o:["Regular la política monetaria y emitir moneda","Cobrar impuestos","Dirigir el ejército","Construir obras públicas"],a:0,e:"El Banco de la República controla la inflación, emite dinero y es el banco de bancos del Estado."},
+  {area:"pol",t:120,q:"La democracia representativa funciona mediante:",o:["El voto directo en todas las decisiones","Elección de representantes que legislan en nombre del pueblo","El liderazgo de un partido único","La herencia del poder"],a:1,e:"En la democracia representativa, los ciudadanos eligen congresistas y gobernantes que los representan."},
+  {area:"pol",t:120,q:"El neoliberalismo económico propone principalmente:",o:["Mayor intervención estatal en la economía","Proteccionismo comercial","Libre mercado, privatización y reducción del Estado","Distribución igual de la riqueza"],a:2,e:"El neoliberalismo promueve la desregulación, las privatizaciones y la apertura comercial."},
+  {area:"pol",t:120,q:"Los tratados de libre comercio (TLC) buscan principalmente:",o:["Eliminar la moneda nacional","Privatizar la educación","Unificar leyes penales","Reducir aranceles para aumentar el comercio entre países"],a:3,e:"Los TLC reducen barreras arancelarias para facilitar el comercio bilateral o multilateral."},
   // INGLÉS (7) — rotación continua: 0,1,2,3,0,1,2
   {area:"ing",t:45,q:"Choose the correct sentence: 'Yesterday, I ___ to school.'",o:["went","go","will go","going"],a:0,e:"'Yesterday' indicates past tense. The past tense of 'go' is 'went' (irregular verb)."},
   {area:"ing",t:45,q:"What does 'moreover' mean in English?",o:["However / But","Furthermore / In addition","Therefore / So","Nevertheless / Yet"],a:1,e:"'Moreover' is an additive connector: 'furthermore' or 'in addition'."},
@@ -1096,47 +1208,47 @@ const BANCO_G10 = [
 const BANCO_G11 = [
   // MATEMÁTICAS - CÁLCULO Y ESTADÍSTICA (8) — rotación: 0,1,2,3,0,1,2,3
   {area:"mat",t:60,q:"El límite lim(x→2) de (x²−4)/(x−2) es:",o:["4","2","0","No existe"],a:0,e:"Factorizando: (x−2)(x+2)/(x−2) = x+2. Cuando x→2: 2+2 = 4."},
-  {area:"mat",t:55,q:"La derivada de f(x) = 3x² es:",o:["f'(x) = 3x","f'(x) = 6x","f'(x) = 6x²","f'(x) = 3x²"],a:1,e:"Regla de la potencia: d/dx(axⁿ) = n·axⁿ⁻¹. d/dx(3x²) = 2·3x = 6x."},
-  {area:"mat",t:55,q:"¿Qué representa la integral definida de una función entre dos puntos?",o:["La pendiente de la curva","El valor máximo de la función","El área bajo la curva entre esos puntos","La raíz de la función"],a:2,e:"La integral definida ∫ᵃᵇ f(x)dx calcula el área entre la curva y el eje x en [a,b]."},
-  {area:"mat",t:50,q:"En el conjunto de datos 3, 5, 5, 7, 9, ¿cuál es la mediana?",o:["6","7","5.8","5"],a:3,e:"Ordenados: 3,5,5,7,9. El valor central (posición 3 de 5) es 5."},
-  {area:"mat",t:50,q:"La probabilidad de sacar un 4 al lanzar un dado justo es:",o:["1/6","1/4","1/3","1/2"],a:0,e:"El dado tiene 6 caras equiprobables. Solo una es el 4. P(4) = 1/6."},
-  {area:"mat",t:55,q:"¿Qué describe el coeficiente de correlación r = 0?",o:["Correlación perfecta positiva","No hay relación lineal entre las variables","Correlación perfecta negativa","Las variables son iguales"],a:1,e:"r=0 indica ausencia de relación lineal (aunque puede existir otro tipo de relación)."},
-  {area:"mat",t:55,q:"Con Media=70 y σ=10, ¿qué porcentaje de datos queda entre 60 y 80?",o:["95%","99.7%","68% (regla empírica ±1σ)","50%"],a:2,e:"En una distribución normal, aprox. el 68% de los datos están dentro de ±1 desviación estándar de la media."},
+  {area:"mat",t:120,q:"La derivada de f(x) = 3x² es:",o:["f'(x) = 3x","f'(x) = 6x","f'(x) = 6x²","f'(x) = 3x²"],a:1,e:"Regla de la potencia: d/dx(axⁿ) = n·axⁿ⁻¹. d/dx(3x²) = 2·3x = 6x."},
+  {area:"mat",t:120,q:"¿Qué representa la integral definida de una función entre dos puntos?",o:["La pendiente de la curva","El valor máximo de la función","El área bajo la curva entre esos puntos","La raíz de la función"],a:2,e:"La integral definida ∫ᵃᵇ f(x)dx calcula el área entre la curva y el eje x en [a,b]."},
+  {area:"mat",t:120,q:"En el conjunto de datos 3, 5, 5, 7, 9, ¿cuál es la mediana?",o:["6","7","5.8","5"],a:3,e:"Ordenados: 3,5,5,7,9. El valor central (posición 3 de 5) es 5."},
+  {area:"mat",t:120,q:"La probabilidad de sacar un 4 al lanzar un dado justo es:",o:["1/6","1/4","1/3","1/2"],a:0,e:"El dado tiene 6 caras equiprobables. Solo una es el 4. P(4) = 1/6."},
+  {area:"mat",t:120,q:"¿Qué describe el coeficiente de correlación r = 0?",o:["Correlación perfecta positiva","No hay relación lineal entre las variables","Correlación perfecta negativa","Las variables son iguales"],a:1,e:"r=0 indica ausencia de relación lineal (aunque puede existir otro tipo de relación)."},
+  {area:"mat",t:120,q:"Con Media=70 y σ=10, ¿qué porcentaje de datos queda entre 60 y 80?",o:["95%","99.7%","68% (regla empírica ±1σ)","50%"],a:2,e:"En una distribución normal, aprox. el 68% de los datos están dentro de ±1 desviación estándar de la media."},
   {area:"mat",t:60,q:"El número de combinaciones de 5 elementos tomados de 3 en 3 — C(5,3) — es:",o:["15","20","6","10"],a:3,e:"C(5,3) = 5!/(3!·2!) = (5×4)/(2×1) = 10."},
   // FÍSICA AVANZADA (7) — rotación continua: 0,1,2,3,0,1,2
   {area:"fis",t:60,q:"Las ondas electromagnéticas se propagan:",o:["Sin necesidad de medio material (en el vacío)","Solo en el agua","Solo en metales","Solo en el aire"],a:0,e:"A diferencia de las ondas mecánicas, las EM (luz, radio, rayos X) se propagan en el vacío."},
-  {area:"fis",t:55,q:"El principio de Bernoulli establece que en un fluido en movimiento:",o:["La presión siempre es constante","Donde la velocidad es mayor, la presión es menor","La velocidad y presión son proporcionales","La densidad aumenta con la velocidad"],a:1,e:"P + ½ρv² + ρgh = constante. A mayor velocidad, menor presión (principio del vuelo en aviones)."},
-  {area:"fis",t:55,q:"La Ley de Ohm establece que la corriente eléctrica es:",o:["I = V × R","I = R/V","I = V/R (voltaje dividido entre resistencia)","I = V + R"],a:2,e:"Ley de Ohm: I(amperios) = V(voltios) / R(ohmios)."},
+  {area:"fis",t:120,q:"El principio de Bernoulli establece que en un fluido en movimiento:",o:["La presión siempre es constante","Donde la velocidad es mayor, la presión es menor","La velocidad y presión son proporcionales","La densidad aumenta con la velocidad"],a:1,e:"P + ½ρv² + ρgh = constante. A mayor velocidad, menor presión (principio del vuelo en aviones)."},
+  {area:"fis",t:120,q:"La Ley de Ohm establece que la corriente eléctrica es:",o:["I = V × R","I = R/V","I = V/R (voltaje dividido entre resistencia)","I = V + R"],a:2,e:"Ley de Ohm: I(amperios) = V(voltios) / R(ohmios)."},
   {area:"fis",t:60,q:"El calor específico de una sustancia mide:",o:["La temperatura máxima que alcanza","La velocidad de conducción térmica","La energía liberada en una reacción","La energía necesaria para elevar 1 kg en 1°C"],a:3,e:"Q = m·c·ΔT. El calor específico 'c' indica cuántos Joules necesita 1 kg para subir 1°C."},
-  {area:"fis",t:55,q:"¿Qué fenómeno explica los colores en una pompa de jabón?",o:["Interferencia de ondas de luz","Refracción del sonido","Reflexión interna total","Difracción por rendija"],a:0,e:"Los colores resultan de la interferencia constructiva/destructiva de la luz en las delgadas capas de jabón."},
-  {area:"fis",t:55,q:"La fisión nuclear consiste en:",o:["La unión de dos núcleos ligeros","La división de un núcleo pesado liberando energía","La emisión de electrones","El movimiento de protones"],a:1,e:"En la fisión (reactores nucleares), núcleos como U-235 se dividen en fragmentos más pequeños liberando enorme energía."},
-  {area:"fis",t:55,q:"¿Cuál es la velocidad de la luz en el vacío?",o:["3×10⁶ m/s","9.8 m/s","3×10⁸ m/s","340 m/s"],a:2,e:"c ≈ 3×10⁸ m/s ≈ 300.000 km/s. Es la máxima velocidad posible según la Relatividad Especial."},
+  {area:"fis",t:120,q:"¿Qué fenómeno explica los colores en una pompa de jabón?",o:["Interferencia de ondas de luz","Refracción del sonido","Reflexión interna total","Difracción por rendija"],a:0,e:"Los colores resultan de la interferencia constructiva/destructiva de la luz en las delgadas capas de jabón."},
+  {area:"fis",t:120,q:"La fisión nuclear consiste en:",o:["La unión de dos núcleos ligeros","La división de un núcleo pesado liberando energía","La emisión de electrones","El movimiento de protones"],a:1,e:"En la fisión (reactores nucleares), núcleos como U-235 se dividen en fragmentos más pequeños liberando enorme energía."},
+  {area:"fis",t:120,q:"¿Cuál es la velocidad de la luz en el vacío?",o:["3×10⁶ m/s","9.8 m/s","3×10⁸ m/s","340 m/s"],a:2,e:"c ≈ 3×10⁸ m/s ≈ 300.000 km/s. Es la máxima velocidad posible según la Relatividad Especial."},
   // QUÍMICA ORGÁNICA (7) — rotación continua: 3,0,1,2,3,0,1
-  {area:"qui",t:55,q:"¿Qué elemento es la base de la Química Orgánica?",o:["El hidrógeno","El oxígeno","El nitrógeno","El carbono"],a:3,e:"El carbono puede formar largas cadenas y 4 enlaces, siendo el esqueleto de todos los compuestos orgánicos."},
-  {area:"qui",t:55,q:"Los alcanos son hidrocarburos con:",o:["Solo enlaces simples (C−C)","Un doble enlace","Un triple enlace","Anillo aromático"],a:0,e:"Los alcanos son saturados: solo contienen enlaces simples C−C. Fórmula general: CₙH₂ₙ₊₂."},
-  {area:"qui",t:55,q:"El grupo funcional −OH en un compuesto orgánico indica que es:",o:["Un ácido carboxílico","Un alcohol","Un éster","Una amina"],a:1,e:"El grupo hidroxilo (−OH) unido a carbono caracteriza a los alcoholes (ej: etanol CH₃CH₂OH)."},
-  {area:"qui",t:55,q:"La reacción de saponificación produce:",o:["Plástico","Combustible","Jabón (sales de ácidos grasos) y glicerina","Ácido clorhídrico"],a:2,e:"La saponificación es la hidrólisis de grasas con base fuerte (NaOH/KOH): produce jabón + glicerol."},
+  {area:"qui",t:120,q:"¿Qué elemento es la base de la Química Orgánica?",o:["El hidrógeno","El oxígeno","El nitrógeno","El carbono"],a:3,e:"El carbono puede formar largas cadenas y 4 enlaces, siendo el esqueleto de todos los compuestos orgánicos."},
+  {area:"qui",t:120,q:"Los alcanos son hidrocarburos con:",o:["Solo enlaces simples (C−C)","Un doble enlace","Un triple enlace","Anillo aromático"],a:0,e:"Los alcanos son saturados: solo contienen enlaces simples C−C. Fórmula general: CₙH₂ₙ₊₂."},
+  {area:"qui",t:120,q:"El grupo funcional −OH en un compuesto orgánico indica que es:",o:["Un ácido carboxílico","Un alcohol","Un éster","Una amina"],a:1,e:"El grupo hidroxilo (−OH) unido a carbono caracteriza a los alcoholes (ej: etanol CH₃CH₂OH)."},
+  {area:"qui",t:120,q:"La reacción de saponificación produce:",o:["Plástico","Combustible","Jabón (sales de ácidos grasos) y glicerina","Ácido clorhídrico"],a:2,e:"La saponificación es la hidrólisis de grasas con base fuerte (NaOH/KOH): produce jabón + glicerol."},
   {area:"qui",t:60,q:"¿Cuál es el monómero que forma el polietileno?",o:["Propileno","Acetileno","Benceno","Etileno (CH₂=CH₂)"],a:3,e:"El etileno (eteno, CH₂=CH₂) se polimeriza para formar el polietileno, uno de los plásticos más comunes."},
-  {area:"qui",t:55,q:"Las proteínas están formadas por unidades llamadas:",o:["Aminoácidos","Nucleótidos","Glucosa","Ácidos grasos"],a:0,e:"Las proteínas son polímeros de aminoácidos unidos por enlaces peptídicos (−CO−NH−)."},
-  {area:"qui",t:55,q:"El benceno (C₆H₆) es el compuesto aromático más simple porque tiene:",o:["6 carbonos en cadena recta","Un anillo de 6 carbonos con electrones deslocalizados","Solo enlaces simples","3 carbonos en triángulo"],a:1,e:"El benceno tiene un anillo hexagonal con electrones π deslocalizados que le dan estabilidad especial."},
+  {area:"qui",t:120,q:"Las proteínas están formadas por unidades llamadas:",o:["Aminoácidos","Nucleótidos","Glucosa","Ácidos grasos"],a:0,e:"Las proteínas son polímeros de aminoácidos unidos por enlaces peptídicos (−CO−NH−)."},
+  {area:"qui",t:120,q:"El benceno (C₆H₆) es el compuesto aromático más simple porque tiene:",o:["6 carbonos en cadena recta","Un anillo de 6 carbonos con electrones deslocalizados","Solo enlaces simples","3 carbonos en triángulo"],a:1,e:"El benceno tiene un anillo hexagonal con electrones π deslocalizados que le dan estabilidad especial."},
   // LECTURA CRÍTICA (7) — rotación continua: 2,3,0,1,2,3,0
-  {area:"lec",t:55,q:"La 'validez' de un argumento depende de:",o:["Si el argumento es largo","Si quien lo dice tiene autoridad","Si la conclusión se sigue lógicamente de las premisas","Si es apoyado por cifras"],a:2,e:"Un argumento válido tiene estructura lógica correcta, independientemente de si las premisas son verdaderas."},
-  {area:"lec",t:55,q:"'Todos los jóvenes de Tumaco son violentos.' ¿Qué tipo de falacia es?",o:["Argumento de autoridad","Falacia ad hominem","Petición de principio","Generalización apresurada"],a:3,e:"Concluir sobre 'todos' a partir de pocos casos es una generalización apresurada (falacia informal)."},
-  {area:"lec",t:55,q:"Una infografía es un ejemplo de texto:",o:["Discontinuo e icónico","Continuo y argumentativo","Narrativo y oral","Descriptivo y lírico"],a:0,e:"Los textos discontinuos combinan imágenes, gráficos y texto no lineal: tablas, mapas, infografías."},
-  {area:"lec",t:55,q:"La ironía en un texto crítico sirve para:",o:["Informar objetivamente","Criticar o cuestionar algo diciendo lo contrario","Narrar una historia trágica","Describir un objeto"],a:1,e:"La ironía expresa crítica o burla mediante la contradicción entre lo dicho y lo querido decir."},
-  {area:"lec",t:55,q:"Cuando un autor usa datos estadísticos en su argumento, busca:",o:["Confundir al lector","Adornar el texto","Dar evidencia cuantitativa para apoyar su tesis","Introducir hechos históricos"],a:2,e:"Las estadísticas son evidencia empírica que refuerza la credibilidad y objetividad de un argumento."},
-  {area:"lec",t:55,q:"¿Qué es el contexto de enunciación de un texto?",o:["El vocabulario utilizado","La extensión del texto","El tema central","Las circunstancias (quién, cuándo, dónde) en que se produce el texto"],a:3,e:"El contexto de enunciación considera el emisor, receptor, momento histórico y propósito de la comunicación."},
-  {area:"lec",t:55,q:"En una caricatura política, el mensaje se transmite principalmente mediante:",o:["Exageración de rasgos e ironía visual","Texto extenso y académico","Datos estadísticos precisos","Narración cronológica"],a:0,e:"La caricatura usa deformación intencional y símbolos visuales para criticar o comentar la realidad."},
+  {area:"lec",t:120,q:"La 'validez' de un argumento depende de:",o:["Si el argumento es largo","Si quien lo dice tiene autoridad","Si la conclusión se sigue lógicamente de las premisas","Si es apoyado por cifras"],a:2,e:"Un argumento válido tiene estructura lógica correcta, independientemente de si las premisas son verdaderas."},
+  {area:"lec",t:120,q:"'Todos los jóvenes de Tumaco son violentos.' ¿Qué tipo de falacia es?",o:["Argumento de autoridad","Falacia ad hominem","Petición de principio","Generalización apresurada"],a:3,e:"Concluir sobre 'todos' a partir de pocos casos es una generalización apresurada (falacia informal)."},
+  {area:"lec",t:120,q:"Una infografía es un ejemplo de texto:",o:["Discontinuo e icónico","Continuo y argumentativo","Narrativo y oral","Descriptivo y lírico"],a:0,e:"Los textos discontinuos combinan imágenes, gráficos y texto no lineal: tablas, mapas, infografías."},
+  {area:"lec",t:120,q:"La ironía en un texto crítico sirve para:",o:["Informar objetivamente","Criticar o cuestionar algo diciendo lo contrario","Narrar una historia trágica","Describir un objeto"],a:1,e:"La ironía expresa crítica o burla mediante la contradicción entre lo dicho y lo querido decir."},
+  {area:"lec",t:120,q:"Cuando un autor usa datos estadísticos en su argumento, busca:",o:["Confundir al lector","Adornar el texto","Dar evidencia cuantitativa para apoyar su tesis","Introducir hechos históricos"],a:2,e:"Las estadísticas son evidencia empírica que refuerza la credibilidad y objetividad de un argumento."},
+  {area:"lec",t:120,q:"¿Qué es el contexto de enunciación de un texto?",o:["El vocabulario utilizado","La extensión del texto","El tema central","Las circunstancias (quién, cuándo, dónde) en que se produce el texto"],a:3,e:"El contexto de enunciación considera el emisor, receptor, momento histórico y propósito de la comunicación."},
+  {area:"lec",t:120,q:"En una caricatura política, el mensaje se transmite principalmente mediante:",o:["Exageración de rasgos e ironía visual","Texto extenso y académico","Datos estadísticos precisos","Narración cronológica"],a:0,e:"La caricatura usa deformación intencional y símbolos visuales para criticar o comentar la realidad."},
   // C. POLÍTICAS Y ECONÓMICAS (7) — rotación continua: 1,2,3,0,1,2,3
-  {area:"pol",t:55,q:"¿Qué es el Estado de Bienestar?",o:["Sistema puramente capitalista","Modelo donde el Estado garantiza servicios sociales como salud y educación","Gobierno sin gasto público","Estado mínimo sin intervención"],a:1,e:"El Estado de Bienestar combina mercado con protección social: pensiones, salud pública, educación."},
-  {area:"pol",t:55,q:"Los ODS (Objetivos de Desarrollo Sostenible) fueron adoptados en:",o:["La OTAN en 2000","El FMI en 2010","La ONU en 2015 para cumplirse en 2030","La Unión Europea en 2020"],a:2,e:"Los 17 ODS de la Agenda 2030 guían el desarrollo sostenible mundial: pobreza, clima, salud, etc."},
-  {area:"pol",t:55,q:"La Corte Interamericana de Derechos Humanos tiene competencia sobre:",o:["Todos los países del mundo","Solo Colombia y Venezuela","Solo delitos de guerra","Estados miembros de la OEA que aceptaron su jurisdicción"],a:3,e:"La CIDH juzga violaciones a la Convención Americana sobre DDHH en los países que la ratificaron."},
-  {area:"pol",t:55,q:"¿Qué es el populismo político?",o:["Discurso que enfrenta al 'pueblo virtuoso' contra una 'élite corrupta'","Un sistema de gobierno formal","La democracia participativa directa","El socialismo marxista"],a:0,e:"El populismo construye una narrativa nosotros (el pueblo) vs. ellos (la élite), apelando a las emociones."},
-  {area:"pol",t:55,q:"El desplazamiento forzado viola principalmente el derecho a:",o:["Voto libre","La libre circulación y la vivienda digna","Educación superior","Trabajo formal"],a:1,e:"El desplazamiento viola derechos fundamentales: vivienda, propiedad, unidad familiar, libre circulación."},
-  {area:"pol",t:55,q:"¿Qué medida usa el Banco de la República para controlar la inflación?",o:["Imprimir más dinero","Reducir impuestos","Aumentar la tasa de interés de referencia","Privatizar empresas"],a:2,e:"Al subir tasas de interés, el crédito se encarece, el consumo baja y los precios se moderan."},
-  {area:"pol",t:55,q:"La economía informal en Colombia se caracteriza por:",o:["Empresas exportadoras","El sector financiero regulado","Las cooperativas formales","Trabajadores sin contrato, sin seguridad social y sin pago de impuestos"],a:3,e:"La informalidad laboral implica falta de prestaciones sociales, inestabilidad y baja productividad."},
+  {area:"pol",t:120,q:"¿Qué es el Estado de Bienestar?",o:["Sistema puramente capitalista","Modelo donde el Estado garantiza servicios sociales como salud y educación","Gobierno sin gasto público","Estado mínimo sin intervención"],a:1,e:"El Estado de Bienestar combina mercado con protección social: pensiones, salud pública, educación."},
+  {area:"pol",t:120,q:"Los ODS (Objetivos de Desarrollo Sostenible) fueron adoptados en:",o:["La OTAN en 2000","El FMI en 2010","La ONU en 2015 para cumplirse en 2030","La Unión Europea en 2020"],a:2,e:"Los 17 ODS de la Agenda 2030 guían el desarrollo sostenible mundial: pobreza, clima, salud, etc."},
+  {area:"pol",t:120,q:"La Corte Interamericana de Derechos Humanos tiene competencia sobre:",o:["Todos los países del mundo","Solo Colombia y Venezuela","Solo delitos de guerra","Estados miembros de la OEA que aceptaron su jurisdicción"],a:3,e:"La CIDH juzga violaciones a la Convención Americana sobre DDHH en los países que la ratificaron."},
+  {area:"pol",t:120,q:"¿Qué es el populismo político?",o:["Discurso que enfrenta al 'pueblo virtuoso' contra una 'élite corrupta'","Un sistema de gobierno formal","La democracia participativa directa","El socialismo marxista"],a:0,e:"El populismo construye una narrativa nosotros (el pueblo) vs. ellos (la élite), apelando a las emociones."},
+  {area:"pol",t:120,q:"El desplazamiento forzado viola principalmente el derecho a:",o:["Voto libre","La libre circulación y la vivienda digna","Educación superior","Trabajo formal"],a:1,e:"El desplazamiento viola derechos fundamentales: vivienda, propiedad, unidad familiar, libre circulación."},
+  {area:"pol",t:120,q:"¿Qué medida usa el Banco de la República para controlar la inflación?",o:["Imprimir más dinero","Reducir impuestos","Aumentar la tasa de interés de referencia","Privatizar empresas"],a:2,e:"Al subir tasas de interés, el crédito se encarece, el consumo baja y los precios se moderan."},
+  {area:"pol",t:120,q:"La economía informal en Colombia se caracteriza por:",o:["Empresas exportadoras","El sector financiero regulado","Las cooperativas formales","Trabajadores sin contrato, sin seguridad social y sin pago de impuestos"],a:3,e:"La informalidad laboral implica falta de prestaciones sociales, inestabilidad y baja productividad."},
   // INGLÉS (7) — rotación continua: 0,1,2,3,0,1,2
-  {area:"ing",t:50,q:"Choose the correct option: 'By the time she arrived, they ___ the meeting.'",o:["had finished","finished","have finished","will finish"],a:0,e:"Past Perfect is used for an action completed BEFORE another past action. 'Had finished' is correct."},
+  {area:"ing",t:120,q:"Choose the correct option: 'By the time she arrived, they ___ the meeting.'",o:["had finished","finished","have finished","will finish"],a:0,e:"Past Perfect is used for an action completed BEFORE another past action. 'Had finished' is correct."},
   {area:"ing",t:45,q:"The sentence 'She suggested that he study harder' uses:",o:["Passive voice","Reported speech with subjunctive","Future conditional","Present perfect"],a:1,e:"After 'suggest', 'recommend', 'insist', the subjunctive (base form) is used: 'that he study'."},
   {area:"ing",t:45,q:"'The more you practice, ___ you become.' Complete correctly:",o:["the good","the best","the better","better"],a:2,e:"Double comparative structure: 'The more... the better.' Both parts use comparative forms."},
   {area:"ing",t:45,q:"What is the function of 'nevertheless' in a text?",o:["To add information","To indicate cause","To indicate time","To introduce a contrast despite a previous statement"],a:3,e:"'Nevertheless' (= nonetheless / however) introduces contrast: 'It was expensive; nevertheless, she bought it.'"},
@@ -1160,7 +1272,7 @@ function construirPreguntas(grado) {
     const mezclado = [...banco].sort(() => Math.random() - 0.5).slice(0, 50);
     return mezclado.map((p, idx) => ({
         ...p,
-        tiempoCad: p.t || p.tiempoCad || 45,
+        tiempoCad: p.t || p.tiempoCad || 120,
         explicacion: p.e || p.explicacion || '',
         area: AREA_META[p.area] ? AREA_META[p.area].nombre : p.area,
         areaKey: p.area,
@@ -1498,6 +1610,53 @@ window.reiniciarTest = function() {
     document.getElementById('pantalla-resultados').classList.add('hidden');
     document.getElementById('pantalla-inicio').classList.remove('hidden');
 };
+
+// ── ANTI-TRAMPAS ─────────────────────────────────────────────────
+let _cambiosPestana = 0;
+
+// Bloquear menú contextual (clic derecho) durante el quiz
+document.addEventListener('contextmenu', e => {
+    const enQuiz = !document.getElementById('pantalla-quiz')?.classList.contains('hidden');
+    if (enQuiz) { e.preventDefault(); return false; }
+});
+
+// Bloquear atajos de teclado de copiar/pegar/imprimir durante el quiz
+document.addEventListener('keydown', e => {
+    const enQuiz = !document.getElementById('pantalla-quiz')?.classList.contains('hidden');
+    if (!enQuiz) return;
+    const bloqueados = ['c','v','u','s','a','p'];
+    if ((e.ctrlKey || e.metaKey) && bloqueados.includes(e.key.toLowerCase())) {
+        e.preventDefault();
+    }
+    // F12, PrintScreen
+    if ([123, 44].includes(e.keyCode)) e.preventDefault();
+});
+
+// Detectar cambio de pestaña o minimización durante el quiz
+document.addEventListener('visibilitychange', () => {
+    const enQuiz = !document.getElementById('pantalla-quiz')?.classList.contains('hidden');
+    if (!enQuiz) return;
+    if (document.hidden) {
+        _cambiosPestana++;
+        clearInterval(timerInterval); // pausar timer
+        const fb = document.getElementById('feedback-bar');
+        if (fb) {
+            fb.style.display = 'flex';
+            fb.className = 'feedback-bar wrong';
+            fb.textContent = `⚠️ Cambio de pestaña detectado (${_cambiosPestana}). El timer fue pausado. El uso de IA invalida el diagnóstico.`;
+        }
+    } else {
+        // Volver: reanudar timer solo si la pregunta sigue sin responder
+        const yaRespondida = respuestas.find(r => r.pregunta === indice);
+        if (!yaRespondida && tiempoRestante > 0) {
+            timerInterval = setInterval(() => {
+                tiempoRestante--;
+                actualizarTimerDisplay();
+                if (tiempoRestante <= 0) { clearInterval(timerInterval); tiempoAgotado(); }
+            }, 1000);
+        }
+    }
+});
 
 // =======================================================
 // 3. GUARDADO EN FIREBASE Y DESPLIEGUE DE INVITACIÓN (CTA)
