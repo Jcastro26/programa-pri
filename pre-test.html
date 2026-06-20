@@ -440,7 +440,82 @@
         </div>
         <div class="field">
             <label>Institución Educativa *</label>
-            <input type="text" id="aspirante-colegio" placeholder="Tu colegio o universidad" required>
+            <select id="aspirante-colegio" required>
+                <option value="" disabled selected>Selecciona tu institución</option>
+                <optgroup label="── IE Tumaco (públicas) ──">
+                    <option>IE Liceo del Pacífico</option>
+                    <option>IE Técnico del Pacífico</option>
+                    <option>IE El Divino Niño</option>
+                    <option>IE Nuestra Señora del Carmen</option>
+                    <option>IE Sagrado Corazón de Jesús</option>
+                    <option>IE San Felipe Neri</option>
+                    <option>IE El Cocal</option>
+                    <option>IE San Andrés de Tumaco</option>
+                    <option>IE Mira</option>
+                    <option>IE Artesanal de Tumaco</option>
+                    <option>IE Bajo Mira</option>
+                    <option>IE La Cordialidad</option>
+                    <option>IE Luis Irisar Salcedo</option>
+                    <option>IE Ciudad de Tumaco</option>
+                    <option>IE Policarpa Salavarrieta</option>
+                    <option>IE Paulo VI</option>
+                    <option>IE La Inmaculada</option>
+                    <option>IE Santa Teresita</option>
+                    <option>IE Nuestro Señor del Mar</option>
+                    <option>IE Mercedes Ábrego</option>
+                    <option>IE Francisco José de Caldas</option>
+                    <option>IE Ciudadela Educativa del Pacífico</option>
+                    <option>IE José María Córdoba</option>
+                    <option>IE Nuestra Señora de Fátima</option>
+                    <option>IE Simón Bolívar</option>
+                    <option>IE Antonio Nariño</option>
+                    <option>IE Ángel María Bejarano</option>
+                    <option>IE El Pajal</option>
+                    <option>IE Integrado de La Barra</option>
+                    <option>IE Río Chagüí</option>
+                    <option>IE Imbilí</option>
+                    <option>IE Santa Cruz</option>
+                    <option>IE El Palmar</option>
+                    <option>IE Chorrera</option>
+                    <option>IE Caunapi</option>
+                </optgroup>
+                <optgroup label="── Colegios privados ──">
+                    <option>Colegio Los Amigos de la Ciencia</option>
+                    <option>Colegio Santa Clara</option>
+                    <option>Colegio San Francisco de Asís</option>
+                    <option>Colegio Comfamiliar</option>
+                    <option>Colegio Nuestra Señora de Guadalupe</option>
+                    <option>Colegio Los Álamos</option>
+                    <option>Colegio Semillas del Futuro</option>
+                    <option>Colegio Nuevo Horizonte</option>
+                    <option>Colegio Salesiano</option>
+                    <option>Colegio La Milagrosa</option>
+                </optgroup>
+                <optgroup label="── Universidades e institutos ──">
+                    <option>Universidad Nacional de Colombia</option>
+                    <option>Universidad de Nariño</option>
+                    <option>Universidad Cooperativa de Colombia</option>
+                    <option>Universidad de Antioquia</option>
+                    <option>Universidad del Valle</option>
+                    <option>Universidad Pedagógica Nacional</option>
+                    <option>Universidad Santo Tomás</option>
+                    <option>Universidad de Los Andes</option>
+                    <option>Universidad Javeriana</option>
+                    <option>Universidad Externado</option>
+                    <option>Universidad ICESI</option>
+                    <option>Universidad del Rosario</option>
+                    <option>Universidad EAN</option>
+                    <option>SENA</option>
+                    <option>UNAD</option>
+                    <option>Politécnico Gran Colombiano</option>
+                    <option>Institución Universitaria ITM</option>
+                </optgroup>
+                <optgroup label="── Otra ──">
+                    <option value="__otra__">Otra institución (especificar)</option>
+                </optgroup>
+            </select>
+            <input type="text" id="aspirante-colegio-otro" placeholder="Escribe el nombre de tu institución"
+                   style="display:none;margin-top:.5rem;" autocomplete="organization">
         </div>
     </div>
     <div class="form-row" id="campos-estudiante">
@@ -635,8 +710,16 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
-  // Autenticación anónima requerida por reglas de Firestore
-  signInAnonymously(auth).catch(() => {});
+  // Iniciar auth anónima de forma preventiva; si falla se reintenta antes de guardar
+  let _authListo = false;
+  signInAnonymously(auth).then(() => { _authListo = true; }).catch(() => {});
+
+  // Garantiza auth anónima antes de cualquier escritura en Firestore
+  async function _garantizarAuth() {
+    if (_authListo && auth.currentUser) return;
+    try { await signInAnonymously(auth); _authListo = true; }
+    catch(e) { console.warn('[PreTest] Auth anónima falló:', e.message); }
+  }
 
   // Variable global para guardar los datos temporalmente durante el test
   window.datosAspiranteGlobal = {};
@@ -665,18 +748,41 @@
       document.getElementById('campos-voluntario').style.display = rol === 'VOLUNTARIO' ? '' : 'none';
   };
 
+  // Mostrar campo libre cuando seleccionan "Otra institución"
+  document.getElementById('aspirante-colegio').addEventListener('change', function() {
+      const otro = document.getElementById('aspirante-colegio-otro');
+      if (this.value === '__otra__') {
+          otro.style.display = '';
+          otro.required = true;
+          otro.focus();
+      } else {
+          otro.style.display = 'none';
+          otro.required = false;
+          otro.value = '';
+      }
+  });
+
+  // Leer el valor real del campo institución (select o input libre)
+  function _leerColegio() {
+      const sel = document.getElementById('aspirante-colegio');
+      if (sel.value === '__otra__') {
+          return document.getElementById('aspirante-colegio-otro').value.trim();
+      }
+      return sel.value.trim();
+  }
+
   window.validarEIniciarTest = async function() {
       const nombre = document.getElementById('aspirante-nombre').value.trim();
       const correo = document.getElementById('aspirante-correo').value.trim();
       const tel = document.getElementById('aspirante-tel').value.trim();
-      const colegio = document.getElementById('aspirante-colegio').value.trim();
+      const colegio = _leerColegio();
       const rol = document.getElementById('aspirante-rol').value;
       const ciudad = document.getElementById('aspirante-ciudad').value.trim() || 'Tumaco, Nariño';
       const docTipo = document.getElementById('aspirante-doc-tipo').value;
       const docNum = document.getElementById('aspirante-doc-num').value.trim();
 
       if (!nombre) { mostrarAvisoPRI('Falta el nombre', 'Por favor ingresa tu nombre completo.', '⚠️'); return; }
-      if (!colegio) { mostrarAvisoPRI('Falta la institución', 'Escribe el nombre de tu institución.', '⚠️'); return; }
+      if (!colegio || colegio === '__otra__') { mostrarAvisoPRI('Falta la institución', 'Selecciona o escribe el nombre de tu institución.', '⚠️'); return; }
       if (!rol) { mostrarAvisoPRI('Selecciona tu rol', 'Indica si eres estudiante o voluntario.', '⚠️'); return; }
 
       let grado = '', estrato = '', nivel = '';
@@ -1291,19 +1397,24 @@ async function mostrarResultados() {
         _fuente    : 'pretest_web',
     };
 
+    // Garantizar auth antes de intentar escribir en Firestore
+    await _garantizarAuth();
+
     // Intento de guardado con reintentos (hasta 3 veces)
     let _guardado = false;
     for (let _intento = 1; _intento <= 3 && !_guardado; _intento++) {
         try {
             if (_intento > 1) {
-                // En reintento usar timestamp de cliente como fallback
+                // En reintento: re-intentar auth Y usar timestamp de cliente
+                await _garantizarAuth();
                 _payload.fechaMuestra = new Date();
                 await new Promise(r => setTimeout(r, 1000 * _intento));
             }
             await addDoc(collection(db, "muestras_pretest"), _payload);
             _guardado = true;
+            console.log('[PreTest] ✅ Guardado en Firestore intento', _intento);
         } catch (_e) {
-            console.warn(`[PreTest] Intento ${_intento} fallido:`, _e.message);
+            console.warn(`[PreTest] Intento ${_intento} fallido:`, _e.message, '| auth:', auth.currentUser?.uid || 'sin auth');
         }
     }
 

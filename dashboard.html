@@ -3815,70 +3815,128 @@ function _fmtFecha(raw) {
     } catch { return String(raw).slice(0,16); }
 }
 
-// ── Normalización de nombres de colegios de Tumaco ─────────────────────────
+// ── Normalización de nombres de colegios, universidades e instituciones ─────
 const _COLEGIOS_TUMACO = {
-    // Canonical name → array of fuzzy variants (sin tildes, minúsculas)
-    'IE Liceo del Pacífico':               ['liceo del pacifico','liceo pacifico','lp tumaco'],
-    'IE Técnico del Pacífico':             ['tecnico del pacifico','tecnico pacifico','iet pacifico','ie tecnico pacifico'],
-    'IE El Divino Niño':                   ['divino nino','divino niño','el divino nino','el divino niño'],
-    'IE Nuestra Señora del Carmen':        ['nuestra señora del carmen','nuestra senora del carmen','n s del carmen','ns carmen'],
-    'IE Sagrado Corazón de Jesús':         ['sagrado corazon','sagrado corazón','sagrado corazon de jesus','sagrado corazón de jesús'],
+    // ── Colegios IE Tumaco ──────────────────────────────────────────────────
+    'IE Liceo del Pacífico':               ['liceo del pacifico','liceo pacifico','lp tumaco','liceo del pacifico tumaco'],
+    'IE Técnico del Pacífico':             ['tecnico del pacifico','tecnico pacifico','iet pacifico','ie tecnico pacifico','tecnico tumaco'],
+    'IE El Divino Niño':                   ['divino nino','el divino nino','divino nino tumaco'],
+    'IE Nuestra Señora del Carmen':        ['nuestra senora del carmen','ns del carmen','ns carmen','ntra sra del carmen','n sra del carmen'],
+    'IE Sagrado Corazón de Jesús':         ['sagrado corazon','sagrado corazon de jesus','corazon de jesus tumaco'],
     'IE San Felipe Neri':                  ['san felipe neri','san felipe','sf neri'],
     'IE El Cocal':                         ['el cocal','cocal'],
-    'IE San Andrés de Tumaco':             ['san andres de tumaco','san andrés de tumaco','san andres tumaco','ie san andres'],
-    'IE Mira':                             ['mira','ie mira','inst mira'],
+    'IE San Andrés de Tumaco':             ['san andres de tumaco','san andres tumaco','ie san andres'],
+    'IE Mira':                             ['ie mira','inst mira'],
     'IE Artesanal de Tumaco':              ['artesanal de tumaco','artesanal tumaco','ie artesanal'],
     'IE Bajo Mira':                        ['bajo mira','ie bajo mira'],
     'IE La Cordialidad':                   ['la cordialidad','cordialidad'],
     'IE Luis Irisar Salcedo':              ['luis irisar','luis irisar salcedo','irisar'],
     'IE Ciudad de Tumaco':                 ['ciudad de tumaco','ie ciudad tumaco'],
     'IE Policarpa Salavarrieta':           ['policarpa salavarrieta','policarpa'],
-    'IE Paulo VI':                         ['paulo vi','paulo 6','pablo vi'],
+    'IE Paulo VI':                         ['paulo vi','paulo 6','paulo sexto'],
     'IE La Inmaculada':                    ['la inmaculada','inmaculada'],
     'IE Santa Teresita':                   ['santa teresita','teresita'],
-    'IE Nuestro Señor del Mar':            ['nuestro señor del mar','nuestro senor del mar','señor del mar'],
-    'IE Mercedes Ábrego':                  ['mercedes abrego','mercedes ábrego'],
-    'IE Francisco José de Caldas':         ['francisco jose de caldas','caldas','francisco caldas'],
+    'IE Nuestro Señor del Mar':            ['nuestro senor del mar','senor del mar'],
+    'IE Mercedes Ábrego':                  ['mercedes abrego'],
+    'IE Francisco José de Caldas':         ['francisco jose de caldas','francisco caldas','caldas tumaco'],
     'IE Ciudadela Educativa del Pacífico': ['ciudadela educativa','ciudadela pacifico','ciudadela del pacifico'],
-    'IE José María Córdoba':               ['jose maria cordoba','córdoba','cordoba tumaco'],
-    'IE Nuestra Señora de Fátima':         ['fatima','fátima','nuestra senora de fatima','nuestra señora de fátima'],
-    'IE Simón Bolívar':                    ['simon bolivar','simón bolívar','bolivar tumaco'],
-    'IE Antonio Nariño':                   ['antonio narino','antonio nariño'],
-    'IE Ángel María Bejarano':             ['angel maria bejarano','ángel maría bejarano','bejarano'],
+    'IE José María Córdoba':               ['jose maria cordoba','cordoba tumaco'],
+    'IE Nuestra Señora de Fátima':         ['nuestra senora de fatima','ntra sra de fatima'],
+    'IE Simón Bolívar':                    ['simon bolivar','bolivar tumaco'],
+    'IE Antonio Nariño':                   ['antonio narino'],
+    'IE Ángel María Bejarano':             ['angel maria bejarano','bejarano'],
     'IE El Pajal':                         ['el pajal','pajal'],
     'IE Integrado de La Barra':            ['la barra','integrado la barra'],
-    'IE Río Chagüí':                       ['rio chagui','río chagüí','chagui'],
-    'IE Imbilí':                           ['imbili','imbilí'],
+    'IE Río Chagüí':                       ['rio chagui','chagui'],
+    'IE Imbilí':                           ['imbili'],
     'IE Santa Cruz':                       ['santa cruz tumaco','santa cruz'],
     'IE El Palmar':                        ['el palmar','palmar'],
     'IE Chorrera':                         ['chorrera','la chorrera'],
     'IE Caunapi':                          ['caunapi'],
+    // ── Colegios privados / otros ───────────────────────────────────────────
+    'Colegio Los Amigos de la Ciencia':    [
+        'los amigos de la ciencia','amigos de la ciencia','colegio amigos de la ciencia',
+        'amigos ciencia','col amigos de la ciencia','colegio los amigos','los amigos ciencia',
+        'col. amigos de la ciencia','amigos de las ciencias',
+    ],
+    'Colegio Santa Clara':                 ['santa clara','col santa clara'],
+    'Colegio San Francisco de Asís':       ['san francisco de asis','san francisco asis'],
+    'Colegio Comfamiliar':                 ['comfamiliar','col comfamiliar'],
+    'Colegio Nuestra Señora de Guadalupe': ['guadalupe','nuestra senora de guadalupe'],
+    'Colegio Los Álamos':                  ['los alamos','col los alamos'],
+    'Colegio Semillas del Futuro':         ['semillas del futuro','semillas futuro'],
+    'Colegio Nuevo Horizonte':             ['nuevo horizonte','col nuevo horizonte'],
+    'Colegio Salesiano':                   ['salesiano','colegio salesiano'],
+    'Colegio La Milagrosa':                ['la milagrosa','milagrosa'],
+    // ── Universidades ───────────────────────────────────────────────────────
+    'Universidad Nacional de Colombia':    [
+        'universidad nacional','unal','u nacional','un colombia','unac',
+        'universidad nacional de colombia','unal colombia','universidad nal',
+        'u.n.','u.n','unacional','uni nacional',
+    ],
+    'Universidad de Nariño':               [
+        'universidad de narino','udenar','u de narino','uni narino',
+        'universidad narino','udenar pasto','u nariño',
+    ],
+    'Universidad Cooperativa de Colombia': [
+        'universidad cooperativa','ucc','cooperativa de colombia','uni cooperativa',
+        'cooperativa colombia',
+    ],
+    'Universidad de Antioquia':            ['udea','u de antioquia','universidad antioquia','uni antioquia'],
+    'Universidad del Valle':               ['univalle','u del valle','universidad valle','uni del valle'],
+    'Universidad Pedagógica Nacional':     ['upn','pedagogica nacional','uni pedagogica'],
+    'Universidad Santo Tomás':             ['usta','santo tomas','uni santo tomas','universidad sto tomas'],
+    'Universidad de Los Andes':            ['uniandes','los andes','uni los andes','u de los andes'],
+    'Universidad Javeriana':               ['javeriana','puj','pontificia javeriana','uni javeriana'],
+    'Universidad Externado':               ['externado','uni externado','universidad externado de colombia'],
+    'Universidad ICESI':                   ['icesi','uni icesi'],
+    'Universidad del Rosario':             ['rosario','uni rosario','urosario'],
+    'Universidad EAN':                     ['ean','uni ean'],
+    'SENA':                                ['sena','servicio nacional de aprendizaje','sena tumaco','sena nariño','sena narino'],
+    'UNAD':                                ['unad','universidad nacional abierta','uni abierta','u abierta y a distancia'],
+    'Politécnico Gran Colombiano':         ['politecnico gran colombiano','poligran','politecnico colombiano'],
+    'Institución Universitaria ITM':       ['itm','tecnologico de medellin'],
 };
-// Mapa invertido para lookup rápido
+// Mapa invertido para lookup rápido — clave: variante normalizada, valor: nombre canónico
 const _COLEGIO_MAP = {};
 Object.entries(_COLEGIOS_TUMACO).forEach(([canon, variants]) => {
-    variants.forEach(v => { _COLEGIO_MAP[v] = canon; });
-    // Agregar también el canonical en minúsculas sin tildes
+    variants.forEach(v => {
+        const vn = v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+        _COLEGIO_MAP[vn] = canon;
+    });
+    // También indexar el canónico normalizado
     const canonNorm = canon.toLowerCase()
         .normalize('NFD').replace(/[̀-ͯ]/g,'')
-        .replace(/^ie\s+/,'').trim();
+        .replace(/^(ie|col\.?|colegio|universidad|inst\.?|institucion)\s+/i,'').trim();
     _COLEGIO_MAP[canonNorm] = canon;
 });
+
 function normalizarColegio(raw) {
-    if (!raw) return '';
-    const norm = raw.trim().toLowerCase()
-        .normalize('NFD').replace(/[̀-ͯ]/g,'')   // quitar tildes
-        .replace(/\binst(itucion|itución)?\b\.?\s*(educ\w*)?\s*/g,'')  // quitar "institución educativa"
-        .replace(/\bie\b\.?\s*/g,'')                                   // quitar prefijo IE
+    if (!raw || !raw.trim()) return '';
+    // Normalizar: minúsculas, sin tildes
+    const stripped = raw.trim().toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g,'')
         .replace(/\s+/g,' ').trim();
-    // Buscar en mapa
-    if (_COLEGIO_MAP[norm]) return _COLEGIO_MAP[norm];
-    // Buscar coincidencia parcial
+
+    // 1. Búsqueda exacta en el mapa (con y sin prefijos comunes)
+    const sinPrefijo = stripped
+        .replace(/^(institucion educativa|institucion|ie\.?\s*|col\.?\s*|colegio\s+|universidad\s+)/,'')
+        .trim();
+    if (_COLEGIO_MAP[stripped])   return _COLEGIO_MAP[stripped];
+    if (_COLEGIO_MAP[sinPrefijo]) return _COLEGIO_MAP[sinPrefijo];
+
+    // 2. La variante del mapa está CONTENIDA en el input (ej: input = "colegio amigos de la ciencia" contiene "amigos de la ciencia")
     for (const [key, canon] of Object.entries(_COLEGIO_MAP)) {
-        if (norm.includes(key) || key.includes(norm)) return canon;
+        if (key.length >= 5 && stripped.includes(key)) return canon;
     }
-    // Sin match: devolver el original capitalizado
-    return raw.trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
+
+    // 3. El input está CONTENIDO en la variante del mapa (ej: input = "amigos ciencia" está en "amigos de la ciencia")
+    for (const [key, canon] of Object.entries(_COLEGIO_MAP)) {
+        if (sinPrefijo.length >= 5 && key.includes(sinPrefijo)) return canon;
+    }
+
+    // Sin match → Title Case del original
+    return raw.trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 // ──────────────────────────────────────────────────────────────────────────────
 
