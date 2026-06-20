@@ -347,8 +347,8 @@
             .foro-messages{height:clamp(240px,42vh,400px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
 
             /* ── INBOX CHAT: overlay pantalla completa en móvil ── */
-            /* Evita que la página compita con el scroll del chat */
-            #inbox-chat-box{
+            /* Se activa SOLO con la clase .inbox-open (evita romper el scroll global) */
+            #inbox-chat-box.inbox-open{
                 position:fixed !important;
                 inset:0 !important;
                 z-index:3500 !important;
@@ -357,7 +357,7 @@
                 flex-direction:column !important;
                 overflow:hidden !important;
             }
-            #inbox-chat-box .section-box{
+            #inbox-chat-box.inbox-open .section-box{
                 flex:1 !important;
                 display:flex !important;
                 flex-direction:column !important;
@@ -366,7 +366,7 @@
                 border:none !important;
                 height:100% !important;
             }
-            #inbox-chat-mensajes{
+            #inbox-chat-box.inbox-open #inbox-chat-mensajes{
                 flex:1 !important;
                 height:auto !important;
                 min-height:0 !important;
@@ -376,8 +376,6 @@
                 overscroll-behavior-y:contain !important;
                 touch-action:pan-y !important;
             }
-            /* Ocultar cuando display:none está en el elemento */
-            #inbox-chat-box[style*="display:none"]{display:none !important;}
             .foro-input-row{flex-direction:column;}
             .btn-send{width:100%;}
 
@@ -1267,8 +1265,8 @@
                         <span>💬 Chat con: <strong id="inbox-chat-nombre">—</strong></span>
                         <button class="btn-cerrar-chat" onclick="cerrarInboxChat()">✕ Volver</button>
                     </div>
-                    <div class="foro-messages" id="inbox-chat-mensajes" style="overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y;"></div>
-                    <div style="padding:1rem;">
+                    <div class="foro-messages" id="inbox-chat-mensajes" style="overflow-y:scroll;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;touch-action:pan-y;padding-bottom:.5rem;"></div>
+                    <div style="padding:1rem;padding-bottom:max(1rem, env(safe-area-inset-bottom));">
                         <div class="foro-input-row">
                             <input class="foro-input" type="text" id="inbox-chat-input" placeholder="Escribe..." onkeydown="if(event.key==='Enter')enviarMensajeInbox()">
                             <button class="btn-send" onclick="enviarMensajeInbox()">Enviar</button>
@@ -2528,8 +2526,8 @@ window.cerrarChatPrivado = function() {
 function crearMsgItem(m, esMio) {
     const hora = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
     const iniciales = (m.autor||'?')[0].toUpperCase();
-    // Fallback: si el mensaje es mío y no tiene foto guardada, usar la foto actual del usuario
-    const foto = m.autorFoto || (esMio ? (currentUser?.fotoUrl||'') : '');
+    // Fallback: foto guardada en el msg → foto actual del user → foto cacheada del interlocutor
+    const foto = m.autorFoto || (esMio ? (currentUser?.fotoUrl||'') : (_inboxOtroFotoUrl||''));
     const avatarInner = foto
         ? `<img src="${foto}" onerror="this.parentElement.textContent='${iniciales}'">`
         : iniciales;
@@ -3030,7 +3028,8 @@ window.verDetalleEstudiante = async function(uid) {
 
 // PRETEST DATA
 function cargarPretestData() {
-    getDocs(query(collection(db,"muestras_pretest"), orderBy("fechaMuestra","desc"))).then(snap => {
+    // Intentar con orderBy; si falla (índice no creado), reintentar sin él
+    const _procesar = snap => {
         const tbody = document.getElementById('pretest-tbody');
         tbody.innerHTML = '';
         let total=0, sumPct=0, colegios=new Set(), registrados=0;
@@ -3055,7 +3054,16 @@ function cargarPretestData() {
         document.getElementById('pt-prom').textContent = total ? Math.round(sumPct/total)+'%' : '0%';
         document.getElementById('pt-colegios').textContent = colegios.size;
         document.getElementById('pt-registrados').textContent = registrados;
-    }).catch(err => console.error(err));
+    };
+    getDocs(query(collection(db,"muestras_pretest"), orderBy("fechaMuestra","desc")))
+        .then(_procesar)
+        .catch(() => {
+            // Sin índice de fechaMuestra — cargar sin ordenar
+            getDocs(collection(db,"muestras_pretest")).then(_procesar).catch(err => {
+                const tbody = document.getElementById('pretest-tbody');
+                if (tbody) tbody.innerHTML = `<tr><td colspan="9" style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">Error: ${err.message}</td></tr>`;
+            });
+        });
 }
 
 window.exportarPreTestCSV = function() {
@@ -4196,8 +4204,9 @@ window.cargarResumenEntregasICFES = async function() {
                 const filasForm = est.respuestas
                     .sort((a,b)=>(a['Marca temporal']||'').localeCompare(b['Marca temporal']||''))
                     .map(r => {
-                        const hoja  = r._hoja || '(sin nombre)';
-                        const pts   = parsePts(r['Puntuación']||r['puntuacion']);
+                        const _hojaRaw = r._hoja || '(sin nombre)';
+                        const hoja  = (typeof displayHoja === 'function') ? displayHoja(_hojaRaw) : _hojaRaw;
+                        const pts   = parsePts(r['Puntuación']||r['puntuacion']||r['Puntuacion']||r['puntaje']);
                         const fecha = (_ext(r,'marca_temporal','_timestamp_envio','digita_la_fecha','Marca temporal','DIGITE LA FECHA')||'—').toString().slice(0,16);
                         const pct   = pts?.total ? Math.round(pts.correctas/pts.total*100) : null;
                         const scoreStr = pts ? pts.raw : '—';
@@ -4304,7 +4313,7 @@ window.renderTalleresAdmin = function() {
         return `<div style="box-sizing:border-box;width:100%;min-height:44px;margin-bottom:6px;background:#0a1e32;border:1px solid rgba(255,255,255,0.08);border-left:3px solid ${bColor};border-radius:6px;opacity:${habilitado?1:.65};display:flex;align-items:center;">
             <div style="flex:1;min-width:0;padding:8px 10px;">
                 <div style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;font-weight:700;color:#e8f0f8;line-height:17px;">${titulo} ${badgeHtml}</div>
-                <div style="font-size:9px;color:rgba(255,255,255,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}${t.hojaCalculo ? ` <span style="color:#86efac;">📊 ${t.hojaCalculo}</span>` : ` <span style="color:#fbbf24;cursor:pointer;" title="Sin hoja configurada — edita para asignar la pestaña de Google Sheets">⚠️ sin hoja</span>`}</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.4);line-height:14px;margin-top:2px;">${t.area||'—'} · ${t.grupo||'—'} · Sesión ${t.sesion||'—'}${t.hojaCalculo ? ` <span style="color:#86efac;" title="${t.hojaCalculo}">📊 ${(typeof displayHoja==='function'?displayHoja(t.hojaCalculo):t.hojaCalculo)}</span>` : ` <span style="color:#fbbf24;cursor:pointer;" title="Sin hoja configurada — edita para asignar la pestaña de Google Sheets">⚠️ sin hoja</span>`}</div>
             </div>
             <div style="flex-shrink:0;padding:8px 10px;white-space:nowrap;">
                 <button class="btn-table" onclick="toggleHabilitadoTaller('${safeId}',${!habilitado})" style="padding:3px 7px;font-size:9px;color:${habilitado?'#86efac':'#fca5a5'};" title="${habilitado?'Deshabilitar':'Habilitar'}">${habilitado?'✅':'🔒'}</button>
@@ -5428,16 +5437,24 @@ async function cargarInbox() {
     } catch(err) { cont.innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:0.65rem;">Error: ${err.message}</p>`; }
 }
 
+let _inboxOtroFotoUrl = ''; // foto del otro usuario en el chat activo
+
 window.abrirConversacionInbox = function(uid, nombre, chatId) {
     inboxChatUid = uid; inboxChatId = chatId;
+    _inboxOtroFotoUrl = '';
     document.getElementById('inbox-lista-sec').style.display = 'none';
-    document.getElementById('inbox-chat-box').style.display = 'flex';
+    const chatBox = document.getElementById('inbox-chat-box');
+    chatBox.style.display = 'flex';
+    chatBox.classList.add('inbox-open');
     document.getElementById('inbox-chat-nombre').textContent = nombre || '…';
     document.getElementById('inbox-chat-input').value = '';
-    // Bloquear scroll del body para que iOS no compita con el div de mensajes
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
+
+    // Obtener foto del otro usuario para mostrarla en sus mensajes
+    getDoc(doc(db, 'usuarios', uid)).then(uSnap => {
+        if (uSnap.exists()) {
+            _inboxOtroFotoUrl = uSnap.data().fotoUrl || uSnap.data().foto || '';
+        }
+    }).catch(()=>{});
 
     // Si el nombre no se resolvió (chat antiguo sin mapa "nombres"), buscar en Firestore
     if (!nombre || nombre === 'Conversación') {
@@ -5471,12 +5488,11 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
 window.cerrarInboxChat = function() {
     if (inboxUnsubscribe) { inboxUnsubscribe(); inboxUnsubscribe = null; }
     inboxChatUid = null; inboxChatId = null;
+    _inboxOtroFotoUrl = '';
     document.getElementById('inbox-lista-sec').style.display = '';
-    document.getElementById('inbox-chat-box').style.display = 'none';
-    // Restaurar scroll del body al cerrar el chat
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width = '';
+    const chatBox = document.getElementById('inbox-chat-box');
+    chatBox.style.display = 'none';
+    chatBox.classList.remove('inbox-open');
 };
 
 window.enviarMensajeInbox = async function() {
@@ -6654,6 +6670,76 @@ window.seedTalleresInteractivos = async function() {
             descripcion: 'Aprende a diseñar un proyecto social paso a paso: objetivo, población, actividades e indicadores. Taller conversacional interactivo.',
             tipo: 'interactivo',
             url: 'taller_primer_proyecto.html',
+            publicado: true
+        },
+        {
+            titulo: 'Lectura Crítica 📖',
+            area: 'Lectura Crítica',
+            grado: 'todos',
+            puntos: 120,
+            descripcion: 'Tipos de texto, propósito comunicativo, presuposición, conectores, textos discontinuos, argumentación, falacias y voces narrativas. Temario completo ICFES.',
+            tipo: 'interactivo',
+            url: 'taller_lectura_critica.html',
+            publicado: true
+        },
+        {
+            titulo: 'English 🇬🇧',
+            area: 'Inglés',
+            grado: 'todos',
+            puntos: 120,
+            descripcion: 'Main idea, vocabulary in context, verb tenses, conditionals, connectors, inference, language functions and passive voice. Full ICFES English syllabus.',
+            tipo: 'interactivo',
+            url: 'taller_ingles.html',
+            publicado: true
+        },
+        {
+            titulo: 'Biología 🧬',
+            area: 'Ciencias Naturales',
+            grado: 'todos',
+            puntos: 120,
+            descripcion: 'Célula eucariota y procariota, fotosíntesis, genética mendeliana, cromosomas, ecosistemas, relaciones ecológicas, evolución y sistemas del cuerpo humano.',
+            tipo: 'interactivo',
+            url: 'taller_biologia.html',
+            publicado: true
+        },
+        {
+            titulo: 'Química ⚗️',
+            area: 'Ciencias Naturales',
+            grado: 'todos',
+            puntos: 120,
+            descripcion: 'Cambios físicos y químicos, tabla periódica, enlace químico, balanceo de ecuaciones, pH, tipos de reacciones, estequiometría y química orgánica.',
+            tipo: 'interactivo',
+            url: 'taller_quimica.html',
+            publicado: true
+        },
+        {
+            titulo: 'Geometría y Medición 📐',
+            area: 'Matemáticas',
+            grado: 'todos',
+            puntos: 120,
+            descripcion: 'Áreas y perímetros, Teorema de Pitágoras, ángulos, sólidos geométricos, transformaciones, escala y semejanza, trigonometría SOH-CAH-TOA.',
+            tipo: 'interactivo',
+            url: 'taller_geometria.html',
+            publicado: true
+        },
+        {
+            titulo: 'Ciencias Sociales 🌎',
+            area: 'Ciencias Sociales',
+            grado: 'todos',
+            puntos: 120,
+            descripcion: 'Colombia precolombina, conquista y colonia, independencia, Constitución 1991, geografía, economía, siglo XX (Bogotazo) y mecanismos de participación.',
+            tipo: 'interactivo',
+            url: 'taller_sociales.html',
+            publicado: true
+        },
+        {
+            titulo: 'Física ⚡',
+            area: 'Ciencias Naturales',
+            grado: 'todos',
+            puntos: 120,
+            descripcion: 'Cinemática (MRU, MRUV), Leyes de Newton, trabajo y energía, ondas, calor y transferencia, Ley de Ohm, presión y movimiento circular.',
+            tipo: 'interactivo',
+            url: 'taller_fisica.html',
             publicado: true
         }
     ];

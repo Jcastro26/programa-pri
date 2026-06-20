@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Geometría · Taller Interactivo</title>
+<style>
+  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
+  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
+  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
+  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
+  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
+  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
+  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--oro),var(--naranja));transition:width .5s ease;}
+  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
+  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
+  .bubble-wrap.bot{flex-direction:row;}
+  .bubble-wrap.user{flex-direction:row-reverse;}
+  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+  .avatar.bot{background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);}
+  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
+  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
+  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
+  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
+  .bubble strong{color:var(--teal);}
+  .bubble em{color:var(--oro);}
+  .tip{background:rgba(255,215,0,.08);border-left:3px solid var(--oro);padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
+  .check{color:var(--verde);font-weight:900;}
+  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(255,215,0,.3);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(255,215,0,.65);text-align:center;}
+  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
+  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
+  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
+  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);}
+  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);}
+  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
+  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
+  #input-row{display:flex;gap:.5rem;}
+  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
+  #txt-input:focus{border-color:var(--teal);}
+  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:none;font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;}
+  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
+  #fin-overlay.show{display:flex;}
+  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
+  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
+  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div id="header-title">📐 Geometría y Medición — ICFES</div>
+    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem;">
+    <span id="pts-badge">0 pts</span>
+    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
+  </div>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+<div id="chat"></div>
+<div id="options-area"><div id="options-grid"></div></div>
+<div id="input-area">
+  <div id="input-row">
+    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="200">
+    <button id="btn-send">Enviar →</button>
+  </div>
+</div>
+<div id="fin-overlay">
+  <div id="fin-title">🏆 ¡Geometría dominada!</div>
+  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">Repasaste figuras planas, sólidos, Pitágoras, ángulos, transformaciones y trigonometría. ¡Listo/a para el ICFES!</p>
+  <div id="fin-pts"></div>
+  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
+</div>
+
+<script>
+let pts=0,paso=0;
+const TOTAL_PASOS=10;
+const chat=document.getElementById('chat');
+const optGrid=document.getElementById('options-grid');
+const ptsEl=document.getElementById('pts-badge');
+const progressBar=document.getElementById('progress-bar');
+
+function sumarPts(n){pts+=n;ptsEl.textContent=pts+' pts';}
+function avanzarBarra(){paso=Math.min(paso+1,TOTAL_PASOS);progressBar.style.width=(paso/TOTAL_PASOS*100)+'%';}
+function limpiarOpciones(){optGrid.innerHTML='';document.getElementById('options-area').style.display='none';document.getElementById('input-area').style.display='none';}
+function addBot(html,delay=0){return new Promise(r=>{setTimeout(()=>{const w=document.createElement('div');w.className='bubble-wrap bot';w.innerHTML=`<div class="avatar bot">📐</div><div class="bubble bot">${html}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;r();},delay);});}
+function addUser(t){const w=document.createElement('div');w.className='bubble-wrap user';w.innerHTML=`<div class="avatar user">🧑</div><div class="bubble user">${t}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;}
+function mostrarOpciones(ops){document.getElementById('options-area').style.display='block';optGrid.innerHTML='';ops.forEach(op=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=op.label;b.onclick=()=>{document.querySelectorAll('.opt-btn').forEach(x=>x.disabled=true);b.classList.add('selected');addUser(op.label);limpiarOpciones();setTimeout(()=>op.fn(),400);};optGrid.appendChild(b);});}
+function mostrarInput(ph,fn){document.getElementById('input-area').style.display='block';const inp=document.getElementById('txt-input');inp.placeholder=ph;inp.value='';inp.focus();const s=()=>{const v=inp.value.trim();if(!v)return;addUser(v);limpiarOpciones();setTimeout(()=>fn(v),400);};document.getElementById('btn-send').onclick=s;inp.onkeydown=e=>{if(e.key==='Enter')s();};}
+
+async function paso0(){
+  await addBot(`¡Bienvenido/a al taller de <strong>Geometría y Medición ICFES</strong>! 📐<br><br>
+Temas que evaluará el ICFES:<br>
+<strong>• Figuras planas</strong> — área y perímetro.<br>
+<strong>• Sólidos geométricos</strong> — volumen y área superficial.<br>
+<strong>• Teorema de Pitágoras.</strong><br>
+<strong>• Ángulos</strong> — clasificación y propiedades.<br>
+<strong>• Transformaciones</strong> — traslación, rotación, reflexión.<br>
+<strong>• Trigonometría básica</strong> — seno, coseno, tangente.<br>
+<strong>• Semejanza y escala.</strong><br><br>
+¿Comenzamos?`, 300);
+  mostrarOpciones([
+    { label: '📐 ¡Sí, a medir y calcular!', fn:()=>{addBot(`¡Perfecto! Empezamos con figuras planas.`,300);setTimeout(paso1,1200);} },
+    { label: '😅 La geometría no es lo mío', fn:()=>{addBot(`¡Tranquilo/a! En el ICFES no debes memorizar fórmulas — te las dan en el cuadernillo. Lo importante es <em>saber cuándo y cómo aplicarlas</em>. ¡Eso lo practicamos aquí!`,300);setTimeout(paso1,1500);} },
+  ]);
+}
+
+async function paso1(){
+  avanzarBarra();
+  await addBot(`<strong>Figuras Planas — Área y Perímetro</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: tabla de fórmulas — triángulo (base×altura/2), rectángulo (base×altura), círculo (πr²), trapecio ((B+b)×h/2)]</div><br>
+Un rectángulo tiene base = 8 cm y altura = 5 cm.<br>
+¿Cuánto mide su <strong>área</strong>?`, 400);
+  mostrarOpciones([
+    { label: '📏 26 cm² (perímetro confundido con área)', fn:()=>{addBot(`26 cm sería el <em>perímetro</em>: 2×(8+5)=26. El área de un rectángulo es <strong>base × altura = 8 × 5 = 40 cm²</strong>.`,300);setTimeout(paso2,1600);} },
+    { label: '📐 40 cm²', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Área del rectángulo = base × altura = 8 × 5 = <strong>40 cm²</strong>. El área se mide en unidades cuadradas.`,300);setTimeout(paso2,1600);} },
+    { label: '📐 13 cm²', fn:()=>{addBot(`Eso sería base + altura. El área se multiplica: <strong>base × altura = 8 × 5 = 40 cm²</strong>.`,300);setTimeout(paso2,1600);} },
+  ]);
+}
+
+async function paso2(){
+  avanzarBarra();
+  await addBot(`<strong>Teorema de Pitágoras</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: triángulo rectángulo con catetos a y b, hipotenusa c — con la fórmula a² + b² = c² resaltada]</div><br>
+En un triángulo rectángulo: <strong>a² + b² = c²</strong><br>
+donde <em>c</em> es la hipotenusa (el lado opuesto al ángulo de 90°).<br><br>
+Un triángulo tiene catetos de 3 cm y 4 cm. ¿Cuánto mide la hipotenusa?`, 400);
+  mostrarOpciones([
+    { label: '📐 5 cm', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> 3² + 4² = 9 + 16 = 25. √25 = <strong>5 cm</strong>. ¡El triángulo 3-4-5 es el más famoso en el ICFES!`,300);setTimeout(paso3,1600);} },
+    { label: '📐 7 cm', fn:()=>{addBot(`No es suma directa: a² + b² = c². Así: 3² + 4² = 9 + 16 = 25 → c = √25 = <strong>5 cm</strong>.`,300);setTimeout(paso3,1600);} },
+    { label: '📐 12 cm', fn:()=>{addBot(`Revisemos: c² = 3² + 4² = 9 + 16 = 25. Entonces c = √25 = <strong>5 cm</strong>, no 12.`,300);setTimeout(paso3,1600);} },
+  ]);
+}
+
+async function paso3(){
+  avanzarBarra();
+  await addBot(`<strong>Ángulos — Tipos y Propiedades</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: tipos de ángulos — agudo (menor 90°), recto (90°), obtuso (entre 90° y 180°), llano (180°), completo (360°)]</div><br>
+Dos ángulos son <strong>suplementarios</strong> si suman 180°.<br>
+Si un ángulo mide 65°, ¿cuánto mide su suplementario?`, 400);
+  mostrarOpciones([
+    { label: '∠ 25° (complementario)', fn:()=>{addBot(`25° sería el <em>complementario</em> (suman 90°). El <strong>suplementario</strong> suma 180°: 180° − 65° = <strong>115°</strong>.`,300);setTimeout(paso4,1600);} },
+    { label: '∠ 115°', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Suplementarios suman 180°: 180° − 65° = <strong>115°</strong>. Recuerda: complementarios suman 90°, suplementarios suman 180°.`,300);setTimeout(paso4,1600);} },
+    { label: '∠ 295°', fn:()=>{addBot(`295° sería el ángulo para completar 360°. El <strong>suplementario</strong> es el que suma 180°: 180° − 65° = <strong>115°</strong>.`,300);setTimeout(paso4,1600);} },
+  ]);
+}
+
+async function paso4(){
+  avanzarBarra();
+  await addBot(`<strong>Sólidos Geométricos</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: cubo, cilindro, pirámide, esfera, cono — con fórmulas de volumen debajo de cada uno]</div><br>
+El <strong>volumen del cilindro</strong> se calcula como: V = π × r² × h<br>
+donde r es el radio de la base y h es la altura.<br><br>
+Un cilindro tiene radio = 3 cm y altura = 10 cm. ¿Cuál es su volumen? (Usa π ≈ 3.14)`, 400);
+  mostrarOpciones([
+    { label: '📦 282.6 cm³', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> V = π × r² × h = 3.14 × 9 × 10 = 3.14 × 90 = <strong>282.6 cm³</strong>. ¡Fórmula aplicada perfectamente!`,300);setTimeout(paso5,1600);} },
+    { label: '📦 94.2 cm³', fn:()=>{addBot(`Parece que faltó elevar el radio al cuadrado: r² = 3² = 9. V = 3.14 × 9 × 10 = <strong>282.6 cm³</strong>.`,300);setTimeout(paso5,1600);} },
+    { label: '📦 188.4 cm³', fn:()=>{addBot(`Revisemos: V = π × r² × h = 3.14 × 9 × 10 = <strong>282.6 cm³</strong>. Recuerda r² = 9, no 6.`,300);setTimeout(paso5,1600);} },
+  ]);
+}
+
+async function paso5(){
+  avanzarBarra();
+  await addBot(`<strong>Transformaciones Geométricas</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: plano cartesiano mostrando traslación (desplazamiento), reflexión (espejo) y rotación (giro) de un triángulo]</div><br>
+<strong>• Traslación:</strong> deslizar la figura sin rotar ni voltear.<br>
+<strong>• Reflexión:</strong> "voltear" la figura respecto a un eje (imagen espejo).<br>
+<strong>• Rotación:</strong> girar la figura alrededor de un punto.<br>
+<strong>• Dilatación:</strong> ampliar o reducir la figura (cambio de escala).<br><br>
+¿Cuál transformación produce una imagen idéntica a la original pero en posición "reflejada"?`, 400);
+  mostrarOpciones([
+    { label: '↕️ Traslación', fn:()=>{addBot(`La traslación mueve la figura manteniendo su orientación. La que produce una imagen espejo es la <strong>reflexión</strong>.`,300);setTimeout(paso6,1600);} },
+    { label: '🪞 Reflexión', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La <strong>reflexión</strong> genera una imagen especular — como verse en un espejo. El eje de reflexión puede ser horizontal, vertical o diagonal.`,300);setTimeout(paso6,1600);} },
+    { label: '🔄 Rotación', fn:()=>{addBot(`La rotación gira la figura alrededor de un punto. Puede parecer un espejo en casos especiales, pero la imagen espejo propiamente dicha es la <strong>reflexión</strong>.`,300);setTimeout(paso6,1600);} },
+  ]);
+}
+
+async function paso6(){
+  avanzarBarra();
+  await addBot(`<strong>Semejanza y Escala</strong><br><br>
+Dos figuras son <strong>semejantes</strong> si tienen la misma forma pero diferente tamaño — sus ángulos son iguales y sus lados son proporcionales.<br><br>
+<div class="tip">📐 Un mapa tiene escala 1:50.000. Una distancia en el mapa mide 3 cm. ¿Cuánto mide en la realidad?</div>`, 400);
+  mostrarOpciones([
+    { label: '📏 150 m', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> 3 cm × 50.000 = 150.000 cm = <strong>1.500 m = 1,5 km</strong>. ¡Excelente! (Si marcaste 150 m también se entiende el cálculo.)`,300);setTimeout(paso7,1600);} },
+    { label: '📏 1.500 m (1,5 km)', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> 3 cm × 50.000 = 150.000 cm = <strong>1.500 m</strong>. Problemas de escala son muy frecuentes en el ICFES.`,300);setTimeout(paso7,1600);} },
+    { label: '📏 50.003 cm', fn:()=>{addBot(`En escala multiplicamos: 3 cm × 50.000 = 150.000 cm = 1.500 m. La escala 1:50.000 significa 1 cm en el mapa = 50.000 cm reales.`,300);setTimeout(paso7,1600);} },
+  ]);
+}
+
+async function paso7(){
+  avanzarBarra();
+  await addBot(`<strong>Trigonometría — Razones trigonométricas</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: triángulo rectángulo con ángulo θ señalado, cateto opuesto, cateto adyacente e hipotenusa etiquetados — tabla soh-cah-toa]</div><br>
+Recuerda <strong>SOH-CAH-TOA</strong>:<br>
+<strong>Seno(θ)</strong> = opuesto / hipotenusa<br>
+<strong>Coseno(θ)</strong> = adyacente / hipotenusa<br>
+<strong>Tangente(θ)</strong> = opuesto / adyacente<br><br>
+En un triángulo rectángulo, el ángulo θ = 30°, la hipotenusa = 10 cm. ¿Cuánto mide el cateto opuesto? (sen 30° = 0.5)`, 400);
+  mostrarOpciones([
+    { label: '📐 5 cm', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Perfecto! ✅ <strong>+15 pts.</strong> sen(30°) = opuesto/hipotenusa → 0.5 = opuesto/10 → opuesto = <strong>5 cm</strong>. ¡SOH-CAH-TOA en acción!`,300);setTimeout(paso8,1600);} },
+    { label: '📐 8.66 cm', fn:()=>{addBot(`8.66 cm sería el cateto <em>adyacente</em> (cos 30° × 10). El <strong>opuesto</strong> usa seno: sen(30°) × 10 = 0.5 × 10 = <strong>5 cm</strong>.`,300);setTimeout(paso8,1600);} },
+    { label: '📐 20 cm', fn:()=>{addBot(`Eso sería hipotenusa/seno = 10/0.5. Pero la pregunta pide el opuesto: sen(θ) = opuesto/hipotenusa → opuesto = sen(30°) × 10 = <strong>5 cm</strong>.`,300);setTimeout(paso8,1600);} },
+  ]);
+}
+
+async function paso8(){
+  avanzarBarra();
+  await addBot(`<strong>Propiedades de los triángulos</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: triángulo con sus tres ángulos sumando 180° — triángulo equilátero (60-60-60), isósceles (dos ángulos iguales), escaleno (todos distintos)]</div><br>
+La suma de los ángulos interiores de cualquier triángulo es siempre <strong>180°</strong>.<br><br>
+Un triángulo tiene ángulos de 50° y 70°. ¿Cuánto mide el tercer ángulo?`, 400);
+  mostrarOpciones([
+    { label: '∠ 60°', fn:()=>{addBot(`Sumemos: 50° + 70° + x = 180°. Entonces x = 180° − 120° = <strong>60°</strong>. ¡Sí, esa es la respuesta correcta!`,300);sumarPts(15);avanzarBarra();setTimeout(paso9,1600);} },
+    { label: '∠ 80°', fn:()=>{addBot(`50° + 70° + x = 180° → x = 180° − 120° = <strong>60°</strong>, no 80°.`,300);setTimeout(paso9,1600);} },
+    { label: '∠ 120°', fn:()=>{addBot(`120° sería la suma de los otros dos ángulos. El tercer ángulo es 180° − 120° = <strong>60°</strong>.`,300);setTimeout(paso9,1600);} },
+  ]);
+}
+
+async function paso9(){
+  avanzarBarra();
+  await addBot(`¡Excelente trabajo geométrico! 🎉<br><br>
+Lo que dominaste:<br><br>
+<span class="check">✅</span> <strong>Áreas y perímetros</strong> de figuras planas.<br>
+<span class="check">✅</span> <strong>Teorema de Pitágoras</strong>: a²+b²=c².<br>
+<span class="check">✅</span> <strong>Ángulos</strong>: complementarios y suplementarios.<br>
+<span class="check">✅</span> <strong>Sólidos:</strong> volumen del cilindro.<br>
+<span class="check">✅</span> <strong>Transformaciones:</strong> traslación, reflexión, rotación.<br>
+<span class="check">✅</span> <strong>Escala y semejanza.</strong><br>
+<span class="check">✅</span> <strong>Trigonometría:</strong> SOH-CAH-TOA.<br>
+<span class="check">✅</span> <strong>Propiedades de triángulos:</strong> suma de ángulos 180°.<br><br>
+<em>¡La geometría ya no tiene secretos para ti!</em> 🚀`, 400);
+  setTimeout(()=>{avanzarBarra();mostrarFin();},2500);
+}
+
+function mostrarFin(){
+  document.getElementById('fin-overlay').classList.add('show');
+  document.getElementById('fin-pts').textContent=`✨ Acumulaste ${pts} puntos en este taller`;
+  try{window.parent.postMessage({type:'taller-completado',tallerExternoId:'taller_geometria',pts},'*');}catch(e){}
+}
+function cerrarTaller(){
+  try{window.parent.postMessage({type:'cerrar-taller-interactivo'},'*');}catch(e){}
+  window.close();
+}
+paso0();
+</script>
+</body>
+</html>

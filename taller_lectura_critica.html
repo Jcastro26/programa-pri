@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lectura Crítica · Taller Interactivo</title>
+<style>
+  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+
+  /* HEADER */
+  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
+  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
+  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
+  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
+  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
+
+  /* BARRA DE PROGRESO */
+  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
+  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--naranja));transition:width .5s ease;}
+
+  /* CHAT */
+  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
+  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
+  .bubble-wrap.bot{flex-direction:row;}
+  .bubble-wrap.user{flex-direction:row-reverse;}
+  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+  .avatar.bot{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);}
+  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
+  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
+  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
+  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
+  .bubble strong{color:var(--teal);}
+  .bubble em{color:var(--oro);}
+  .tip{background:rgba(255,94,0,.1);border-left:3px solid var(--naranja);padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
+  .check{color:var(--verde);font-weight:900;}
+  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(56,189,248,.35);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(56,189,248,.65);text-align:center;}
+
+  /* OPCIONES */
+  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
+  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
+  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
+  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);color:var(--blanco);}
+  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);color:var(--blanco);}
+  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* INPUT LIBRE */
+  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
+  #input-row{display:flex;gap:.5rem;}
+  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
+  #txt-input:focus{border-color:var(--teal);}
+  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:1px solid rgba(255,255,255,.2);font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;transition:all .2s;}
+  #btn-send:hover{background:#fff;}
+
+  /* FIN */
+  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
+  #fin-overlay.show{display:flex;}
+  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
+  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
+  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-top:.5rem;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div id="header-title">📖 Lectura Crítica — ICFES</div>
+    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem;">
+    <span id="pts-badge">0 pts</span>
+    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
+  </div>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<div id="chat"></div>
+
+<div id="options-area"><div id="options-grid"></div></div>
+<div id="input-area">
+  <div id="input-row">
+    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="200">
+    <button id="btn-send">Enviar →</button>
+  </div>
+</div>
+
+<div id="fin-overlay">
+  <div id="fin-title">🏆 ¡Lectura completada!</div>
+  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">
+    Dominaste los conceptos clave de Lectura Crítica: tipos de texto, propósito comunicativo, argumentación e inferencia.
+  </p>
+  <div id="fin-pts"></div>
+  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
+</div>
+
+<script>
+let pts = 0, paso = 0;
+const TOTAL_PASOS = 10;
+const chat = document.getElementById('chat');
+const optGrid = document.getElementById('options-grid');
+const ptsEl = document.getElementById('pts-badge');
+const progressBar = document.getElementById('progress-bar');
+
+function sumarPts(n){ pts += n; ptsEl.textContent = pts + ' pts'; }
+function avanzarBarra(){ paso = Math.min(paso+1,TOTAL_PASOS); progressBar.style.width=(paso/TOTAL_PASOS*100)+'%'; }
+function limpiarOpciones(){ optGrid.innerHTML=''; document.getElementById('options-area').style.display='none'; document.getElementById('input-area').style.display='none'; }
+
+function addBot(html, delay=0){
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const wrap = document.createElement('div');
+      wrap.className = 'bubble-wrap bot';
+      wrap.innerHTML = `<div class="avatar bot">📖</div><div class="bubble bot">${html}</div>`;
+      chat.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+      resolve();
+    }, delay);
+  });
+}
+function addUser(text){
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-wrap user';
+  wrap.innerHTML = `<div class="avatar user">🧑</div><div class="bubble user">${text}</div>`;
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+}
+function mostrarOpciones(opciones){
+  document.getElementById('options-area').style.display='block';
+  optGrid.innerHTML='';
+  opciones.forEach(op => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = op.label;
+    btn.onclick = () => {
+      document.querySelectorAll('.opt-btn').forEach(b => b.disabled=true);
+      btn.classList.add('selected');
+      addUser(op.label);
+      limpiarOpciones();
+      setTimeout(()=>op.fn(), 400);
+    };
+    optGrid.appendChild(btn);
+  });
+}
+function mostrarInput(placeholder, fn){
+  document.getElementById('input-area').style.display='block';
+  const inp = document.getElementById('txt-input');
+  inp.placeholder = placeholder; inp.value=''; inp.focus();
+  const send = () => { const val=inp.value.trim(); if(!val)return; addUser(val); limpiarOpciones(); setTimeout(()=>fn(val),400); };
+  document.getElementById('btn-send').onclick = send;
+  inp.onkeydown = e => { if(e.key==='Enter') send(); };
+}
+
+// ─── FLUJO ────────────────────────────────────────────────
+
+async function paso0(){
+  await addBot(`¡Bienvenido/a al taller de <strong>Lectura Crítica</strong>! 📖<br><br>
+En el ICFES, Lectura Crítica evalúa tres competencias:<br>
+<strong>1.</strong> Identificar y entender el contenido.<br>
+<strong>2.</strong> Comprender cómo se articula el texto.<br>
+<strong>3.</strong> Reflexionar y evaluar el texto críticamente.<br><br>
+¿Con cuál de estas competencias crees que tienes más dificultad?`, 300);
+  mostrarOpciones([
+    { label: '🔍 Entender de qué trata el texto', fn: () => { addBot(`¡Perfecto punto de partida! Trabajaremos comprensión literal e inferencial en este taller.`, 300); setTimeout(paso1,1500); } },
+    { label: '🧩 Ver cómo se conectan las ideas', fn: () => { addBot(`Eso es la coherencia y cohesión textual — lo trabajamos en los pasos 4 y 5.`, 300); setTimeout(paso1,1500); } },
+    { label: '⚖️ Evaluar si el texto tiene buenos argumentos', fn: () => { addBot(`¡Eso es pensar críticamente! Lo abordamos en los últimos pasos con falacias y argumentación.`, 300); setTimeout(paso1,1500); } },
+  ]);
+}
+
+async function paso1(){
+  avanzarBarra();
+  await addBot(`Primero: los <strong>tipos de texto</strong>. Todo texto tiene un propósito que define su estructura.<br><br>
+<div class="img-placeholder">📸 [IMAGEN: tabla comparativa de tipos de texto — narrativo, expositivo, argumentativo, descriptivo, instructivo]</div><br>
+Un texto como una novela o cuento es principalmente:`, 400);
+  mostrarOpciones([
+    { label: '📊 Expositivo — explica información objetiva', fn: () => { avanzarBarra(); addBot(`No del todo — los expositivos informan (artículos, enciclopedias). Los cuentos <em>cuentan historias</em>. Son <strong>narrativos</strong>.`, 300); setTimeout(paso2,1600); } },
+    { label: '📖 Narrativo — cuenta una historia con personajes y hechos', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> El texto <strong>narrativo</strong> tiene narrador, personajes, tiempo y espacio. Es el tipo más frecuente en el ICFES.`, 300); setTimeout(paso2,1600); } },
+    { label: '💬 Argumentativo — defiende una posición con razones', fn: () => { avanzarBarra(); addBot(`Ese es el argumentativo — columnas de opinión, ensayos. Importante en el ICFES, pero diferente al narrativo.`, 300); setTimeout(paso2,1600); } },
+  ]);
+}
+
+async function paso2(){
+  avanzarBarra();
+  await addBot(`El <strong>propósito comunicativo</strong> es la intención del autor al escribir. Puede ser:<br><br>
+<strong>• Informar</strong> — datos y hechos objetivos.<br>
+<strong>• Persuadir</strong> — convencer al lector de algo.<br>
+<strong>• Entretener</strong> — generar placer estético o emocional.<br>
+<strong>• Instruir</strong> — dar pasos o procedimientos.<br><br>
+Lee este fragmento:<br>
+<div class="tip">💬 <em>"El consumo de bebidas azucaradas aumenta el riesgo de diabetes en un 26%. Por eso, es urgente que el gobierno aplique impuestos a estas bebidas."</em></div>
+¿Cuál es el propósito principal?`, 400);
+  mostrarOpciones([
+    { label: '📰 Informar sobre estadísticas de salud', fn: () => { addBot(`Es parte de la estrategia, pero el autor va más allá de informar — quiere que el gobierno actúe. El propósito es <strong>persuadir</strong>.`, 300); setTimeout(paso3,1600); } },
+    { label: '🗣️ Persuadir al lector de apoyar una política', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Usa el dato estadístico <em>como argumento</em> para convencer. Eso es texto <strong>argumentativo-persuasivo</strong>.`, 300); setTimeout(paso3,1600); } },
+    { label: '🎭 Entretener con una historia de salud', fn: () => { addBot(`No hay personajes ni narrativa. Es un argumento con datos — propósito <strong>persuasivo</strong>.`, 300); setTimeout(paso3,1600); } },
+  ]);
+}
+
+async function paso3(){
+  avanzarBarra();
+  await addBot(`En Lectura Crítica, debes distinguir entre <strong>afirmar</strong>, <strong>suponer</strong> e <strong>implicar</strong>.<br><br>
+<strong>• Afirmación explícita:</strong> lo que el texto dice directamente.<br>
+<strong>• Presuposición:</strong> lo que el texto da por hecho sin decirlo.<br>
+<strong>• Implicación:</strong> lo que se puede deducir lógicamente.<br><br>
+<div class="tip">💬 <em>"María dejó de fumar gracias al programa."</em></div>
+¿Qué <em>presupone</em> esta oración?`, 400);
+  mostrarOpciones([
+    { label: '🚬 Que María fumaba antes', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Perfecto! ✅ <strong>+15 pts.</strong> "Dejó de fumar" <em>presupone</em> que antes fumaba. Eso no se dice, ¡pero es necesario para que la frase tenga sentido!`, 300); setTimeout(paso4,1600); } },
+    { label: '📋 Que el programa es bueno', fn: () => { addBot(`Eso sería una <em>implicación</em> o inferencia, pero no una presuposición. La presuposición es algo que el texto da por hecho para poder existir: que ella <strong>fumaba</strong>.`, 300); setTimeout(paso4,1600); } },
+    { label: '💊 Que María tiene problemas de salud', fn: () => { addBot(`Es una suposición tuya, no una presuposición del texto. Las presuposiciones son ideas sin las cuales la frase no tendría sentido.`, 300); setTimeout(paso4,1600); } },
+  ]);
+}
+
+async function paso4(){
+  avanzarBarra();
+  await addBot(`Ahora veamos <strong>coherencia y cohesión</strong> — cómo se conectan las ideas en un texto.<br><br>
+<strong>Cohesión:</strong> uso de conectores, pronombres y sinónimos para enlazar frases.<br>
+<strong>Coherencia:</strong> unidad temática y lógica del texto completo.<br><br>
+<div class="img-placeholder">📸 [IMAGEN: diagrama de conectores textuales — causa, consecuencia, contraste, adición, conclusión con ejemplos]</div><br>
+¿Qué conector expresa <em>consecuencia</em>?`, 400);
+  mostrarOpciones([
+    { label: '🔗 "Sin embargo"', fn: () => { addBot(`"Sin embargo" expresa <strong>contraste o concesión</strong>. Los de consecuencia son: <em>por lo tanto, en consecuencia, así que, por eso</em>.`, 300); setTimeout(paso5,1600); } },
+    { label: '🔗 "Por lo tanto"', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> "Por lo tanto" introduce una <em>conclusión o consecuencia</em>. Es el conector más evaluado en el ICFES junto con "sin embargo" (contraste) y "además" (adición).`, 300); setTimeout(paso5,1600); } },
+    { label: '🔗 "Además"', fn: () => { addBot(`"Además" expresa <strong>adición</strong> — suma ideas. Los de consecuencia son: <em>por lo tanto, en consecuencia, así que, por ende</em>.`, 300); setTimeout(paso5,1600); } },
+  ]);
+}
+
+async function paso5(){
+  avanzarBarra();
+  await addBot(`Los textos <strong>discontinuos</strong> combinan elementos visuales y escritos: infografías, tablas, caricaturas, gráficas.<br><br>
+<div class="img-placeholder">📸 [IMAGEN: ejemplo de caricatura política con globo de texto y símbolo visual — sin texto que revele la respuesta]</div><br>
+En una caricatura política, el mensaje principal suele transmitirse mediante:`, 400);
+  mostrarOpciones([
+    { label: '📝 El título de la caricatura', fn: () => { addBot(`El título ayuda, pero en una caricatura el mensaje está en la <strong>exageración visual y los símbolos</strong> — eso es lo que hay que interpretar.`, 300); setTimeout(paso6,1600); } },
+    { label: '🎭 La exageración de rasgos y símbolos visuales', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La caricatura es <strong>texto icónico-verbal</strong>. Los símbolos exageran para criticar o hacer humor. Siempre pregúntate: ¿qué representa ese símbolo?`, 300); setTimeout(paso6,1600); } },
+    { label: '🔤 Las palabras en los globos de texto', fn: () => { addBot(`Las palabras importan, pero el mensaje central viene de la imagen exagerada — la <strong>ironía visual</strong>. El texto refuerza, no define solo.`, 300); setTimeout(paso6,1600); } },
+  ]);
+}
+
+async function paso6(){
+  avanzarBarra();
+  await addBot(`La <strong>argumentación</strong> tiene partes clave:<br><br>
+<strong>• Tesis:</strong> la posición del autor.<br>
+<strong>• Argumentos:</strong> razones que sostienen la tesis.<br>
+<strong>• Conclusión:</strong> cierre que reafirma la tesis.<br><br>
+Lee:<br>
+<div class="tip">💬 <em>"Las redes sociales afectan la salud mental de los jóvenes. Estudios muestran que el uso excesivo genera ansiedad. Además, la comparación social reduce la autoestima. Por eso, los colegios deben restringir su uso durante el día escolar."</em></div>
+¿Cuál es la <em>tesis</em> de este texto?`, 400);
+  mostrarOpciones([
+    { label: '📊 Las redes sociales generan ansiedad según estudios', fn: () => { addBot(`Eso es un <em>argumento</em> (evidencia), no la tesis. La tesis es la <strong>posición central</strong> del autor, no uno de los datos.`, 300); setTimeout(paso7,1600); } },
+    { label: '🏫 Los colegios deben restringir las redes durante el día', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> Esa es la <strong>tesis</strong> — la propuesta que el autor defiende. El resto son argumentos que la sustentan.`, 300); setTimeout(paso7,1600); } },
+    { label: '📉 La comparación social reduce la autoestima', fn: () => { addBot(`Es otro argumento de apoyo. La <strong>tesis</strong> es la idea principal que el autor quiere defender, generalmente al inicio o al final.`, 300); setTimeout(paso7,1600); } },
+  ]);
+}
+
+async function paso7(){
+  avanzarBarra();
+  await addBot(`Las <strong>falacias</strong> son errores en el razonamiento que parecen válidos pero no lo son. Las más frecuentes en el ICFES:<br><br>
+<strong>• Ad hominem:</strong> atacar a la persona, no al argumento.<br>
+<strong>• Generalización apresurada:</strong> concluir de pocos casos.<br>
+<strong>• Pendiente resbaladiza:</strong> asumir que un paso lleva inevitablemente al peor resultado.<br>
+<strong>• Falsa dicotomía:</strong> presentar solo dos opciones cuando hay más.<br><br>
+<div class="tip">💬 <em>"No puedes hablar de economía porque no has trabajado nunca."</em></div>
+¿Qué falacia es?`, 400);
+  mostrarOpciones([
+    { label: '🎯 Ad hominem', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Perfecto! ✅ <strong>+15 pts.</strong> El <strong>ad hominem</strong> ataca al hablante en vez de refutar su argumento. No tiene nada que ver si trabajó o no — eso no invalida sus ideas.`, 300); setTimeout(paso8,1600); } },
+    { label: '📉 Generalización apresurada', fn: () => { addBot(`No — aquí no se generaliza de pocos casos. El argumento ataca <em>a la persona</em>, no a sus ideas. Eso es <strong>ad hominem</strong>.`, 300); setTimeout(paso8,1600); } },
+    { label: '🚪 Falsa dicotomía', fn: () => { addBot(`La falsa dicotomía presenta solo dos opciones. Aquí el problema es atacar a quien habla en lugar de rebatir sus ideas: es <strong>ad hominem</strong>.`, 300); setTimeout(paso8,1600); } },
+  ]);
+}
+
+async function paso8(){
+  avanzarBarra();
+  await addBot(`Último reto: <strong>la voz narrativa</strong>.<br><br>
+<strong>1ª persona:</strong> el narrador participa en la historia ("yo…").<br>
+<strong>2ª persona:</strong> se dirige al lector ("tú…").<br>
+<strong>3ª persona omnisciente:</strong> el narrador sabe todo sobre los personajes.<br>
+<strong>3ª persona testigo:</strong> el narrador solo ve lo externo, como una cámara.<br><br>
+<div class="tip">💬 <em>"Carlos caminó hacia la puerta sin saber que, en ese momento, su vida cambiaría para siempre."</em></div>
+¿Qué tipo de narrador es?`, 400);
+  mostrarOpciones([
+    { label: '👁️ 3ª persona omnisciente', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Excelente! ✅ <strong>+15 pts.</strong> "Sin saber" revela el estado interno de Carlos — solo el narrador <strong>omnisciente</strong> puede saber lo que el personaje desconoce.`, 300); setTimeout(paso9,1600); } },
+    { label: '👤 1ª persona protagonista', fn: () => { addBot(`Si fuera 1ª persona diría "yo caminé…". En 3ª persona el narrador habla del personaje desde afuera.`, 300); setTimeout(paso9,1600); } },
+    { label: '📷 3ª persona testigo', fn: () => { addBot(`El testigo solo ve lo externo. Pero aquí el narrador sabe lo que Carlos <em>siente y desconoce</em> — eso es conocimiento interior: narrador <strong>omnisciente</strong>.`, 300); setTimeout(paso9,1600); } },
+  ]);
+}
+
+async function paso9(){
+  avanzarBarra();
+  await addBot(`¡Increíble trabajo! 🎉 Repasemos lo que dominaste:<br><br>
+<span class="check">✅</span> <strong>Tipos de texto:</strong> narrativo, expositivo, argumentativo, descriptivo.<br>
+<span class="check">✅</span> <strong>Propósito comunicativo:</strong> informar, persuadir, entretener, instruir.<br>
+<span class="check">✅</span> <strong>Presuposición e implicación.</strong><br>
+<span class="check">✅</span> <strong>Conectores textuales.</strong><br>
+<span class="check">✅</span> <strong>Textos discontinuos (caricaturas, infografías).</strong><br>
+<span class="check">✅</span> <strong>Argumentación: tesis, argumentos, conclusión.</strong><br>
+<span class="check">✅</span> <strong>Falacias: ad hominem, generalización, pendiente, dicotomía.</strong><br>
+<span class="check">✅</span> <strong>Voces narrativas.</strong><br><br>
+<em>¡Estás listo/a para el ICFES!</em> 🚀`, 400);
+  setTimeout(() => { avanzarBarra(); mostrarFin(); }, 2500);
+}
+
+function mostrarFin(){
+  document.getElementById('fin-overlay').classList.add('show');
+  document.getElementById('fin-pts').textContent = `✨ Acumulaste ${pts} puntos en este taller`;
+  try { window.parent.postMessage({ type:'taller-completado', tallerExternoId:'taller_lectura_critica', pts }, '*'); } catch(e){}
+}
+function cerrarTaller(){
+  try { window.parent.postMessage({ type:'cerrar-taller-interactivo' }, '*'); } catch(e){}
+  window.close();
+}
+
+paso0();
+</script>
+</body>
+</html>

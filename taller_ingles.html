@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>English · Taller Interactivo</title>
+<style>
+  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
+  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
+  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
+  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
+  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
+  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
+  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--naranja));transition:width .5s ease;}
+  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
+  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
+  .bubble-wrap.bot{flex-direction:row;}
+  .bubble-wrap.user{flex-direction:row-reverse;}
+  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+  .avatar.bot{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);}
+  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
+  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
+  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
+  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
+  .bubble strong{color:var(--teal);}
+  .bubble em{color:var(--oro);}
+  .tip{background:rgba(255,94,0,.1);border-left:3px solid var(--naranja);padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
+  .check{color:var(--verde);font-weight:900;}
+  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(56,189,248,.35);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(56,189,248,.65);text-align:center;}
+  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
+  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
+  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
+  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);}
+  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);}
+  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
+  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
+  #input-row{display:flex;gap:.5rem;}
+  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
+  #txt-input:focus{border-color:var(--teal);}
+  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:none;font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;}
+  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
+  #fin-overlay.show{display:flex;}
+  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
+  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
+  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div id="header-title">🇬🇧 English — ICFES</div>
+    <div id="header-sub">Interactive workshop · PROGRAMA-PRI</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem;">
+    <span id="pts-badge">0 pts</span>
+    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
+  </div>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+<div id="chat"></div>
+<div id="options-area"><div id="options-grid"></div></div>
+<div id="input-area">
+  <div id="input-row">
+    <input id="txt-input" type="text" placeholder="Type here…" maxlength="200">
+    <button id="btn-send">Send →</button>
+  </div>
+</div>
+<div id="fin-overlay">
+  <div id="fin-title">🏆 Great job!</div>
+  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">You covered all key English ICFES skills: reading comprehension, vocabulary, grammar, and language functions.</p>
+  <div id="fin-pts"></div>
+  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
+</div>
+
+<script>
+let pts=0,paso=0;
+const TOTAL_PASOS=10;
+const chat=document.getElementById('chat');
+const optGrid=document.getElementById('options-grid');
+const ptsEl=document.getElementById('pts-badge');
+const progressBar=document.getElementById('progress-bar');
+
+function sumarPts(n){pts+=n;ptsEl.textContent=pts+' pts';}
+function avanzarBarra(){paso=Math.min(paso+1,TOTAL_PASOS);progressBar.style.width=(paso/TOTAL_PASOS*100)+'%';}
+function limpiarOpciones(){optGrid.innerHTML='';document.getElementById('options-area').style.display='none';document.getElementById('input-area').style.display='none';}
+function addBot(html,delay=0){return new Promise(r=>{setTimeout(()=>{const w=document.createElement('div');w.className='bubble-wrap bot';w.innerHTML=`<div class="avatar bot">🇬🇧</div><div class="bubble bot">${html}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;r();},delay);});}
+function addUser(text){const w=document.createElement('div');w.className='bubble-wrap user';w.innerHTML=`<div class="avatar user">🧑</div><div class="bubble user">${text}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;}
+function mostrarOpciones(ops){document.getElementById('options-area').style.display='block';optGrid.innerHTML='';ops.forEach(op=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=op.label;b.onclick=()=>{document.querySelectorAll('.opt-btn').forEach(x=>x.disabled=true);b.classList.add('selected');addUser(op.label);limpiarOpciones();setTimeout(()=>op.fn(),400);};optGrid.appendChild(b);});}
+function mostrarInput(ph,fn){document.getElementById('input-area').style.display='block';const inp=document.getElementById('txt-input');inp.placeholder=ph;inp.value='';inp.focus();const s=()=>{const v=inp.value.trim();if(!v)return;addUser(v);limpiarOpciones();setTimeout(()=>fn(v),400);};document.getElementById('btn-send').onclick=s;inp.onkeydown=e=>{if(e.key==='Enter')s();};}
+
+// ─── FLOW ───────────────────────────────────────────────
+
+async function paso0(){
+  await addBot(`Welcome! 🎉 This workshop covers <strong>English for the ICFES</strong>.<br><br>
+The ICFES English test evaluates your ability to:<br>
+<strong>1.</strong> Read and understand texts (gist, detail, inference).<br>
+<strong>2.</strong> Use vocabulary in context.<br>
+<strong>3.</strong> Apply grammar structures.<br>
+<strong>4.</strong> Understand language functions.<br><br>
+The test is based on the <em>Common European Framework</em> — mostly <strong>A2 and B1</strong> level. Ready to start?`, 300);
+  mostrarOpciones([
+    { label: "🚀 Yes, let's go!", fn: ()=>{addBot(`¡Perfecto! Let's begin with reading comprehension.`,300);setTimeout(paso1,1200);} },
+    { label: '😅 I'm nervous about English', fn: ()=>{addBot(`Don't worry — we'll go step by step. The ICFES English section is the <em>shortest</em> part. You can do it! 💪`,300);setTimeout(paso1,1500);} },
+  ]);
+}
+
+async function paso1(){
+  avanzarBarra();
+  await addBot(`<strong>Reading — Main Idea</strong><br><br>
+Read the text and answer:<br>
+<div class="tip">📄 <em>"Every year, millions of tourists visit the Amazon rainforest. However, this growing tourism is causing serious environmental damage. Experts warn that without strict regulations, the ecosystem could collapse within decades."</em></div>
+<div class="img-placeholder">📸 [IMAGE: Amazon rainforest with tourists — deforestation visual]</div>
+What is the <strong>main idea</strong> of this text?`, 400);
+  mostrarOpciones([
+    { label: '🌿 Tourism in the Amazon is very popular', fn: ()=>{addBot(`That's a detail, not the main idea. The text is not just describing tourism — it's warning about its <strong>consequences</strong>.`,300);setTimeout(paso2,1600);} },
+    { label: '⚠️ Growing tourism is harming the Amazon and needs regulation', fn: ()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> The main idea combines the <em>problem</em> (damage) and the <em>proposed solution</em> (regulations).`,300);setTimeout(paso2,1600);} },
+    { label: '📉 The Amazon ecosystem will collapse soon', fn: ()=>{addBot(`That's one possible consequence mentioned by experts — a detail. The main idea covers the <em>whole argument</em>.`,300);setTimeout(paso2,1600);} },
+  ]);
+}
+
+async function paso2(){
+  avanzarBarra();
+  await addBot(`<strong>Vocabulary in Context</strong><br><br>
+<div class="tip">📄 <em>"The scientist made a <u>significant</u> discovery that changed medicine forever."</em></div>
+What does <strong>"significant"</strong> mean in this context?`, 400);
+  mostrarOpciones([
+    { label: '📌 Small and unimportant', fn: ()=>{addBot(`No — "significant" means the opposite: something <strong>important and meaningful</strong>. The context clue is "changed medicine forever."`,300);setTimeout(paso3,1600);} },
+    { label: '⭐ Important and meaningful', fn: ()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> Context clues are key in the ICFES. Always look at the surrounding sentence to understand a word's meaning.`,300);setTimeout(paso3,1600);} },
+    { label: '🔬 Related to science', fn: ()=>{addBot(`"Significant" is not a science word — it means <strong>important or notable</strong>. Use the context: a discovery that "changed medicine forever" must be <em>very important</em>.`,300);setTimeout(paso3,1600);} },
+  ]);
+}
+
+async function paso3(){
+  avanzarBarra();
+  await addBot(`<strong>Grammar — Verb Tenses</strong><br><br>
+Choose the correct option:<br>
+<div class="tip">📝 <em>"By the time she arrived, he ________ already left."</em></div>
+<div class="img-placeholder">📸 [IMAGE: timeline diagram showing Past Perfect vs Simple Past]</div>`, 400);
+  mostrarOpciones([
+    { label: '🕐 "had already left" (Past Perfect)', fn: ()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> The <strong>Past Perfect</strong> (had + past participle) shows an action that happened <em>before</em> another past action. "By the time she arrived" = he left first.`,300);setTimeout(paso4,1600);} },
+    { label: '🕑 "already left" (Simple Past)', fn: ()=>{addBot(`Simple Past doesn't show which action happened first. With "by the time" + past, we need <strong>Past Perfect: had left</strong> to show the sequence.`,300);setTimeout(paso4,1600);} },
+    { label: '🕒 "has already left" (Present Perfect)', fn:()=>{addBot(`Present Perfect connects the past to now, but here we're talking about two past events. Use <strong>Past Perfect: had left</strong>.`,300);setTimeout(paso4,1600);} },
+  ]);
+}
+
+async function paso4(){
+  avanzarBarra();
+  await addBot(`<strong>Grammar — Conditionals</strong><br><br>
+The ICFES tests three main conditional structures:<br>
+<strong>0:</strong> General truths → <em>If + Present / Present</em><br>
+<strong>1st:</strong> Real future possibility → <em>If + Present / will + verb</em><br>
+<strong>2nd:</strong> Unreal or hypothetical → <em>If + Past / would + verb</em><br>
+<strong>3rd:</strong> Impossible past → <em>If + Past Perfect / would have + PP</em><br><br>
+Which sentence uses the <strong>2nd conditional</strong> correctly?`, 400);
+  mostrarOpciones([
+    { label: '🔵 "If it rains, we will stay home."', fn: ()=>{addBot(`That's the <strong>1st conditional</strong> — a real, possible future situation.`,300);setTimeout(paso5,1600);} },
+    { label: '🟣 "If I had a million dollars, I would travel the world."', fn: ()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> The <strong>2nd conditional</strong> expresses an imaginary or unlikely present/future situation: <em>If + past simple / would + base verb</em>.`,300);setTimeout(paso5,1600);} },
+    { label: '🔴 "If she had studied, she would have passed."', fn: ()=>{addBot(`That's the <strong>3rd conditional</strong> — an impossible past scenario.`,300);setTimeout(paso5,1600);} },
+  ]);
+}
+
+async function paso5(){
+  avanzarBarra();
+  await addBot(`<strong>Connectors and Discourse Markers</strong><br><br>
+Connectors show logical relationships between ideas. Choose the correct one:<br>
+<div class="tip">📝 <em>"She trained hard every day. ________, she didn't win the competition."</em></div>`, 400);
+  mostrarOpciones([
+    { label: '🔗 "Therefore"', fn: ()=>{addBot(`"Therefore" introduces a consequence or result. But here training hard and NOT winning is a <em>contrast</em>. Use <strong>"However" or "Nevertheless."</strong>`,300);setTimeout(paso6,1600);} },
+    { label: '🔗 "However"', fn: ()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> <strong>"However"</strong> expresses contrast. Despite training hard (effort), she didn't win (unexpected result). Other options: <em>Nevertheless, Even so, Yet.</em>`,300);setTimeout(paso6,1600);} },
+    { label: '🔗 "Moreover"', fn: ()=>{addBot(`"Moreover" adds more information (= also, furthermore). Here we need <em>contrast</em>, not addition. Use <strong>"However."</strong>`,300);setTimeout(paso6,1600);} },
+  ]);
+}
+
+async function paso6(){
+  avanzarBarra();
+  await addBot(`<strong>Inference — Reading Between the Lines</strong><br><br>
+<div class="tip">📄 <em>"John looked at his empty fridge, checked his wallet, and sighed."</em></div>
+<div class="img-placeholder">📸 [IMAGE: empty fridge with sad person — no text labels]</div>
+What can we <strong>infer</strong> about John?`, 400);
+  mostrarOpciones([
+    { label: '🍔 He is not hungry', fn: ()=>{addBot(`The empty fridge and the sigh suggest he <em>is</em> hungry — or at least worried about food or money. Inference means reading what's implied.`,300);setTimeout(paso7,1600);} },
+    { label: '💸 He doesn't have enough money to buy food', fn:()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> The combination of <em>empty fridge + wallet + sigh</em> strongly implies financial difficulty. This is inference — connecting clues to reach a logical conclusion.`,300);setTimeout(paso7,1600);} },
+    { label: '🛒 He is about to go shopping', fn: ()=>{addBot(`Possible, but the <em>sigh</em> suggests he CAN'T go shopping rather than is about to. The most logical inference involves money problems.`,300);setTimeout(paso7,1600);} },
+  ]);
+}
+
+async function paso7(){
+  avanzarBarra();
+  await addBot(`<strong>Language Functions</strong><br><br>
+Language functions are what we <em>do</em> with language: offer, suggest, complain, apologize, request, advise...<br><br>
+<div class="tip">📝 <em>"You really should see a doctor about that cough."</em></div>
+What language function is this?`, 400);
+  mostrarOpciones([
+    { label: '🙏 Making a request', fn: ()=>{addBot(`A request asks someone to do something for you: <em>"Could you open the window?"</em> This sentence is giving advice to someone else.`,300);setTimeout(paso8,1600);} },
+    { label: '💡 Giving advice', fn: ()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> <strong>"You should…"</strong> is the classic structure for giving advice. Others: <em>"If I were you, I would…" / "I'd recommend…" / "Why don't you…?"</em>`,300);setTimeout(paso8,1600);} },
+    { label: '🚫 Expressing prohibition', fn: ()=>{addBot(`Prohibition says what is NOT allowed: <em>"You must not smoke here."</em> This is personal advice, not a rule.`,300);setTimeout(paso8,1600);} },
+  ]);
+}
+
+async function paso8(){
+  avanzarBarra();
+  await addBot(`<strong>Passive Voice</strong><br><br>
+The passive voice shifts focus from the doer to the action or receiver.<br>
+<strong>Active:</strong> <em>The chef cooked the meal.</em><br>
+<strong>Passive:</strong> <em>The meal was cooked (by the chef).</em><br><br>
+Convert to passive:<br>
+<div class="tip">📝 <em>"Scientists discovered a new planet."</em></div>`, 400);
+  mostrarOpciones([
+    { label: '🪐 "A new planet was discovered by scientists."', fn: ()=>{sumarPts(15);avanzarBarra();addBot(`Correct! ✅ <strong>+15 pts.</strong> Formula: <em>Object + was/were + Past Participle (+ by + Subject)</em>. In the ICFES, you must recognize and transform passive structures.`,300);setTimeout(paso9,1600);} },
+    { label: '🪐 "A new planet has been discovering."', fn: ()=>{addBot(`Incorrect structure. The passive uses <em>was/were + past participle</em>: <strong>"was discovered."</strong> "Discovering" is the present participle — wrong form.`,300);setTimeout(paso9,1600);} },
+    { label: '🪐 "Scientists were discovered a new planet."', fn: ()=>{addBot(`"Scientists" is the subject (doer) — it stays active. In passive, the <em>object</em> becomes subject: <strong>"A new planet was discovered."</strong>`,300);setTimeout(paso9,1600);} },
+  ]);
+}
+
+async function paso9(){
+  avanzarBarra();
+  await addBot(`🏆 Excellent work! Here's what you mastered:<br><br>
+<span class="check">✅</span> <strong>Main idea</strong> — gist of a text.<br>
+<span class="check">✅</span> <strong>Vocabulary in context</strong> — using clues.<br>
+<span class="check">✅</span> <strong>Verb tenses</strong> — Past Perfect.<br>
+<span class="check">✅</span> <strong>Conditionals</strong> — 0, 1st, 2nd, 3rd.<br>
+<span class="check">✅</span> <strong>Connectors</strong> — however, therefore, moreover.<br>
+<span class="check">✅</span> <strong>Inference</strong> — reading between the lines.<br>
+<span class="check">✅</span> <strong>Language functions</strong> — advice, request, prohibition.<br>
+<span class="check">✅</span> <strong>Passive voice</strong>.<br><br>
+<em>You're ready for the ICFES English section! 🚀</em>`, 400);
+  setTimeout(()=>{avanzarBarra();mostrarFin();},2500);
+}
+
+function mostrarFin(){
+  document.getElementById('fin-overlay').classList.add('show');
+  document.getElementById('fin-pts').textContent=`✨ You scored ${pts} points in this workshop`;
+  try{window.parent.postMessage({type:'taller-completado',tallerExternoId:'taller_ingles',pts},'*');}catch(e){}
+}
+function cerrarTaller(){
+  try{window.parent.postMessage({type:'cerrar-taller-interactivo'},'*');}catch(e){}
+  window.close();
+}
+
+paso0();
+</script>
+</body>
+</html>

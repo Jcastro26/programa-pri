@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Química · Taller Interactivo</title>
+<style>
+  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
+  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
+  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
+  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
+  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
+  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
+  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#a78bfa,var(--teal));transition:width .5s ease;}
+  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
+  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
+  .bubble-wrap.bot{flex-direction:row;}
+  .bubble-wrap.user{flex-direction:row-reverse;}
+  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+  .avatar.bot{background:rgba(167,139,250,.15);border:1px solid rgba(167,139,250,.3);}
+  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
+  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
+  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
+  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
+  .bubble strong{color:var(--teal);}
+  .bubble em{color:var(--oro);}
+  .tip{background:rgba(167,139,250,.1);border-left:3px solid #a78bfa;padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
+  .check{color:var(--verde);font-weight:900;}
+  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(167,139,250,.35);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(167,139,250,.7);text-align:center;}
+  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
+  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
+  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
+  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);}
+  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);}
+  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
+  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
+  #input-row{display:flex;gap:.5rem;}
+  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
+  #txt-input:focus{border-color:var(--teal);}
+  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:none;font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;}
+  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
+  #fin-overlay.show{display:flex;}
+  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
+  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
+  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div id="header-title">⚗️ Química — ICFES</div>
+    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem;">
+    <span id="pts-badge">0 pts</span>
+    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
+  </div>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+<div id="chat"></div>
+<div id="options-area"><div id="options-grid"></div></div>
+<div id="input-area">
+  <div id="input-row">
+    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="200">
+    <button id="btn-send">Enviar →</button>
+  </div>
+</div>
+<div id="fin-overlay">
+  <div id="fin-title">🏆 ¡Química superada!</div>
+  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">Repasaste materia, tabla periódica, enlaces, reacciones, ácidos y bases, y química orgánica. ¡Listo/a para el ICFES!</p>
+  <div id="fin-pts"></div>
+  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
+</div>
+
+<script>
+let pts=0,paso=0;
+const TOTAL_PASOS=10;
+const chat=document.getElementById('chat');
+const optGrid=document.getElementById('options-grid');
+const ptsEl=document.getElementById('pts-badge');
+const progressBar=document.getElementById('progress-bar');
+
+function sumarPts(n){pts+=n;ptsEl.textContent=pts+' pts';}
+function avanzarBarra(){paso=Math.min(paso+1,TOTAL_PASOS);progressBar.style.width=(paso/TOTAL_PASOS*100)+'%';}
+function limpiarOpciones(){optGrid.innerHTML='';document.getElementById('options-area').style.display='none';document.getElementById('input-area').style.display='none';}
+function addBot(html,delay=0){return new Promise(r=>{setTimeout(()=>{const w=document.createElement('div');w.className='bubble-wrap bot';w.innerHTML=`<div class="avatar bot">⚗️</div><div class="bubble bot">${html}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;r();},delay);});}
+function addUser(t){const w=document.createElement('div');w.className='bubble-wrap user';w.innerHTML=`<div class="avatar user">🧑</div><div class="bubble user">${t}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;}
+function mostrarOpciones(ops){document.getElementById('options-area').style.display='block';optGrid.innerHTML='';ops.forEach(op=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=op.label;b.onclick=()=>{document.querySelectorAll('.opt-btn').forEach(x=>x.disabled=true);b.classList.add('selected');addUser(op.label);limpiarOpciones();setTimeout(()=>op.fn(),400);};optGrid.appendChild(b);});}
+function mostrarInput(ph,fn){document.getElementById('input-area').style.display='block';const inp=document.getElementById('txt-input');inp.placeholder=ph;inp.value='';inp.focus();const s=()=>{const v=inp.value.trim();if(!v)return;addUser(v);limpiarOpciones();setTimeout(()=>fn(v),400);};document.getElementById('btn-send').onclick=s;inp.onkeydown=e=>{if(e.key==='Enter')s();};}
+
+async function paso0(){
+  await addBot(`¡Bienvenido/a al taller de <strong>Química ICFES</strong>! ⚗️<br><br>
+Los temas más evaluados en el ICFES son:<br>
+<strong>• Materia y sus propiedades</strong><br>
+<strong>• Tabla periódica</strong> — grupos y períodos.<br>
+<strong>• Enlace químico</strong> — iónico, covalente, metálico.<br>
+<strong>• Reacciones químicas</strong> — tipos y balanceo.<br>
+<strong>• Ácidos y bases</strong> — pH y neutralización.<br>
+<strong>• Química orgánica básica</strong> — hidrocarburos y funciones.<br>
+<strong>• Estequiometría</strong> — mol y concentración.<br><br>
+¿Arrancamos?`, 300);
+  mostrarOpciones([
+    { label: '⚗️ ¡Sí, a experimentar!', fn:()=>{addBot(`¡Perfecto! Empezamos con la materia y sus cambios.`,300);setTimeout(paso1,1200);} },
+    { label: '😵 La química me parece difícil', fn:()=>{addBot(`¡Tranquilo/a! Vamos paso a paso con ejemplos cotidianos. El ICFES evalúa conceptos, no cálculos complejos. 💪`,300);setTimeout(paso1,1500);} },
+  ]);
+}
+
+async function paso1(){
+  avanzarBarra();
+  await addBot(`<strong>Materia: cambios físicos vs químicos</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: comparación — hielo derritiéndose (cambio físico) vs papel quemándose (cambio químico)]</div><br>
+Un <strong>cambio físico</strong> no altera la composición química (derretir, cortar, disolver). Un <strong>cambio químico</strong> genera nuevas sustancias (quemar, oxidar, fermentar).<br><br>
+¿Cuál de estos es un cambio <em>químico</em>?`, 400);
+  mostrarOpciones([
+    { label: '🧊 El hielo se derrite en agua', fn:()=>{addBot(`Es un cambio <strong>físico</strong> — el agua cambia de estado pero su fórmula (H₂O) no cambia.`,300);setTimeout(paso2,1600);} },
+    { label: '🌀 El azúcar se disuelve en agua', fn:()=>{addBot(`Es un cambio <strong>físico</strong> — el azúcar se dispersa pero no se transforma en otra sustancia.`,300);setTimeout(paso2,1600);} },
+    { label: '🔥 El hierro se oxida formando herrumbre', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La oxidación es un cambio <strong>químico</strong> — el hierro (Fe) reacciona con el oxígeno y forma óxido de hierro (Fe₂O₃), una sustancia nueva.`,300);setTimeout(paso2,1600);} },
+  ]);
+}
+
+async function paso2(){
+  avanzarBarra();
+  await addBot(`<strong>Tabla Periódica</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: tabla periódica con grupos y períodos señalados — metales alcalinos, halógenos, gases nobles resaltados]</div><br>
+Los elementos se organizan en <strong>períodos</strong> (filas) y <strong>grupos</strong> (columnas).<br><br>
+Los <strong>gases nobles</strong> (Grupo 18: He, Ne, Ar…) se caracterizan por:`, 400);
+  mostrarOpciones([
+    { label: '💥 Ser muy reactivos y explotar fácilmente', fn:()=>{addBot(`No — esos son los metales alcalinos (Grupo 1). Los gases nobles son todo lo contrario.`,300);setTimeout(paso3,1600);} },
+    { label: '🛡️ Ser muy estables y no reaccionar con otros elementos', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> Los gases nobles tienen la capa de valencia completa (8 electrones, o 2 en el He), lo que les da una <strong>estabilidad química extrema</strong>.`,300);setTimeout(paso3,1600);} },
+    { label: '🧲 Ser buenos conductores de electricidad', fn:()=>{addBot(`Los buenos conductores son los <strong>metales</strong>. Los gases nobles son no metales con baja reactividad.`,300);setTimeout(paso3,1600);} },
+  ]);
+}
+
+async function paso3(){
+  avanzarBarra();
+  await addBot(`<strong>Enlace Químico</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: comparación de enlace iónico (Na⁺Cl⁻) vs covalente (H₂O con electrones compartidos) vs metálico (red de cationes con electrones libres)]</div><br>
+<strong>• Enlace iónico:</strong> transferencia de electrones entre metal y no metal. Ej: NaCl (sal).<br>
+<strong>• Enlace covalente:</strong> compartición de electrones entre no metales. Ej: H₂O, CO₂.<br>
+<strong>• Enlace metálico:</strong> electrones libres en red de metales. Ej: cobre, hierro.<br><br>
+¿Qué tipo de enlace forma la molécula de agua (H₂O)?`, 400);
+  mostrarOpciones([
+    { label: '⚡ Enlace iónico', fn:()=>{addBot(`No — el iónico se da entre metal y no metal (como Na y Cl). El H y el O son ambos no metales, así que comparten electrones.`,300);setTimeout(paso4,1600);} },
+    { label: '🤝 Enlace covalente', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> El oxígeno y el hidrógeno son no metales y <em>comparten</em> electrones → <strong>enlace covalente</strong>. El agua tiene 2 enlaces covalentes O-H.`,300);setTimeout(paso4,1600);} },
+    { label: '🔩 Enlace metálico', fn:()=>{addBot(`El enlace metálico ocurre solo entre átomos metálicos (como en un cable de cobre). El H₂O usa <strong>enlace covalente</strong>.`,300);setTimeout(paso4,1600);} },
+  ]);
+}
+
+async function paso4(){
+  avanzarBarra();
+  await addBot(`<strong>Reacciones Químicas y Balanceo</strong><br><br>
+Una reacción química debe cumplir la <strong>ley de conservación de la masa</strong> (Lavoisier): la masa de reactivos = masa de productos.<br><br>
+<div class="tip">⚗️ H₂ + O₂ → H₂O (sin balancear)</div>
+¿Cuál es la versión correctamente balanceada?`, 400);
+  mostrarOpciones([
+    { label: '2H₂ + O₂ → 2H₂O', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Reactivos: 4H + 2O. Productos: 4H + 2O ✅. La masa se conserva. Este es uno de los balanceos más frecuentes en el ICFES.`,300);setTimeout(paso5,1600);} },
+    { label: 'H₂ + O₂ → H₂O', fn:()=>{addBot(`Sin balancear: 2H + 2O del lado de los reactivos, pero solo 2H + 1O en el producto. ¡La ley de conservación de masa no se cumple!`,300);setTimeout(paso5,1600);} },
+    { label: 'H₂ + O → H₂O', fn:()=>{addBot(`El oxígeno en condiciones normales es diatómico (O₂), no O solo. Además, la ecuación correctamente balanceada es <strong>2H₂ + O₂ → 2H₂O</strong>.`,300);setTimeout(paso5,1600);} },
+  ]);
+}
+
+async function paso5(){
+  avanzarBarra();
+  await addBot(`<strong>Ácidos y Bases — Escala de pH</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: escala de pH del 0 al 14 — con limón, agua pura y jabón ubicados. 0-6 ácido, 7 neutro, 8-14 básico]</div><br>
+La escala de pH mide la acidez o basicidad de una solución:<br>
+<strong>pH &lt; 7:</strong> ácido. <strong>pH = 7:</strong> neutro. <strong>pH &gt; 7:</strong> básico o alcalino.<br><br>
+El jugo de limón tiene un pH de aproximadamente 2. ¿Qué significa eso?`, 400);
+  mostrarOpciones([
+    { label: '🟢 Es una sustancia básica', fn:()=>{addBot(`pH 2 está muy por debajo de 7 — eso es <strong>ácido</strong>. Las básicas tienen pH mayor a 7.`,300);setTimeout(paso6,1600);} },
+    { label: '⚪ Es una sustancia neutra', fn:()=>{addBot(`Neutro es pH = 7 (como el agua pura). pH 2 es muy <strong>ácido</strong>.`,300);setTimeout(paso6,1600);} },
+    { label: '🔴 Es una sustancia ácida', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> pH 2 es muy ácido (como el vinagre o el ácido del estómago). Cuanto más bajo el pH, más <strong>ácida</strong> la solución.`,300);setTimeout(paso6,1600);} },
+  ]);
+}
+
+async function paso6(){
+  avanzarBarra();
+  await addBot(`<strong>Tipos de Reacciones Químicas</strong><br><br>
+<strong>• Síntesis:</strong> A + B → AB (se unen)<br>
+<strong>• Descomposición:</strong> AB → A + B (se separan)<br>
+<strong>• Combustión:</strong> combustible + O₂ → CO₂ + H₂O + energía<br>
+<strong>• Neutralización:</strong> ácido + base → sal + agua<br>
+<strong>• Redox:</strong> transferencia de electrones (oxidación-reducción)<br><br>
+¿Qué tipo de reacción es: HCl + NaOH → NaCl + H₂O?`, 400);
+  mostrarOpciones([
+    { label: '🔥 Combustión', fn:()=>{addBot(`La combustión requiere O₂ y produce CO₂ y H₂O con liberación de energía. Esta reacción es entre un <em>ácido y una base</em>.`,300);setTimeout(paso7,1600);} },
+    { label: '⚖️ Neutralización', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> HCl (ácido clorhídrico) + NaOH (base) → NaCl (sal de mesa) + H₂O. Ácido + Base → Sal + Agua. ¡Eso es <strong>neutralización</strong>!`,300);setTimeout(paso7,1600);} },
+    { label: '🔗 Síntesis', fn:()=>{addBot(`La síntesis une dos reactivos en uno solo: A + B → AB. Aquí hay dos reactivos que forman dos productos — es <strong>neutralización</strong>.`,300);setTimeout(paso7,1600);} },
+  ]);
+}
+
+async function paso7(){
+  avanzarBarra();
+  await addBot(`<strong>Estequiometría y el Mol</strong><br><br>
+El <strong>mol</strong> es la unidad que mide cantidad de materia en química.<br>
+<strong>1 mol = 6,022 × 10²³ partículas</strong> (Número de Avogadro).<br><br>
+La <strong>masa molar</strong> de un elemento es el número de su masa atómica expresado en g/mol.<br>
+Ejemplo: la masa molar del carbono (C) = 12 g/mol.<br><br>
+¿Cuántos gramos hay en 2 moles de agua (H₂O)? (Masa molar H=1, O=16)`, 400);
+  mostrarOpciones([
+    { label: '⚖️ 18 gramos', fn:()=>{addBot(`18 g sería solo 1 mol de H₂O. La pregunta pide <strong>2 moles</strong>: 2 × 18 g/mol = <strong>36 g</strong>.`,300);setTimeout(paso8,1600);} },
+    { label: '⚖️ 36 gramos', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Masa molar H₂O = 2(1) + 16 = 18 g/mol. En 2 moles: 2 × 18 = <strong>36 g</strong>. ¡Eso es estequiometría básica!`,300);setTimeout(paso8,1600);} },
+    { label: '⚖️ 20 gramos', fn:()=>{addBot(`Revisemos: H₂O tiene 2 hidrógenos (2×1=2) + 1 oxígeno (16) = 18 g/mol. En 2 moles: 2 × 18 = <strong>36 g</strong>.`,300);setTimeout(paso8,1600);} },
+  ]);
+}
+
+async function paso8(){
+  avanzarBarra();
+  await addBot(`<strong>Química Orgánica — Hidrocarburos</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: estructura de metano (CH₄), etano, propano — mostrando cadena de carbonos con hidrógenos]</div><br>
+La química orgánica estudia los compuestos que contienen <strong>carbono</strong>.<br><br>
+<strong>• Alcanos:</strong> cadena saturada (solo enlaces simples). Ej: CH₄ (metano), C₂H₆ (etano).<br>
+<strong>• Alquenos:</strong> al menos un doble enlace C=C. Ej: C₂H₄ (etileno).<br>
+<strong>• Alquinos:</strong> al menos un triple enlace C≡C. Ej: C₂H₂ (acetileno).<br><br>
+¿Cuál es la fórmula general de los <strong>alcanos</strong>?`, 400);
+  mostrarOpciones([
+    { label: '🔗 CₙH₂ₙ', fn:()=>{addBot(`Esa es la fórmula de los <strong>alquenos</strong> (con doble enlace). Los alcanos tienen más hidrógenos: CₙH₂ₙ₊₂.`,300);setTimeout(paso9,1600);} },
+    { label: '🔗 CₙH₂ₙ₊₂', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Los <strong>alcanos</strong> son saturados: CₙH₂ₙ₊₂. Ejemplo: metano = CH₄ (n=1: 2×1+2=4 H). El carbono siempre forma 4 enlaces.`,300);setTimeout(paso9,1600);} },
+    { label: '🔗 CₙH₂ₙ₋₂', fn:()=>{addBot(`Esa fórmula corresponde a los <strong>alquinos</strong> (con triple enlace). Los alcanos son saturados: <strong>CₙH₂ₙ₊₂</strong>.`,300);setTimeout(paso9,1600);} },
+  ]);
+}
+
+async function paso9(){
+  avanzarBarra();
+  await addBot(`¡Excelente trabajo, futuro/a químico/a! 🎉<br><br>
+Resumen de lo que dominaste:<br><br>
+<span class="check">✅</span> <strong>Cambios físicos vs químicos.</strong><br>
+<span class="check">✅</span> <strong>Tabla periódica:</strong> grupos y gases nobles.<br>
+<span class="check">✅</span> <strong>Enlace químico:</strong> iónico, covalente, metálico.<br>
+<span class="check">✅</span> <strong>Balanceo de ecuaciones.</strong><br>
+<span class="check">✅</span> <strong>pH:</strong> ácido, neutro, básico.<br>
+<span class="check">✅</span> <strong>Tipos de reacciones:</strong> síntesis, neutralización, combustión.<br>
+<span class="check">✅</span> <strong>Estequiometría:</strong> mol y masa molar.<br>
+<span class="check">✅</span> <strong>Química orgánica:</strong> alcanos, alquenos, alquinos.<br><br>
+<em>¡El ICFES no tiene secretos para ti!</em> 🚀`, 400);
+  setTimeout(()=>{avanzarBarra();mostrarFin();},2500);
+}
+
+function mostrarFin(){
+  document.getElementById('fin-overlay').classList.add('show');
+  document.getElementById('fin-pts').textContent=`✨ Acumulaste ${pts} puntos en este taller`;
+  try{window.parent.postMessage({type:'taller-completado',tallerExternoId:'taller_quimica',pts},'*');}catch(e){}
+}
+function cerrarTaller(){
+  try{window.parent.postMessage({type:'cerrar-taller-interactivo'},'*');}catch(e){}
+  window.close();
+}
+paso0();
+</script>
+</body>
+</html>

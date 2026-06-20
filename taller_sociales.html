@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ciencias Sociales · Taller Interactivo</title>
+<style>
+  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
+  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
+  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
+  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
+  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
+  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
+  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
+  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
+  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#f43f5e,var(--oro));transition:width .5s ease;}
+  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
+  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
+  .bubble-wrap.bot{flex-direction:row;}
+  .bubble-wrap.user{flex-direction:row-reverse;}
+  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+  .avatar.bot{background:rgba(244,63,94,.12);border:1px solid rgba(244,63,94,.3);}
+  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
+  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
+  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
+  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
+  .bubble strong{color:var(--teal);}
+  .bubble em{color:var(--oro);}
+  .tip{background:rgba(244,63,94,.09);border-left:3px solid #f43f5e;padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
+  .check{color:var(--verde);font-weight:900;}
+  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(244,63,94,.3);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(244,63,94,.7);text-align:center;}
+  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
+  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
+  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
+  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);}
+  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);}
+  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
+  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
+  #input-row{display:flex;gap:.5rem;}
+  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
+  #txt-input:focus{border-color:var(--teal);}
+  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:none;font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;}
+  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
+  #fin-overlay.show{display:flex;}
+  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
+  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
+  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <div id="header-title">🌎 Ciencias Sociales — ICFES</div>
+    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem;">
+    <span id="pts-badge">0 pts</span>
+    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
+  </div>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+<div id="chat"></div>
+<div id="options-area"><div id="options-grid"></div></div>
+<div id="input-area">
+  <div id="input-row">
+    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="200">
+    <button id="btn-send">Enviar →</button>
+  </div>
+</div>
+<div id="fin-overlay">
+  <div id="fin-title">🏆 ¡Ciencias Sociales dominadas!</div>
+  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">Repasaste historia colombiana, Constitución, geografía, economía y ciudadanía. ¡Estás listo/a para el ICFES!</p>
+  <div id="fin-pts"></div>
+  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
+</div>
+
+<script>
+let pts=0,paso=0;
+const TOTAL_PASOS=10;
+const chat=document.getElementById('chat');
+const optGrid=document.getElementById('options-grid');
+const ptsEl=document.getElementById('pts-badge');
+const progressBar=document.getElementById('progress-bar');
+
+function sumarPts(n){pts+=n;ptsEl.textContent=pts+' pts';}
+function avanzarBarra(){paso=Math.min(paso+1,TOTAL_PASOS);progressBar.style.width=(paso/TOTAL_PASOS*100)+'%';}
+function limpiarOpciones(){optGrid.innerHTML='';document.getElementById('options-area').style.display='none';document.getElementById('input-area').style.display='none';}
+function addBot(html,delay=0){return new Promise(r=>{setTimeout(()=>{const w=document.createElement('div');w.className='bubble-wrap bot';w.innerHTML=`<div class="avatar bot">🌎</div><div class="bubble bot">${html}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;r();},delay);});}
+function addUser(t){const w=document.createElement('div');w.className='bubble-wrap user';w.innerHTML=`<div class="avatar user">🧑</div><div class="bubble user">${t}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;}
+function mostrarOpciones(ops){document.getElementById('options-area').style.display='block';optGrid.innerHTML='';ops.forEach(op=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=op.label;b.onclick=()=>{document.querySelectorAll('.opt-btn').forEach(x=>x.disabled=true);b.classList.add('selected');addUser(op.label);limpiarOpciones();setTimeout(()=>op.fn(),400);};optGrid.appendChild(b);});}
+function mostrarInput(ph,fn){document.getElementById('input-area').style.display='block';const inp=document.getElementById('txt-input');inp.placeholder=ph;inp.value='';inp.focus();const s=()=>{const v=inp.value.trim();if(!v)return;addUser(v);limpiarOpciones();setTimeout(()=>fn(v),400);};document.getElementById('btn-send').onclick=s;inp.onkeydown=e=>{if(e.key==='Enter')s();};}
+
+async function paso0(){
+  await addBot(`¡Bienvenido/a al taller de <strong>Ciencias Sociales ICFES</strong>! 🌎<br><br>
+El ICFES evalúa Competencias Ciudadanas y Sociales con preguntas sobre:<br>
+<strong>• Historia de Colombia</strong> — precolombino, conquista, independencia, siglo XX.<br>
+<strong>• Constitución de 1991</strong> — derechos y mecanismos.<br>
+<strong>• Geografía colombiana y mundial.</strong><br>
+<strong>• Economía básica.</strong><br>
+<strong>• Democracia y ciudadanía.</strong><br>
+<strong>• Historia universal selecta.</strong><br><br>
+¿Comenzamos el recorrido por la historia?`, 300);
+  mostrarOpciones([
+    { label: '🏛️ ¡Sí, a viajar por la historia!', fn:()=>{addBot(`¡Perfecto! Empezamos con los pueblos precolombinos de Colombia.`,300);setTimeout(paso1,1200);} },
+    { label: '📰 ¿El ICFES pregunta sobre política actual?', fn:()=>{addBot(`El ICFES evalúa principalmente historia, geografía, economía y principios constitucionales. Raramente hace preguntas sobre política coyuntural reciente. ¡Lo que importa son los conceptos!`,300);setTimeout(paso1,1500);} },
+  ]);
+}
+
+async function paso1(){
+  avanzarBarra();
+  await addBot(`<strong>Colombia Precolombina</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: mapa de Colombia con ubicación de principales culturas: Muisca (altiplano cundiboyacense), Tayrona (Sierra Nevada), Quimbaya (Eje Cafetero), Zenú (costa Caribe)]</div><br>
+Los <strong>Muiscas</strong> habitaban el altiplano cundiboyacense y se destacaron por su organización política y comercio. El mito de <em>El Dorado</em> tiene origen en su rito del <strong>Zipa</strong> en la laguna de Guatavita.<br><br>
+¿Cuál civilización precolombina construyó Ciudad Perdida (Teyuna) en la Sierra Nevada de Santa Marta?`, 400);
+  mostrarOpciones([
+    { label: '🌿 Los Muiscas', fn:()=>{addBot(`No — los Muiscas estaban en el altiplano (Cundinamarca-Boyacá). Ciudad Perdida fue construida por los <strong>Tayrona</strong>, cerca del mar Caribe.`,300);setTimeout(paso2,1600);} },
+    { label: '🏔️ Los Tayrona', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Los <strong>Tayrona</strong> construyeron Teyuna (Ciudad Perdida) en la Sierra Nevada. Se destacaron por su arquitectura en piedra y organización urbana.`,300);setTimeout(paso2,1600);} },
+    { label: '⚱️ Los Zenú', fn:()=>{addBot(`Los Zenú habitaban las llanuras del Caribe y se destacaron por la orfebrería. Ciudad Perdida fue de los <strong>Tayrona</strong> en la Sierra Nevada.`,300);setTimeout(paso2,1600);} },
+  ]);
+}
+
+async function paso2(){
+  avanzarBarra();
+  await addBot(`<strong>Conquista y Colonia</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: línea de tiempo — 1492 llegada de Colón, 1499 llegada a costas colombianas, 1538 fundación de Bogotá, 1717 Virreinato de la Nueva Granada]</div><br>
+Durante la Colonia, el territorio colombiano fue el <strong>Virreinato de la Nueva Granada</strong> (1717).<br>
+La economía colonial se basó principalmente en:<br>
+<strong>• Encomienda:</strong> los indígenas trabajaban para los colonizadores a cambio de "protección" y evangelización.<br>
+<strong>• Mita:</strong> trabajo forzado en minas, especialmente de oro y plata.<br><br>
+¿Cuál fue el principal producto de exportación colonial que generó la mayor riqueza a España?`, 400);
+  mostrarOpciones([
+    { label: '☕ El café', fn:()=>{addBot(`El café llegó mucho después (siglo XIX). En la Colonia, el principal mineral explotado fue el <strong>oro y la plata</strong>.`,300);setTimeout(paso3,1600);} },
+    { label: '⛏️ El oro y la plata', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Los metales preciosos fueron el motor económico colonial. Las minas de Potosí y las de la Nueva Granada financiaron el Imperio español durante siglos.`,300);setTimeout(paso3,1600);} },
+    { label: '🌿 El cacao', fn:()=>{addBot(`El cacao fue importante en Mesoamérica (México), pero en la Nueva Granada el gran producto colonial fue el <strong>oro y la plata</strong>.`,300);setTimeout(paso3,1600);} },
+  ]);
+}
+
+async function paso3(){
+  avanzarBarra();
+  await addBot(`<strong>Independencia de Colombia</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: pintura del 20 de julio de 1810 en Bogotá — el florero de Llorente como detonante, multitud en la plaza]</div><br>
+El proceso de independencia inició el <strong>20 de julio de 1810</strong> (El Florero de Llorente) y se consolidó con la Batalla de <strong>Boyacá</strong> el 7 de agosto de 1819.<br><br>
+¿Quién lideró el ejército patriota en la Batalla de Boyacá?`, 400);
+  mostrarOpciones([
+    { label: '🗡️ Francisco de Paula Santander', fn:()=>{addBot(`Santander participó como segundo al mando. El líder principal de la campaña libertadora fue <strong>Simón Bolívar</strong>.`,300);setTimeout(paso4,1600);} },
+    { label: '⚔️ Simón Bolívar', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> <strong>Simón Bolívar</strong> lideró la Campaña Libertadora de 1819. La Batalla de Boyacá fue decisiva — selló la independencia de la Nueva Granada.`,300);setTimeout(paso4,1600);} },
+    { label: '🏛️ Antonio Nariño', fn:()=>{addBot(`Nariño fue un precursor clave (tradujo los Derechos del Hombre), pero la Batalla de Boyacá fue dirigida por <strong>Simón Bolívar</strong>.`,300);setTimeout(paso4,1600);} },
+  ]);
+}
+
+async function paso4(){
+  avanzarBarra();
+  await addBot(`<strong>Constitución Política de 1991</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: portada de la Constitución de 1991 con el lema "Estado Social de Derecho" — con los tres poderes: Ejecutivo, Legislativo, Judicial]</div><br>
+La Constitución de 1991 transformó a Colombia en un <strong>Estado Social de Derecho</strong> y creó mecanismos de participación ciudadana:<br><br>
+<strong>• Tutela:</strong> protege derechos fundamentales de manera inmediata.<br>
+<strong>• Acción Popular:</strong> protege derechos colectivos y del ambiente.<br>
+<strong>• Habeas Corpus:</strong> protege la libertad personal.<br>
+<strong>• Derecho de Petición:</strong> permite solicitar información a entidades.<br><br>
+¿Qué mecanismo usarías si una empresa contamina el río de tu comunidad?`, 400);
+  mostrarOpciones([
+    { label: '📋 Tutela', fn:()=>{addBot(`La tutela protege <em>derechos fundamentales individuales</em> (salud, vida, educación). La contaminación de un río afecta derechos <em>colectivos</em> — eso es <strong>Acción Popular</strong>.`,300);setTimeout(paso5,1600);} },
+    { label: '🌊 Acción Popular', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La <strong>Acción Popular</strong> protege derechos colectivos: ambiente sano, patrimonio público, espacio público. Es el mecanismo correcto para problemas ambientales.`,300);setTimeout(paso5,1600);} },
+    { label: '🔒 Habeas Corpus', fn:()=>{addBot(`El Habeas Corpus protege la <em>libertad personal</em> cuando alguien es detenido ilegalmente. Para daño ambiental colectivo, se usa la <strong>Acción Popular</strong>.`,300);setTimeout(paso5,1600);} },
+  ]);
+}
+
+async function paso5(){
+  avanzarBarra();
+  await addBot(`<strong>Geografía Colombiana</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: mapa de Colombia con las 6 regiones naturales: Caribe, Pacífico, Andina, Orinoquía, Amazonía, Insular — con diferentes colores]</div><br>
+Colombia se divide en <strong>6 regiones naturales</strong>:<br>
+<em>Caribe · Pacífico · Andina · Orinoquía · Amazonía · Insular</em><br><br>
+Colombia es el único país de Sudamérica que tiene costa en el <strong>Océano Pacífico</strong> y en el <strong>Mar Caribe</strong>. ¿Qué ventaja estratégica le da eso?`, 400);
+  mostrarOpciones([
+    { label: '🌊 Mayor extensión territorial', fn:()=>{addBot(`No necesariamente — tener dos costas no duplica el territorio, pero sí amplía el acceso marino.`,300);setTimeout(paso6,1600);} },
+    { label: '🚢 Acceso a dos océanos para el comercio internacional', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Las dos costas dan a Colombia acceso estratégico al comercio con el Pacífico (Asia, EE.UU.) y el Caribe/Atlántico (Europa, Norteamérica). ¡Una ventaja geopolítica enorme!`,300);setTimeout(paso6,1600);} },
+    { label: '🌿 Mayor biodiversidad', fn:()=>{addBot(`La biodiversidad de Colombia es excepcional (es megadiverso), pero eso se debe más a su posición tropical y altitudinal que a tener dos costas.`,300);setTimeout(paso6,1600);} },
+  ]);
+}
+
+async function paso6(){
+  avanzarBarra();
+  await addBot(`<strong>Economía Básica — Conceptos del ICFES</strong><br><br>
+<strong>• PIB (Producto Interno Bruto):</strong> valor total de bienes y servicios producidos en un país en un año.<br>
+<strong>• Inflación:</strong> aumento generalizado y sostenido de los precios.<br>
+<strong>• Desempleo:</strong> porcentaje de personas sin trabajo que lo buscan activamente.<br>
+<strong>• Balanza comercial:</strong> diferencia entre exportaciones e importaciones.<br><br>
+Si Colombia exporta más de lo que importa, su balanza comercial es:`, 400);
+  mostrarOpciones([
+    { label: '📉 Deficitaria', fn:()=>{addBot(`El déficit ocurre cuando las <em>importaciones superan las exportaciones</em>. Si exporta más, el resultado es positivo — <strong>superávit</strong>.`,300);setTimeout(paso7,1600);} },
+    { label: '📈 Superavitaria', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Si Exportaciones > Importaciones → <strong>Superávit comercial</strong>. El país "gana" más divisas de las que gasta. Lo contrario es el <em>déficit</em>.`,300);setTimeout(paso7,1600);} },
+    { label: '⚖️ Equilibrada', fn:()=>{addBot(`El equilibrio perfecto es teórico. Si exporta <em>más</em> de lo que importa, hay <strong>superávit comercial</strong>.`,300);setTimeout(paso7,1600);} },
+  ]);
+}
+
+async function paso7(){
+  avanzarBarra();
+  await addBot(`<strong>Colombia en el Siglo XX — Conflicto Armado</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: línea de tiempo 1948-2016 — Bogotazo, Frente Nacional, nacimiento FARC, Constitución 1991, Acuerdos de paz 2016]</div><br>
+El <strong>Bogotazo</strong> (9 de abril de 1948) fue el levantamiento popular tras el asesinato de:<br>`, 400);
+  mostrarOpciones([
+    { label: '🏛️ Jorge Eliécer Gaitán', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> El asesinato de <strong>Jorge Eliécer Gaitán</strong> detonó el Bogotazo, que marcó el inicio del período conocido como "La Violencia" (1948-1958), con miles de muertos en el campo colombiano.`,300);setTimeout(paso8,1600);} },
+    { label: '⚔️ Rafael Uribe Uribe', fn:()=>{addBot(`Uribe Uribe fue asesinado en 1914. El Bogotazo de 1948 fue provocado por el asesinato de <strong>Jorge Eliécer Gaitán</strong>.`,300);setTimeout(paso8,1600);} },
+    { label: '🗡️ Simón Bolívar', fn:()=>{addBot(`Bolívar murió en 1830 de tuberculosis. El Bogotazo de 1948 se desató por el asesinato de <strong>Jorge Eliécer Gaitán</strong>.`,300);setTimeout(paso8,1600);} },
+  ]);
+}
+
+async function paso8(){
+  avanzarBarra();
+  await addBot(`<strong>Democracia y Participación Ciudadana</strong><br><br>
+<div class="img-placeholder">📸 [IMAGEN: infografía con los mecanismos de participación: voto, referendo, plebiscito, iniciativa legislativa popular, consulta popular, revocatoria del mandato]</div><br>
+La Constitución de 1991 reconoce el <strong>voto</strong> como derecho fundamental.<br>
+Pero también existen otros mecanismos. ¿Cuál sirve para que la ciudadanía <em>destituya</em> a un alcalde o gobernador antes de que termine su período?`, 400);
+  mostrarOpciones([
+    { label: '📊 Referendo', fn:()=>{addBot(`El referendo es para que la ciudadanía apruebe o rechace una norma o decisión. Para destituir a un mandatario se usa la <strong>revocatoria del mandato</strong>.`,300);setTimeout(paso9,1600);} },
+    { label: '🗳️ Revocatoria del mandato', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La <strong>revocatoria del mandato</strong> permite a los ciudadanos destituir a alcaldes o gobernadores. Para activarla se necesita un número mínimo de firmas.`,300);setTimeout(paso9,1600);} },
+    { label: '📜 Plebiscito', fn:()=>{addBot(`El plebiscito consulta la opinión ciudadana sobre decisiones del Ejecutivo. Para destituir mandatarios se usa la <strong>revocatoria del mandato</strong>.`,300);setTimeout(paso9,1600);} },
+  ]);
+}
+
+async function paso9(){
+  avanzarBarra();
+  await addBot(`¡Viaje histórico completado! 🎉<br><br>
+Lo que dominaste:<br><br>
+<span class="check">✅</span> <strong>Culturas precolombinas:</strong> Muisca, Tayrona, Quimbaya, Zenú.<br>
+<span class="check">✅</span> <strong>Colonia:</strong> encomienda, mita, oro y plata.<br>
+<span class="check">✅</span> <strong>Independencia:</strong> Bolívar, Batalla de Boyacá 1819.<br>
+<span class="check">✅</span> <strong>Constitución 1991:</strong> tutela, acción popular, habeas corpus.<br>
+<span class="check">✅</span> <strong>Geografía:</strong> 6 regiones, dos costas.<br>
+<span class="check">✅</span> <strong>Economía:</strong> PIB, inflación, balanza comercial.<br>
+<span class="check">✅</span> <strong>Siglo XX:</strong> Bogotazo, Gaitán, La Violencia.<br>
+<span class="check">✅</span> <strong>Democracia:</strong> mecanismos de participación ciudadana.<br><br>
+<em>¡Colombia y el mundo no tienen secretos para ti!</em> 🚀`, 400);
+  setTimeout(()=>{avanzarBarra();mostrarFin();},2500);
+}
+
+function mostrarFin(){
+  document.getElementById('fin-overlay').classList.add('show');
+  document.getElementById('fin-pts').textContent=`✨ Acumulaste ${pts} puntos en este taller`;
+  try{window.parent.postMessage({type:'taller-completado',tallerExternoId:'taller_sociales',pts},'*');}catch(e){}
+}
+function cerrarTaller(){
+  try{window.parent.postMessage({type:'cerrar-taller-interactivo'},'*');}catch(e){}
+  window.close();
+}
+paso0();
+</script>
+</body>
+</html>
