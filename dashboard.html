@@ -1427,6 +1427,16 @@
             </div>
             <div class="section-box">
                 <p class="section-box-title">📋 Talleres en Firebase</p>
+                <!-- Filtro por tipo -->
+                <div style="display:flex;gap:.5rem;margin-bottom:.9rem;flex-wrap:wrap;">
+                    <button id="tt-filtro-todos" class="btn-module" onclick="filtrarTalleresAdmin('todos')"
+                        style="background:rgba(255,255,255,.12);color:#e8f0f8;border-color:rgba(255,255,255,.3);">📋 Todos</button>
+                    <button id="tt-filtro-interactivo" class="btn-module" onclick="filtrarTalleresAdmin('interactivo')"
+                        style="background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.1);">⚡ Interactivos</button>
+                    <button id="tt-filtro-diapositivas" class="btn-module" onclick="filtrarTalleresAdmin('diapositivas')"
+                        style="background:rgba(255,255,255,.04);color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.1);">🖼 Diapositivas</button>
+                    <span id="tt-filtro-count" style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.3);align-self:center;margin-left:.3rem;"></span>
+                </div>
                 <div id="tt-lista-admin"><p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p></div>
             </div>
         </div>
@@ -3156,16 +3166,34 @@ function normalizarCedula(raw) {
 // ── helpers locales de ICFES ──────────────────────────────────────────────────
 const _px = (r,...k) => { for(const c of k){ const v=r[c]; if(v!==undefined&&v!==null&&String(v).trim()!=='') return String(v).trim(); } return null; };
 const _pct = raw => {
-    if(!raw) return NaN;
+    if(!raw || raw === '—') return NaN;
     const s = String(raw).trim();
-    // "X / Y (N%)" — prefer the explicit percentage
+    // "X / Y (N%)" — explicit percentage takes priority
     const mp = s.match(/\((\d+\.?\d*)%\)/);
     if(mp) return parseFloat(mp[1]);
-    // "X / Y" or "X/Y"
+    // "X / Y" or "X/Y" fraction
     const m = s.match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
-    if(m) return parseFloat(m[1]) / parseFloat(m[2]) * 100;
-    // Número suelto sin total conocido → no podemos calcular %
+    if(m) {
+        const tot = parseFloat(m[2]);
+        return tot > 0 ? parseFloat(m[1]) / tot * 100 : NaN;
+    }
+    // "56%" explicit percent sign
+    if(s.endsWith('%')) return parseFloat(s);
+    // Raw number: if ≤ 100 treat as direct percentage (common in Google Forms scoring)
+    const n = parseFloat(s);
+    if(!isNaN(n) && n >= 0 && n <= 100) return n;
     return NaN;
+};
+// Texto para mostrar puntaje en tabla cuando no hay % calculable
+const _ptsLabel = raw => {
+    if(!raw || raw === '—') return '—';
+    const s = String(raw).trim();
+    if(!s) return '—';
+    const p = _pct(raw);
+    if(!isNaN(p)) return Math.round(p) + '%';
+    // Score mayor a 100 → mostrar como puntos crudos
+    const n = parseFloat(s);
+    return !isNaN(n) ? s + ' pts' : s;
 };
 const _pcolor = p => isNaN(p)?'rgba(240,244,248,.4)':p>=70?'#86efac':p>=40?'#fbbf24':'#fca5a5';
 
@@ -3180,6 +3208,73 @@ function _fmtFecha(raw) {
         return `${fecha} · ${hora}`;
     } catch { return String(raw).slice(0,16); }
 }
+
+// ── Normalización de nombres de colegios de Tumaco ─────────────────────────
+const _COLEGIOS_TUMACO = {
+    // Canonical name → array of fuzzy variants (sin tildes, minúsculas)
+    'IE Liceo del Pacífico':               ['liceo del pacifico','liceo pacifico','lp tumaco'],
+    'IE Técnico del Pacífico':             ['tecnico del pacifico','tecnico pacifico','iet pacifico','ie tecnico pacifico'],
+    'IE El Divino Niño':                   ['divino nino','divino niño','el divino nino','el divino niño'],
+    'IE Nuestra Señora del Carmen':        ['nuestra señora del carmen','nuestra senora del carmen','n s del carmen','ns carmen'],
+    'IE Sagrado Corazón de Jesús':         ['sagrado corazon','sagrado corazón','sagrado corazon de jesus','sagrado corazón de jesús'],
+    'IE San Felipe Neri':                  ['san felipe neri','san felipe','sf neri'],
+    'IE El Cocal':                         ['el cocal','cocal'],
+    'IE San Andrés de Tumaco':             ['san andres de tumaco','san andrés de tumaco','san andres tumaco','ie san andres'],
+    'IE Mira':                             ['mira','ie mira','inst mira'],
+    'IE Artesanal de Tumaco':              ['artesanal de tumaco','artesanal tumaco','ie artesanal'],
+    'IE Bajo Mira':                        ['bajo mira','ie bajo mira'],
+    'IE La Cordialidad':                   ['la cordialidad','cordialidad'],
+    'IE Luis Irisar Salcedo':              ['luis irisar','luis irisar salcedo','irisar'],
+    'IE Ciudad de Tumaco':                 ['ciudad de tumaco','ie ciudad tumaco'],
+    'IE Policarpa Salavarrieta':           ['policarpa salavarrieta','policarpa'],
+    'IE Paulo VI':                         ['paulo vi','paulo 6','pablo vi'],
+    'IE La Inmaculada':                    ['la inmaculada','inmaculada'],
+    'IE Santa Teresita':                   ['santa teresita','teresita'],
+    'IE Nuestro Señor del Mar':            ['nuestro señor del mar','nuestro senor del mar','señor del mar'],
+    'IE Mercedes Ábrego':                  ['mercedes abrego','mercedes ábrego'],
+    'IE Francisco José de Caldas':         ['francisco jose de caldas','caldas','francisco caldas'],
+    'IE Ciudadela Educativa del Pacífico': ['ciudadela educativa','ciudadela pacifico','ciudadela del pacifico'],
+    'IE José María Córdoba':               ['jose maria cordoba','córdoba','cordoba tumaco'],
+    'IE Nuestra Señora de Fátima':         ['fatima','fátima','nuestra senora de fatima','nuestra señora de fátima'],
+    'IE Simón Bolívar':                    ['simon bolivar','simón bolívar','bolivar tumaco'],
+    'IE Antonio Nariño':                   ['antonio narino','antonio nariño'],
+    'IE Ángel María Bejarano':             ['angel maria bejarano','ángel maría bejarano','bejarano'],
+    'IE El Pajal':                         ['el pajal','pajal'],
+    'IE Integrado de La Barra':            ['la barra','integrado la barra'],
+    'IE Río Chagüí':                       ['rio chagui','río chagüí','chagui'],
+    'IE Imbilí':                           ['imbili','imbilí'],
+    'IE Santa Cruz':                       ['santa cruz tumaco','santa cruz'],
+    'IE El Palmar':                        ['el palmar','palmar'],
+    'IE Chorrera':                         ['chorrera','la chorrera'],
+    'IE Caunapi':                          ['caunapi'],
+};
+// Mapa invertido para lookup rápido
+const _COLEGIO_MAP = {};
+Object.entries(_COLEGIOS_TUMACO).forEach(([canon, variants]) => {
+    variants.forEach(v => { _COLEGIO_MAP[v] = canon; });
+    // Agregar también el canonical en minúsculas sin tildes
+    const canonNorm = canon.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g,'')
+        .replace(/^ie\s+/,'').trim();
+    _COLEGIO_MAP[canonNorm] = canon;
+});
+function normalizarColegio(raw) {
+    if (!raw) return '';
+    const norm = raw.trim().toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g,'')   // quitar tildes
+        .replace(/\binst(itucion|itución)?\b\.?\s*(educ\w*)?\s*/g,'')  // quitar "institución educativa"
+        .replace(/\bie\b\.?\s*/g,'')                                   // quitar prefijo IE
+        .replace(/\s+/g,' ').trim();
+    // Buscar en mapa
+    if (_COLEGIO_MAP[norm]) return _COLEGIO_MAP[norm];
+    // Buscar coincidencia parcial
+    for (const [key, canon] of Object.entries(_COLEGIO_MAP)) {
+        if (norm.includes(key) || key.includes(norm)) return canon;
+    }
+    // Sin match: devolver el original capitalizado
+    return raw.trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase()+w.slice(1).toLowerCase());
+}
+// ──────────────────────────────────────────────────────────────────────────────
 
 function _extraerEstudiante(r) {
     const cedula  = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula'));
@@ -3197,7 +3292,8 @@ function _extraerEstudiante(r) {
     // Si el formulario no tiene colegio, buscarlo en el perfil del usuario (cache cargado en cargarResultadosICFES)
     const emailKey = (email||'').toLowerCase().trim();
     const colegioCache = (!colegioForm && emailKey) ? ((window._riColegioCache||{})[emailKey] || '') : '';
-    const colegio = colegioForm || colegioCache;
+    const colegioRaw = colegioForm || colegioCache;
+    const colegio = colegioRaw ? normalizarColegio(colegioRaw) : '';
     return { cedula:cedula||'—', email:email||'—', nombre:nombre||'—', fecha:fecha||'—', pts:pts||'—', tipoId, colegio };
 }
 
@@ -3587,17 +3683,28 @@ function renderResultadosICFES() {
     if (orden === 'reciente') {
         // Fecha más reciente entre todos los formularios del estudiante
         const _parseFechaRobusta = f => {
-            if (!f) return 0;
-            // Firestore Timestamp object
-            if (f && typeof f === 'object' && typeof f.toDate === 'function') return f.toDate().getTime();
-            if (f && typeof f === 'object' && f.seconds) return f.seconds * 1000;
+            if (!f || f === '—') return 0;
+            if (typeof f === 'object' && typeof f.toDate === 'function') return f.toDate().getTime();
+            if (typeof f === 'object' && f.seconds) return f.seconds * 1000;
             const s = String(f).trim();
-            // DD/MM/YYYY HH:mm:ss  o  DD/MM/YYYY
-            const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{2}:\d{2}(?::\d{2})?))?/);
-            if (m1) return new Date(`${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}T${m1[4]||'00:00:00'}`).getTime();
-            // YYYY-MM-DD
-            const m2 = s.match(/^\d{4}-\d{2}-\d{2}/);
-            if (m2) return new Date(s).getTime();
+            if (!s || s === '—') return 0;
+            // ISO format: YYYY-MM-DD... (Apps Script _timestamp_envio)
+            if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
+                const ts = new Date(s).getTime();
+                return isNaN(ts) ? 0 : ts;
+            }
+            // Google Forms "Marca temporal": M/D/YYYY H:MM:SS (US format)
+            // También podría ser DD/MM/YYYY (usuario)
+            const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}:\d{2}(?::\d{2})?))?/);
+            if (m1) {
+                const a = parseInt(m1[1], 10), b = parseInt(m1[2], 10), y = m1[3], t = m1[4] || '00:00:00';
+                // Si b>12 → a es mes (formato US: M/D/YYYY — Google Forms)
+                // Si a>12 → b es mes (formato EU: D/M/YYYY)
+                // Ambos ≤12 → asumir US (Google Forms por defecto)
+                const [mes, dia] = (b > 12) ? [a, b] : (a > 12 ? [b, a] : [a, b]);
+                const ts = new Date(`${y}-${String(mes).padStart(2,'0')}-${String(dia).padStart(2,'0')}T${t}`).getTime();
+                return isNaN(ts) ? 0 : ts;
+            }
             const ts = Date.parse(s);
             return isNaN(ts) ? 0 : ts;
         };
@@ -3617,9 +3724,36 @@ function renderResultadosICFES() {
         });
     }
 
+    // Computar _maxPorHoja UNA sola vez (no dentro del loop por estudiante)
+    const _maxPorHoja = {};
+    _riDatos.forEach(rr => {
+        const pts = (rr.Puntuacion||rr.puntuacion||rr.PUNTUACION||rr.Puntaje||'');
+        const pm  = String(pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
+        if (pm) {
+            const tot = parseFloat(pm[2]);
+            if (!isNaN(tot) && rr._hoja) {
+                if (!_maxPorHoja[rr._hoja] || tot > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = tot;
+            }
+        } else {
+            const n = parseFloat(pts);
+            if (!isNaN(n) && rr._hoja) {
+                if (!_maxPorHoja[rr._hoja] || n > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = n;
+            }
+        }
+    });
+    // Helper: % real usando _maxPorHoja como denominador para puntajes brutos
+    const _pctConTotal = (pts, hoja) => {
+        const p = _pct(pts);
+        if (!isNaN(p)) return p;
+        const n = parseFloat(String(pts||'').trim());
+        const mx = _maxPorHoja[hoja];
+        if (!isNaN(n) && n >= 0 && mx && mx > 0) return Math.round(n / mx * 100);
+        return NaN;
+    };
+
     // KPIs
     const totalResp = estudiantes.reduce((s,e)=>s+e.formularios.length,0);
-    const todasPcts = estudiantes.flatMap(e=>e.formularios.map(f=>_pct(f.pts))).filter(n=>!isNaN(n));
+    const todasPcts = estudiantes.flatMap(e=>e.formularios.map(f=>_pctConTotal(f.pts, f.hoja))).filter(n=>!isNaN(n));
     const promGlobal = todasPcts.length ? (todasPcts.reduce((a,b)=>a+b,0)/todasPcts.length).toFixed(0) : '—';
 
     document.getElementById('ri-stats').innerHTML = [
@@ -3635,16 +3769,14 @@ function renderResultadosICFES() {
             <div style="font-family:var(--fuente-t);font-size:1.1rem;font-weight:900;color:var(--teal);">${val}</div>
         </div>`).join('');
 
-    // Gráfico 1: promedio por área (incluye "(sin área)" si no hay áreas configuradas)
+    // Gráfico 1: promedio por área — incluye TODAS las áreas (incluso sin asignar)
     const porArea = {};
     estudiantes.forEach(e => e.formularios.forEach(f => {
-        const p = _pct(f.pts); if(isNaN(p)) return;
-        if(!porArea[f.area]) porArea[f.area]={suma:0,n:0};
-        porArea[f.area].suma+=p; porArea[f.area].n++;
+        const p = _pctConTotal(f.pts, f.hoja); if(isNaN(p)) return;
+        const areaLabel = f.area === '(sin área)' ? 'Sin área' : f.area;
+        if(!porArea[areaLabel]) porArea[areaLabel]={suma:0,n:0};
+        porArea[areaLabel].suma+=p; porArea[areaLabel].n++;
     }));
-    // Si hay áreas reales, ocultar "(sin área)" del gráfico; si no hay ninguna, mostrarla
-    const hayAreasReales = Object.keys(porArea).some(k => k !== '(sin área)');
-    if (hayAreasReales) delete porArea['(sin área)'];
     const labelsArea  = Object.keys(porArea).sort();
     const valoresArea = labelsArea.map(a=>(porArea[a].suma/porArea[a].n).toFixed(1));
     const coloresArea = labelsArea.map((a,i)=> a==='(sin área)'?'rgba(150,150,180,.5)':parseFloat(valoresArea[i])>=70?'rgba(134,239,172,.7)':parseFloat(valoresArea[i])>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
@@ -3660,7 +3792,7 @@ function renderResultadosICFES() {
     const porColegio = {};
     estudiantes.forEach(e => {
         if (!e.colegio) return;
-        const pcts = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n));
+        const pcts = e.formularios.map(f=>_pctConTotal(f.pts, f.hoja)).filter(n=>!isNaN(n));
         if (!pcts.length) return;
         const prom = pcts.reduce((a,b)=>a+b,0)/pcts.length;
         if(!porColegio[e.colegio]) porColegio[e.colegio]={suma:0,n:0};
@@ -3700,28 +3832,10 @@ function renderResultadosICFES() {
 
     tbody.innerHTML = estudiantes.map((e, idx) => {
         const detId = `ri-est-${idx}`;
-        const pcts  = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n));
+        const pcts  = e.formularios.map(f=>_pctConTotal(f.pts, f.hoja)).filter(n=>!isNaN(n));
         const prom  = pcts.length ? Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length) : null;
         const promStr = prom!=null ? `${prom}%` : '—';
         const promColor = prom!=null ? _pcolor(prom) : 'rgba(240,244,248,.4)';
-
-        // Inferir total de preguntas por hoja = máximo puntaje visto en todos los datos
-        const _maxPorHoja = {};
-        _riDatos.forEach(rr => {
-            const pts = (rr.Puntuacion||rr.puntuacion||rr.PUNTUACION||rr.Puntaje||'');
-            const pm  = String(pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
-            if (pm) {
-                const tot = parseFloat(pm[2]);
-                if (!isNaN(tot) && rr._hoja) {
-                    if (!_maxPorHoja[rr._hoja] || tot > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = tot;
-                }
-            } else {
-                const n = parseFloat(pts);
-                if (!isNaN(n) && rr._hoja) {
-                    if (!_maxPorHoja[rr._hoja] || n > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = n;
-                }
-            }
-        });
 
         const filasForms = e.formularios
             .sort((a,b)=>{ const da=new Date(String(b.fecha).replace(/[-/]/g,'-')), db=new Date(String(a.fecha).replace(/[-/]/g,'-')); return isNaN(da)||isNaN(db)?0:da-db; })
@@ -6090,6 +6204,61 @@ let _ttDiapoActual = 0;
 let _ttCompletado = false;
 
 /* ─── ADMIN: cargar lista ─── */
+let _ttAllDocs = []; // cache para filtrado sin re-fetch
+let _ttFiltroActivo = 'todos';
+
+function _renderTalleresAdmin(docs, filtro) {
+    const lista = document.getElementById('tt-lista-admin');
+    if (!lista) return;
+    const filtered = filtro === 'todos' ? docs : docs.filter(d => {
+        const tipo = d.data().tipo || 'diapositivas';
+        return tipo === filtro;
+    });
+    // Actualizar botones de filtro
+    ['todos','interactivo','diapositivas'].forEach(f => {
+        const btn = document.getElementById(`tt-filtro-${f}`);
+        if (!btn) return;
+        const active = f === filtro;
+        btn.style.background = active ? 'rgba(255,255,255,.15)' : 'rgba(255,255,255,.04)';
+        btn.style.color = active ? '#e8f0f8' : 'rgba(255,255,255,.45)';
+        btn.style.borderColor = active ? 'rgba(255,255,255,.3)' : 'rgba(255,255,255,.1)';
+    });
+    const countEl = document.getElementById('tt-filtro-count');
+    if (countEl) countEl.textContent = `${filtered.length} de ${docs.length}`;
+    if (!filtered.length) {
+        lista.innerHTML = `<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">No hay talleres de tipo «${filtro}» todavía.</p>`;
+        return;
+    }
+    lista.innerHTML = filtered.map(d => {
+        const t = {id:d.id,...d.data()};
+        const nd = (t.diapositivas||[]).length;
+        const tipoLabel = t.tipo==='interactivo' ? '<span style="font-family:var(--fuente-t);font-size:.5rem;font-weight:700;background:rgba(34,197,94,.15);color:#86efac;border-radius:4px;padding:.1rem .35rem;margin-left:.35rem;">⚡ INTERACTIVO</span>' : '';
+        return `<div class="banco-form-card" style="padding:.85rem 1rem;margin-bottom:.6rem;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.6rem;">
+                <div style="flex:1;min-width:0;">
+                    <p class="banco-titulo" style="margin:0 0 .25rem;">${t.titulo||'—'}${tipoLabel}</p>
+                    <p class="banco-meta">${t.area||'—'} · Grado ${t.grado||'todos'} · ${t.tipo==='interactivo'?'chat interactivo':''+nd+' diapositiva'+(nd!==1?'s':'')} · ${t.puntos||50} PTS</p>
+                    ${t.formularioBancoId?`<p class="banco-meta" style="color:var(--teal);margin-top:.2rem;">📝 Incluye cuestionario</p>`:''}
+                    <p class="banco-meta" style="margin-top:.25rem;color:${t.publicado?'var(--verde)':'rgba(255,94,0,.7)'};">${t.publicado?'✅ Publicado':'⏸ Borrador'}</p>
+                </div>
+                <div style="display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0;">
+                    ${t.tipo!=='interactivo'?`<button class="btn-module" onclick="editarTallerTematico('${t.id}')" style="background:rgba(56,189,248,.1);color:var(--teal);border-color:rgba(56,189,248,.25);">✏️ Editar</button>`:''}
+                    ${t.tipo==='interactivo'&&t.url ? `<button class="btn-module" onclick="window.open('${t.url}','_blank')" style="background:rgba(34,197,94,.1);color:#86efac;border-color:rgba(34,197,94,.25);">👁 Preview</button>` : ''}
+                    <button class="btn-module" onclick="togglePublicarTT('${t.id}',${!t.publicado})"
+                        style="background:${t.publicado?'rgba(255,94,0,.08)':'rgba(16,185,129,.08)'};color:${t.publicado?'var(--naranja)':'#10b981'};border-color:${t.publicado?'rgba(255,94,0,.25)':'rgba(16,185,129,.3)'};">
+                        ${t.publicado?'⏸ Ocultar':'▶ Publicar'}</button>
+                    <button class="btn-module" onclick="eliminarTallerTematico('${t.id}')" style="background:rgba(239,68,68,.08);color:#f87171;border-color:rgba(239,68,68,.2);">🗑</button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.filtrarTalleresAdmin = function(filtro) {
+    _ttFiltroActivo = filtro;
+    _renderTalleresAdmin(_ttAllDocs, filtro);
+};
+
 window.cargarTalleresTematicoAdmin = async function() {
     const lista = document.getElementById('tt-lista-admin');
     if (!lista) return;
@@ -6100,33 +6269,12 @@ window.cargarTalleresTematicoAdmin = async function() {
             lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">No hay talleres todavía. Crea el primero.</p>';
             return;
         }
-        const docs = snap.docs.slice().sort((a,b) => {
+        _ttAllDocs = snap.docs.slice().sort((a,b) => {
             const ta = a.data().creadoEn?.toMillis?.()||0;
             const tb = b.data().creadoEn?.toMillis?.()||0;
             return tb-ta;
         });
-        lista.innerHTML = docs.map(d => {
-            const t = {id:d.id,...d.data()};
-            const nd = (t.diapositivas||[]).length;
-            return `<div class="banco-form-card" style="padding:.85rem 1rem;margin-bottom:.6rem;">
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.6rem;">
-                    <div style="flex:1;min-width:0;">
-                        <p class="banco-titulo" style="margin:0 0 .25rem;">${t.titulo||'—'}</p>
-                        <p class="banco-meta">${t.area||'—'} · Grado ${t.grado||'todos'} · ${nd} diapositiva${nd!==1?'s':''} · ${t.puntos||50} PTS</p>
-                        ${t.formularioBancoId?`<p class="banco-meta" style="color:var(--teal);margin-top:.2rem;">📝 Incluye cuestionario</p>`:''}
-                        <p class="banco-meta" style="margin-top:.25rem;color:${t.publicado?'var(--verde)':'rgba(255,94,0,.7)'};">${t.publicado?'✅ Publicado':'⏸ Borrador'}</p>
-                    </div>
-                    <div style="display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0;">
-                        <button class="btn-module" onclick="editarTallerTematico('${t.id}')" style="background:rgba(56,189,248,.1);color:var(--teal);border-color:rgba(56,189,248,.25);">✏️ Editar</button>
-                        ${t.tipo==='interactivo'&&t.url ? `<button class="btn-module" onclick="window.open('${t.url}','_blank')" style="background:rgba(34,197,94,.1);color:#86efac;border-color:rgba(34,197,94,.25);">👁 Preview</button>` : ''}
-                        <button class="btn-module" onclick="togglePublicarTT('${t.id}',${!t.publicado})"
-                            style="background:${t.publicado?'rgba(255,94,0,.08)':'rgba(16,185,129,.08)'};color:${t.publicado?'var(--naranja)':'#10b981'};border-color:${t.publicado?'rgba(255,94,0,.25)':'rgba(16,185,129,.3)'};">
-                            ${t.publicado?'⏸ Ocultar':'▶ Publicar'}</button>
-                        <button class="btn-module" onclick="eliminarTallerTematico('${t.id}')" style="background:rgba(239,68,68,.08);color:#f87171;border-color:rgba(239,68,68,.2);">🗑</button>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
+        _renderTalleresAdmin(_ttAllDocs, _ttFiltroActivo);
     } catch(e) {
         lista.innerHTML = `<p style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">${e.message}</p>`;
     }

@@ -403,6 +403,104 @@ function limpiarClave(texto) {
         .toLowerCase();
 }
 
+// ── 4. WRAPPER COMPLETO: SINCRONIZAR TODO ────────────────────────────────────
+//    Llama todo en secuencia: sincronizarHistorico → vincularHistorico.
+//    Ejecutar MANUALMENTE desde el editor de Apps Script en caso de carga masiva.
+//    Para datos nuevos, el trigger onFormSubmit lo hace automáticamente.
+function sincronizarTodo() {
+    Logger.log('🚀 Iniciando sincronización completa…');
+    const props = PropertiesService.getScriptProperties();
+    const syncSheet  = props.getProperty('sync_sheet');
+    const syncOffset = props.getProperty('sync_offset');
+
+    // FASE 1: sincronizar histórico (si aún no terminó)
+    const syncCompleta = syncSheet !== null && parseInt(syncSheet) >= SpreadsheetApp
+        .openById(SHEET_ID).getSheets().length;
+
+    if (!syncCompleta) {
+        Logger.log('📂 FASE 1: Sincronizando histórico…');
+        sincronizarHistorico();
+        Logger.log('▶ Ejecuta sincronizarTodo() de nuevo hasta que FASE 1 esté completa.');
+        return;
+    }
+
+    // FASE 2: vincular estudiantes
+    const vincToken = props.getProperty('vincular_token');
+    Logger.log('🔗 FASE 2: Vinculando estudiantes…');
+    vincularHistorico();
+
+    // FASE 3: enriquecer _formId si aún no se hizo
+    const enrichToken = props.getProperty('enrich_token');
+    if (enrichToken !== null) {
+        Logger.log('🏷 FASE 3: Enriqueciendo _formId…');
+        enriquecerFormIds();
+    }
+
+    Logger.log('✅ Ciclo de sincronizarTodo() completado. Ejecuta de nuevo si hay más lotes pendientes.');
+}
+
+// ── 5. VERIFICAR ESTADO DE SINCRONIZACIÓN ─────────────────────────────────────
+//    Muestra en el Log qué hojas del Spreadsheet tienen registros en Firestore
+//    y cuántos, para diagnosticar qué falta subir.
+//    EJECUTAR MANUALMENTE una vez para ver el estado.
+function verificarSincronizacion() {
+    Logger.log('🔍 Verificando sincronización de hojas…');
+    const ss     = SpreadsheetApp.openById(SHEET_ID);
+    const sheets = ss.getSheets();
+    const resumen = [];
+
+    sheets.forEach(function(s) {
+        const nombre   = s.getName();
+        const allData  = s.getDataRange().getValues();
+        const dataRows = allData.slice(1).filter(r => r.some(c => c !== ''));
+        const totalLocal = dataRows.length;
+
+        // Contar en Firestore cuántos docs tienen _hoja = nombre
+        const queryUrl = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE_PROJECT_ID +
+                         '/databases/(default)/documents:runQuery?key=' + FIREBASE_API_KEY;
+        const query = {
+            structuredQuery: {
+                from: [{ collectionId: COLECCION }],
+                where: {
+                    fieldFilter: {
+                        field: { fieldPath: '_hoja' },
+                        op: 'EQUAL',
+                        value: { stringValue: nombre }
+                    }
+                },
+                select: { fields: [{ fieldPath: '_hoja' }] }  // solo traer 1 campo para reducir payload
+            }
+        };
+        let totalFirestore = 0;
+        try {
+            const resp    = UrlFetchApp.fetch(queryUrl, {
+                method: 'POST', contentType: 'application/json',
+                payload: JSON.stringify(query), muteHttpExceptions: true
+            });
+            const results = JSON.parse(resp.getContentText());
+            totalFirestore = results.filter(r => r.document).length;
+        } catch(e) {
+            totalFirestore = -1; // error al consultar
+        }
+
+        const estado = totalFirestore < 0        ? '❌ ERROR al consultar'
+                     : totalFirestore === 0       ? '⚠️  SIN DATOS en Firestore'
+                     : totalFirestore >= totalLocal ? '✅ Sincronizada'
+                     : '🔄 PARCIAL (' + totalFirestore + '/' + totalLocal + ')';
+
+        Logger.log(estado + ' — "' + nombre + '": ' + totalLocal + ' locales, ' + totalFirestore + ' en Firestore');
+        resumen.push({ hoja: nombre, local: totalLocal, firestore: totalFirestore, estado });
+        Utilities.sleep(300); // respetar rate limit
+    });
+
+    const sinDatos  = resumen.filter(r => r.firestore === 0).length;
+    const parciales = resumen.filter(r => r.firestore > 0 && r.firestore < r.local).length;
+    const listas    = resumen.filter(r => r.firestore >= r.local && r.firestore > 0).length;
+    Logger.log('─────────────────────────────────────────────────');
+    Logger.log('RESUMEN: ' + listas + ' ✅ listas | ' + parciales + ' 🔄 parciales | ' + sinDatos + ' ⚠️ sin datos');
+    Logger.log('→ Ejecuta sincronizarTodo() para subir lo que falta.');
+}
+
 // ── ENRIQUECER DOCUMENTOS EXISTENTES CON _formId ─────────────────────────────
 //    Ejecuta varias veces hasta que el log diga "ENRIQUECER COMPLETA".
 //    Necesario solo una vez para datos históricos que no tienen _formId.
