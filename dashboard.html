@@ -1440,11 +1440,11 @@
             <!-- Botón nuevo + lista -->
             <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem;">
                 <button class="btn-add" onclick="mostrarEditorTallerTematico()">➕ Nuevo Taller</button>
+                <button class="btn-add" onclick="seedTalleresInteractivos()" style="font-size:.6rem;padding:.4rem .85rem;background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.4);color:var(--naranja);" title="Sincroniza las 26 presentaciones y talleres interactivos. Es seguro correrlo varias veces — no duplica.">🔄 Sincronizar presentaciones (26)</button>
                 <details style="flex:1;min-width:200px;">
-                    <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px;list-style:none;">📥 Carga inicial de talleres del PDF (solo primera vez)</summary>
+                    <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px;list-style:none;">📥 Talleres del libro de teoría</summary>
                     <div style="padding:.6rem 0 .25rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
-                        <button class="btn-add" id="btn-seed-tt" onclick="seedTalleresTemáticos()" style="font-size:.6rem;padding:.4rem .85rem;">📥 Cargar talleres del libro de teoría</button>
-                        <button class="btn-add" onclick="seedTalleresInteractivos()" style="font-size:.6rem;padding:.4rem .85rem;background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.4);color:var(--naranja);">🎮 Cargar talleres interactivos</button>
+                        <button class="btn-add" id="btn-seed-tt" onclick="seedTalleresTemáticos()" style="font-size:.6rem;padding:.4rem .85rem;">📥 Cargar talleres del libro</button>
                         <p id="seed-tt-status" style="font-family:var(--fuente-t);font-size:.62rem;color:#86efac;display:none;"></p>
                     </div>
                 </details>
@@ -3351,31 +3351,44 @@ function _extraerFechaRaw(r) {
     return '—';
 }
 
-// Detecta el colegio en CUALQUIER campo del registro usando múltiples estrategias
+// Extrae el colegio de un registro de forma CONSERVADORA.
+// SOLO usa nombres de campo explícitamente relacionados a institución.
+// NO hace búsqueda en valores de texto libre — demasiados falsos positivos con respuestas ICFES.
 function _extraerColegioDeRegistro(r) {
-    // 1. Campos con nombre exacto conocido
+    // Lista amplia de nombres de campo que Google Forms/Apps Script puede generar para la pregunta de colegio
     const COLEGIO_KEYS = [
-        'nombre_del_colegio','nombre_colegio','colegio','COLEGIO','Colegio','_colegio',
-        'institucion_educativa','institucion','nombre_institucion','nombre_de_la_institucion',
+        // Nombres cortos
+        'colegio','COLEGIO','Colegio','_colegio','nombre_colegio','nombre_del_colegio',
+        'nombre_de_tu_colegio','nombre_de_su_colegio',
+        // Institución
+        'institucion','institucion_educativa','nombre_institucion','nombre_de_la_institucion',
         'Institución Educativa','INSTITUCION EDUCATIVA','institucion_educativa_nombre',
-        'nombre_del_colegio_o_institucion','colegio_o_institucion','nombre_colegio_institucion',
+        'nombre_de_la_institucion_educativa','tu_institucion_educativa',
+        'nombre_del_colegio_o_institucion','colegio_o_institucion',
+        // Plantel
+        'plantel','nombre_plantel','plantel_educativo',
+        // Variantes con tildes
+        'institución','institución_educativa','nombre_institución',
     ];
     for (const k of COLEGIO_KEYS) {
         const v = r[k];
-        if (v && String(v).trim().length > 2) return String(v).trim();
+        if (!v) continue;
+        const s = String(v).trim();
+        // Rechazar valores que parezcan respuestas de opción múltiple (A. B. C. D. o porcentajes)
+        if (/^[A-D]\./i.test(s)) continue;           // "A. La especie..."
+        if (/^\d+(\.\d+)?%?$/.test(s)) continue;     // "20%", "60"
+        if (s.length > 120) continue;                 // demasiado largo para ser un colegio
+        if (s.length > 2) return s;
     }
-    // 2. Buscar en TODOS los campos — cualquier clave que mencione colegio/institución
-    const COLEGIO_KW = ['colegio','instituci','plantel','escuela','academia','liceo'];
+    // Fallback: buscar clave cuyo nombre (normalizado) contenga exactamente "colegio" o "institucion"
+    // pero exigir que el VALOR también pase la validación anti-ICFES
     for (const [k, v] of Object.entries(r)) {
-        if (!v || typeof v !== 'string' || v.length < 3) continue;
+        if (!v || typeof v !== 'string') continue;
         const kl = k.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-        if (COLEGIO_KW.some(kw => kl.includes(kw))) return v.trim();
-    }
-    // 3. Buscar en valores de tipo texto que parezcan un nombre de institución
-    for (const [k, v] of Object.entries(r)) {
-        if (!v || typeof v !== 'string' || v.length < 10) continue;
-        const vl = v.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
-        if (COLEGIO_KW.some(kw => vl.startsWith(kw)) || vl.includes(' tumaco') || vl.includes('ie ')) return v.trim();
+        if (!['colegio','institucion','plantel','escuela'].some(kw => kl === kw || kl.startsWith(kw+'_') || kl.endsWith('_'+kw))) continue;
+        const s = v.trim();
+        if (/^[A-D]\./i.test(s) || /^\d+(\.\d+)?%?$/.test(s) || s.length > 120 || s.length < 3) continue;
+        return s;
     }
     return '';
 }
@@ -6447,12 +6460,27 @@ window.filtrarTalleresAdmin = function(filtro) {
 };
 
 let _cargandoTalleresTematicoAdmin = false;
+let _seedAutoEjecutado = false; // solo auto-seed UNA vez por sesión
 window.cargarTalleresTematicoAdmin = async function() {
     if (_cargandoTalleresTematicoAdmin) return;
     _cargandoTalleresTematicoAdmin = true;
     const lista = document.getElementById('tt-lista-admin');
     if (!lista) { _cargandoTalleresTematicoAdmin = false; return; }
     lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>';
+
+    // ── Auto-sync: garantiza que todas las lecciones y talleres estén en Firestore ──
+    // seedTalleresInteractivos usa IDs determinísticos — nunca duplica, siempre actualiza.
+    if (!_seedAutoEjecutado) {
+        _seedAutoEjecutado = true;
+        _cargandoTalleresTematicoAdmin = false; // liberar mutex ANTES del return
+        lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Sincronizando talleres y presentaciones… ⏳</p>';
+        setTimeout(async () => {
+            if (typeof seedTalleresInteractivos === 'function') await seedTalleresInteractivos();
+            // seedTalleresInteractivos llama cargarTalleresTematicoAdmin al final
+        }, 300);
+        return;
+    }
+
     const _doLoad = async () => {
         const snap = await getDocs(collection(db,'talleres_tematicos'));
         if (snap.empty) {
