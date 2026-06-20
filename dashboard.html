@@ -1091,8 +1091,12 @@
                     <div class="fa-group"><label>Título</label><input type="text" id="ti-titulo" placeholder="ej: Sesión 2 - Lectura Crítica G1"></div>
                     <div class="fa-group"><label>Área</label>
                         <select id="ti-area">
-                            <option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option>
-                            <option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option>
+                            <option>Lectura Crítica</option>
+                            <option>Matemáticas</option><option>Geometría</option><option>Álgebra Lineal</option><option>Estadística</option><option>Trigonometría</option>
+                            <option>Ciencias Naturales</option><option>Biología</option><option>Química</option><option>Física</option>
+                            <option>Ciencias Sociales</option><option>Filosofía</option>
+                            <option>Inglés</option><option>Lenguaje</option>
+                            <option>General</option>
                         </select>
                     </div>
                     <div class="fa-group"><label>Grupo</label>
@@ -1127,8 +1131,12 @@
                     <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;">
                         <select id="ti-filter-area" onchange="renderTalleresAdmin()" style="font-family:var(--fuente-t);font-size:0.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:.3rem .5rem;">
                             <option value="">Todas las áreas</option>
-                            <option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option>
-                            <option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option>
+                            <option>Lectura Crítica</option>
+                            <option>Matemáticas</option><option>Geometría</option><option>Álgebra Lineal</option><option>Estadística</option><option>Trigonometría</option>
+                            <option>Ciencias Naturales</option><option>Biología</option><option>Química</option><option>Física</option>
+                            <option>Ciencias Sociales</option><option>Filosofía</option>
+                            <option>Inglés</option><option>Lenguaje</option>
+                            <option>General</option>
                         </select>
                         <select id="ti-filter-grupo" onchange="renderTalleresAdmin()" style="font-family:var(--fuente-t);font-size:0.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:.3rem .5rem;">
                             <option value="">Todos los grupos</option>
@@ -1167,7 +1175,14 @@
                 <div class="form-add">
                     <div class="fa-group" style="grid-column:1/-1"><label>Título del Reto</label><input type="text" id="ra-titulo" placeholder="ej: Reto de Comprensión Lectora — Semana 3"></div>
                     <div class="fa-group"><label>Área</label>
-                        <select id="ra-area"><option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option><option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option><option>General</option></select>
+                        <select id="ra-area">
+                        <option>Lectura Crítica</option>
+                        <option>Matemáticas</option><option>Geometría</option><option>Álgebra Lineal</option><option>Estadística</option><option>Trigonometría</option>
+                        <option>Ciencias Naturales</option><option>Biología</option><option>Química</option><option>Física</option>
+                        <option>Ciencias Sociales</option><option>Filosofía</option>
+                        <option>Inglés</option><option>Lenguaje</option>
+                        <option>General</option>
+                    </select>
                     </div>
                     <div class="fa-group"><label>Puntos al completar</label><input type="number" id="ra-puntos" value="10" min="1" max="100"></div>
                     <div class="fa-group"><label>Fecha límite (opcional)</label><input type="datetime-local" id="ra-deadline"></div>
@@ -1186,8 +1201,12 @@
                     <p class="section-box-title" style="margin:0;">📋 Retos publicados</p>
                     <select id="ra-filter-area" onchange="renderRetosAdmin()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .5rem;">
                         <option value="">Todas las áreas</option>
-                        <option>Lectura Crítica</option><option>Matemáticas</option><option>Inglés</option>
-                        <option>Biología</option><option>Química</option><option>Sociales</option><option>Geometría</option><option>General</option>
+                        <option>Lectura Crítica</option>
+                        <option>Matemáticas</option><option>Geometría</option><option>Álgebra Lineal</option><option>Estadística</option><option>Trigonometría</option>
+                        <option>Ciencias Naturales</option><option>Biología</option><option>Química</option><option>Física</option>
+                        <option>Ciencias Sociales</option><option>Filosofía</option>
+                        <option>Inglés</option><option>Lenguaje</option>
+                        <option>General</option>
                     </select>
                 </div>
                 <div id="ra-lista" style="display:flex;flex-direction:column;gap:.4rem;max-height:420px;overflow-y:auto;">
@@ -5381,7 +5400,14 @@ function renderResultadosICFES() {
         return;
     }
 
-    const AREA_COLOR = {'Lectura Crítica':'#7c3aed','Química':'#059669','Inglés':'#0369a1','Matemáticas':'#d97706','Geometría':'#0891b2','Biología':'#16a34a','Sociales':'#dc2626','Física':'#0ea5e9','(sin área)':'rgba(240,244,248,.25)'};
+    const AREA_COLOR = {
+        'Lectura Crítica':'#7c3aed',
+        'Matemáticas':'#d97706','Geometría':'#0891b2','Álgebra Lineal':'#f59e0b','Estadística':'#a855f7','Trigonometría':'#6366f1',
+        'Ciencias Naturales':'#16a34a','Biología':'#22c55e','Química':'#059669','Física':'#0ea5e9',
+        'Ciencias Sociales':'#dc2626','Filosofía':'#e11d48',
+        'Inglés':'#0369a1','Lenguaje':'#7e22ce',
+        'General':'#64748b','(sin área)':'rgba(240,244,248,.25)'
+    };
 
     tbody.innerHTML = estudiantes.map((e, idx) => {
         const detId = `ri-est-${idx}`;
