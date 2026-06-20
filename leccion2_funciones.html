@@ -14,7 +14,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #prog-track{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
 #prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange));border-radius:2px;transition:width .5s ease;}
 #slide-card{flex:1;background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
-#slide-inner{flex:1;padding:2rem;overflow-y:auto;display:flex;flex-direction:column;justify-content:center;}
+#slide-inner{flex:1;padding:2rem;overflow-y:auto;display:flex;flex-direction:column;justify-content:flex-start;}
 #nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .nav-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:600;transition:all .2s;}
 .nav-btn:hover:not(:disabled){background:var(--purple);border-color:var(--purple);transform:translateY(-1px);}
@@ -200,7 +200,7 @@ function s5(el){
 </div></div>`;rQ2(0);}
 function rQ2(i){if(i>=quiz.length){setTimeout(showSc,400);return;}const q=quiz[i];const w=document.getElementById('qw');if(!w)return;
 w.innerHTML=`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem;">Pregunta ${i+1} de ${quiz.length}</div><div class="q-q">${q.q}</div><div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div><div class="q-fb" id="qf${i}"></div>`;
-gsap.from('.q-opt',{x:-16,opacity:0,duration:.28,stagger:.07});}
+gsap.from('.q-opt',{x:-18,duration:.3,stagger:.06,ease:'power2.out'});}
 function ansQ(qi,oi){if(qAns[qi]!==null)return;qAns[qi]=oi;const q=quiz[qi];
 document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});
 const fb=document.getElementById(`qf${qi}`);if(fb){fb.className='q-fb '+(oi===q.ok?'ok':'bad');fb.textContent=(oi===q.ok?'✅ ':'❌ ')+q.fb;}
