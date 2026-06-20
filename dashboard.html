@@ -6299,8 +6299,9 @@ window.importarTalleresCSV = async function() {
         if (existentes.has(titulo.toLowerCase())) { skipped++; continue; } // no duplicar
         const taller = {
             titulo,
-            area:        get(cols, COL('area'))        || 'General',
-            grupo:       get(cols, COL('grupo'))       || 'General',
+            hojaCalculo: get(cols, COL('hojacalculo')) || get(cols, COL('hoja')) || titulo,
+            area:        get(cols, COL('area'))        || '',
+            grupo:       get(cols, COL('grupo'))       || '',
             sesion:      parseInt(get(cols, COL('sesion'))) || 1,
             modulo:      get(cols, COL('modulo'))      || '',
             formId:      get(cols, COL('formid'))      || '',
