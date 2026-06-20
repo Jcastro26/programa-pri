@@ -121,7 +121,10 @@
         .foro-messages::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);}
         .foro-messages::-webkit-scrollbar-thumb{background:var(--naranja);border-radius:4px;}
         /* inbox chat: altura responsiva para llenar el panel disponible */
-        #inbox-chat-mensajes{height:clamp(240px,45vh,420px);}
+        #inbox-chat-mensajes{height:clamp(300px,55vh,600px);}
+        /* Desktop: el chat ocupa todo el ancho del panel */
+        #inbox-chat-box{width:100%;}
+        #inbox-chat-box>.section-box{flex:1;min-width:0;width:100%;}
         #ti-lista::-webkit-scrollbar{width:4px;}
         #ti-lista::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);border-radius:2px;}
         #ti-lista::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.4);border-radius:2px;}
@@ -1399,11 +1402,21 @@
                                 <option value="">— Sin cuestionario asociado —</option>
                             </select>
                         </div>
+                        <!-- Campo URL: solo visible para talleres interactivos -->
+                        <div class="fa-group" id="tt-url-row" style="grid-column:1/-1;display:none;">
+                            <label>URL del taller interactivo (archivo .html)</label>
+                            <input type="text" id="tt-url" placeholder="ej: taller_lectura_critica.html">
+                        </div>
+                        <input type="hidden" id="tt-tipo" value="">
                     </div>
+                    <div id="tt-diapos-section">
                     <p class="section-box-title" style="margin:.25rem 0 .75rem;border-top:1px solid rgba(255,255,255,.06);padding-top:.8rem;">🖼️ Diapositivas del Taller</p>
                     <div id="tt-diapos-builder"></div>
                     <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;">
                         <button class="btn-add" style="background:rgba(56,189,248,.1);color:var(--teal);border:1px solid rgba(56,189,248,.25);" onclick="agregarDiapoBuilder()">➕ Agregar Diapositiva</button>
+                    </div>
+                    </div><!-- /tt-diapos-section -->
+                    <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.8rem;">
                         <button class="btn-add" onclick="guardarTallerTematico()">💾 Guardar Taller</button>
                         <button class="btn-add" style="background:rgba(255,255,255,.05);" onclick="cerrarEditorTallerTematico()">✕ Cancelar</button>
                     </div>
@@ -3288,7 +3301,7 @@ function _extraerEstudiante(r) {
     const cedula  = normalizarCedula(_px(r,'numero_de_cedula','numero_de_identificacion','NUMERO DE CEDULA','NÚMERO DE CÉDULA','cedula'));
     const email   = _px(r,'correo_electronico','direccion_de_correo_electronico','Dirección de correo electrónico','CORREO ELECTRONICO','email');
     const nombre  = _px(r,'nombre_completo','columna_3','Columna 3','NOMBRE COMPLETO','nombre');
-    const fecha   = _px(r,'marca_temporal','_timestamp_envio','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
+    const fecha   = _px(r,'_timestamp_envio','marca_temporal','digita_la_fecha','digite_la_fecha','Marca temporal','DIGITE LA FECHA');
     const pts     = _px(r,'Puntuación','puntuacion','PUNTUACION','Puntaje');
     const tipoId  = _px(r,'tipo_de_identificacion','tipo_de_documento','tipo_id','Tipo de Identificación','TIPO DE IDENTIFICACION') || '';
     const colegioForm = _px(r,
@@ -3705,7 +3718,10 @@ function renderResultadosICFES() {
             // También podría ser DD/MM/YYYY (usuario)
             const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[,\s]+(\d{1,2}:\d{2}(?::\d{2})?))?/);
             if (m1) {
-                const a = parseInt(m1[1], 10), b = parseInt(m1[2], 10), y = m1[3], t = m1[4] || '00:00:00';
+                const a = parseInt(m1[1], 10), b = parseInt(m1[2], 10), y = m1[3];
+                const tRaw = m1[4] || '00:00:00';
+                // Zero-pad single-digit hour: "8:14:23" → "08:14:23" (ISO 8601 requirement)
+                const t = tRaw.replace(/^(\d):/, '0$1:');
                 // Si b>12 → a es mes (formato US: M/D/YYYY — Google Forms)
                 // Si a>12 → b es mes (formato EU: D/M/YYYY)
                 // Ambos ≤12 → asumir US (Google Forms por defecto)
@@ -3735,17 +3751,19 @@ function renderResultadosICFES() {
     // Computar _maxPorHoja UNA sola vez (no dentro del loop por estudiante)
     const _maxPorHoja = {};
     _riDatos.forEach(rr => {
-        const pts = (rr.Puntuacion||rr.puntuacion||rr.PUNTUACION||rr.Puntaje||'');
+        // Todos los posibles nombres del campo puntaje
+        const pts = (rr.Puntuacion||rr.puntuacion||rr.PUNTUACION||rr.Puntaje||rr.puntaje||rr.PUNTAJE||rr.Score||rr.score||rr.Puntaje_Total||rr.total||'');
+        const hojaKey = rr._hoja || '';  // agrupar registros sin _hoja bajo clave vacía
         const pm  = String(pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
         if (pm) {
             const tot = parseFloat(pm[2]);
-            if (!isNaN(tot) && rr._hoja) {
-                if (!_maxPorHoja[rr._hoja] || tot > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = tot;
+            if (!isNaN(tot)) {
+                if (!_maxPorHoja[hojaKey] || tot > _maxPorHoja[hojaKey]) _maxPorHoja[hojaKey] = tot;
             }
         } else {
             const n = parseFloat(pts);
-            if (!isNaN(n) && rr._hoja) {
-                if (!_maxPorHoja[rr._hoja] || n > _maxPorHoja[rr._hoja]) _maxPorHoja[rr._hoja] = n;
+            if (!isNaN(n)) {
+                if (!_maxPorHoja[hojaKey] || n > _maxPorHoja[hojaKey]) _maxPorHoja[hojaKey] = n;
             }
         }
     });
@@ -6258,7 +6276,7 @@ function _renderTalleresAdmin(docs, filtro) {
                     <p class="banco-meta" style="margin-top:.25rem;color:${t.publicado?'var(--verde)':'rgba(255,94,0,.7)'};">${t.publicado?'✅ Publicado':'⏸ Borrador'}</p>
                 </div>
                 <div style="display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0;">
-                    ${t.tipo!=='interactivo'?`<button class="btn-module" onclick="editarTallerTematico('${t.id}')" style="background:rgba(56,189,248,.1);color:var(--teal);border-color:rgba(56,189,248,.25);">✏️ Editar</button>`:''}
+                    <button class="btn-module" onclick="editarTallerTematico('${t.id}')" style="background:rgba(56,189,248,.1);color:var(--teal);border-color:rgba(56,189,248,.25);">✏️ Editar</button>
                     ${t.tipo==='interactivo'&&t.url ? `<button class="btn-module" onclick="window.open('${t.url}','_blank')" style="background:rgba(34,197,94,.1);color:#86efac;border-color:rgba(34,197,94,.25);">👁 Preview</button>` : ''}
                     <button class="btn-module" onclick="togglePublicarTT('${t.id}',${!t.publicado})"
                         style="background:${t.publicado?'rgba(255,94,0,.08)':'rgba(16,185,129,.08)'};color:${t.publicado?'var(--naranja)':'#10b981'};border-color:${t.publicado?'rgba(255,94,0,.25)':'rgba(16,185,129,.3)'};">
@@ -6319,24 +6337,43 @@ window.mostrarEditorTallerTematico = async function(id) {
         });
     } catch(e) {}
 
+    // Helpers para mostrar/ocultar sección interactivo vs diapositivas
+    const urlRow = document.getElementById('tt-url-row');
+    const diaposSection = document.getElementById('tt-diapos-section');
+    const tipoInput = document.getElementById('tt-tipo');
+
+    function _setModoInteractivo(esInteractivo) {
+        if (urlRow) urlRow.style.display = esInteractivo ? '' : 'none';
+        if (diaposSection) diaposSection.style.display = esInteractivo ? 'none' : '';
+    }
+
     if (id) {
         try {
             const snap = await getDoc(doc(db,'talleres_tematicos',id));
             if (snap.exists()) {
                 const t = snap.data();
+                const esInteractivo = t.tipo === 'interactivo';
                 document.getElementById('tt-titulo').value = t.titulo||'';
                 document.getElementById('tt-area').value = t.area||'Matemáticas';
                 document.getElementById('tt-grado').value = t.grado||'todos';
                 document.getElementById('tt-puntos').value = t.puntos||50;
                 document.getElementById('tt-desc').value = t.descripcion||'';
                 document.getElementById('tt-formulario-id').value = t.formularioBancoId||'';
-                (t.diapositivas||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)).forEach(d => agregarDiapoBuilder(d));
+                if (tipoInput) tipoInput.value = t.tipo||'';
+                if (urlRow) document.getElementById('tt-url').value = t.url||'';
+                _setModoInteractivo(esInteractivo);
+                if (!esInteractivo) {
+                    (t.diapositivas||[]).sort((a,b)=>(a.orden||0)-(b.orden||0)).forEach(d => agregarDiapoBuilder(d));
+                }
             }
         } catch(e) {}
     } else {
         document.getElementById('tt-titulo').value = '';
         document.getElementById('tt-desc').value = '';
         document.getElementById('tt-puntos').value = '50';
+        if (tipoInput) tipoInput.value = '';
+        if (urlRow) document.getElementById('tt-url').value = '';
+        _setModoInteractivo(false);
         agregarDiapoBuilder();
     }
 
@@ -6410,8 +6447,12 @@ window.previewDiapoImg = function(idx) {
 window.guardarTallerTematico = async function() {
     const titulo = document.getElementById('tt-titulo').value.trim();
     if (!titulo) { notif('Campo requerido','Ingresa un título para el taller.','⚠️','warning'); return; }
+
+    const tipoGuardado = document.getElementById('tt-tipo')?.value || '';
+    const esInteractivo = tipoGuardado === 'interactivo';
+
     const items = document.querySelectorAll('#tt-diapos-builder .tt-diapo-item');
-    if (!items.length) { notif('Sin diapositivas','Agrega al menos una diapositiva.','⚠️','warning'); return; }
+    if (!esInteractivo && !items.length) { notif('Sin diapositivas','Agrega al menos una diapositiva.','⚠️','warning'); return; }
 
     const btns = document.querySelectorAll('#tt-editor-cont button');
     btns.forEach(b => b.disabled = true);
@@ -6420,18 +6461,20 @@ window.guardarTallerTematico = async function() {
 
     try {
         const diapositivas = [];
-        for (let i = 0; i < items.length; i++) {
-            const idx = items[i].dataset.idx;
-            const tituloD = document.getElementById(`ttd-titulo-${idx}`)?.value?.trim()||'';
-            const contenido = document.getElementById(`ttd-contenido-${idx}`)?.value?.trim()||'';
-            let imgUrl = document.getElementById(`ttd-imgurl-${idx}`)?.value||'';
-            const fileEl = document.getElementById(`ttd-file-${idx}`);
-            if (fileEl?.files?.[0]) {
-                imgUrl = await subirImagenCloudinary(fileEl.files[0]);
-                const urlEl = document.getElementById(`ttd-imgurl-${idx}`);
-                if (urlEl) urlEl.value = imgUrl;
+        if (!esInteractivo) {
+            for (let i = 0; i < items.length; i++) {
+                const idx = items[i].dataset.idx;
+                const tituloD = document.getElementById(`ttd-titulo-${idx}`)?.value?.trim()||'';
+                const contenido = document.getElementById(`ttd-contenido-${idx}`)?.value?.trim()||'';
+                let imgUrl = document.getElementById(`ttd-imgurl-${idx}`)?.value||'';
+                const fileEl = document.getElementById(`ttd-file-${idx}`);
+                if (fileEl?.files?.[0]) {
+                    imgUrl = await subirImagenCloudinary(fileEl.files[0]);
+                    const urlEl = document.getElementById(`ttd-imgurl-${idx}`);
+                    if (urlEl) urlEl.value = imgUrl;
+                }
+                diapositivas.push({ titulo:tituloD, contenido, imagen:imgUrl||null, orden:i });
             }
-            diapositivas.push({ titulo:tituloD, contenido, imagen:imgUrl||null, orden:i });
         }
 
         const selForm = document.getElementById('tt-formulario-id');
@@ -6443,7 +6486,9 @@ window.guardarTallerTematico = async function() {
             descripcion: document.getElementById('tt-desc').value.trim(),
             formularioBancoId: selForm.value||null,
             formularioBancoTitulo: selForm.value ? (selForm.options[selForm.selectedIndex]?.text||null) : null,
-            diapositivas,
+            ...(esInteractivo
+                ? { tipo:'interactivo', url: document.getElementById('tt-url')?.value?.trim()||'' }
+                : { diapositivas }),
             creadoEn: serverTimestamp(),
         };
 
