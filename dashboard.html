@@ -3166,10 +3166,12 @@ function cargarPretestData() {
             const fortalezasColor = forts.length ? '#86efac' : 'rgba(255,255,255,.3)';
             const falenciasColor  = falens.length ? '#fca5a5'  : 'rgba(255,255,255,.3)';
 
+            const gradoNorm = normalizarGrado(r.grado || r.nivel || '');
+
             tbody.insertAdjacentHTML('beforeend',`<tr>
                 <td><span class="name-cell">${r.nombre||'—'}</span></td>
                 <td style="font-size:.7rem;">${colegioNorm||'—'}</td>
-                <td style="font-size:.7rem;">${r.grado||'—'}</td>
+                <td style="font-family:var(--fuente-t);font-size:.75rem;font-weight:700;color:rgba(255,255,255,.7);">${gradoNorm}</td>
                 <td style="font-family:var(--fuente-t);font-size:.75rem;font-weight:700;color:var(--teal);">${edad||'—'}</td>
                 <td style="font-size:.7rem;">${municipioNorm}</td>
                 <td style="font-family:var(--fuente-t);font-size:.85rem;font-weight:900;color:${pctColor};">${r.porcentaje!=null?r.porcentaje+'%':'—'}</td>
@@ -4206,6 +4208,29 @@ function normalizarMunicipio(raw) {
     // Title Case de la primera parte antes de la coma o guión original
     const base = raw.split(/[,\-]/)[0].trim();
     return base.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
+// ── Normalización de grados ───────────────────────────────────────────────────
+function normalizarGrado(raw) {
+    if (!raw) return '—';
+    const s = raw.toString().trim().toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g,'');
+    // Semestres / universitario / pregrado
+    if (/semestre|universitario|pregrado|primer sem|segundo sem|tercer sem|cuarto sem|quinto sem|sexto sem|1er sem|2do sem|3er sem|4to sem|5to sem|6to sem/.test(s)) return 'Pregrado';
+    if (/egresado|graduado/.test(s)) return 'Egresado';
+    // Números textuales → grado con símbolo
+    if (/^6$|sexto\s*(grado)?$/.test(s))    return '6°';
+    if (/^7$|septimo\s*(grado)?$/.test(s))   return '7°';
+    if (/^8$|octavo\s*(grado)?$/.test(s))    return '8°';
+    if (/^9$|noveno\s*(grado)?$/.test(s))    return '9°';
+    if (/^10$|decimo\s*(grado)?$/.test(s))   return '10°';
+    if (/^11$|undecimo\s*(grado)?$|onceavo\s*(grado)?$|once\s*(grado)?$/.test(s)) return '11°';
+    if (/^12$|doceavo\s*(grado)?$/.test(s))  return '12°';
+    // Ya tiene símbolo de grado o es solo número
+    const solNum = s.match(/^(\d+)\s*°?\s*(grado)?$/);
+    if (solNum) return solNum[1] + '°';
+    // Fallback: title case
+    return raw.toString().trim().replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 
 // ── Mapeo claves internas de área → nombre completo ───────────────────────────

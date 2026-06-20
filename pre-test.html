@@ -574,7 +574,8 @@
                 <option value="9">Noveno (9°)</option>
                 <option value="10">Décimo (10°)</option>
                 <option value="11">Undécimo (11°)</option>
-                <option value="Egresado">Egresado/Graduado</option>
+                <option value="Egresado">Egresado de bachillerato</option>
+                <option value="Pregrado">Pregrado (universidad)</option>
             </select>
         </div>
         <div class="field">
@@ -913,7 +914,7 @@
           estrato = document.getElementById('aspirante-estrato').value;
           if (!grado) { mostrarAvisoPRI('Selecciona el grado', 'Indica en qué grado estás.', '⚠️'); return; }
           if (!estrato) { mostrarAvisoPRI('Selecciona el estrato', 'Indica tu estrato socioeconómico.', '⚠️'); return; }
-          nivel = grado === 'Egresado' ? 'Egresado/Graduado' : `${grado}° grado`;
+          nivel = grado === 'Egresado' ? 'Egresado' : grado === 'Pregrado' ? 'Pregrado' : `${grado}°`;
       } else {
           nivel = document.getElementById('aspirante-semestre').value || 'Universitario';
           estrato = document.getElementById('aspirante-estrato-vol').value || '1';
