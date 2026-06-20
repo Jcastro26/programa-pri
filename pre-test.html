@@ -412,6 +412,12 @@
             <input type="tel" id="aspirante-tel" placeholder="300 123 4567" required autocomplete="tel">
         </div>
         <div class="field">
+            <label>Edad *</label>
+            <input type="number" id="aspirante-edad" placeholder="Ej: 17" min="10" max="60" required>
+        </div>
+    </div>
+    <div class="form-row full-mobile">
+        <div class="field">
             <label>Departamento</label>
             <select id="aspirante-depto" onchange="actualizarMunicipios()">
                 <option value="" disabled selected>Selecciona departamento</option>
@@ -892,6 +898,7 @@
       const _municipio = document.getElementById('aspirante-ciudad').value.trim() || 'Tumaco';
       const _depto     = document.getElementById('aspirante-depto')?.value.trim() || 'Nariño';
       const ciudad = _municipio ? `${_municipio}, ${_depto}` : 'Tumaco, Nariño';
+      const edad   = parseInt(document.getElementById('aspirante-edad')?.value) || null;
       const docTipo = document.getElementById('aspirante-doc-tipo').value;
       const docNum = document.getElementById('aspirante-doc-num').value.trim();
 
@@ -913,8 +920,8 @@
           grado = '11'; // Para voluntarios usamos banco G11 como base
       }
 
-      window.datosAspiranteGlobal = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, municipio: ciudad, docTipo, docNum, nivel };
-      datosAspirante = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, municipio: ciudad, docTipo, docNum, nivel };
+      window.datosAspiranteGlobal = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, municipio: ciudad, docTipo, docNum, nivel, edad };
+      datosAspirante = { nombre, correo, tel, colegio, grado, estrato, rol, ciudad, municipio: ciudad, docTipo, docNum, nivel, edad };
 
       // Poblar barra superior del quiz
       const setUI = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
@@ -1154,16 +1161,16 @@ const BANCO_G10 = [
   {area:"mat",t:120,q:"El coseno de 60° es igual a:",o:["0.866","0.5","1","0"],a:1,e:"cos(60°) = ½ = 0.5. Es uno de los valores trigonométricos exactos fundamentales."},
   {area:"mat",t:120,q:"Si sen(θ) = 3/5, en un triángulo rectángulo, cos(θ) es:",o:["3/4","5/3","4/5","5/4"],a:2,e:"Por el Teorema de Pitágoras: si opuesto=3 e hipotenusa=5, adyacente=4. Cos(θ)=4/5."},
   {area:"mat",t:120,q:"La tangente de 45° es igual a:",o:["0","√2","0.5","1"],a:3,e:"tan(45°) = sen(45°)/cos(45°) = (√2/2)/(√2/2) = 1."},
-  {area:"mat",t:60,q:"En un triángulo, el Teorema del Seno establece que:",o:["a/sen A = b/sen B = c/sen C","a² = b² + c²","a/b = sen C/sen A","sen A + sen B = 1"],a:0,e:"La Ley del Seno relaciona cada lado con el seno del ángulo opuesto en cualquier triángulo."},
+  {area:"mat",t:120,q:"En un triángulo, el Teorema del Seno establece que:",o:["a/sen A = b/sen B = c/sen C","a² = b² + c²","a/b = sen C/sen A","sen A + sen B = 1"],a:0,e:"La Ley del Seno relaciona cada lado con el seno del ángulo opuesto en cualquier triángulo."},
   {area:"mat",t:120,q:"¿Cuál es la identidad trigonométrica fundamental?",o:["sen θ + cos θ = 1","sen²θ + cos²θ = 1","sen θ × cos θ = 1","tan θ = 1"],a:1,e:"La identidad pitagórica es la base de la trigonometría: sen²θ + cos²θ = 1 siempre."},
   {area:"mat",t:120,q:"La función y = 2sen(x) tiene amplitud:",o:["1","π","2","0.5"],a:2,e:"La amplitud de A·sen(x) es |A|. En y=2sen(x), A=2, amplitud=2."},
-  {area:"mat",t:60,q:"Si una escalera de 10 m forma un ángulo de 30° con el suelo, ¿a qué altura llega?",o:["8.66 m","10 m","7 m","5 m"],a:3,e:"Altura = 10 × sen(30°) = 10 × 0.5 = 5 m."},
+  {area:"mat",t:120,q:"Si una escalera de 10 m forma un ángulo de 30° con el suelo, ¿a qué altura llega?",o:["8.66 m","10 m","7 m","5 m"],a:3,e:"Altura = 10 × sen(30°) = 10 × 0.5 = 5 m."},
   // FÍSICA - MECÁNICA (7) — rotación continua: 0,1,2,3,0,1,2
   {area:"fis",t:120,q:"La Segunda Ley de Newton establece que la fuerza es igual a:",o:["F = m × a","F = m / a","F = a / m","F = m + a"],a:0,e:"F = ma: la fuerza neta sobre un objeto es igual a su masa por su aceleración."},
   {area:"fis",t:120,q:"Un objeto de 5 kg es sometido a una fuerza de 20 N. ¿Cuál es su aceleración?",o:["25 m/s²","4 m/s²","100 m/s²","15 m/s²"],a:1,e:"a = F/m = 20/5 = 4 m/s²."},
   {area:"fis",t:120,q:"¿Qué es la energía potencial gravitacional?",o:["Energía del movimiento","Energía química almacenada","Energía que tiene un objeto por su posición en altura","Energía del calor"],a:2,e:"Ep = mgh. Depende de la masa (m), la gravedad (g) y la altura (h) sobre el suelo."},
   {area:"fis",t:120,q:"La conservación de la energía mecánica implica que:",o:["La energía siempre aumenta","La energía cinética siempre es mayor","El trabajo es siempre positivo","La energía total (cinética + potencial) se mantiene constante"],a:3,e:"Sin fricción, la energía mecánica total E=Ec+Ep se conserva en cada instante."},
-  {area:"fis",t:60,q:"¿Cuál es la unidad de energía en el Sistema Internacional?",o:["Joule (J)","Newton (N)","Watt (W)","Pascal (Pa)"],a:0,e:"El Joule es la unidad de energía: 1 J = 1 N·m = 1 kg·m²/s²."},
+  {area:"fis",t:120,q:"¿Cuál es la unidad de energía en el Sistema Internacional?",o:["Joule (J)","Newton (N)","Watt (W)","Pascal (Pa)"],a:0,e:"El Joule es la unidad de energía: 1 J = 1 N·m = 1 kg·m²/s²."},
   {area:"fis",t:120,q:"Un proyectil lanzado horizontalmente sigue una trayectoria:",o:["Circular","Parabólica","Recta","Elíptica"],a:1,e:"La combinación de movimiento uniforme horizontal y caída libre vertical produce una parábola."},
   {area:"fis",t:120,q:"La potencia se define como:",o:["P = F/m","P = E × t","P = W/t (trabajo por unidad de tiempo)","P = m × v"],a:2,e:"Potencia = trabajo realizado ÷ tiempo empleado. Unidad: Watt (W) = J/s."},
   // QUÍMICA INORGÁNICA (7) — rotación continua: 3,0,1,2,3,0,1
@@ -1172,7 +1179,7 @@ const BANCO_G10 = [
   {area:"qui",t:120,q:"El enlace iónico se forma entre:",o:["Dos no-metales (compartición)","Un metal y un no-metal (transferencia de electrones)","Dos metales","Átomos iguales"],a:1,e:"En el enlace iónico, el metal cede electrones al no-metal: se forman catión (+) y anión (−)."},
   {area:"qui",t:120,q:"Balancea: H₂ + O₂ → H₂O. La ecuación balanceada es:",o:["H₂ + O₂ → H₂O","H₂ + 2O₂ → H₂O","2H₂ + O₂ → 2H₂O","4H₂ + O₂ → H₂O"],a:2,e:"2H₂ + O₂ → 2H₂O conserva los átomos: 4H y 2O en cada lado."},
   {area:"qui",t:120,q:"Un ácido, según Arrhenius, produce en agua:",o:["Iones OH⁻","Iones metálicos","Gases inertes","Iones H⁺ (protones)"],a:3,e:"Arrhenius definió ácidos como sustancias que liberan H⁺ en solución acuosa."},
-  {area:"qui",t:60,q:"La estequiometría estudia:",o:["Las proporciones cuantitativas en las reacciones químicas","La estructura del núcleo","Los estados de la materia","Las propiedades físicas de los elementos"],a:0,e:"La estequiometría calcula cantidades de reactivos y productos en una reacción balanceada."},
+  {area:"qui",t:120,q:"La estequiometría estudia:",o:["Las proporciones cuantitativas en las reacciones químicas","La estructura del núcleo","Los estados de la materia","Las propiedades físicas de los elementos"],a:0,e:"La estequiometría calcula cantidades de reactivos y productos en una reacción balanceada."},
   {area:"qui",t:120,q:"¿Cuántos electrones de valencia tiene el carbono (Z=6)?",o:["2","4","6","3"],a:1,e:"Carbono: configuración 2,4 → 4 electrones en la capa de valencia. Por eso forma 4 enlaces."},
   // FILOSOFÍA (7) — rotación continua: 2,3,0,1,2,3,0
   {area:"fil",t:120,q:"¿Qué es la epistemología?",o:["El estudio de los valores morales","La ciencia de la vida","La rama filosófica que estudia el conocimiento","El estudio del lenguaje"],a:2,e:"La epistemología investiga la naturaleza, el origen y los límites del conocimiento humano."},
@@ -1207,19 +1214,19 @@ const BANCO_G10 = [
 // ================================================================
 const BANCO_G11 = [
   // MATEMÁTICAS - CÁLCULO Y ESTADÍSTICA (8) — rotación: 0,1,2,3,0,1,2,3
-  {area:"mat",t:60,q:"El límite lim(x→2) de (x²−4)/(x−2) es:",o:["4","2","0","No existe"],a:0,e:"Factorizando: (x−2)(x+2)/(x−2) = x+2. Cuando x→2: 2+2 = 4."},
+  {area:"mat",t:120,q:"El límite lim(x→2) de (x²−4)/(x−2) es:",o:["4","2","0","No existe"],a:0,e:"Factorizando: (x−2)(x+2)/(x−2) = x+2. Cuando x→2: 2+2 = 4."},
   {area:"mat",t:120,q:"La derivada de f(x) = 3x² es:",o:["f'(x) = 3x","f'(x) = 6x","f'(x) = 6x²","f'(x) = 3x²"],a:1,e:"Regla de la potencia: d/dx(axⁿ) = n·axⁿ⁻¹. d/dx(3x²) = 2·3x = 6x."},
   {area:"mat",t:120,q:"¿Qué representa la integral definida de una función entre dos puntos?",o:["La pendiente de la curva","El valor máximo de la función","El área bajo la curva entre esos puntos","La raíz de la función"],a:2,e:"La integral definida ∫ᵃᵇ f(x)dx calcula el área entre la curva y el eje x en [a,b]."},
   {area:"mat",t:120,q:"En el conjunto de datos 3, 5, 5, 7, 9, ¿cuál es la mediana?",o:["6","7","5.8","5"],a:3,e:"Ordenados: 3,5,5,7,9. El valor central (posición 3 de 5) es 5."},
   {area:"mat",t:120,q:"La probabilidad de sacar un 4 al lanzar un dado justo es:",o:["1/6","1/4","1/3","1/2"],a:0,e:"El dado tiene 6 caras equiprobables. Solo una es el 4. P(4) = 1/6."},
   {area:"mat",t:120,q:"¿Qué describe el coeficiente de correlación r = 0?",o:["Correlación perfecta positiva","No hay relación lineal entre las variables","Correlación perfecta negativa","Las variables son iguales"],a:1,e:"r=0 indica ausencia de relación lineal (aunque puede existir otro tipo de relación)."},
   {area:"mat",t:120,q:"Con Media=70 y σ=10, ¿qué porcentaje de datos queda entre 60 y 80?",o:["95%","99.7%","68% (regla empírica ±1σ)","50%"],a:2,e:"En una distribución normal, aprox. el 68% de los datos están dentro de ±1 desviación estándar de la media."},
-  {area:"mat",t:60,q:"El número de combinaciones de 5 elementos tomados de 3 en 3 — C(5,3) — es:",o:["15","20","6","10"],a:3,e:"C(5,3) = 5!/(3!·2!) = (5×4)/(2×1) = 10."},
+  {area:"mat",t:120,q:"El número de combinaciones de 5 elementos tomados de 3 en 3 — C(5,3) — es:",o:["15","20","6","10"],a:3,e:"C(5,3) = 5!/(3!·2!) = (5×4)/(2×1) = 10."},
   // FÍSICA AVANZADA (7) — rotación continua: 0,1,2,3,0,1,2
-  {area:"fis",t:60,q:"Las ondas electromagnéticas se propagan:",o:["Sin necesidad de medio material (en el vacío)","Solo en el agua","Solo en metales","Solo en el aire"],a:0,e:"A diferencia de las ondas mecánicas, las EM (luz, radio, rayos X) se propagan en el vacío."},
+  {area:"fis",t:120,q:"Las ondas electromagnéticas se propagan:",o:["Sin necesidad de medio material (en el vacío)","Solo en el agua","Solo en metales","Solo en el aire"],a:0,e:"A diferencia de las ondas mecánicas, las EM (luz, radio, rayos X) se propagan en el vacío."},
   {area:"fis",t:120,q:"El principio de Bernoulli establece que en un fluido en movimiento:",o:["La presión siempre es constante","Donde la velocidad es mayor, la presión es menor","La velocidad y presión son proporcionales","La densidad aumenta con la velocidad"],a:1,e:"P + ½ρv² + ρgh = constante. A mayor velocidad, menor presión (principio del vuelo en aviones)."},
   {area:"fis",t:120,q:"La Ley de Ohm establece que la corriente eléctrica es:",o:["I = V × R","I = R/V","I = V/R (voltaje dividido entre resistencia)","I = V + R"],a:2,e:"Ley de Ohm: I(amperios) = V(voltios) / R(ohmios)."},
-  {area:"fis",t:60,q:"El calor específico de una sustancia mide:",o:["La temperatura máxima que alcanza","La velocidad de conducción térmica","La energía liberada en una reacción","La energía necesaria para elevar 1 kg en 1°C"],a:3,e:"Q = m·c·ΔT. El calor específico 'c' indica cuántos Joules necesita 1 kg para subir 1°C."},
+  {area:"fis",t:120,q:"El calor específico de una sustancia mide:",o:["La temperatura máxima que alcanza","La velocidad de conducción térmica","La energía liberada en una reacción","La energía necesaria para elevar 1 kg en 1°C"],a:3,e:"Q = m·c·ΔT. El calor específico 'c' indica cuántos Joules necesita 1 kg para subir 1°C."},
   {area:"fis",t:120,q:"¿Qué fenómeno explica los colores en una pompa de jabón?",o:["Interferencia de ondas de luz","Refracción del sonido","Reflexión interna total","Difracción por rendija"],a:0,e:"Los colores resultan de la interferencia constructiva/destructiva de la luz en las delgadas capas de jabón."},
   {area:"fis",t:120,q:"La fisión nuclear consiste en:",o:["La unión de dos núcleos ligeros","La división de un núcleo pesado liberando energía","La emisión de electrones","El movimiento de protones"],a:1,e:"En la fisión (reactores nucleares), núcleos como U-235 se dividen en fragmentos más pequeños liberando enorme energía."},
   {area:"fis",t:120,q:"¿Cuál es la velocidad de la luz en el vacío?",o:["3×10⁶ m/s","9.8 m/s","3×10⁸ m/s","340 m/s"],a:2,e:"c ≈ 3×10⁸ m/s ≈ 300.000 km/s. Es la máxima velocidad posible según la Relatividad Especial."},
@@ -1228,7 +1235,7 @@ const BANCO_G11 = [
   {area:"qui",t:120,q:"Los alcanos son hidrocarburos con:",o:["Solo enlaces simples (C−C)","Un doble enlace","Un triple enlace","Anillo aromático"],a:0,e:"Los alcanos son saturados: solo contienen enlaces simples C−C. Fórmula general: CₙH₂ₙ₊₂."},
   {area:"qui",t:120,q:"El grupo funcional −OH en un compuesto orgánico indica que es:",o:["Un ácido carboxílico","Un alcohol","Un éster","Una amina"],a:1,e:"El grupo hidroxilo (−OH) unido a carbono caracteriza a los alcoholes (ej: etanol CH₃CH₂OH)."},
   {area:"qui",t:120,q:"La reacción de saponificación produce:",o:["Plástico","Combustible","Jabón (sales de ácidos grasos) y glicerina","Ácido clorhídrico"],a:2,e:"La saponificación es la hidrólisis de grasas con base fuerte (NaOH/KOH): produce jabón + glicerol."},
-  {area:"qui",t:60,q:"¿Cuál es el monómero que forma el polietileno?",o:["Propileno","Acetileno","Benceno","Etileno (CH₂=CH₂)"],a:3,e:"El etileno (eteno, CH₂=CH₂) se polimeriza para formar el polietileno, uno de los plásticos más comunes."},
+  {area:"qui",t:120,q:"¿Cuál es el monómero que forma el polietileno?",o:["Propileno","Acetileno","Benceno","Etileno (CH₂=CH₂)"],a:3,e:"El etileno (eteno, CH₂=CH₂) se polimeriza para formar el polietileno, uno de los plásticos más comunes."},
   {area:"qui",t:120,q:"Las proteínas están formadas por unidades llamadas:",o:["Aminoácidos","Nucleótidos","Glucosa","Ácidos grasos"],a:0,e:"Las proteínas son polímeros de aminoácidos unidos por enlaces peptídicos (−CO−NH−)."},
   {area:"qui",t:120,q:"El benceno (C₆H₆) es el compuesto aromático más simple porque tiene:",o:["6 carbonos en cadena recta","Un anillo de 6 carbonos con electrones deslocalizados","Solo enlaces simples","3 carbonos en triángulo"],a:1,e:"El benceno tiene un anillo hexagonal con electrones π deslocalizados que le dan estabilidad especial."},
   // LECTURA CRÍTICA (7) — rotación continua: 2,3,0,1,2,3,0
@@ -1689,30 +1696,60 @@ window.finalizarYGuardar = async function(totalOk, totalPreguntas, porcentaje, p
   function mostrarCTAFinal() {
       const pantallaResultados = document.getElementById('pantalla-resultados');
       if (!pantallaResultados) return;
-
       if (document.getElementById('cta-registro-programa')) return;
+
+      const datos = datosAspirante.nombre ? datosAspirante : (window.datosAspiranteGlobal || {});
+      const primerNombre = datos.nombre ? datos.nombre.split(' ')[0] : 'Futuro Ingeniero';
+      const tel = (datos.tel || '').replace(/\D/g,'');
+
+      // Construir mensaje WhatsApp personalizado
+      const _resPuntos = document.getElementById('res-puntos')?.textContent || '';
+      const _ptsArr = _resPuntos.split('/');
+      const _pct = _ptsArr.length===2 ? Math.round(parseInt(_ptsArr[0])/parseInt(_ptsArr[1])*100)+'%' : '';
+      const pct = _resPuntos ? `${_resPuntos} (${_pct})` : '';
+      const _msg = encodeURIComponent(
+`¡Hola ${primerNombre}! 👋
+
+Acabas de completar el diagnóstico del *Programa PRI — El Pacífico Renaciendo con Ingeniería* 🎓
+
+📊 Tu resultado: *${pct}*
+🌟 Ahora tienes acceso a clases gratuitas, simuladores ICFES y una comunidad de estudiantes del Pacífico que están transformando su futuro.
+
+👉 Regístrate aquí y sigue creciendo:
+🔗 https://www.programapri.com
+
+📲 Únete a nuestra comunidad de WhatsApp:
+https://chat.whatsapp.com/ENLACE_COMUNIDAD_PRI
+
+¡Tu potencial no tiene límites! 🚀`
+      );
+      const waLink = tel.length >= 10
+          ? `https://wa.me/57${tel}?text=${_msg}`
+          : `https://wa.me/?text=${_msg}`;
 
       const ctaDiv = document.createElement('div');
       ctaDiv.id = 'cta-registro-programa';
-      ctaDiv.className = 'cta-final'; 
-      
-      const primerNombre = (datosAspirante.nombre || window.datosAspiranteGlobal.nombre) 
-          ? (datosAspirante.nombre || window.datosAspiranteGlobal.nombre).split(' ')[0] 
-          : 'Futuro Ingeniero';
-
+      ctaDiv.className = 'cta-final';
       ctaDiv.innerHTML = `
-          <div style="margin-top: 2rem; padding: 2rem; background: linear-gradient(135deg, rgba(6,32,64,0.9), rgba(4,24,48,0.9)); border: 2px dashed var(--naranja); border-radius: 12px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
-              <span class="brand-eyebrow" style="color: var(--teal); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; display: block; margin-bottom: 0.5rem;">¡Este es solo el comienzo!</span>
-              <h3 style="font-family: 'Montserrat', sans-serif; color: var(--oro); font-size: 1.4rem; margin-bottom: 0.75rem;">¿Quieres superar este puntaje, ${primerNombre}?</h3>
-              <p style="color: var(--blanco); font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6; opacity: 0.9;">
-                No dejes que las pruebas de estado definen tu límite. Regístrate oficialmente en <b>PROGRAMA-PRI</b> y accede gratis a nuestras clases, simuladores completos y gana recompensas por estudiar.
-              </p>
-              <button class="btn-primary" style="background: var(--naranja); color: var(--blanco); font-weight: 900; padding: 0.8rem 2rem; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; width: 100%; max-width: 320px; box-shadow: 0 4px 15px rgba(255,94,0,0.3);" onclick="window.location.href='login.html'">
-                Crear mi Perfil Oficial Ahora 🚀
-              </button>
-          </div>
+        <div style="margin-top:2rem;padding:2rem;background:linear-gradient(135deg,rgba(6,32,64,0.9),rgba(4,24,48,0.9));border:2px dashed var(--naranja);border-radius:12px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.3);">
+            <span style="color:var(--teal);font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;font-weight:700;display:block;margin-bottom:0.5rem;">¡Este es solo el comienzo!</span>
+            <h3 style="font-family:'Montserrat',sans-serif;color:var(--oro);font-size:1.3rem;margin-bottom:0.6rem;">¿Quieres superar este puntaje, ${primerNombre}?</h3>
+            <p style="color:var(--blanco);font-size:0.9rem;margin-bottom:1.5rem;line-height:1.6;opacity:0.9;">
+                Regístrate gratis en <b>Programa PRI</b> y accede a clases, simuladores ICFES completos y gana recompensas por estudiar. Únete a cientos de jóvenes del Pacífico que están transformando su futuro. 🌊
+            </p>
+            <div style="display:flex;flex-direction:column;gap:0.75rem;align-items:center;">
+                <button class="btn-primary" style="background:var(--naranja);color:#fff;font-weight:900;padding:0.85rem 2rem;border:none;border-radius:8px;cursor:pointer;font-size:1rem;width:100%;max-width:340px;box-shadow:0 4px 15px rgba(255,94,0,0.3);"
+                    onclick="window.location.href='login.html'">
+                    🚀 Crear mi Perfil Oficial
+                </button>
+                <a href="${waLink}" target="_blank" rel="noopener"
+                   style="display:flex;align-items:center;justify-content:center;gap:0.5rem;background:#25D366;color:#fff;font-weight:700;padding:0.8rem 2rem;border-radius:8px;text-decoration:none;font-size:0.95rem;width:100%;max-width:340px;box-sizing:border-box;box-shadow:0 4px 15px rgba(37,211,102,0.3);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Recibir invitación por WhatsApp
+                </a>
+            </div>
+        </div>
       `;
-      
       pantallaResultados.appendChild(ctaDiv);
   }
 </script>

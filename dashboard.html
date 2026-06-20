@@ -164,7 +164,7 @@
         thead th{font-family:var(--fuente-t);font-size:0.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:0.85rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07);white-space:nowrap;}
         tbody tr{border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;}
         tbody tr:hover{background:rgba(255,255,255,0.02);}
-        tbody td{padding:0.9rem 1rem;color:rgba(255,255,255,0.6);max-width:200px;overflow:hidden;text-overflow:ellipsis;}
+        tbody td{padding:0.9rem 1rem;color:rgba(255,255,255,0.6);word-break:break-word;}
         .name-cell{font-family:var(--fuente-t);font-size:0.75rem;font-weight:700;color:var(--blanco);}
         .pts-cell{font-family:var(--fuente-t);font-size:0.8rem;font-weight:900;color:var(--naranja);}
         .badge{font-family:var(--fuente-t);font-size:0.55rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.2rem 0.6rem;display:inline-block;border-radius:6px;}
@@ -789,6 +789,7 @@
                 <div class="pretest-mini"><p class="pm-val" id="pt-prom">0%</p><p class="pm-label">Promedio General</p></div>
                 <div class="pretest-mini"><p class="pm-val" id="pt-colegios">0</p><p class="pm-label">Colegios</p></div>
                 <div class="pretest-mini"><p class="pm-val" id="pt-registrados">0</p><p class="pm-label">Se Registraron</p></div>
+                <div class="pretest-mini"><p class="pm-val" id="pt-edad-prom">—</p><p class="pm-label">Edad Promedio</p></div>
             </div>
             <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
                 <button class="export-btn" onclick="exportarPreTestCSV()">📊 Exportar Pre-Tests CSV</button>
@@ -809,11 +810,16 @@
                     <canvas id="pt-chart-falencias" height="220"></canvas>
                 </div>
             </div>
+            <!-- Gráfica de distribución de edades (se muestra solo si hay datos) -->
+            <div class="section-box" style="padding:1rem;margin-top:1rem;display:none;" id="pt-edad-wrap">
+                <p class="section-box-title" style="margin-bottom:.75rem;">🎂 Distribución de edades</p>
+                <canvas id="pt-chart-edades" height="120"></canvas>
+            </div>
             <div class="section-box" style="padding:0;overflow:visible;margin-top:1rem;">
                 <div class="admin-table-wrap">
                     <table>
-                        <thead><tr><th>Nombre</th><th>Colegio</th><th>Grado</th><th>Municipio</th><th>Puntaje</th><th>Fortalezas</th><th>Falencias</th><th>Registrado</th><th>Fecha</th></tr></thead>
-                        <tbody id="pretest-tbody"><tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Cargando datos...</td></tr></tbody>
+                        <thead><tr><th>Nombre</th><th>Colegio</th><th>Grado</th><th>Edad</th><th>Municipio</th><th>Puntaje</th><th>Fortalezas</th><th>Falencias</th><th>Registrado</th><th>Fecha</th></tr></thead>
+                        <tbody id="pretest-tbody"><tr><td colspan="10" style="text-align:center;font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);padding:2rem;">Cargando datos...</td></tr></tbody>
                     </table>
                 </div>
             </div>
@@ -3075,7 +3081,7 @@ let _pretestAutoSync = false;
 function cargarPretestData() {
     const tbody = document.getElementById('pretest-tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Cargando…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Cargando…</td></tr>';
 
     // Auto-sync en la primera vez que se abre el panel (silencioso)
     if (!_pretestAutoSync && !_pretestImportandoAuto && typeof importarPreTestDesdeSheets === 'function') {
@@ -3102,6 +3108,9 @@ function cargarPretestData() {
         let total=0, sumPct=0, colegios=new Set(), registrados=0;
         // Acumuladores para gráficas por área
         const areaSum = {}, areaCnt = {}, areaFalencia = {};
+        // Acumuladores para distribución de edades
+        const edadDist = {}; // { "15": 3, "16": 7, ... }
+        let edadSum = 0, edadCnt = 0;
 
         for (const r of docs) {
             total++;
@@ -3138,84 +3147,91 @@ function cargarPretestData() {
             }
 
             const fechaFmt = r.fechaMuestra && typeof r.fechaMuestra.toDate==='function'
-                ? r.fechaMuestra.toDate().toLocaleDateString('es-CO',{day:'2-digit',month:'short'})
+                ? r.fechaMuestra.toDate().toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})
                 : '—';
             const pctColor = pct >= 70 ? '#86efac' : pct >= 40 ? '#fbbf24' : '#fca5a5';
 
-            // Fortalezas / falencias — texto abreviado + tooltip completo
+            // Edad
+            const edad = r.edad ? parseInt(r.edad) : null;
+            if (edad && edad >= 5 && edad <= 80) {
+                edadSum += edad; edadCnt++;
+                edadDist[edad] = (edadDist[edad] || 0) + 1;
+            }
+
+            // Fortalezas / falencias — texto completo sin truncar
             const forts = (r.fortalezas||[]).map(a => _nombreArea(a));
             const falens = (r.falencias||[]).map(a => _nombreArea(a));
             const fortalezasFull = forts.length ? forts.join(', ') : 'Desarrollando habilidades';
             const falenciasFull  = falens.length ? falens.join(', ')  : 'Sin áreas débiles';
-            const _abrev = (txt, n=28) => txt.length > n ? txt.slice(0,n)+'…' : txt;
             const fortalezasColor = forts.length ? '#86efac' : 'rgba(255,255,255,.3)';
             const falenciasColor  = falens.length ? '#fca5a5'  : 'rgba(255,255,255,.3)';
 
-            // Colegio abreviado
-            const _colegioAbrev = colegioNorm.length > 20 ? colegioNorm.slice(0,20)+'…' : colegioNorm;
-
             tbody.insertAdjacentHTML('beforeend',`<tr>
-                <td><span class="name-cell" title="${r.nombre||''}">${r.nombre||'—'}</span></td>
-                <td style="font-size:.7rem;" title="${colegioNorm||''}">${_colegioAbrev||'—'}</td>
+                <td><span class="name-cell">${r.nombre||'—'}</span></td>
+                <td style="font-size:.7rem;">${colegioNorm||'—'}</td>
                 <td style="font-size:.7rem;">${r.grado||'—'}</td>
+                <td style="font-family:var(--fuente-t);font-size:.75rem;font-weight:700;color:var(--teal);">${edad||'—'}</td>
                 <td style="font-size:.7rem;">${municipioNorm}</td>
                 <td style="font-family:var(--fuente-t);font-size:.85rem;font-weight:900;color:${pctColor};">${r.porcentaje!=null?r.porcentaje+'%':'—'}</td>
-                <td style="font-size:.68rem;color:${fortalezasColor};font-style:${forts.length?'normal':'italic'};" title="${fortalezasFull}">${_abrev(fortalezasFull)}</td>
-                <td style="font-size:.68rem;color:${falenciasColor};font-style:${falens.length?'normal':'italic'};" title="${falenciasFull}">${_abrev(falenciasFull)}</td>
+                <td style="font-size:.68rem;color:${fortalezasColor};font-style:${forts.length?'normal':'italic'};">${fortalezasFull}</td>
+                <td style="font-size:.68rem;color:${falenciasColor};font-style:${falens.length?'normal':'italic'};">${falenciasFull}</td>
                 <td><span class="badge ${r.registrado?'verde':'amarillo'}">${r.registrado?'Sí':'No'}</span></td>
                 <td style="font-size:.65rem;color:rgba(255,255,255,.4);">${fechaFmt}</td>
             </tr>`);
         }
         if (!total) {
-            tbody.innerHTML='<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin datos aún. Pide a los estudiantes que completen el Pre-Test en pre-test.html.</td></tr>';
+            tbody.innerHTML='<tr><td colspan="10" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Sin datos aún. Pide a los estudiantes que completen el Pre-Test en pre-test.html.</td></tr>';
         }
         document.getElementById('pt-total').textContent        = total;
         document.getElementById('pt-prom').textContent         = total ? Math.round(sumPct/total)+'%' : '0%';
         document.getElementById('pt-colegios').textContent     = colegios.size;
         document.getElementById('pt-registrados').textContent  = registrados;
+        const edadPromEl = document.getElementById('pt-edad-prom');
+        if (edadPromEl) edadPromEl.textContent = edadCnt ? Math.round(edadSum/edadCnt)+' años' : '—';
 
-        // ── Renderizar gráficas de áreas ──────────────────────────────────
-        _renderPtCharts(areaSum, areaCnt, areaFalencia);
+        // ── Renderizar gráficas de áreas y edades ─────────────────────────
+        _renderPtCharts(areaSum, areaCnt, areaFalencia, edadDist);
     }).catch(err => {
-        tbody.innerHTML = `<tr><td colspan="9" style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">
+        tbody.innerHTML = `<tr><td colspan="10" style="color:#fca5a5;font-family:var(--fuente-t);font-size:.65rem;text-align:center;padding:1rem;">
             ⚠️ Error al cargar: ${err.message}
         </td></tr>`;
     });
 }
 
-// ── Gráficas de Pre-Test por área ─────────────────────────────────────────
-let _ptChartAreas = null, _ptChartFalencias = null;
-function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
-    if (!Object.keys(areaCnt).length) return;
-
+// ── Gráficas de Pre-Test por área y edades ────────────────────────────────
+let _ptChartAreas = null, _ptChartFalencias = null, _ptChartEdades = null;
+function _renderPtCharts(areaSum, areaCnt, areaFalencia, edadDist = {}) {
     // Las claves ya vienen normalizadas con _nombreArea desde el acumulador
     // Ordenar áreas por promedio descendente
     const areas = Object.keys(areaCnt).sort((a,b) => (areaSum[b]/areaCnt[b]) - (areaSum[a]/areaCnt[a]));
     const promedios = areas.map(a => Math.round(areaSum[a] / areaCnt[a]));
-    const falencias = areas.map(a => areaFalencia[a] || 0);
-    // Abreviar etiquetas largas para los ejes
-    const labelsCortos = areas.map(a => a.length > 16 ? a.slice(0,14)+'…' : a);
 
     // Colores por posición (gradiente naranja→teal)
     const COLORS = ['#ff5e00','#fbbf24','#86efac','#22d3ee','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#60a5fa'];
     const bgColors = areas.map((_,i) => COLORS[i % COLORS.length] + 'cc');
     const borderColors = areas.map((_,i) => COLORS[i % COLORS.length]);
 
-    const _xTick = { color:'rgba(255,255,255,.5)', font:{size:9},
-        maxRotation: 0, callback: function(val, i) {
-            // etiqueta corta en eje X (ya en labelsCortos)
+    // Etiquetas de área: max 18 chars, wrap natural (usar \n no funciona en chart.js v3 sin plugin; abreviar solo si >20)
+    const labelsCortos = areas.map(a => {
+        // Abreviaciones conocidas para que quepan
+        return a.replace('Ciencias Naturales','C. Naturales')
+                .replace('Ciencias Sociales','C. Sociales')
+                .replace('Lectura Crítica','Lect. Crítica')
+                .replace('C. Políticas y Econ.','C. Políticas')
+                .replace('Matemáticas Básicas','Mat. Básicas')
+                .replace('Álgebra Lineal','Álg. Lineal');
+    });
+
+    const _xTick = {
+        color:'rgba(255,255,255,.5)', font:{size:9}, maxRotation: 30,
+        callback: function(val) {
             const lbl = this.getLabelForValue(val);
-            return lbl && lbl.length > 14 ? lbl.slice(0,12)+'…' : lbl;
+            return lbl && lbl.length > 15 ? lbl.slice(0,14)+'.' : lbl;
         }
     };
-    const chartOpts = {
+    const baseOpts = {
         responsive: true,
-        plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: {
-                title: items => areas[items[0].dataIndex] // tooltip muestra nombre completo
-            }}
-        },
+        plugins: { legend: { display: false } },
         scales: {
             x: { ticks: _xTick, grid: { color:'rgba(255,255,255,.05)' } },
             y: { ticks: { color:'rgba(255,255,255,.5)', font:{size:9} }, grid: { color:'rgba(255,255,255,.08)' }, beginAtZero:true }
@@ -3224,7 +3240,7 @@ function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
 
     // Gráfica 1: Promedio por área
     const ctx1 = document.getElementById('pt-chart-areas');
-    if (ctx1) {
+    if (ctx1 && areas.length) {
         if (_ptChartAreas) { _ptChartAreas.destroy(); _ptChartAreas = null; }
         _ptChartAreas = new Chart(ctx1, {
             type: 'bar',
@@ -3239,14 +3255,14 @@ function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
                     borderRadius: 6,
                 }]
             },
-            options: { ...chartOpts,
-                plugins: { ...chartOpts.plugins, tooltip: { callbacks: {
+            options: { ...baseOpts,
+                plugins: { ...baseOpts.plugins, tooltip: { callbacks: {
                     title: items => areas[items[0].dataIndex],
                     label: items => ` ${items.raw}% promedio`
                 }}},
-                scales: { ...chartOpts.scales,
-                    y: { ...chartOpts.scales.y, max: 100,
-                        ticks: { ...chartOpts.scales.y.ticks, callback: v => v+'%' }
+                scales: { ...baseOpts.scales,
+                    y: { ...baseOpts.scales.y, max: 100,
+                        ticks: { ...baseOpts.scales.y.ticks, callback: v => v+'%' }
                     }
                 }
             }
@@ -3255,28 +3271,63 @@ function _renderPtCharts(areaSum, areaCnt, areaFalencia) {
 
     // Gráfica 2: Nº estudiantes con cada área como falencia
     const ctx2 = document.getElementById('pt-chart-falencias');
-    if (ctx2) {
+    if (ctx2 && areas.length) {
         if (_ptChartFalencias) { _ptChartFalencias.destroy(); _ptChartFalencias = null; }
-        const areasFal   = [...areas].sort((a,b) => (areaFalencia[b]||0) - (areaFalencia[a]||0));
-        const labsFalCortos = areasFal.map(a => a.length > 14 ? a.slice(0,12)+'…' : a);
+        const areasFal = [...areas].sort((a,b) => (areaFalencia[b]||0) - (areaFalencia[a]||0));
+        const labsFal  = areasFal.map(a => labelsCortos[areas.indexOf(a)] || a);
         _ptChartFalencias = new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: labsFalCortos,
+                labels: labsFal,
                 datasets: [{
                     label: 'Estudiantes',
                     data: areasFal.map(a => areaFalencia[a] || 0),
-                    backgroundColor: areasFal.map(() => '#fca5a5cc'),
-                    borderColor: areasFal.map(() => '#fca5a5'),
+                    backgroundColor: '#fca5a5cc',
+                    borderColor: '#fca5a5',
                     borderWidth: 1,
                     borderRadius: 6,
                 }]
             },
-            options: { ...chartOpts, plugins: { ...chartOpts.plugins, tooltip: { callbacks: {
+            options: { ...baseOpts, plugins: { ...baseOpts.plugins, tooltip: { callbacks: {
                 title: items => areasFal[items[0].dataIndex],
                 label: items => ` ${items.raw} estudiante${items.raw!==1?'s':''}`
             }}}}
         });
+    }
+
+    // Gráfica 3: Distribución de edades
+    const ctx3 = document.getElementById('pt-chart-edades');
+    const edadWrap = document.getElementById('pt-edad-wrap');
+    const edadEdades = Object.keys(edadDist).map(Number).sort((a,b) => a-b);
+    if (ctx3 && edadEdades.length) {
+        if (edadWrap) edadWrap.style.display = '';
+        if (_ptChartEdades) { _ptChartEdades.destroy(); _ptChartEdades = null; }
+        _ptChartEdades = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: edadEdades.map(String),
+                datasets: [{
+                    label: 'Estudiantes',
+                    data: edadEdades.map(e => edadDist[e]),
+                    backgroundColor: '#818cf8cc',
+                    borderColor: '#818cf8',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                }]
+            },
+            options: { ...baseOpts,
+                plugins: { ...baseOpts.plugins, tooltip: { callbacks: {
+                    title: items => `${items[0].label} años`,
+                    label: items => ` ${items.raw} estudiante${items.raw!==1?'s':''}`
+                }}},
+                scales: { ...baseOpts.scales,
+                    x: { ...baseOpts.scales.x, ticks: { color:'rgba(255,255,255,.5)', font:{size:9} } },
+                    y: { ...baseOpts.scales.y, ticks: { ...baseOpts.scales.y.ticks, stepSize:1 } }
+                }
+            }
+        });
+    } else if (edadWrap && !edadEdades.length) {
+        edadWrap.style.display = 'none';
     }
 }
 
@@ -4131,16 +4182,29 @@ const _MUNICIPIO_MAP = {
 };
 function normalizarMunicipio(raw) {
     if (!raw || !raw.trim()) return '';
-    const n = raw.trim().toLowerCase()
+    let n = raw.trim().toLowerCase()
         .normalize('NFD').replace(/[̀-ͯ]/g,'')
+        // reemplazar guiones y guiones con espacios → "tumaco-nariño" y "tumaco - nariño" → "tumaco nariño"
+        .replace(/\s*-\s*/g, ' ')
+        // quitar signos raros (paréntesis, puntos)
+        .replace(/[()\.]/g, ' ')
         .replace(/\s+/g,' ').trim();
-    // Quitamos sufijos de departamento comunes para lookup
+
+    // Quitar sufijo de departamento
     const sinDepto = n
-        .replace(/,?\s*(narino|nariño|antioquia|valle|bogota|colombia)$/,'').trim();
-    if (_MUNICIPIO_MAP[n] !== undefined) return _MUNICIPIO_MAP[n];
+        .replace(/,?\s*(narino|antioquia|valle|bogota|cundinamarca|cauca|colombia|nariño)$/,'')
+        .trim();
+
+    if (_MUNICIPIO_MAP[n]        !== undefined) return _MUNICIPIO_MAP[n];
     if (_MUNICIPIO_MAP[sinDepto] !== undefined) return _MUNICIPIO_MAP[sinDepto];
-    // Title Case del original (primera parte antes de la coma)
-    const base = raw.split(',')[0].trim();
+
+    // También probar solo la primera palabra (ej "tumaco" de "tumaco nariño" ya normalizado)
+    const primeraPalabra = sinDepto.split(' ')[0];
+    if (primeraPalabra.length > 3 && _MUNICIPIO_MAP[primeraPalabra] !== undefined)
+        return _MUNICIPIO_MAP[primeraPalabra];
+
+    // Title Case de la primera parte antes de la coma o guión original
+    const base = raw.split(/[,\-]/)[0].trim();
     return base.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 }
 
