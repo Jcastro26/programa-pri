@@ -3225,10 +3225,14 @@ function _renderPtCharts(areaSum, areaCnt, areaFalencia, edadDist = {}) {
     });
 
     const _xTick = {
-        color:'rgba(255,255,255,.5)', font:{size:9}, maxRotation: 30,
+        color:'rgba(255,255,255,.5)', font:{size:8}, maxRotation: 0, minRotation: 0,
         callback: function(val) {
             const lbl = this.getLabelForValue(val);
-            return lbl && lbl.length > 15 ? lbl.slice(0,14)+'.' : lbl;
+            // Partir en dos líneas si supera 10 chars
+            if (!lbl || lbl.length <= 10) return lbl;
+            const mid = lbl.lastIndexOf(' ', Math.floor(lbl.length / 2));
+            if (mid > 0) return [lbl.slice(0, mid), lbl.slice(mid + 1)];
+            return lbl.slice(0, 10);
         }
     };
     const baseOpts = {
