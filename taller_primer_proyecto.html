@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Cómo crear mi primer proyecto? | PROGRAMA-PRI</title>
+<link rel="icon" type="image/png" href="logo.png">
+<meta name="theme-color" content="#021a36">
+<style>
+  :root{
+    --azul:#021a36;--panel:#062040;--card:#041830;
+    --naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;
+    --blanco:#f0f4f8;
+    --fuente:'Montserrat',sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--fuente);background:var(--azul);color:var(--blanco);
+       min-height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+  /* ── HEADER ── */
+  #header{display:flex;align-items:center;justify-content:space-between;
+          padding:.75rem 1.25rem;background:rgba(4,24,48,.9);
+          border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;gap:.75rem;}
+  #header-title{font-size:.65rem;font-weight:900;letter-spacing:1.5px;
+                text-transform:uppercase;color:var(--teal);}
+  #header-sub{font-size:.55rem;color:rgba(255,255,255,.35);margin-top:.1rem;}
+  #pts-badge{font-size:.6rem;font-weight:900;color:var(--oro);
+             background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);
+             border-radius:20px;padding:.2rem .65rem;white-space:nowrap;}
+  #btn-cerrar{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);
+              color:#fca5a5;font-size:.6rem;font-weight:700;padding:.3rem .75rem;
+              border-radius:8px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+  #btn-cerrar:hover{background:rgba(239,68,68,.25);}
+
+  /* ── PROGRESS ── */
+  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.06);flex-shrink:0;}
+  #progress-bar{height:100%;background:linear-gradient(90deg,var(--naranja),var(--teal));
+                transition:width .6s ease;width:0%;}
+
+  /* ── CHAT AREA ── */
+  #chat{flex:1;overflow-y:auto;padding:1rem 1rem 1.25rem;
+        display:flex;flex-direction:column;gap:.75rem;
+        scroll-behavior:smooth;
+        -webkit-overflow-scrolling:touch;}
+  #chat::-webkit-scrollbar{width:4px;}
+  #chat::-webkit-scrollbar-thumb{background:rgba(255,94,0,.3);border-radius:2px;}
+
+  /* ── BUBBLES ── */
+  .bubble-wrap{display:flex;gap:.55rem;align-items:flex-end;max-width:90%;animation:slideIn .35s ease;}
+  .bubble-wrap.bot{align-self:flex-start;}
+  .bubble-wrap.user{align-self:flex-end;flex-direction:row-reverse;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+  .avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;
+          display:flex;align-items:center;justify-content:center;font-size:1rem;}
+  .avatar.bot{background:linear-gradient(135deg,var(--naranja),#cc4400);}
+  .avatar.user{background:linear-gradient(135deg,var(--teal),#0284c7);}
+
+  .bubble{padding:.6rem .85rem;border-radius:14px;font-size:.78rem;
+          line-height:1.55;max-width:100%;word-break:break-word;}
+  .bubble.bot{background:rgba(6,32,64,.9);border:1px solid rgba(255,255,255,.09);
+              border-bottom-left-radius:4px;color:rgba(240,244,248,.9);}
+  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);
+               border-bottom-right-radius:4px;color:var(--blanco);}
+  .bubble strong{color:var(--teal);}
+  .bubble em{color:var(--oro);font-style:normal;}
+  .bubble code{background:rgba(255,255,255,.08);border-radius:4px;
+               padding:.1rem .35rem;font-family:monospace;font-size:.72rem;color:#86efac;}
+  .bubble .tip{background:rgba(255,94,0,.1);border-left:3px solid var(--naranja);
+               border-radius:0 8px 8px 0;padding:.4rem .6rem;margin:.4rem 0 0;
+               font-size:.72rem;color:rgba(240,244,248,.75);}
+  .bubble .check{color:#86efac;margin-right:.3rem;}
+
+  /* ── OPTIONS ── */
+  #options-area{padding:.6rem 1rem .9rem;flex-shrink:0;}
+  #options-grid{display:flex;flex-wrap:wrap;gap:.5rem;}
+  .opt-btn{font-family:var(--fuente);font-size:.68rem;font-weight:700;
+           padding:.45rem .9rem;border-radius:10px;cursor:pointer;transition:all .2s;
+           border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);
+           color:rgba(240,244,248,.8);text-align:left;line-height:1.4;}
+  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);color:var(--blanco);}
+  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);color:var(--blanco);}
+  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* ── INPUT LIBRE ── */
+  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
+  #input-row{display:flex;gap:.5rem;}
+  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);
+             color:var(--blanco);font-family:var(--fuente);font-size:.78rem;
+             padding:.55rem .9rem;border-radius:10px;outline:none;}
+  #txt-input:focus{border-color:var(--teal);}
+  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:1px solid rgba(255,255,255,.2);
+            font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;
+            border-radius:10px;cursor:pointer;transition:all .2s;}
+  #btn-send:hover{background:#fff;}
+
+  /* ── FIN ── */
+  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);
+               backdrop-filter:blur(10px);z-index:100;
+               flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
+  #fin-overlay.show{display:flex;}
+  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
+  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
+  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;
+           text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);
+           color:#fff;border:none;border-radius:10px;cursor:pointer;margin-top:.5rem;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div>
+    <div id="header-title">💡 ¿Cómo crear mi primer proyecto?</div>
+    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:.6rem;">
+    <span id="pts-badge">0 pts</span>
+    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
+  </div>
+</div>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<!-- CHAT -->
+<div id="chat"></div>
+
+<!-- OPCIONES -->
+<div id="options-area"><div id="options-grid"></div></div>
+<div id="input-area">
+  <div id="input-row">
+    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="120">
+    <button id="btn-send">Enviar →</button>
+  </div>
+</div>
+
+<!-- FIN -->
+<div id="fin-overlay">
+  <div id="fin-title">🏆 ¡Proyecto lanzado!</div>
+  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:320px;line-height:1.55;">
+    Completaste el taller. Ahora sabes qué es un proyecto social, cómo estructurarlo y cómo presentarlo.
+  </p>
+  <div id="fin-pts"></div>
+  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
+</div>
+
+<script>
+// ─── Estado ───────────────────────────────────────────────
+let pts = 0;
+let paso = 0;
+let nombre = '';
+let proyectoTema = '';
+const TOTAL_PASOS = 9;
+
+// ─── Utilidades ───────────────────────────────────────────
+const chat = document.getElementById('chat');
+const optGrid = document.getElementById('options-grid');
+const ptsEl = document.getElementById('pts-badge');
+const progressBar = document.getElementById('progress-bar');
+
+function sumarPts(n){
+  pts += n;
+  ptsEl.textContent = pts + ' pts';
+}
+function avanzarBarra(){
+  paso = Math.min(paso + 1, TOTAL_PASOS);
+  progressBar.style.width = (paso / TOTAL_PASOS * 100) + '%';
+}
+function limpiarOpciones(){
+  optGrid.innerHTML = '';
+  document.getElementById('options-area').style.display = 'none';
+  document.getElementById('input-area').style.display = 'none';
+}
+
+function addBot(html, delay = 0){
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const wrap = document.createElement('div');
+      wrap.className = 'bubble-wrap bot';
+      wrap.innerHTML = `<div class="avatar bot">🤖</div><div class="bubble bot">${html}</div>`;
+      chat.appendChild(wrap);
+      chat.scrollTop = chat.scrollHeight;
+      resolve();
+    }, delay);
+  });
+}
+
+function addUser(text){
+  const wrap = document.createElement('div');
+  wrap.className = 'bubble-wrap user';
+  wrap.innerHTML = `<div class="avatar user">🧑</div><div class="bubble user">${text}</div>`;
+  chat.appendChild(wrap);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function mostrarOpciones(opciones){
+  document.getElementById('options-area').style.display = 'block';
+  optGrid.innerHTML = '';
+  opciones.forEach(op => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = op.label;
+    btn.onclick = () => {
+      document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+      btn.classList.add('selected');
+      addUser(op.label);
+      limpiarOpciones();
+      setTimeout(() => op.fn(), 400);
+    };
+    optGrid.appendChild(btn);
+  });
+}
+
+function mostrarInput(placeholder, fn){
+  document.getElementById('input-area').style.display = 'block';
+  const inp = document.getElementById('txt-input');
+  inp.placeholder = placeholder;
+  inp.value = '';
+  inp.focus();
+  const send = () => {
+    const val = inp.value.trim();
+    if (!val) return;
+    addUser(val);
+    limpiarOpciones();
+    setTimeout(() => fn(val), 400);
+  };
+  document.getElementById('btn-send').onclick = send;
+  inp.onkeydown = e => { if (e.key === 'Enter') send(); };
+}
+
+// ─── FLUJO ────────────────────────────────────────────────
+
+async function paso0(){
+  await addBot(`¡Hola! 👋 Soy tu guía en este taller.<br><br>
+Aquí vas a aprender <strong>paso a paso cómo diseñar un proyecto social</strong> — del tipo que puedes presentar en el colegio, en un concurso o para tu comunidad.<br><br>
+Primero dime: <em>¿cómo te llamas?</em>`, 300);
+  mostrarInput('Tu nombre…', val => {
+    nombre = val;
+    avanzarBarra();
+    paso1();
+  });
+}
+
+async function paso1(){
+  await addBot(`¡Qué bueno tenerte aquí, <em>${nombre}</em>! 🙌<br><br>
+Antes de crear, necesitas entender qué es un proyecto. Elige la definición que crees que es correcta:`, 400);
+  mostrarOpciones([
+    { label: '📄 Un documento largo con muchas páginas', fn: () => { addBot(`Mmm, no exactamente. Un proyecto no es solo papel — es una <strong>idea estructurada para resolver un problema real</strong>. ¡Vamos bien!`, 300); setTimeout(paso2, 1500); } },
+    { label: '💡 Una idea estructurada para resolver un problema real', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+20 pts.</strong> Un proyecto es una <em>hoja de ruta</em> para transformar algo que no funciona bien en algo mejor.`, 300); setTimeout(paso2, 1500); } },
+    { label: '📱 Una app o página web', fn: () => { addBot(`Eso puede ser parte de un proyecto, pero el concepto es más amplio. Un proyecto puede ser digital, artístico, ambiental… lo que importa es que resuelva algo.`, 300); setTimeout(paso2, 1500); } },
+  ]);
+}
+
+async function paso2(){
+  avanzarBarra();
+  await addBot(`Todo proyecto nace de un <strong>problema</strong>. Sin problema, no hay proyecto.<br><br>
+<div class="tip">💡 Ejemplo: "En mi colegio muchos estudiantes no saben leer bien en grado 9." → Eso es un problema que se puede trabajar.</div><br>
+¿Cuál de estas frases describe un <em>problema real</em> que se podría atacar con un proyecto?`, 400);
+  mostrarOpciones([
+    { label: '🌧️ A veces llueve mucho en mi ciudad', fn: () => { addBot(`Es una realidad del clima, pero no es un problema que un proyecto estudiantil pueda resolver directamente. Piensa en algo de tu entorno social o escolar.`, 300); setTimeout(paso3, 1600); } },
+    { label: '♻️ En mi barrio no se recicla y hay mucha basura', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Sí! ✅ <strong>+20 pts.</strong> Ese es un problema concreto, local y <em>accionable</em>. Desde ahí se pueden hacer campañas, talleres, puntos de reciclaje…`, 300); setTimeout(paso3, 1600); } },
+    { label: '😴 Me da sueño en matemáticas', fn: () => { addBot(`Jaja, ¡le pasa a muchos! Pero un proyecto necesita afectar a <em>más personas</em> y tener una causa raíz que puedas intervenir.`, 300); setTimeout(paso3, 1600); } },
+  ]);
+}
+
+async function paso3(){
+  avanzarBarra();
+  await addBot(`Perfecto. Ahora viene la parte más creativa: <strong>definir tu proyecto</strong>.<br><br>
+Cuéntame: <em>¿sobre qué tema te gustaría crear un proyecto?</em><br>
+(Puede ser ambiente, educación, tecnología, deporte, arte, salud… cualquier cosa que te apasione.)`, 400);
+  mostrarInput('Ej: educación ambiental, deportes, música…', val => {
+    proyectoTema = val;
+    avanzarBarra();
+    paso4();
+  });
+}
+
+async function paso4(){
+  await addBot(`¡Qué tema tan interesante: <em>${proyectoTema}</em>! 🔥<br><br>
+Todo buen proyecto tiene una estructura. Se llama el <strong>marco lógico</strong> y tiene 4 partes clave:<br><br>
+<strong>1. Objetivo General</strong> — ¿Qué quieres lograr?<br>
+<strong>2. Población</strong> — ¿A quién va dirigido?<br>
+<strong>3. Actividades</strong> — ¿Qué vas a hacer?<br>
+<strong>4. Indicadores</strong> — ¿Cómo sabes que funcionó?<br><br>
+¿Cuántas partes tiene el marco lógico que te acabo de enseñar?`, 400);
+  mostrarOpciones([
+    { label: '🔢 2 partes', fn: () => { addBot(`Casi — son un poco más. Relée: Objetivo, Población, Actividades, Indicadores. ¡Cuatro!`, 300); setTimeout(paso5, 1500); } },
+    { label: '🔢 4 partes', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Correcto! ✅ <strong>+20 pts.</strong> Objetivo · Población · Actividades · Indicadores. Esas 4 son la columna vertebral.`, 300); setTimeout(paso5, 1500); } },
+    { label: '🔢 6 partes', fn: () => { addBot(`Un poco más de lo que te dije — en este taller trabajamos las 4 esenciales para empezar.`, 300); setTimeout(paso5, 1500); } },
+  ]);
+}
+
+async function paso5(){
+  avanzarBarra();
+  await addBot(`Ahora apliquemos. Para tu proyecto sobre <em>${proyectoTema}</em>:<br><br>
+<em>¿A quién iría dirigido?</em> Escribe la población que quieres impactar.
+<div class="tip">💡 Ej: "Estudiantes de grado 8 y 9 del colegio" · "Familias del barrio" · "Jóvenes de 12 a 17 años"</div>`, 400);
+  mostrarInput('¿A quién va dirigido tu proyecto?', val => {
+    avanzarBarra();
+    paso6(val);
+  });
+}
+
+async function paso6(poblacion){
+  await addBot(`Perfecto: <em>${poblacion}</em>. Esa es tu <strong>población objetivo</strong> ✅<br><br>
+Ahora el <strong>objetivo general</strong>. Un buen objetivo empieza con un verbo de acción y es medible.<br><br>
+¿Cuál de estos es un buen objetivo general?`, 400);
+  mostrarOpciones([
+    {
+      label: `🎯 "Implementar talleres de ${proyectoTema} para ${poblacion} durante 3 meses"`,
+      fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Excelente! ✅ <strong>+20 pts.</strong> Tiene verbo de acción (<em>implementar</em>), población, tema y tiempo. ¡Eso es un objetivo sólido!`, 300); setTimeout(paso7, 1600); }
+    },
+    {
+      label: `💭 "Que las personas aprendan sobre ${proyectoTema}"`,
+      fn: () => { addBot(`Es vaga — no dice cuántas personas, cómo, ni en cuánto tiempo. Los objetivos deben ser <strong>específicos y medibles</strong>.`, 300); setTimeout(paso7, 1600); }
+    },
+    {
+      label: `📌 "El proyecto es sobre ${proyectoTema}"`,
+      fn: () => { addBot(`Eso describe el tema, no el objetivo. El objetivo dice <em>qué quieres lograr y para quién</em>.`, 300); setTimeout(paso7, 1600); }
+    },
+  ]);
+}
+
+async function paso7(){
+  avanzarBarra();
+  await addBot(`Ya tienes: población ✅ · objetivo ✅<br><br>
+Ahora las <strong>actividades</strong> — las acciones concretas que vas a realizar. Elige el mejor ejemplo de actividad para un proyecto de ${proyectoTema}:`, 400);
+  mostrarOpciones([
+    { label: '📋 Hacer una encuesta inicial + 3 talleres + feria final', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+20 pts.</strong> Son pasos concretos, secuenciados y con producto visible. ¡Así se planea un proyecto real!`, 300); setTimeout(paso8, 1600); } },
+    { label: '🗣️ Hablar con las personas sobre el tema', fn: () => { addBot(`"Hablar" es muy vago. Las actividades deben ser acciones específicas: talleres, eventos, encuestas, visitas, campañas…`, 300); setTimeout(paso8, 1600); } },
+    { label: '📱 Crear un grupo de WhatsApp', fn: () => { addBot(`Puede ser una herramienta, pero no es una actividad completa. ¿Qué van a hacer en ese grupo? Eso es lo que cuenta.`, 300); setTimeout(paso8, 1600); } },
+  ]);
+}
+
+async function paso8(){
+  avanzarBarra();
+  await addBot(`¡Increíble, ${nombre}! Ya diseñaste los 3 primeros elementos de tu proyecto. 🎉<br><br>
+Solo falta saber si funcionó: los <strong>indicadores</strong>.<br><br>
+<div class="tip">💡 Un indicador mide el impacto. Ejemplo: "El 80% de los participantes mejoró su conocimiento sobre el tema según la encuesta final."</div><br>
+¿Cómo sabrías que tu proyecto sobre <em>${proyectoTema}</em> funcionó? Escribe un indicador sencillo.`, 400);
+  mostrarInput('Ej: "El 70% de los participantes…"', val => {
+    avanzarBarra();
+    paso9(val);
+  });
+}
+
+async function paso9(indicador){
+  sumarPts(10);
+  await addBot(`¡Brillante! Indicador: <em>"${indicador}"</em> ✅<br><br>
+Ahora tienes el esqueleto de tu <strong>primer proyecto</strong>:<br><br>
+<span class="check">✅</span> <strong>Tema:</strong> ${proyectoTema}<br>
+<span class="check">✅</span> <strong>Objetivo:</strong> Implementar acciones de ${proyectoTema}<br>
+<span class="check">✅</span> <strong>Actividades:</strong> Encuesta + talleres + feria/presentación<br>
+<span class="check">✅</span> <strong>Indicador:</strong> ${indicador}<br><br>
+<em>¡Eso es un proyecto real, ${nombre}! Podrías presentarlo mañana.</em> 🚀`, 400);
+  setTimeout(() => {
+    avanzarBarra();
+    mostrarFin();
+  }, 2500);
+}
+
+function mostrarFin(){
+  document.getElementById('fin-overlay').classList.add('show');
+  document.getElementById('fin-pts').textContent = `✨ Acumulaste ${pts} puntos en este taller`;
+  // Notificar al dashboard
+  try {
+    window.parent.postMessage({ type: 'taller-completado', tallerExternoId: 'taller_primer_proyecto', pts }, '*');
+  } catch(e){}
+}
+
+function cerrarTaller(){
+  try {
+    window.parent.postMessage({ type: 'cerrar-taller-interactivo' }, '*');
+  } catch(e){}
+  window.close();
+}
+
+// ─── INICIO ───────────────────────────────────────────────
+paso0();
+</script>
+</body>
+</html>

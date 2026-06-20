@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Control | PROGRAMA-PRI</title>
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="theme-color" content="#021a36">
+    <meta property="og:image" content="logo.png">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
@@ -1416,7 +1420,7 @@
                     <summary style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px;list-style:none;">📥 Carga inicial de talleres del PDF (solo primera vez)</summary>
                     <div style="padding:.6rem 0 .25rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
                         <button class="btn-add" id="btn-seed-tt" onclick="seedTalleresTemáticos()" style="font-size:.6rem;padding:.4rem .85rem;">📥 Cargar talleres del libro de teoría</button>
-                        <button class="btn-add" onclick="seedTalleresInteractivos()" style="font-size:.6rem;padding:.4rem .85rem;background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.4);color:var(--naranja);">🎮 Cargar talleres interactivos de Matemáticas</button>
+                        <button class="btn-add" onclick="seedTalleresInteractivos()" style="font-size:.6rem;padding:.4rem .85rem;background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.4);color:var(--naranja);">🎮 Cargar talleres interactivos</button>
                         <p id="seed-tt-status" style="font-family:var(--fuente-t);font-size:.62rem;color:#86efac;display:none;"></p>
                     </div>
                 </details>
@@ -3340,36 +3344,39 @@ async function cargarResultadosICFES() {
             await syncHojaNombresFirestore();
             const mapeo   = getHojaMapeo();
             const optAreas = _AREAS_DISPONIBLES.map(a=>`<option value="${a}">${a}</option>`).join('');
-            const filaHoja = (h, urgente) => {
+            // Mapa de índice → hoja para evitar IDs con caracteres especiales
+            const _hojaIdx = {};
+            const filaHoja = (h, urgente, idx) => {
                 const areaActual = _areaDeHoja(h) || '';
-                const eid = 'mapsel-' + CSS.escape(h);
-                const nid = 'nomInput-' + CSS.escape(h);
-                const hEsc = h.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+                const safeIdx = idx;
+                _hojaIdx[safeIdx] = h; // se usa en guardarMapeoHojaCompleto
                 const nResp = _riDatos.filter(r=>r._hoja===h).length;
                 const nombreActual = displayHoja(h);
                 const esRenombrado = nombreActual !== h;
-                return `<div style="display:grid;grid-template-columns:1fr 1fr 160px auto auto;gap:.45rem;align-items:center;padding:.55rem .7rem;border-radius:10px;background:${urgente?'rgba(255,94,0,.07)':'rgba(255,255,255,.025)'};border:1px solid ${urgente?'rgba(255,120,0,.2)':'rgba(255,255,255,.06)'};margin-bottom:.4rem;">
+                return `<div data-hoja-idx="${safeIdx}" style="display:grid;grid-template-columns:1fr 1fr 160px auto auto;gap:.45rem;align-items:center;padding:.55rem .7rem;border-radius:10px;background:${urgente?'rgba(255,94,0,.07)':'rgba(255,255,255,.025)'};border:1px solid ${urgente?'rgba(255,120,0,.2)':'rgba(255,255,255,.06)'};margin-bottom:.4rem;">
                     <span style="font-family:var(--fuente-t);font-size:.6rem;color:${urgente?'rgba(255,180,50,.8)':'rgba(255,255,255,.4)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${h}">
                         ${urgente?'⚠️ ':''}${esRenombrado?`<s style="opacity:.4">${h}</s>`:h} <span style="color:rgba(255,255,255,.2);font-size:.55rem;">(${nResp})</span>
                     </span>
-                    <input id="${nid}" type="text" value="${nombreActual.replace(/"/g,'&quot;')}" placeholder="Nombre personalizado…"
+                    <input type="text" value="${nombreActual.replace(/"/g,'&quot;')}" placeholder="Nombre personalizado…"
                         style="font-family:var(--fuente-t);font-size:.6rem;background:rgba(2,14,36,.6);color:#e8f0f8;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:.28rem .5rem;width:100%;min-width:0;outline:none;" />
-                    <select id="${eid}" style="font-family:var(--fuente-t);font-size:.62rem;background:#0a1e32;color:#e8f0f8;border:1px solid ${urgente?'rgba(255,94,0,.4)':'rgba(255,255,255,.15)'};border-radius:7px;padding:.3rem .5rem;">
+                    <select style="font-family:var(--fuente-t);font-size:.62rem;background:#0a1e32;color:#e8f0f8;border:1px solid ${urgente?'rgba(255,94,0,.4)':'rgba(255,255,255,.15)'};border-radius:7px;padding:.3rem .5rem;">
                         <option value="">— Sin área —</option>
                         ${_AREAS_DISPONIBLES.map(a=>`<option value="${a}"${areaActual===a?' selected':''}>${a}</option>`).join('')}
                     </select>
-                    <button onclick="guardarMapeoHojaCompleto('${hEsc}', document.getElementById('${eid}').value, document.getElementById('${nid}').value)"
+                    <button onclick="guardarMapeoHojaCompletoPorIdx(${safeIdx}, this)"
                         style="font-family:var(--fuente-t);font-size:.6rem;background:var(--teal);color:#000;border:none;border-radius:7px;padding:.3rem .65rem;cursor:pointer;font-weight:800;white-space:nowrap;">💾</button>
-                    <button onclick="abrirEstadisticasFormulario('${hEsc}')"
+                    <button onclick="abrirEstadisticasFormulario(_hojaMapIdx[${safeIdx}])"
                         style="font-family:var(--fuente-t);font-size:.6rem;background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3);border-radius:7px;padding:.3rem .65rem;cursor:pointer;font-weight:800;white-space:nowrap;">📊</button>
                 </div>`;
             };
+            window._hojaMapIdx = _hojaIdx;
+            let _fhIdx = 0;
             mapeoBody.innerHTML = todasHojas.length === 0
                 ? `<p style="font-family:var(--fuente-t);font-size:.62rem;color:rgba(255,255,255,.3);text-align:center;padding:.75rem;">Sin datos aún.</p>`
                 : `${sinMatch.length ? `<p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,180,50,.8);margin-bottom:.6rem;">⚠️ ${sinMatch.length} formulario${sinMatch.length!==1?'s':''} sin área. Asigna cada uno:</p>` : ''}
-                   ${sinMatch.map(h => filaHoja(h, true)).join('')}
+                   ${sinMatch.map(h => filaHoja(h, true, _fhIdx++)).join('')}
                    ${conArea.length && sinMatch.length ? `<div style="border-top:1px solid rgba(255,255,255,.07);margin:.6rem 0;"></div><p style="font-family:var(--fuente-t);font-size:.58rem;color:rgba(255,255,255,.3);margin-bottom:.4rem;">✅ Ya tienen área (editable):</p>` : ''}
-                   ${conArea.map(h => filaHoja(h, false)).join('')}`;
+                   ${conArea.map(h => filaHoja(h, false, _fhIdx++)).join('')}`;
         }
 
         renderResultadosICFES();
@@ -3387,17 +3394,25 @@ window.guardarMapeoHoja = async function(hoja, area) {
 };
 
 window.guardarMapeoHojaCompleto = async function(hoja, area, nombreCustom) {
-    // Guardar área
     const m = getHojaMapeo();
     if (area.trim()) { m[hoja] = area.trim(); } else { delete m[hoja]; }
     await guardarHojaMapeoFirestore(m);
-    // Guardar nombre personalizado
     const n = getHojaNombres();
     const nomTrim = nombreCustom.trim();
     if (nomTrim && nomTrim !== hoja) { n[hoja] = nomTrim; } else { delete n[hoja]; }
     await guardarHojaNombresFirestore(n);
     cargarResultadosICFES();
     notif('Guardado', `"${hoja}" configurado correctamente`, '✅','success');
+};
+
+// Versión que recibe índice + botón, para evitar problemas con IDs CSS-escaped
+window.guardarMapeoHojaCompletoPorIdx = async function(idx, btn) {
+    const hoja = window._hojaMapIdx?.[idx];
+    if (!hoja) return;
+    const row   = btn.closest('div[data-hoja-idx]');
+    const area  = row.querySelector('select').value;
+    const nom   = row.querySelector('input[type="text"]').value;
+    await window.guardarMapeoHojaCompleto(hoja, area, nom);
 };
 
 /* ─── ESTADÍSTICAS POR FORMULARIO ─── */
@@ -6103,6 +6118,7 @@ window.cargarTalleresTematicoAdmin = async function() {
                     </div>
                     <div style="display:flex;gap:.4rem;flex-wrap:wrap;flex-shrink:0;">
                         <button class="btn-module" onclick="editarTallerTematico('${t.id}')" style="background:rgba(56,189,248,.1);color:var(--teal);border-color:rgba(56,189,248,.25);">✏️ Editar</button>
+                        ${t.tipo==='interactivo'&&t.url ? `<button class="btn-module" onclick="window.open('${t.url}','_blank')" style="background:rgba(34,197,94,.1);color:#86efac;border-color:rgba(34,197,94,.25);">👁 Preview</button>` : ''}
                         <button class="btn-module" onclick="togglePublicarTT('${t.id}',${!t.publicado})"
                             style="background:${t.publicado?'rgba(255,94,0,.08)':'rgba(16,185,129,.08)'};color:${t.publicado?'var(--naranja)':'#10b981'};border-color:${t.publicado?'rgba(255,94,0,.25)':'rgba(16,185,129,.3)'};">
                             ${t.publicado?'⏸ Ocultar':'▶ Publicar'}</button>
@@ -6481,6 +6497,16 @@ window.seedTalleresInteractivos = async function() {
             tipo: 'interactivo',
             url: 'taller_mat_probabilidad.html',
             publicado: true
+        },
+        {
+            titulo: '¿Cómo crear mi primer proyecto? 💡',
+            area: 'Competencias Ciudadanas',
+            grado: 'todos',
+            puntos: 90,
+            descripcion: 'Aprende a diseñar un proyecto social paso a paso: objetivo, población, actividades e indicadores. Taller conversacional interactivo.',
+            tipo: 'interactivo',
+            url: 'taller_primer_proyecto.html',
+            publicado: true
         }
     ];
     try {
@@ -6492,7 +6518,7 @@ window.seedTalleresInteractivos = async function() {
             await addDoc(collection(db,'talleres_tematicos'), {...t, creadoEn: serverTimestamp()});
             creados++;
         }
-        notif('Talleres interactivos', `${creados} talleres de matemáticas añadidos 🎮`, '✅', 'success');
+        notif('Talleres interactivos', `${creados} taller${creados!==1?'es':''} añadido${creados!==1?'s':''} 🎮`, '✅', 'success');
         cargarTalleresTematicoAdmin();
     } catch(e) { notif('Error', e.message, '❌', 'error'); }
 };
