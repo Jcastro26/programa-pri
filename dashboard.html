@@ -3182,86 +3182,264 @@ window.eliminarUsuario = async function(uid, nombre) {
     }
 };
 
+// ── Almacenar datos del perfil actual para CSV ────────────────────────────
+let _perfilActualData = null;
+
 window.verDetalleEstudiante = async function(uid) {
     activarPanel('panel-admin-perfil');
-    document.getElementById('admin-perfil-contenido').innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);">Cargando perfil...</p>';
+    const contenido = document.getElementById('admin-perfil-contenido');
+    contenido.innerHTML = '<p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.3);padding:2rem;text-align:center;">Cargando perfil completo…</p>';
     try {
+        // ── 1. Datos del usuario ──────────────────────────────────────────
         const snap = await getDoc(doc(db,"usuarios",uid));
-        if (!snap.exists()) { document.getElementById('admin-perfil-contenido').innerHTML='<p>Usuario no encontrado.</p>'; return; }
+        if (!snap.exists()) { contenido.innerHTML='<p>Usuario no encontrado.</p>'; return; }
         const e = snap.data();
-        const canjesSnap = await getDocs(query(collection(db,"premios_reclamados"), where("uid","==",uid))).catch(()=>({forEach:()=>{},empty:true}));
-        let canjesHTML = '';
-        canjesSnap.forEach && canjesSnap.forEach(d => {
-            const c = d.data();
-            canjesHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(255,255,255,0.6);">${c.premio||'—'} · <span style="color:var(--oro)">${c.costo||0} PTS</span> · <span style="color:rgba(255,255,255,0.3)">${c.estado||'Pendiente'}</span></div>`;
-        });
         const r = e.caracterizacion_respuestas || {};
         const pct = Math.min(100, ((e.puntos||0)/1000)*100);
-        // Cargar talleres respondidos
-        let talleresHTML = '';
-        try {
-            const tSnap = await getDocs(query(collection(db,"usuarios",uid,"respuestas_formularios")));
-            if (!tSnap.empty) {
-                talleresHTML = '<div class="section-box"><p class="section-box-title">📝 Formularios Respondidos</p>';
-                tSnap.forEach(d => {
-                    const tr = d.data();
-                    talleresHTML += `<div style="padding:0.5rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.78rem;color:rgba(255,255,255,0.6);">${tr.formNombre||d.id} · <span style="color:var(--teal)">${tr.puntaje||0} PTS</span> · ${tr.correcto||0}/${tr.total||0} correctas</div>`;
-                });
-                talleresHTML += '</div>';
-            }
-        } catch(e2){}
-        // Cargar resultados de Pre-Test para este usuario
-        let pretestHTML = '';
-        try {
-            const ptSnap = await getDocs(query(collection(db,"muestras_pretest"), where("uid","==",uid), orderBy("fechaMuestra","desc"))).catch(async () => {
-                // fallback sin orderBy si falta el índice
-                return getDocs(query(collection(db,"muestras_pretest"), where("uid","==",uid)));
+
+        // ── 2. Todos los talleres/formularios disponibles ─────────────────
+        const [talleresSnap, respSnap, canjesSnap, ptSnap] = await Promise.all([
+            getDocs(collection(db,"talleres_tematicos")).catch(()=>({docs:[]})),
+            getDocs(collection(db,"usuarios",uid,"respuestas_formularios")).catch(()=>({docs:[]})),
+            getDocs(query(collection(db,"premios_reclamados"),where("uid","==",uid))).catch(()=>({docs:[]})),
+            getDocs(query(collection(db,"muestras_pretest"),where("uid","==",uid))).catch(()=>
+                getDocs(query(collection(db,"muestras_pretest"),where("correo","==",e.correo||e.email||''))).catch(()=>({docs:[]}))
+            ),
+        ]);
+
+        // Mapa de respuestas: formId → datos
+        const respMap = {};
+        (respSnap.docs||[]).forEach(d => { respMap[d.id] = d.data(); });
+
+        // ── 3. Acumuladores para gráficas de área ─────────────────────────
+        const areaScores = {}; // area → { sum, cnt }
+        // Desde pre-test
+        const ptDocs = (ptSnap.docs||[]).map(d => ({ id:d.id, ...d.data() }));
+        ptDocs.sort((a,b) => {
+            const ta = a.fechaMuestra?.toDate?.()?.getTime() || 0;
+            const tb = b.fechaMuestra?.toDate?.()?.getTime() || 0;
+            return tb - ta;
+        });
+        const ptLatest = ptDocs[0] || null;
+        if (ptLatest?.desglosePorArea) {
+            Object.entries(ptLatest.desglosePorArea).forEach(([k,v]) => {
+                const a = _nombreArea(k);
+                if (!areaScores[a]) areaScores[a] = { sum:0, cnt:0 };
+                areaScores[a].sum += (v.pct||0); areaScores[a].cnt++;
             });
-            if (!ptSnap.empty) {
-                pretestHTML = '<div class="section-box"><p class="section-box-title">🧪 Resultados Pre-Test</p>';
-                ptSnap.forEach(d => {
-                    const pt = d.data();
-                    const fechaPT = pt.fechaMuestra ? new Date(pt.fechaMuestra.toDate()).toLocaleString('es-CO',{dateStyle:'short',timeStyle:'short'}) : '—';
-                    const fortalezas = (pt.fortalezas||[]).join(', ') || '—';
-                    const falencias = (pt.falencias||[]).join(', ') || '—';
-                    pretestHTML += `<div style="padding:0.75rem 0;border-bottom:1px solid rgba(255,255,255,0.05);">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
-                            <span style="font-family:var(--fuente-t);font-size:0.75rem;font-weight:900;color:var(--teal)">${pt.porcentaje||'—'}</span>
-                            <span style="font-size:0.65rem;color:rgba(255,255,255,0.35)">${fechaPT}</span>
-                        </div>
-                        <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.15rem;">💪 Fortalezas: <span style="color:#86efac">${fortalezas}</span></p>
-                        <p style="font-size:0.75rem;color:rgba(255,255,255,0.5);">🎯 Por mejorar: <span style="color:#fca5a5">${falencias}</span></p>
-                    </div>`;
-                });
-                pretestHTML += '</div>';
+        }
+        // Desde formularios respondidos
+        (respSnap.docs||[]).forEach(d => {
+            const fd = d.data();
+            const area = fd.area || fd.formArea || '';
+            if (area && fd.puntaje != null && fd.totalPosible) {
+                const pctResp = Math.round(fd.puntaje / fd.totalPosible * 100);
+                if (!areaScores[area]) areaScores[area] = { sum:0, cnt:0 };
+                areaScores[area].sum += pctResp; areaScores[area].cnt++;
             }
-        } catch(ePT){}
-        document.getElementById('admin-perfil-contenido').innerHTML = `
-            <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
-                <button class="btn-table" onclick="activarPanel('panel-admin-global');">← Volver</button>
-            </div>
-            <div class="section-box">
-                <p class="section-box-title">👤 Datos del Usuario</p>
-                ${e.fotoUrl?`<img src="${e.fotoUrl}" style="width:80px;height:80px;object-fit:cover;border:2px solid rgba(255,94,0,0.4);margin-bottom:1rem;">`:'' }
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem;margin-bottom:1rem;">
-                    ${[['Nombre',e.nombre],['Correo',e.correo],['Rol',e.rol],['Colegio',e.colegio],['Grado',e.grado],['Municipio',e.municipio],['Estrato',e.estrato],['Puntos',e.puntos||0],['Premios/Mes',e.premiosMes||0],['Ficha',e.fichaCompleta?'✅ Sí':'❌ No'],['WhatsApp',e.contacto||'—'],['Acudiente',e.acudiente||'—']].map(([k,v])=>`<div><p style="font-family:var(--fuente-t);font-size:0.55rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);">${k}</p><p style="font-size:0.82rem;color:var(--blanco);word-break:break-word;">${v??'—'}</p></div>`).join('')}
+        });
+
+        // ── 4. Talleres: realizados vs pendientes ─────────────────────────
+        const talleresList = (talleresSnap.docs||[]).map(d => ({ id:d.id, ...d.data() }));
+        const realizados  = talleresList.filter(t => respMap[t.id]);
+        const pendientes  = talleresList.filter(t => !respMap[t.id]);
+
+        // ── 5. Construir HTML ─────────────────────────────────────────────
+        const canjeItems = (canjesSnap.docs||[]).map(d => d.data());
+        const cvId = `cv_${uid.slice(0,6)}`;
+
+        // Sección Talleres realizados / pendientes
+        const _tallerRow = (t, hecho) => {
+            const resp = hecho ? respMap[t.id] : null;
+            const ptsStr = resp ? `${resp.puntaje||0} pts` : '';
+            const pctStr = resp && resp.totalPosible ? ` (${Math.round((resp.puntaje||0)/resp.totalPosible*100)}%)` : '';
+            const color = hecho ? '#86efac' : 'rgba(255,255,255,.35)';
+            return `<div style="display:grid;grid-template-columns:auto 1fr auto auto;gap:.6rem;align-items:center;padding:.5rem .75rem;border-radius:8px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);margin-bottom:.35rem;">
+                <span style="font-size:1rem;">${hecho?'✅':'⬜'}</span>
+                <div>
+                    <p style="font-family:var(--fuente-t);font-size:.72rem;font-weight:700;color:${color};margin:0;">${t.nombre||t.titulo||d.id}</p>
+                    ${t.area?`<p style="font-size:.58rem;color:rgba(255,255,255,.35);margin:0;">${t.area}</p>`:''}
                 </div>
-                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.35);margin-bottom:0.3rem;">Progreso global</p>
-                <div class="progress-mini" style="height:8px;"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
-                <p style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,0.25);margin-top:0.25rem;">${e.puntos||0} / 1000 PTS</p>
+                <span style="font-family:var(--fuente-t);font-size:.7rem;color:var(--teal);">${ptsStr}${pctStr}</span>
+                <span style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.3);">${hecho?(resp?.fechaRespuesta?.toDate?.()?.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})||'—'):'Pendiente'}</span>
+            </div>`;
+        };
+
+        const talleresSeccionHTML = talleresList.length ? `
+        <div class="section-box">
+            <p class="section-box-title">📝 Formularios y Talleres</p>
+            <div style="display:flex;gap:.5rem;margin-bottom:1rem;font-family:var(--fuente-t);font-size:.7rem;">
+                <span style="color:#86efac;">✅ Realizados: <strong>${realizados.length}</strong></span>
+                <span style="color:rgba(255,255,255,.4);margin:0 .3rem;">·</span>
+                <span style="color:#fca5a5;">⬜ Pendientes: <strong>${pendientes.length}</strong></span>
+                <span style="color:rgba(255,255,255,.4);margin:0 .3rem;">·</span>
+                <span style="color:var(--oro);">Total: <strong>${talleresList.length}</strong></span>
             </div>
-            ${e.fichaCompleta && r.p1?`<div class="section-box"><p class="section-box-title">📋 Datos de Caracterización</p>
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:0.75rem;font-size:0.78rem;color:rgba(255,255,255,0.6);">
-                    ${Object.entries({p1:'Nombre',p2:'Municipio',p3:'Barrio',p4:'Estrato',p5:'Vivienda',p9:'Personas hogar',p19:'Internet',p20:'Equipo',p22:'Institución',p23:'Grado',p24:'Dificultad',p25:'Interés U',p26:'Primer prof.'}).map(([k,label])=>r[k]?`<div><p style="font-family:var(--fuente-t);font-size:0.5rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">${label}</p><p style="color:var(--blanco);">${r[k]}</p></div>`:''    ).join('')}
+            ${realizados.length ? realizados.map(t=>_tallerRow(t,true)).join('') : ''}
+            ${pendientes.length ? `<p style="font-family:var(--fuente-t);font-size:.6rem;letter-spacing:2px;color:rgba(255,255,255,.25);text-transform:uppercase;margin:.75rem 0 .4rem;">Sin completar</p>${pendientes.map(t=>_tallerRow(t,false)).join('')}` : ''}
+        </div>` : '';
+
+        // Sección Pre-Test
+        let pretestSeccionHTML = '';
+        if (ptDocs.length) {
+            pretestSeccionHTML = '<div class="section-box"><p class="section-box-title">🧪 Resultados Pre-Test</p>';
+            ptDocs.forEach(pt => {
+                const fechaPT = pt.fechaMuestra?.toDate?.()?.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}) || '—';
+                const forts = (pt.fortalezas||[]).map(a=>_nombreArea(a));
+                const falens = (pt.falencias||[]).map(a=>_nombreArea(a));
+                const pctColor = (pt.porcentaje||0)>=70?'#86efac':(pt.porcentaje||0)>=40?'#fbbf24':'#fca5a5';
+                pretestSeccionHTML += `<div style="padding:.75rem 0;border-bottom:1px solid rgba(255,255,255,.05);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem;">
+                        <span style="font-family:var(--fuente-t);font-size:.9rem;font-weight:900;color:${pctColor};">${pt.porcentaje!=null?pt.porcentaje+'%':'—'}</span>
+                        <span style="font-size:.65rem;color:rgba(255,255,255,.35);">${fechaPT}</span>
+                    </div>
+                    <p style="font-size:.73rem;color:rgba(255,255,255,.5);margin-bottom:.15rem;">💪 Fortalezas: <span style="color:#86efac;">${forts.join(', ')||'Desarrollando habilidades'}</span></p>
+                    <p style="font-size:.73rem;color:rgba(255,255,255,.5);">🎯 Por mejorar: <span style="color:#fca5a5;">${falens.join(', ')||'Sin áreas débiles'}</span></p>
+                </div>`;
+            });
+            pretestSeccionHTML += '</div>';
+        }
+
+        // Sección premios
+        let canjesHTML = canjeItems.length ? `<div class="section-box"><p class="section-box-title">🎁 Premios Reclamados</p>` : '';
+        canjeItems.forEach(c => {
+            canjesHTML += `<div style="padding:.4rem 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:.78rem;color:rgba(255,255,255,.6);">${c.premio||'—'} · <span style="color:var(--oro)">${c.costo||0} PTS</span> · <span style="color:rgba(255,255,255,.3)">${c.estado||'Pendiente'}</span></div>`;
+        });
+        if (canjeItems.length) canjesHTML += '</div>';
+
+        // Guardar datos para CSV
+        _perfilActualData = { e, uid, ptDocs, talleresRealizados: realizados, talleresPendientes: pendientes, respMap, canjeItems, areaScores };
+
+        // ── 6. Renderizar ─────────────────────────────────────────────────
+        contenido.innerHTML = `
+        <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+            <button class="btn-table" onclick="activarPanel('panel-admin-global');cargarAdmin();">← Volver</button>
+            <button class="btn-table" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:#86efac;" onclick="descargarPerfilCSV()">📥 Descargar CSV para Padres</button>
+        </div>
+
+        <div class="section-box">
+            <p class="section-box-title">👤 Datos del Usuario</p>
+            ${e.fotoUrl?`<img src="${e.fotoUrl}" style="width:80px;height:80px;object-fit:cover;border:2px solid rgba(255,94,0,.4);border-radius:50%;margin-bottom:1rem;">`:'' }
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-bottom:1rem;">
+                ${[['Nombre',e.nombre],['Correo',e.correo||e.email],['Rol',e.rol],['Colegio',e.colegio],['Grado',normalizarGrado(e.grado||'')],['Municipio',e.municipio||'—'],['Estrato',e.estrato||'—'],['Puntos',e.puntos||0],['Premios/Mes',e.premiosMes||0],['Ficha',e.fichaCompleta?'✅ Sí':'❌ No'],['WhatsApp',e.contacto||e.tel||'—'],['Acudiente',e.acudiente||'—']].map(([k,v])=>`<div><p style="font-family:var(--fuente-t);font-size:.52rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);">${k}</p><p style="font-size:.82rem;color:var(--blanco);word-break:break-word;">${v??'—'}</p></div>`).join('')}
+            </div>
+            <p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.35);margin-bottom:.3rem;">Progreso global</p>
+            <div class="progress-mini" style="height:8px;"><div class="progress-mini-fill" style="width:${pct}%"></div></div>
+            <p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.25);margin-top:.25rem;">${e.puntos||0} / 1000 PTS</p>
+        </div>
+
+        <!-- Gráficas de áreas -->
+        ${Object.keys(areaScores).length ? `
+        <div class="section-box">
+            <p class="section-box-title">📊 Puntos Fuertes y Débiles por Área</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                <div>
+                    <p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem;">Rendimiento por área</p>
+                    <canvas id="${cvId}_areas" height="200"></canvas>
                 </div>
-            </div>`:''}
-            ${pretestHTML}
-            ${talleresHTML}
-            ${canjesHTML?`<div class="section-box"><p class="section-box-title">🎁 Premios Reclamados</p>${canjesHTML}</div>`:''}
+                <div>
+                    <p style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem;">Fortalezas vs por mejorar</p>
+                    <canvas id="${cvId}_radar" height="200"></canvas>
+                </div>
+            </div>
+        </div>` : ''}
+
+        ${talleresSeccionHTML}
+        ${pretestSeccionHTML}
+        ${e.fichaCompleta && r.p1?`<div class="section-box"><p class="section-box-title">📋 Datos de Caracterización</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem;font-size:.78rem;color:rgba(255,255,255,.6);">
+                ${Object.entries({p1:'Nombre',p2:'Municipio',p3:'Barrio',p4:'Estrato',p5:'Vivienda',p9:'Personas hogar',p19:'Internet',p20:'Equipo',p22:'Institución',p23:'Grado',p24:'Dificultad',p25:'Interés U',p26:'Primer prof.'}).map(([k,label])=>r[k]?`<div><p style="font-family:var(--fuente-t);font-size:.5rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.3);">${label}</p><p style="color:var(--blanco);">${r[k]}</p></div>`:'').join('')}
+            </div>
+        </div>`:''}
+        ${canjesHTML}
         `;
+
+        // ── 7. Renderizar gráficas (post-DOM) ─────────────────────────────
+        if (Object.keys(areaScores).length) {
+            requestAnimationFrame(() => {
+                const areas = Object.keys(areaScores).sort((a,b) => (areaScores[b].sum/areaScores[b].cnt) - (areaScores[a].sum/areaScores[a].cnt));
+                const promedios = areas.map(a => Math.round(areaScores[a].sum / areaScores[a].cnt));
+                const COLORS = ['#ff5e00','#fbbf24','#86efac','#22d3ee','#818cf8','#f472b6','#34d399','#fb923c','#a78bfa','#60a5fa'];
+                const labCortos = areas.map(a => a.replace('Ciencias Naturales','C. Naturales').replace('Ciencias Sociales','C. Sociales').replace('Lectura Crítica','Lect. Crítica').replace('C. Políticas y Econ.','C. Políticas').replace('Matemáticas Básicas','Mat. Básicas').replace('Álgebra Lineal','Álg. Lineal'));
+                const baseOpts = { responsive:true, plugins:{ legend:{display:false}, tooltip:{callbacks:{title: items=>areas[items[0].dataIndex]}} }, scales:{ x:{ticks:{color:'rgba(255,255,255,.5)',font:{size:8},maxRotation:0,minRotation:0},grid:{color:'rgba(255,255,255,.05)'}}, y:{ticks:{color:'rgba(255,255,255,.5)',font:{size:8},callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.08)'},beginAtZero:true,max:100} } };
+                // Gráfica barras
+                const ctx1 = document.getElementById(`${cvId}_areas`);
+                if (ctx1) new Chart(ctx1, { type:'bar', data:{ labels:labCortos, datasets:[{ data:promedios, backgroundColor:areas.map((_,i)=>COLORS[i%COLORS.length]+'cc'), borderColor:areas.map((_,i)=>COLORS[i%COLORS.length]), borderWidth:1, borderRadius:6 }] }, options:baseOpts });
+                // Radar fortalezas/debilidades
+                const ctx2 = document.getElementById(`${cvId}_radar`);
+                if (ctx2) new Chart(ctx2, { type:'radar', data:{ labels:labCortos, datasets:[{ label:'Rendimiento %', data:promedios, backgroundColor:'rgba(255,94,0,.15)', borderColor:'rgba(255,94,0,.8)', pointBackgroundColor:'rgba(255,94,0,.9)', pointRadius:3 }] }, options:{ responsive:true, plugins:{legend:{display:false}}, scales:{ r:{ ticks:{display:false,maxTicksLimit:5}, grid:{color:'rgba(255,255,255,.1)'}, pointLabels:{color:'rgba(255,255,255,.6)',font:{size:8}}, min:0, max:100 } } } });
+            });
+        }
+
     } catch(err) {
-        document.getElementById('admin-perfil-contenido').innerHTML = `<p style="color:var(--rojo);">Error: ${err.message}</p>`;
+        document.getElementById('admin-perfil-contenido').innerHTML = `<p style="color:var(--rojo);font-family:var(--fuente-t);font-size:.75rem;padding:1rem;">Error: ${err.message}</p>`;
     }
+};
+
+// ── Descargar CSV del perfil para padres ─────────────────────────────────
+window.descargarPerfilCSV = function() {
+    if (!_perfilActualData) return;
+    const { e, ptDocs, talleresRealizados, talleresPendientes, respMap, canjeItems, areaScores } = _perfilActualData;
+    const fecha = new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const esc = v => `"${String(v||'—').replace(/"/g,'""')}"`;
+
+    let csv = `﻿`; // BOM para Excel
+    csv += `REPORTE DE PROGRESO — PROGRAMA PRI\n`;
+    csv += `Generado el: ${fecha}\n\n`;
+
+    csv += `DATOS DEL ESTUDIANTE\n`;
+    csv += `Nombre,Colegio,Grado,Municipio,Estrato,Correo,WhatsApp\n`;
+    csv += `${esc(e.nombre)},${esc(e.colegio)},${esc(normalizarGrado(e.grado||''))},${esc(e.municipio)},${esc(e.estrato)},${esc(e.correo||e.email)},${esc(e.contacto||e.tel)}\n\n`;
+
+    csv += `RESUMEN DE PUNTOS\n`;
+    csv += `Puntos acumulados,Premios reclamados,Formularios realizados,Formularios pendientes\n`;
+    csv += `${esc(e.puntos||0)},${esc(canjeItems.length)},${esc(talleresRealizados.length)},${esc(talleresPendientes.length)}\n\n`;
+
+    if (ptDocs.length) {
+        const pt = ptDocs[0];
+        const forts = (pt.fortalezas||[]).map(a=>_nombreArea(a)).join(' | ');
+        const falens = (pt.falencias||[]).map(a=>_nombreArea(a)).join(' | ');
+        csv += `DIAGNÓSTICO PRE-TEST (último)\n`;
+        csv += `Puntaje,Fortalezas,Áreas a reforzar,Fecha\n`;
+        csv += `${esc((pt.porcentaje||'—')+'%')},${esc(forts||'Desarrollando habilidades')},${esc(falens||'Sin áreas débiles')},${esc(pt.fechaMuestra?.toDate?.()?.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})||'—')}\n\n`;
+    }
+
+    if (Object.keys(areaScores).length) {
+        csv += `RENDIMIENTO POR ÁREA\n`;
+        csv += `Área,Promedio\n`;
+        Object.entries(areaScores).sort((a,b)=>(b[1].sum/b[1].cnt)-(a[1].sum/a[1].cnt)).forEach(([area,sc]) => {
+            csv += `${esc(area)},${esc(Math.round(sc.sum/sc.cnt)+'%')}\n`;
+        });
+        csv += '\n';
+    }
+
+    if (talleresRealizados.length) {
+        csv += `FORMULARIOS COMPLETADOS\n`;
+        csv += `Formulario,Área,Puntos,Porcentaje,Fecha\n`;
+        talleresRealizados.forEach(t => {
+            const resp = respMap[t.id] || {};
+            const pctR = resp.totalPosible ? Math.round((resp.puntaje||0)/resp.totalPosible*100)+'%' : '—';
+            csv += `${esc(t.nombre||t.titulo||t.id)},${esc(t.area||'—')},${esc(resp.puntaje||0)},${esc(pctR)},${esc(resp.fechaRespuesta?.toDate?.()?.toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'})||'—')}\n`;
+        });
+        csv += '\n';
+    }
+
+    if (talleresPendientes.length) {
+        csv += `FORMULARIOS PENDIENTES\n`;
+        csv += `Formulario,Área\n`;
+        talleresPendientes.forEach(t => {
+            csv += `${esc(t.nombre||t.titulo||t.id)},${esc(t.area||'—')}\n`;
+        });
+    }
+
+    const blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `reporte_${(e.nombre||'estudiante').replace(/\s+/g,'_').toLowerCase()}_PRI.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    notif('CSV generado', `Reporte de ${e.nombre||'estudiante'} descargado.`, '📥', 'success');
 };
 
 // PRETEST DATA — con auto-import silencioso en la primera apertura
