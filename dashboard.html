@@ -3056,11 +3056,19 @@ window.verDetalleEstudiante = async function(uid) {
     }
 };
 
-// PRETEST DATA
+// PRETEST DATA — con auto-import silencioso en la primera apertura
+let _pretestAutoSync = false;
 function cargarPretestData() {
     const tbody = document.getElementById('pretest-tbody');
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);padding:2rem;">Cargando…</td></tr>';
+
+    // Auto-sync en la primera vez que se abre el panel (silencioso)
+    if (!_pretestAutoSync && !_pretestImportandoAuto && typeof importarPreTestDesdeSheets === 'function') {
+        _pretestAutoSync = true;
+        _pretestImportandoAuto = true;
+        setTimeout(() => importarPreTestDesdeSheets({ silent: true }), 800);
+    }
 
     // Siempre carga sin orderBy (no requiere índice compuesto) y ordena en JS
     getDocs(collection(db,'muestras_pretest')).then(snap => {
@@ -3110,10 +3118,97 @@ function cargarPretestData() {
 }
 
 // ──────────────────────────────────────────────────────────────────────────
-// IMPORTAR PRE-TEST DESDE GOOGLE SHEETS
+// IMPORTAR PRE-TEST DESDE GOOGLE SHEETS (con clave de respuestas + fortalezas/falencias)
 // Sheet: https://docs.google.com/spreadsheets/d/1Wl5U9NO3Fko5bBY8PdHZmGdu8Wop4gFWePUdaCwF6eM
+// Estructura de la hoja:
+//   Cols 21-30 → Matemáticas Básicas (10 qs)
+//   Cols 33-37 → Cálculo I            (5 qs)
+//   Cols 40-44 → Programación         (5 qs)
+//   Cols 47-51 → Álgebra Lineal       (5 qs)
 // ──────────────────────────────────────────────────────────────────────────
-window.importarPreTestDesdeSheets = async function() {
+const CLAVE_PRETEST = {
+    // Matemáticas Básicas
+    21: 'Una representación que usamos para expresar cantidades o posiciones.',
+    22: 'Segundo',
+    23: '70 decenas',
+    24: '5',
+    25: '2',
+    26: 'Distributiva',
+    27: '25',
+    28: '50',
+    29: '2/4',   // also accept 3/6
+    30: '0.35',
+    // Cálculo I
+    33: 'x+6',
+    34: 'Una relación donde cada valor de entrada tiene solo una salida.',
+    35: '5/6',
+    36: 'x^6',
+    37: '2',
+    // Programación
+    40: 'Un espacio donde se guarda un valor para usarlo más tarde',
+    41: 'Mayor',
+    42: 'Bucle (loop)',
+    43: 'Cadena de texto (string)',
+    44: '0 1 2',
+    // Álgebra Lineal
+    47: 'x = 3, y = 2',
+    48: 'Un vector en la misma dirección pero con distinta magnitud',
+    49: 'su determinante no debe ser cero',  // partial match (both B and C say this)
+    50: 'Una magnitud con dirección y sentido',
+    51: 'ángulo de 90',
+};
+// Aceptar también estas alternativas equivalentes
+const CLAVE_ALT = {
+    29: '3/6',
+    49: 'determinante distinto de cero',
+};
+
+const AREA_COLS_PRETEST = {
+    'Matemáticas Básicas': [21,22,23,24,25,26,27,28,29,30],
+    'Cálculo I':           [33,34,35,36,37],
+    'Programación':        [40,41,42,43,44],
+    'Álgebra Lineal':      [47,48,49,50,51],
+};
+
+// Normaliza respuesta: quita prefijo "A) " y convierte a minúsculas sin acentos
+function _normResp(v) {
+    return String(v||'')
+        .replace(/^[A-Ea-e]\)\s*/,'')
+        .trim()
+        .toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g,'');
+}
+
+// Calcula scores por área y devuelve {scoresPorArea, fortalezas, falencias}
+function _calcAreaScores(cols) {
+    const scores = {};
+    for (const [area, qCols] of Object.entries(AREA_COLS_PRETEST)) {
+        const answered = qCols.filter(c => String(cols[c]||'').trim()).length;
+        if (answered === 0) continue;
+        let ok = 0;
+        for (const c of qCols) {
+            const resp = String(cols[c]||'').trim();
+            if (!resp) continue;
+            const rn = _normResp(resp);
+            const cn  = _normResp(CLAVE_PRETEST[c] || '');
+            const ca  = _normResp(CLAVE_ALT[c]      || '');
+            if (cn && (rn.includes(cn) || cn.includes(rn))) { ok++; continue; }
+            if (ca && (rn.includes(ca) || ca.includes(rn))) { ok++; continue; }
+        }
+        scores[area] = { ok, total: answered, pct: Math.round(ok / answered * 100) };
+    }
+    const sorted = Object.entries(scores).sort((a,b) => b[1].pct - a[1].pct);
+    return {
+        desglosePorArea: scores,
+        fortalezas: sorted.filter(([,v]) => v.pct >= 60).map(([k]) => k),
+        falencias:  sorted.filter(([,v]) => v.pct <  60).map(([k]) => k),
+    };
+}
+
+let _pretestImportandoAuto = false;
+
+window.importarPreTestDesdeSheets = async function(opts = {}) {
+    const { silent = false } = opts;
     const SHEET_ID  = '1Wl5U9NO3Fko5bBY8PdHZmGdu8Wop4gFWePUdaCwF6eM';
     const CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
     const statusEl  = document.getElementById('import-status');
@@ -3181,8 +3276,8 @@ window.importarPreTestDesdeSheets = async function() {
         return `pretest_${e}_${f}`;
     }
 
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Importando…'; }
-    setStatus('Conectando con Google Sheets…', '#fbbf24');
+    if (!silent && btn) { btn.disabled = true; btn.textContent = '⏳ Importando…'; }
+    if (!silent) setStatus('Conectando con Google Sheets…', '#fbbf24');
 
     let rows;
     try {
@@ -3191,15 +3286,21 @@ window.importarPreTestDesdeSheets = async function() {
         const raw = await res.text();
         rows = parseCSV(raw);
     } catch(e) {
-        setStatus(`❌ Error al descargar la hoja: ${e.message}`, '#fca5a5');
-        if (btn) { btn.disabled = false; btn.textContent = '⬇️ Importar desde Google Sheets'; }
-        return;
+        if (!silent) {
+            setStatus(`❌ Error al descargar la hoja: ${e.message}`, '#fca5a5');
+            if (btn) { btn.disabled = false; btn.textContent = '⬇️ Importar desde Google Sheets'; }
+        }
+        _pretestImportandoAuto = false;
+        return 0;
     }
 
     if (rows.length < 2) {
-        setStatus('❌ La hoja está vacía o no tiene datos.', '#fca5a5');
-        if (btn) { btn.disabled = false; btn.textContent = '⬇️ Importar desde Google Sheets'; }
-        return;
+        if (!silent) {
+            setStatus('❌ La hoja está vacía o no tiene datos.', '#fca5a5');
+            if (btn) { btn.disabled = false; btn.textContent = '⬇️ Importar desde Google Sheets'; }
+        }
+        _pretestImportandoAuto = false;
+        return 0;
     }
 
     // Fila 0 = encabezados → detectar índices de columnas dinámicamente
@@ -3249,17 +3350,25 @@ window.importarPreTestDesdeSheets = async function() {
         const puntM    = puntStr.match(/(\d+)\s*\/\s*(\d+)/);
         const porcentaje = puntM ? Math.round((parseInt(puntM[1]) / parseInt(puntM[2])) * 100) : null;
 
-        // Colegio: primer IE no vacía entre todas las columnas de IE condicionales
+        // Colegio: primer IE no vacía
         const colegio = allIEIdx.map(i => s(cols[i])).find(v => v && v.length > 2 && !/^\d+$/.test(v)) || '';
 
-        // Grado: primer nivel educativo detallado ("Onceavo grado", "Décimo grado", "Primer Semestre", etc.)
-        const grado = allNivelIdx.map(i => s(cols[i])).find(v => v && v.length > 2) || '';
+        // Grado: preferir valor específico ("Onceavo grado", "Cuarto Semestre") sobre categoría ("GRADO ESCOLAR", "PREGRADO")
+        const CATEGORIAS_GENERALES = ['grado escolar','pregrado','técnico','tecnólogo','graduado','próximo a graduarse','posgrado','universitario','bachiller'];
+        const esCategoria = v => CATEGORIAS_GENERALES.some(c => v.toLowerCase().includes(c));
+        const niveles = allNivelIdx.map(i => s(cols[i])).filter(v => v && v.length > 2);
+        const grado = niveles.find(v => !esCategoria(v)) || niveles.find(v => v) || '';
 
-        // Áreas de interés
-        const areasInteres = allAreasIdx.map(i => s(cols[i])).filter(Boolean);
+        // Áreas de interés (cols de navegación, no preguntas)
+        const areasInteres = allAreasIdx
+            .map(i => s(cols[i]))
+            .filter(v => v && v.length > 2 && !['si','no','sí'].includes(v.toLowerCase()));
 
         // Fecha
         const fechaMuestra = parseFechaSheets(marca);
+
+        // Per-area scoring → fortalezas y falencias
+        const { desglosePorArea, fortalezas, falencias } = _calcAreaScores(cols);
 
         // ID determinístico → evita re-importar duplicados
         const docId = slug(email || nombre, marca);
@@ -3275,8 +3384,9 @@ window.importarPreTestDesdeSheets = async function() {
             cedula         : first(cols, iNumDoc),
             tipoDocumento  : first(cols, iTipoDoc),
             areasInteres,
-            fortalezas     : [],
-            falencias      : [],
+            fortalezas,
+            falencias,
+            desglosePorArea,
             registrado     : false,
             _fuente        : 'sheets_import',
             _sheetId       : SHEET_ID,
@@ -3286,19 +3396,26 @@ window.importarPreTestDesdeSheets = async function() {
         try {
             await setDoc(doc(db, 'muestras_pretest', docId), payload, { merge: true });
             importados++;
-            setStatus(`Importando ${importados}/${total}…`, '#fbbf24');
+            if (!silent) setStatus(`Importando ${importados}/${total}…`, '#fbbf24');
         } catch(e) {
             console.warn('importar row', ri, e);
             errores++;
         }
     }
 
-    const color = errores > 0 ? '#fbbf24' : '#86efac';
-    setStatus(`✅ ${importados} registros importados${saltados?` · ${saltados} vacíos saltados`:''}${errores?` · ${errores} errores`:''}`, color);
-    if (btn) { btn.disabled = false; btn.textContent = '⬇️ Importar desde Google Sheets'; }
-
-    // Recargar tabla automáticamente
-    setTimeout(() => cargarPretestData(), 600);
+    const resMsg = `✅ ${importados} registros importados${saltados?` · ${saltados} omitidos`:''}${errores?` · ${errores} errores`:''}`;
+    if (!silent) {
+        const color = errores > 0 ? '#fbbf24' : '#86efac';
+        setStatus(resMsg, color);
+        if (btn) { btn.disabled = false; btn.textContent = '⬇️ Importar desde Google Sheets'; }
+        setTimeout(() => cargarPretestData(), 600);
+    } else {
+        console.log('[AutoImport PreTest]', resMsg);
+        // Recargar solo si hay nuevos registros
+        if (importados > 0) setTimeout(() => cargarPretestData(), 800);
+    }
+    _pretestImportandoAuto = false;
+    return importados;
 };
 
 window.exportarPreTestCSV = function() {
