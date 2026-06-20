@@ -1269,56 +1269,80 @@ async function mostrarResultados() {
 
     document.getElementById('puntos-ganados-val').textContent = `+${puntos} PTS`;
 
-    // Guardar en Firebase
-    try {
-        const payload = {
-            ...datosAspirante,
-            registrado: !!usuario,
-            uid: usuario ? usuario.uid : null,
-            aciertos: totalOk,
-            total: PREGUNTAS.length,
-            porcentaje: porcentaje + '%',
-            puntos,
-            desglosePorArea: areas,
-            resumenAreas,
-            fortalezas: fortalezas.map(a => a.nombre),
-            falencias: falencias.map(a => a.nombre),
-            fechaMuestra: serverTimestamp()
-        };
-        await addDoc(collection(db, "muestras_pretest"), payload);
+    // ── GUARDAR EN FIREBASE (con retry y fallback de timestamp) ──────
+    const _payload = {
+        ...datosAspirante,
+        nombre     : datosAspirante.nombre   || '',
+        correo     : datosAspirante.correo   || '',
+        colegio    : datosAspirante.colegio  || '',
+        grado      : datosAspirante.grado    || '',
+        municipio  : datosAspirante.municipio || datosAspirante.ciudad || 'Tumaco',
+        registrado : !!usuario,
+        uid        : usuario ? usuario.uid : null,
+        aciertos   : totalOk,
+        total      : PREGUNTAS.length,
+        porcentaje : porcentaje,           // número (no string con %)
+        puntos,
+        desglosePorArea : areas,
+        resumenAreas,
+        fortalezas : fortalezas.map(a => a.nombre),
+        falencias  : falencias.map(a => a.nombre),
+        fechaMuestra: serverTimestamp(),
+        _fuente    : 'pretest_web',
+    };
 
-        // También guardar en sondeo_piloto para estadísticas generales
+    // Intento de guardado con reintentos (hasta 3 veces)
+    let _guardado = false;
+    for (let _intento = 1; _intento <= 3 && !_guardado; _intento++) {
         try {
-            await addDoc(collection(db, "sondeo_piloto"), {
-                nombre: datosAspirante.nombre || '',
-                correo: datosAspirante.correo || '',
-                tel: datosAspirante.tel || '',
-                ciudad: datosAspirante.ciudad || 'Tumaco, Nariño',
-                doc_tipo: datosAspirante.docTipo || '',
-                doc_num: datosAspirante.docNum || '',
-                rol: datosAspirante.rol || 'ESTUDIANTE',
-                nivel: datosAspirante.nivel || (datosAspirante.grado + '° grado'),
-                institucion: datosAspirante.colegio || 'No especificada',
-                areas_interes: datosAspirante.areas_interes || fortalezas.map(a=>a.nombre),
-                puntuacion: totalOk,
-                puntaje_max: PREGUNTAS.length,
-                fecha_registro: new Date().toLocaleDateString('es-CO'),
-                fuente: 'pretest_web',
-                timestamp: serverTimestamp()
-            });
-        } catch(e2) { /* no bloquea si falla */ }
+            if (_intento > 1) {
+                // En reintento usar timestamp de cliente como fallback
+                _payload.fechaMuestra = new Date();
+                await new Promise(r => setTimeout(r, 1000 * _intento));
+            }
+            await addDoc(collection(db, "muestras_pretest"), _payload);
+            _guardado = true;
+        } catch (_e) {
+            console.warn(`[PreTest] Intento ${_intento} fallido:`, _e.message);
+        }
+    }
 
-        if (usuario) {
-            await updateDoc(doc(db, "usuarios", usuario.uid), {
-                puntos: increment(puntos),
-                ultimoTest: new Date(),
-                caracterizacion_completa: true
-            });
+    if (!_guardado) {
+        // Último recurso: guardar en localStorage para no perder datos
+        const _cache = JSON.parse(localStorage.getItem('_pretest_pendiente') || '[]');
+        _cache.push({ ..._payload, fechaMuestra: new Date().toISOString(), _ts: Date.now() });
+        localStorage.setItem('_pretest_pendiente', JSON.stringify(_cache));
+        // Mostrar advertencia al estudiante
+        const _fb = document.getElementById('feedback-bar');
+        if (_fb) {
+            _fb.style.display = 'flex';
+            _fb.className = 'feedback-bar wrong';
+            _fb.textContent = '⚠️ Tus resultados se guardaron localmente. Contáctanos si no aparecen en el sistema.';
+        }
+    }
+
+    // Guardar también en sondeo_piloto (sin bloquear)
+    addDoc(collection(db, "sondeo_piloto"), {
+        nombre    : datosAspirante.nombre || '',
+        correo    : datosAspirante.correo || '',
+        rol       : datosAspirante.rol || 'ESTUDIANTE',
+        nivel     : datosAspirante.nivel || '',
+        institucion: datosAspirante.colegio || '',
+        puntuacion: totalOk,
+        puntaje_max: PREGUNTAS.length,
+        fuente    : 'pretest_web',
+        timestamp : serverTimestamp()
+    }).catch(() => {});
+
+    if (usuario) {
+        updateDoc(doc(db, "usuarios", usuario.uid), {
+            puntos: increment(puntos),
+            ultimoTest: new Date(),
+            caracterizacion_completa: true
+        }).then(() => {
             const updated = { ...usuario, puntos: (usuario.puntos || 0) + puntos, caracterizacion_completa: true };
             localStorage.setItem('usuario_sesion_activa', JSON.stringify(updated));
-        }
-    } catch (err) {
-        console.warn('Error al guardar:', err.message);
+        }).catch(() => {});
     }
 
     // DISPARADOR DEL CTA FINAL AUTOMÁTICO AL TERMINAR TU PRUEBA NATAL

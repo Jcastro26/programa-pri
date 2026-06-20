@@ -792,8 +792,10 @@
             </div>
             <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
                 <button class="export-btn" onclick="exportarPreTestCSV()">📊 Exportar Pre-Tests CSV</button>
-                <button class="export-btn" style="background:linear-gradient(135deg,#1a3a2a,#0d2a1a);border-color:rgba(134,239,172,.35);color:#86efac;" onclick="importarPreTestDesdeSheets()">⬇️ Importar desde Google Sheets</button>
+                <button class="export-btn" style="background:linear-gradient(135deg,#1a3a2a,#0d2a1a);border-color:rgba(134,239,172,.35);color:#86efac;" onclick="importarPreTestDesdeSheets()">⬇️ Importar Pre-Test</button>
+                <button id="btn-import-icfes" class="export-btn" style="background:linear-gradient(135deg,#1a2a3a,#0d1a2a);border-color:rgba(134,172,239,.35);color:#93c5fd;" onclick="importarICFESDesdeSheets()">⬇️ Importar ICFES</button>
                 <span id="import-status" style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,.4);display:none;"></span>
+                <span id="import-icfes-status" style="font-family:var(--fuente-t);font-size:0.6rem;color:rgba(255,255,255,.4);display:none;"></span>
             </div>
             <div class="section-box" style="padding:0;overflow:visible;margin-top:1rem;">
                 <div class="admin-table-wrap">
@@ -3068,6 +3070,10 @@ function cargarPretestData() {
         _pretestAutoSync = true;
         _pretestImportandoAuto = true;
         setTimeout(() => importarPreTestDesdeSheets({ silent: true }), 800);
+        // También importar ICFES automáticamente
+        if (typeof importarICFESDesdeSheets === 'function') {
+            setTimeout(() => importarICFESDesdeSheets({ silent: true }), 1600);
+        }
     }
 
     // Siempre carga sin orderBy (no requiere índice compuesto) y ordena en JS
@@ -3415,6 +3421,168 @@ window.importarPreTestDesdeSheets = async function(opts = {}) {
         if (importados > 0) setTimeout(() => cargarPretestData(), 800);
     }
     _pretestImportandoAuto = false;
+    return importados;
+};
+
+// ──────────────────────────────────────────────────────────────────────────
+// IMPORTAR HOJA ICFES (CIENCIAS NATURALES)
+// Sheet: https://docs.google.com/spreadsheets/d/1a_xsxKrTn6KHe-Ft5_1aSiLs3-NqOiUfc6pMoc_8b5s
+// Estructura: Nombre Completo (col3), Email (col1/6), Puntuación (col2),
+//             Tipo ID (col4), Num ID (col5), Fecha (col7), Qs 1-25 (cols 8-32)
+// ──────────────────────────────────────────────────────────────────────────
+window.importarICFESDesdeSheets = async function(opts = {}) {
+    const { silent = false } = opts;
+    const SHEET_ID  = '1a_xsxKrTn6KHe-Ft5_1aSiLs3-NqOiUfc6pMoc_8b5s';
+    const CSV_URL   = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+    const statusEl  = document.getElementById('import-icfes-status');
+    const btn       = document.getElementById('btn-import-icfes');
+
+    function setStatus(msg, color) {
+        if (!statusEl || silent) return;
+        statusEl.style.display = 'inline';
+        statusEl.style.color   = color || 'rgba(255,255,255,.5)';
+        statusEl.textContent   = msg;
+    }
+
+    function parseCSV(raw) {
+        const rows = [];
+        let row=[], cur='', inQ=false, i=0;
+        while (i < raw.length) {
+            const ch = raw[i];
+            if (inQ) {
+                if (ch==='"'&&raw[i+1]==='"') { cur+='"'; i+=2; continue; }
+                if (ch==='"') { inQ=false; i++; continue; }
+                cur+=ch; i++; continue;
+            }
+            if (ch==='"') { inQ=true; i++; continue; }
+            if (ch===',') { row.push(cur); cur=''; i++; continue; }
+            if (ch==='\n'||ch==='\r') {
+                if (ch==='\r'&&raw[i+1]==='\n') i++;
+                row.push(cur); cur='';
+                if (row.length>0) rows.push(row);
+                row=[]; i++; continue;
+            }
+            cur+=ch; i++;
+        }
+        if (cur||row.length) { row.push(cur); rows.push(row); }
+        return rows;
+    }
+
+    function parseFecha(s) {
+        if (!s) return null;
+        // "DD/MM/YYYY HH:MM:SS" o "MM/DD/YYYY"
+        const m = String(s).match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+        if (!m) return null;
+        const [,d,mo,y] = m;
+        const dt = new Date(`${y}-${mo.padStart(2,'0')}-${d.padStart(2,'0')}T00:00:00`);
+        return isNaN(dt) ? null : Timestamp.fromDate(dt);
+    }
+
+    function st(v) { return (v||'').trim(); }
+    function slug(email, id) {
+        const e = (email||'').toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,30);
+        const n = (id||'').replace(/[^0-9]/g,'').slice(0,12);
+        return `icfes_cien_${e || n}_${n || e}`;
+    }
+
+    if (!silent && btn) { btn.disabled=true; btn.textContent='⏳ Importando…'; }
+    setStatus('Conectando…', '#fbbf24');
+
+    let rows;
+    try {
+        const res = await fetch(CSV_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        rows = parseCSV(await res.text());
+    } catch(e) {
+        setStatus(`❌ Error: ${e.message}`, '#fca5a5');
+        if (!silent && btn) { btn.disabled=false; btn.textContent='⬇️ Importar ICFES'; }
+        return 0;
+    }
+
+    if (rows.length < 2) {
+        setStatus('Sin datos.', '#fca5a5');
+        if (!silent && btn) { btn.disabled=false; btn.textContent='⬇️ Importar ICFES'; }
+        return 0;
+    }
+
+    let importados=0, saltados=0, errores=0;
+    const total = rows.length - 1;
+
+    for (let ri = 1; ri < rows.length; ri++) {
+        const c = rows[ri];
+        if (!c || c.every(v=>!st(v))) continue;
+
+        const marca    = st(c[0]);
+        const email1   = st(c[1]);
+        const puntStr  = st(c[2]);
+        const nombre   = st(c[3]);
+        const tipoDoc  = st(c[4]);
+        const numDoc   = st(c[5]);
+        const email2   = st(c[6]);
+        const fecha    = st(c[7]);
+        const email    = email1 || email2;
+
+        if (!nombre && !email) { saltados++; continue; }
+
+        // Puntaje "X / 25" → porcentaje
+        const puntM    = puntStr.match(/(\d+)\s*\/\s*(\d+)/);
+        const porcentaje = puntM ? Math.round(parseInt(puntM[1])/parseInt(puntM[2])*100) : null;
+
+        // Fortalezas/falencias: el test completo es Ciencias Naturales
+        const fortalezas = porcentaje != null && porcentaje >= 60 ? ['Ciencias Naturales'] : [];
+        const falencias  = porcentaje != null && porcentaje <  60 ? ['Ciencias Naturales'] : [];
+
+        // Respuestas a preguntas (cols 8-32)
+        const respuestas = {};
+        for (let qi = 8; qi <= 32 && qi < c.length; qi++) {
+            const qText = rows[0][qi] || '';
+            const qNum  = qText.match(/^\s*(\d+)\./)?.[1] || String(qi-7);
+            const ans   = st(c[qi]);
+            if (ans) respuestas[`q${qNum}`] = ans;
+        }
+
+        // Fecha de muestra: usar col7 (Fecha digitada) o col0 (marca temporal)
+        const fechaTs = parseFecha(fecha) || parseFecha(marca);
+
+        const docId   = slug(email, numDoc);
+        const payload = {
+            nombre,
+            correo        : email,
+            colegio       : '',      // no está en este formulario
+            grado         : '',
+            municipio     : 'Tumaco',
+            porcentaje,
+            cedula        : numDoc,
+            tipoDocumento : tipoDoc,
+            fortalezas,
+            falencias,
+            respuestasCN  : respuestas,
+            desglosePorArea: { 'Ciencias Naturales': { ok: puntM ? parseInt(puntM[1]) : 0, total: puntM ? parseInt(puntM[2]) : 25, pct: porcentaje || 0 }},
+            registrado    : false,
+            _fuente       : 'icfes_sheets_import',
+            _sheetId      : SHEET_ID,
+        };
+        if (fechaTs) payload.fechaMuestra = fechaTs;
+
+        try {
+            await setDoc(doc(db, 'muestras_pretest', docId), payload, { merge: true });
+            importados++;
+            if (!silent) setStatus(`Importando ${importados}/${total}…`, '#fbbf24');
+        } catch(e) {
+            console.warn('importarICFES row', ri, e);
+            errores++;
+        }
+    }
+
+    const resMsg = `✅ ${importados} registros ICFES importados${errores?` · ${errores} errores`:''}`;
+    if (!silent) {
+        setStatus(resMsg, errores ? '#fbbf24' : '#86efac');
+        if (btn) { btn.disabled=false; btn.textContent='⬇️ Importar ICFES'; }
+        if (importados > 0) setTimeout(() => cargarPretestData(), 600);
+    } else {
+        console.log('[AutoImport ICFES]', resMsg);
+        if (importados > 0) setTimeout(() => cargarPretestData(), 800);
+    }
     return importados;
 };
 
