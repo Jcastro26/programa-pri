@@ -3,130 +3,96 @@
 //
 //  INSTRUCCIONES (solo una vez):
 //  1. Abre tu Google Sheets → Extensiones → Apps Script
-//  2. Borra lo que haya, pega TODO este código y guarda (Ctrl+S)
-//  3. Ejecuta la función  setupTrigger()  (solo una vez)
-//  4. Autoriza los permisos que pida Google
-//  5. Ejecuta  probarConUltimaFila()  para verificar que funciona
-//
-//  Desde ese momento cada formulario enviado llega solo a Firestore.
+//  2. En el panel izquierdo haz clic en ⚙️ "Configuración del proyecto"
+//     y activa "Mostrar archivo de manifiesto appsscript.json"
+//  3. Abre el archivo appsscript.json y reemplázalo con el JSON
+//     que aparece al final de este archivo (en los comentarios)
+//  4. Vuelve a Código.gs, pega este código y guarda (Ctrl+S)
+//  5. Ejecuta setupTrigger() → autoriza los permisos
+//  6. Ejecuta probarConUltimaFila() para verificar
 // ═══════════════════════════════════════════════════════════════════
 
-const FIREBASE_API_KEY = 'AIzaSyABVpETOiTxYNoEKE-sLXjQHgPkkCgAZ30';
 const FIREBASE_PROJECT = 'programa-pri-2d395';
 const FIRESTORE_COL    = 'diagnostico_colegios';
 
-// ── 1. TRIGGER: se ejecuta automáticamente en cada envío ────────────────────
+// ── TRIGGER: se ejecuta en cada envío de formulario ─────────────────────────
 function onFormSubmit(e) {
   try {
     const sheet   = e.range.getSheet();
-    const hoja    = sheet.getName();   // nombre de la pestaña = nombre del taller
+    const hoja    = sheet.getName();
     const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    const values  = e.values;          // valores de la fila recién enviada
+    const values  = e.values;
 
-    // Construir objeto con todos los campos del formulario
     const data = { _hoja: hoja };
     headers.forEach((header, i) => {
       if (!header) return;
-      const clave = header.toString().trim();
-      data[clave] = (values[i] !== undefined && values[i] !== null)
-        ? values[i].toString().trim()
-        : '';
+      data[header.toString().trim()] = values[i] ? values[i].toString().trim() : '';
     });
 
     const ok = _escribirEnFirestore(data);
-    Logger.log(ok
-      ? '✅ Enviado a Firestore — hoja: ' + hoja
-      : '❌ Error al enviar — hoja: ' + hoja
-    );
+    Logger.log(ok ? '✅ OK: ' + hoja : '❌ Error: ' + hoja);
 
   } catch (err) {
-    Logger.log('❌ Error en onFormSubmit: ' + err.toString());
+    Logger.log('❌ onFormSubmit: ' + err.toString());
   }
 }
 
-// ── 2. ESCRIBIR en Firestore vía REST API ───────────────────────────────────
+// ── ESCRIBIR en Firestore ───────────────────────────────────────────────────
 function _escribirEnFirestore(data) {
-  const idToken = _obtenerToken();
-  if (!idToken) { Logger.log('Sin token — revisa la API Key'); return false; }
+  // Token OAuth del dueño del script (sin necesidad de Firebase Auth)
+  const token = ScriptApp.getOAuthToken();
 
-  // Convertir a formato de campos Firestore
+  // Convertir a formato Firestore
   const fields = {};
   Object.entries(data).forEach(([k, v]) => {
     fields[k] = { stringValue: String(v) };
   });
   fields['_timestamp'] = { stringValue: new Date().toISOString() };
 
-  // POST al endpoint REST de Firestore
   const url = 'https://firestore.googleapis.com/v1/projects/'
             + FIREBASE_PROJECT
             + '/databases/(default)/documents/'
             + FIRESTORE_COL;
 
   const resp = UrlFetchApp.fetch(url, {
-    method          : 'post',
-    contentType     : 'application/json',
-    headers         : { Authorization: 'Bearer ' + idToken },
-    payload         : JSON.stringify({ fields }),
+    method            : 'post',
+    contentType       : 'application/json',
+    headers           : { Authorization: 'Bearer ' + token },
+    payload           : JSON.stringify({ fields }),
     muteHttpExceptions: true,
   });
 
   const code = resp.getResponseCode();
   if (code !== 200) {
-    Logger.log('Firestore respondió ' + code + ': ' + resp.getContentText());
+    Logger.log('Firestore error ' + code + ': ' + resp.getContentText());
     return false;
   }
+  Logger.log('Firestore OK: ' + resp.getContentText().slice(0, 120));
   return true;
 }
 
-// ── 3. OBTENER TOKEN de Firebase (autenticación anónima) ────────────────────
-function _obtenerToken() {
-  const url = 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key='
-            + FIREBASE_API_KEY;
-  const resp = UrlFetchApp.fetch(url, {
-    method            : 'post',
-    contentType       : 'application/json',
-    payload           : JSON.stringify({ returnSecureToken: true }),
-    muteHttpExceptions: true,
-  });
-  if (resp.getResponseCode() !== 200) {
-    Logger.log('Error de autenticación: ' + resp.getContentText());
-    return null;
-  }
-  return JSON.parse(resp.getContentText()).idToken;
-}
-
-// ── 4. CONFIGURAR TRIGGER (ejecutar UNA sola vez) ───────────────────────────
+// ── CONFIGURAR TRIGGER (ejecutar UNA sola vez) ──────────────────────────────
 function setupTrigger() {
-  // Eliminar triggers anteriores para no duplicar
   ScriptApp.getProjectTriggers().forEach(t => {
-    if (t.getHandlerFunction() === 'onFormSubmit') {
-      ScriptApp.deleteTrigger(t);
-    }
+    if (t.getHandlerFunction() === 'onFormSubmit') ScriptApp.deleteTrigger(t);
   });
 
-  // Crear el trigger en este spreadsheet
   ScriptApp.newTrigger('onFormSubmit')
     .forSpreadsheet(SpreadsheetApp.getActiveSpreadsheet())
     .onFormSubmit()
     .create();
 
-  SpreadsheetApp.getUi().alert(
-    '✅ ¡Listo!\n\n' +
-    'El trigger está configurado.\n' +
-    'Desde ahora cada formulario enviado llega\n' +
-    'automáticamente a Firestore → diagnostico_colegios.\n\n' +
-    'Puedes ejecutar probarConUltimaFila() para verificar.'
-  );
+  SpreadsheetApp.getUi().alert('✅ Trigger configurado. Desde ahora los formularios llegan solos a Firestore.');
 }
 
-// ── 5. PRUEBA: envía la última fila de la pestaña activa ────────────────────
+// ── PROBAR con la última fila de la pestaña activa ──────────────────────────
 function probarConUltimaFila() {
   const sheet   = SpreadsheetApp.getActiveSheet();
   const hoja    = sheet.getName();
   const lastRow = sheet.getLastRow();
 
   if (lastRow < 2) {
-    SpreadsheetApp.getUi().alert('Esta pestaña no tiene datos aún. Ve a una con respuestas.');
+    SpreadsheetApp.getUi().alert('Esta pestaña no tiene respuestas. Ve a una con datos.');
     return;
   }
 
@@ -138,11 +104,30 @@ function probarConUltimaFila() {
     if (h) data[h.toString().trim()] = valores[i] ? valores[i].toString().trim() : '';
   });
 
-  Logger.log('Enviando datos de prueba: ' + JSON.stringify(data));
+  Logger.log('Enviando: ' + JSON.stringify(data).slice(0, 300));
   const ok = _escribirEnFirestore(data);
 
   SpreadsheetApp.getUi().alert(ok
-    ? '✅ ¡Prueba exitosa!\n\nRevisa Firebase Console → Firestore → diagnostico_colegios\nDebería aparecer un documento nuevo con _hoja: "' + hoja + '"'
-    : '❌ Falló.\n\nVe a Ver → Registros de ejecución para ver el error.'
+    ? '✅ ¡Funcionó!\n\nRevisa Firebase Console → Firestore → diagnostico_colegios\nBusca el documento con _hoja: "' + hoja + '"'
+    : '❌ Falló.\n\nVe a Ver → Registros de ejecución para ver el error detallado.'
   );
 }
+
+
+// ═══════════════════════════════════════════════════════════════════
+//  CONTENIDO DEL ARCHIVO appsscript.json
+//  (Configuración del proyecto → activar "Mostrar manifiesto")
+//
+//  {
+//    "timeZone": "America/Bogota",
+//    "dependencies": {},
+//    "exceptionLogging": "STACKDRIVER",
+//    "runtimeVersion": "V8",
+//    "oauthScopes": [
+//      "https://www.googleapis.com/auth/spreadsheets",
+//      "https://www.googleapis.com/auth/script.external_request",
+//      "https://www.googleapis.com/auth/datastore",
+//      "https://www.googleapis.com/auth/drive"
+//    ]
+//  }
+// ═══════════════════════════════════════════════════════════════════
