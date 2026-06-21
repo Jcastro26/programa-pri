@@ -2104,6 +2104,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // ===================== MENU =====================
 window.activarPanel = function(id) {
+    // Si el inbox tenía un chat abierto en móvil, cerrarlo limpiamente antes de cambiar de panel
+    if (typeof cerrarInboxChat === 'function' && document.getElementById('panel-inbox')?.classList.contains('chat-abierto')) {
+        cerrarInboxChat();
+    }
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     const p = document.getElementById(id);
     if (p) p.classList.add('active');
@@ -7559,7 +7563,6 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     // Móvil: pantalla completa para que el scroll del chat no compita con el de la página
     if (window.innerWidth <= 900) {
         document.getElementById('panel-inbox').classList.add('chat-abierto');
-        document.body.style.overflow = 'hidden'; // bloquear scroll de página mientras el chat está abierto
     }
 
     // Nombre: prioridad → argumento → DOM del thread (ya actualizado por lookup previo) → Firestore
@@ -7654,9 +7657,8 @@ window.cerrarInboxChat = function() {
     const chatBox = document.getElementById('inbox-chat-box');
     chatBox.style.display = 'none';
     chatBox.classList.remove('inbox-open');
-    // Restaurar scroll de página y quitar pantalla completa en móvil
+    // Quitar pantalla completa en móvil
     document.getElementById('panel-inbox').classList.remove('chat-abierto');
-    document.body.style.overflow = '';
 };
 
 window.enviarMensajeInbox = async function() {
