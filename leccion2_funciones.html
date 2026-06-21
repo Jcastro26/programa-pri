@@ -200,7 +200,7 @@ function s5(el){
 </div></div>`;rQ2(0);}
 function rQ2(i){if(i>=quiz.length){setTimeout(showSc,400);return;}const q=quiz[i];const w=document.getElementById('qw');if(!w)return;
 w.innerHTML=`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem;">Pregunta ${i+1} de ${quiz.length}</div><div class="q-q">${q.q}</div><div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div><div class="q-fb" id="qf${i}"></div>`;
-gsap.from('.q-opt',{x:-18,duration:.3,stagger:.06,ease:'power2.out'});}
+gsap.from('.q-opt',{opacity:0,y:10,duration:.28,stagger:.07,ease:'power2.out'});}
 function ansQ(qi,oi){if(qAns[qi]!==null)return;qAns[qi]=oi;const q=quiz[qi];
 document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});
 const fb=document.getElementById(`qf${qi}`);if(fb){fb.className='q-fb '+(oi===q.ok?'ok':'bad');fb.textContent=(oi===q.ok?'✅ ':'❌ ')+q.fb;}
