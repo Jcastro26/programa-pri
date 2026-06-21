@@ -35,7 +35,7 @@ input[type=range]{flex:1;accent-color:var(--purple);}
 .step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;}
 .q-q{font-size:.93rem;font-weight:600;margin-bottom:.9rem;}
 .q-opts{display:flex;flex-direction:column;gap:.45rem;}
-.q-opt{padding:.6rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);cursor:pointer;font-size:.84rem;transition:all .2s;text-align:left;color:var(--text);display:flex;align-items:center;gap:.65rem;}
+.q-opt{padding:.65rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);cursor:pointer;font-size:.84rem;transition:all .2s;text-align:left;color:var(--text);}
 .q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
 .q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
 .q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
@@ -199,7 +199,7 @@ function s5(el){
 <button onclick="rQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.3rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button>
 </div></div>`;rQ2(0);}
 function rQ2(i){if(i>=quiz.length){setTimeout(showSc,400);return;}const q=quiz[i];const w=document.getElementById('qw');if(!w)return;
-w.innerHTML=`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem;">Pregunta ${i+1} de ${quiz.length}</div><div class="q-q">${q.q}</div><div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}"><span style="display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;border-radius:50%;background:rgba(124,58,237,.22);border:1px solid rgba(124,58,237,.45);font-size:.72rem;font-weight:700;flex-shrink:0;letter-spacing:0;">\${String.fromCharCode(65+j)}</span><span>\${o}</span></button>`).join('')}</div><div class="q-fb" id="qf${i}"></div>`;
+w.innerHTML=`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem;">Pregunta ${i+1} de ${quiz.length}</div><div class="q-q">${q.q}</div><div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div><div class="q-fb" id="qf${i}"></div>`;
 gsap.from('.q-opt',{x:-18,duration:.3,stagger:.06,ease:'power2.out'});}
 function ansQ(qi,oi){if(qAns[qi]!==null)return;qAns[qi]=oi;const q=quiz[qi];
 document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});
