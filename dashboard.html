@@ -1139,9 +1139,6 @@
                             <option value="">Todos los grupos</option>
                             <option>General</option><option>G1</option><option>G2</option><option>Rehabilitación</option>
                         </select>
-                        <button class="btn-table" onclick="limpiarDiagnosticoViejos()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.3);color:#fca5a5;" title="Borra documentos de diagnostico_colegios con _hoja = Respuestas de formulario X">🗑️ Limpiar respuestas viejas</button>
-                        <button class="btn-table" onclick="actualizarTitulosDesdeHoja()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.3);color:#7dd3fc;" title="Copia el campo hojaCalculo al título de cada taller">✏️ Títulos = hojaCalculo</button>
-                        <button class="btn-table" onclick="reemplazarTalleresDesdeHojas()" style="font-size:.6rem;padding:.3rem .65rem;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.35);color:#fca5a5;" title="Borra todos los talleres actuales y crea nuevos desde los nombres de pestañas en diagnostico_colegios">🔄 Reemplazar desde hojas</button>
                     </div>
                 </div>
                 <div id="ti-lista" style="max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:4px;scrollbar-width:thin;scrollbar-color:rgba(56,189,248,0.35) rgba(255,255,255,0.05);">
@@ -5296,7 +5293,7 @@ function renderResultadosICFES() {
     const _maxPorHoja = {};
     _riDatos.forEach(rr => {
         // Todos los posibles nombres del campo puntaje
-        const pts = (rr.Puntuacion||rr.puntuacion||rr.PUNTUACION||rr.Puntaje||rr.puntaje||rr.PUNTAJE||rr.Score||rr.score||rr.Puntaje_Total||rr.total||'');
+        const pts = (rr['Puntuación']||rr['Puntuacion']||rr.puntuacion||rr.PUNTUACION||rr['Puntaje']||rr.puntaje||rr.PUNTAJE||rr.Score||rr.score||rr.Puntaje_Total||rr.total||'');
         const hojaKey = rr._hoja || '';  // agrupar registros sin _hoja bajo clave vacía
         const pm  = String(pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
         if (pm) {
