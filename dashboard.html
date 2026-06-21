@@ -7518,35 +7518,63 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     document.getElementById('inbox-chat-nombre').textContent = nombreMostrar || '…';
     document.getElementById('inbox-chat-input').value = '';
 
-    // Un solo getDoc: resuelve nombre Y foto del otro usuario
-    getDoc(doc(db, 'usuarios', uid)).then(uSnap => {
-        if (!uSnap.exists()) return;
+    // Marcar como leído (borra el badge) — no esperar el resultado
+    updateDoc(doc(db,'chats_privados',chatId), {
+        [`visto.${currentUser.uid}`]: serverTimestamp()
+    }).catch(()=>{});
+
+    // Helper para re-pintar avatares del otro cuando tengamos foto
+    const _aplicarFotoOtro = (foto) => {
+        if (!foto) return;
+        _inboxOtroFotoUrl = foto;
+        document.querySelectorAll('#inbox-chat-mensajes .msg-item:not(.mine) .msg-avatar').forEach(av => {
+            if (!av.querySelector('img')) {
+                const img = new Image();
+                img.onload = () => { av.textContent = ''; av.appendChild(img); };
+                img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+                img.src = foto; img.alt = av.textContent;
+            }
+        });
+    };
+
+    // Resolver nombre Y foto: primero del doc del CHAT (fiable, ya existe)
+    // luego del doc de USUARIO como refuerzo
+    getDoc(doc(db,'chats_privados',chatId)).then(chatSnap => {
+        const _nr = s => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+        if (chatSnap.exists()) {
+            const cd = chatSnap.data();
+            // Nombre desde el mapa del chat
+            const nChat = (uid && cd.nombres?.[uid]) || cd.ultimoAutorNombre || '';
+            if (nChat && _nr(nChat) !== _nr(currentUser.nombre) && !nombreValPN(nombreMostrar)) {
+                document.getElementById('inbox-chat-nombre').textContent = nChat;
+            }
+            // Foto desde el mapa del chat
+            const fChat = uid && cd.fotos?.[uid] ? cd.fotos[uid] : '';
+            if (fChat) _aplicarFotoOtro(fChat);
+        }
+        // Refuerzo: doc del usuario (puede tener foto/nombre más actualizados)
+        if (!uid) return;
+        return getDoc(doc(db,'usuarios',uid));
+    }).then(uSnap => {
+        if (!uSnap || !uSnap.exists()) return;
         const ud = uSnap.data();
-        // Foto
         const foto = ud.fotoUrl || ud.foto || ud.fotoPerfil || ud.photoURL || '';
-        if (foto) {
-            _inboxOtroFotoUrl = foto;
-            // Re-pintar avatares de mensajes ya renderizados que aún sean inicial de texto
-            document.querySelectorAll('#inbox-chat-mensajes .msg-item:not(.mine) .msg-avatar').forEach(av => {
-                if (!av.querySelector('img')) {
-                    const img = new Image();
-                    img.onload = () => { av.textContent = ''; av.appendChild(img); };
-                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
-                    img.src = foto; img.alt = av.textContent;
-                }
-            });
+        if (foto) _aplicarFotoOtro(foto);
+        const _nr = s => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+        const realName = (typeof ud.nombre === 'string' ? ud.nombre : '')
+                      || (typeof ud.nombreCompleto === 'string' ? ud.nombreCompleto : '')
+                      || (typeof ud.displayName === 'string' ? ud.displayName : '');
+        const headerEl = document.getElementById('inbox-chat-nombre');
+        if (realName && _nr(realName) !== _nr(currentUser.nombre)) {
+            headerEl.textContent = realName;
         }
-        // Nombre
-        const realName = ud.nombre || ud.nombres || ud.nombreCompleto || ud.displayName || '';
-        if (realName && !nombreValPN(nombreMostrar)) {
-            document.getElementById('inbox-chat-nombre').textContent = realName;
-        }
-        // Persistir para carga futura sin lookup
+        // Persistir todo para la próxima carga sin lookups
         const updates = {};
         if (realName) updates[`nombres.${uid}`] = realName;
         if (foto)     updates[`fotos.${uid}`]   = foto;
         if (Object.keys(updates).length) updateDoc(doc(db,'chats_privados',chatId), updates).catch(()=>{});
     }).catch(()=>{});
+
     if (inboxUnsubscribe) inboxUnsubscribe();
     const q = query(collection(db,"chats_privados",chatId,"mensajes"), orderBy("timestamp","asc"), limit(60));
     inboxUnsubscribe = onSnapshot(q, snap => {
@@ -7677,11 +7705,19 @@ function iniciarBadgeInbox() {
     // que se debe guardar en el doc raíz al enviar cada mensaje (ver enviarMensaje)
     const q = query(collection(db,"chats_privados"), where("participantes","array-contains",currentUser.uid));
     inboxBadgeUnsubscribe = onSnapshot(q, snap => {
-        // Conta chats donde el último mensaje no fue enviado por mí
-        // usando el campo desnormalizado 'ultimoAutorUid' del doc raíz (sin sub-queries)
+        // Un chat tiene mensaje no leído si:
+        // 1. El último autor NO fui yo, Y
+        // 2. No lo he marcado como visto (visto.{uid}) después del ultimoTimestamp
         const total = snap.docs.filter(d => {
             const data = d.data();
-            return data.ultimoAutorUid && data.ultimoAutorUid !== currentUser.uid;
+            if (!data.ultimoAutorUid || data.ultimoAutorUid === currentUser.uid) return false;
+            // Si nunca lo vi → no leído
+            const vistoTs = data.visto?.[currentUser.uid];
+            if (!vistoTs) return true;
+            // Si lo vi ANTES del último mensaje → no leído
+            const ultimoTs = data.ultimoTimestamp;
+            if (!ultimoTs) return false;
+            return vistoTs.seconds < ultimoTs.seconds;
         }).length;
         document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
             if (btn.textContent.includes('Mensajes')) {
