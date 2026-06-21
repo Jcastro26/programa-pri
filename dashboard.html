@@ -371,35 +371,14 @@
             .qa-label{font-size:.6rem;}
             .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
 
-            /* Foro global móvil — layout flex + iOS scroll-lock (mismo patrón que inbox) */
-            body.foro-abierto #panel-foro,
-            body.foro-abierto #panel-foro-admin{
-                display:flex !important;flex-direction:column !important;
-                overflow:hidden !important;
-            }
-            body.foro-abierto #panel-foro .panel-title,
-            body.foro-abierto #panel-foro .panel-heading,
-            body.foro-abierto #panel-foro .panel-desc,
-            body.foro-abierto #panel-foro-admin .panel-title,
-            body.foro-abierto #panel-foro-admin .panel-heading,
-            body.foro-abierto #panel-foro-admin .panel-desc{display:none !important;}
-            body.foro-abierto #panel-foro .section-box,
-            body.foro-abierto #panel-foro-admin .section-box{
-                flex:1 !important;min-height:0 !important;
-                display:flex !important;flex-direction:column !important;
-                overflow:hidden !important;margin-bottom:0 !important;
-            }
+            /* Foro global móvil — JS calcula altura directamente sobre .foro-messages */
             body.foro-abierto .foro-messages{
-                flex:1 !important;min-height:0 !important;
-                height:auto !important;max-height:none !important;
                 overflow-y:scroll !important;
                 -webkit-overflow-scrolling:touch !important;
                 overscroll-behavior-y:contain !important;
                 touch-action:pan-y !important;
             }
-            body.foro-abierto #foro-inputs,
-            body.foro-abierto #foro-admin-inputs{flex-shrink:0 !important;}
-            /* Foro / Chat — fallback height cuando foro-abierto no está activo */
+            /* Fallback cuando foro-abierto no está activo */
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             /* Footer: siempre oculto en móvil */
             .footer-industrial,.footer-minimal{display:none !important;}
@@ -2838,6 +2817,8 @@ function cargarForo() {
             cont.appendChild(div);
         });
         cont.scrollTop = cont.scrollHeight;
+        // Refrescar fotos de todos los autores con sus URLs actuales de Firestore
+        _refrescarFotosForo(cont);
     }, err => {
         const cont = document.getElementById('forum-messages');
         cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#fca5a5;text-align:center;margin:auto;padding:2rem;">
@@ -2875,22 +2856,57 @@ window.cerrarChatPrivado = function() {
     cargarForo();
 };
 
+// Caché de fotos por UID — se actualiza cada vez que obtenemos una foto fresca de Firestore
+const _fotoCacheUID = {};
+
+// Aplica la foto fresca de un UID a todos sus .msg-avatar en el DOM
+function _aplicarFotoUID(uid, url) {
+    if (!uid || !url) return;
+    _fotoCacheUID[uid] = url;
+    document.querySelectorAll(`.msg-item[data-uid="${uid}"] .msg-avatar`).forEach(av => {
+        const existing = av.querySelector('img');
+        if (existing) { existing.src = url; }
+        else {
+            const img = document.createElement('img');
+            img.src = url; img.alt = av.textContent.trim();
+            img.onerror = () => img.remove();
+            av.insertAdjacentElement('afterbegin', img);
+        }
+    });
+}
+
+// Tras cargar el foro, busca fotos frescas de todos los autores únicos en un solo batch
+function _refrescarFotosForo(container) {
+    const uids = [...new Set(
+        [...container.querySelectorAll('.msg-item:not(.mine)[data-uid]')]
+            .map(el => el.dataset.uid).filter(Boolean)
+    )];
+    uids.forEach(uid => {
+        if (_fotoCacheUID[uid]) { _aplicarFotoUID(uid, _fotoCacheUID[uid]); return; }
+        getDoc(doc(db,'usuarios',uid)).then(snap => {
+            if (!snap.exists()) return;
+            const url = snap.data().fotoUrl || '';
+            if (url) _aplicarFotoUID(uid, url);
+        }).catch(()=>{});
+    });
+}
+
 function crearMsgItem(m, esMio) {
     const hora = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
     const iniciales = (m.autor||'?')[0].toUpperCase();
-    // Solo aceptar URLs http/https — descartar blobs revocados, strings vacíos, etc.
     const esUrlHttp = u => typeof u === 'string' && (u.startsWith('http://') || u.startsWith('https://'));
-    // Mensajes propios: siempre la foto actual del usuario (nunca la vieja guardada en m.autorFoto)
-    // Mensajes ajenos: m.autorFoto primero (más específico), luego _inboxOtroFotoUrl
+    // Propios: SIEMPRE foto actual (ignora m.autorFoto viejo)
+    // Ajenos: caché → m.autorFoto → _inboxOtroFotoUrl
+    const uid = m.autorUid || '';
     const foto = esMio
-        ? (esUrlHttp(currentUser?.fotoUrl) ? currentUser.fotoUrl
-           : esUrlHttp(m.autorFoto) ? m.autorFoto : '')
-        : (esUrlHttp(m.autorFoto) ? m.autorFoto
+        ? (esUrlHttp(currentUser?.fotoUrl) ? currentUser.fotoUrl : '')
+        : (_fotoCacheUID[uid] && esUrlHttp(_fotoCacheUID[uid]) ? _fotoCacheUID[uid]
+           : esUrlHttp(m.autorFoto) ? m.autorFoto
            : esUrlHttp(_inboxOtroFotoUrl) ? _inboxOtroFotoUrl : '');
 
     const div = document.createElement('div');
     div.className = `msg-item${esMio?' mine':''}`;
-    // Img va absolute encima del inicial; onerror la elimina y el inicial queda visible
+    if (uid) div.dataset.uid = uid;
     const imgHtml = foto ? `<img src="${foto}" alt="${iniciales}" onerror="this.remove()">` : '';
     div.innerHTML = `
         <div class="msg-avatar">${imgHtml}${iniciales}</div>
@@ -2969,6 +2985,7 @@ function cargarForoAdmin() {
             cont.appendChild(divAdm);
         });
         cont.scrollTop = cont.scrollHeight;
+        _refrescarFotosForo(cont);
     }, err => {
         const cont = document.getElementById('forum-messages-admin');
         cont.innerHTML = `<p style="font-family:var(--fuente-t);font-size:0.65rem;color:#fca5a5;text-align:center;margin:auto;padding:2rem;">
@@ -7466,6 +7483,8 @@ window.guardarFotoPerfil = async function() {
         // Actualizar sesión local
         currentUser.fotoUrl = url;
         localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+        // Actualizar caché de fotos por UID (para foro y cualquier otra vista)
+        if (currentUser.uid) _fotoCacheUID[currentUser.uid] = url;
         // Actualizar preview del panel
         const prev = document.getElementById('foto-perfil-preview');
         if (prev) { prev.src = url; prev.style.display = 'block'; }
@@ -7664,15 +7683,21 @@ window._removerChatFixedMobile = function() {
     window.scrollTo(0, scrollY);
 };
 
-// ── Foro global: mismo patrón iOS que el inbox ──────────────────────────────
+// ── Foro global: calcula altura directamente sobre .foro-messages ─────────
 window._aplicarForoFixedMobile = function(panelId) {
-    const panel      = document.getElementById(panelId);
-    const siteHeader = document.querySelector('.site-header');
-    const mainEl     = document.querySelector('.main-layout');
-    if (!panel) return;
-    const headerH = siteHeader ? siteHeader.offsetHeight : 65;
-    const mainPT  = mainEl ? parseFloat(getComputedStyle(mainEl).paddingTop) : 14;
-    panel.style.setProperty('height', `calc(100dvh - ${headerH + mainPT}px)`, 'important');
+    const msgId    = panelId === 'panel-foro' ? 'forum-messages' : 'forum-messages-admin';
+    const inputsId = panelId === 'panel-foro' ? 'foro-inputs'    : 'foro-admin-inputs';
+    const msgEl    = document.getElementById(msgId);
+    const inputsEl = document.getElementById(inputsId);
+    const header   = document.querySelector('.site-header');
+    if (!msgEl) return;
+    const headerH  = header    ? header.offsetHeight    : 65;
+    const inputsH  = inputsEl  ? inputsEl.offsetHeight  : 80;
+    // Altura disponible = viewport - header - inputs - pequeño margen
+    const h = Math.max(180, window.innerHeight - headerH - inputsH - 24);
+    msgEl.style.setProperty('height',     `${h}px`, 'important');
+    msgEl.style.setProperty('max-height', `${h}px`, 'important');
+    // iOS scroll-lock sobre el body (idéntico al inbox)
     document.body.dataset.foroScrollY = window.scrollY;
     document.body.style.position  = 'fixed';
     document.body.style.top       = `-${window.scrollY}px`;
@@ -7681,10 +7706,11 @@ window._aplicarForoFixedMobile = function(panelId) {
 };
 
 window._removerForoFixedMobile = function() {
-    const panelId = document.body.dataset.foroActivoId;
+    const panelId  = document.body.dataset.foroActivoId;
     if (panelId) {
-        const panel = document.getElementById(panelId);
-        if (panel) panel.style.removeProperty('height');
+        const msgId = panelId === 'panel-foro' ? 'forum-messages' : 'forum-messages-admin';
+        const el = document.getElementById(msgId);
+        if (el) { el.style.removeProperty('height'); el.style.removeProperty('max-height'); }
     }
     const scrollY = parseFloat(document.body.dataset.foroScrollY || '0');
     document.body.style.position  = '';
@@ -7743,6 +7769,8 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     const _aplicarFotoOtro = (foto) => {
         if (!foto) return;
         _inboxOtroFotoUrl = foto;
+        // Actualizar caché global para que el foro también use la foto fresca
+        if (uid) _aplicarFotoUID(uid, foto);
         document.querySelectorAll('#inbox-chat-mensajes .msg-item:not(.mine) .msg-avatar').forEach(av => {
             if (!av.querySelector('img')) {
                 const inicial = av.textContent.trim();
