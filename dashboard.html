@@ -9051,11 +9051,13 @@ window.cargarTalleresTematicoEst = async function() {
     const lista = document.getElementById('tt-lista-est');
     if (!lista) return;
     lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando talleres…</p>';
-    const gradoUsuario = String(currentUser.grado||'').replace(/[°ºo]/gi,'').trim();
     try {
+        const gradoUsuario = String(currentUser?.grado||'').replace(/[°ºo]/gi,'').trim();
+        // timeout de 12s para evitar que quede pegado "Cargando" si Firestore no responde
+        const withTimeout = (promise, ms) => Promise.race([promise, new Promise((_,r) => setTimeout(()=>r(new Error('Tiempo de espera agotado. Verifica tu conexión.')), ms))]);
         const [talleresSnap, compSnap] = await Promise.all([
-            getDocs(query(collection(db,'talleres_tematicos'), where('publicado','==',true))),
-            currentUser.uid ? getDocs(query(collection(db,'talleres_tematicos_progreso'), where('uid','==',currentUser.uid))) : Promise.resolve({docs:[]})
+            withTimeout(getDocs(query(collection(db,'talleres_tematicos'), where('publicado','==',true))), 12000),
+            currentUser?.uid ? withTimeout(getDocs(query(collection(db,'talleres_tematicos_progreso'), where('uid','==',currentUser.uid))), 12000) : Promise.resolve({docs:[]})
         ]);
         const completados = new Set(compSnap.docs.map(d => d.data().tallerId));
         const talleres = talleresSnap.docs
@@ -9067,7 +9069,7 @@ window.cargarTalleresTematicoEst = async function() {
             return t.grado===gradoUsuario;
         });
         if (!talleres.length) {
-            lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:2rem;">No hay talleres disponibles para tu grado todavía. ¡Pronto habrá nuevo contenido!</p>';
+            lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:2rem;">Los talleres se están preparando. Pídele al administrador que ingrese al panel Admin → Talleres Temáticos para activarlos, y luego recarga esta página.</p>';
             return;
         }
         lista.innerHTML = talleres.map(t => {
