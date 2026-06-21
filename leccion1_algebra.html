@@ -350,7 +350,7 @@ function renderQ(i){
 <div class="q-q">${q.q}</div>
 <div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div>
 <div class="q-fb" id="qf${i}"></div>`;
-  gsap.from('.q-opt',{opacity:0,y:10,duration:.28,stagger:.07,ease:'power2.out'});
+  gsap.from('.q-opt',{y:6,duration:.22,ease:'power2.out'});
 }
 function ansQ(qi,oi){
   if(qAns[qi]!==null)return;
