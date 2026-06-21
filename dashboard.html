@@ -7991,6 +7991,12 @@ Object.assign(window, {
     getDocs, collection, doc, getDoc, addDoc, setDoc, deleteDoc,
     updateDoc, serverTimestamp, increment, where, query, orderBy, writeBatch, db
 });
+// Getter vivo: el script no-módulo lee window.currentUser y obtiene
+// el valor actualizado del módulo (sin necesidad de sincronizar manualmente).
+Object.defineProperty(window, 'currentUser', {
+    get: () => currentUser,
+    configurable: true, enumerable: true
+});
 </script>
 <script>
     const dot=document.getElementById('cdot'), ring=document.getElementById('cring');
