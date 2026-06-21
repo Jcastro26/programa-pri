@@ -155,6 +155,9 @@
         .foro-input-row{display:flex;gap:0.75rem;}
         .foro-input{flex:1;background:rgba(2,14,36,0.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.12);color:var(--blanco);font-family:var(--fuente-b);font-size:0.85rem;padding:0.75rem 1rem;outline:none;border-radius:10px;}
         .foro-input:focus{border-color:var(--verde);background:rgba(2,14,36,0.7);}
+        /* Input del foro: sticky al fondo del viewport para que el footer no lo tape */
+        #foro-inputs,#foro-admin-inputs{position:sticky;bottom:0;z-index:20;background:rgba(2,14,36,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,0.07);padding:0.85rem 1rem !important;margin-top:auto;}
+        #panel-foro,#panel-foro-admin{padding-bottom:1rem;}
         .btn-send{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.75rem 1.25rem;background:rgba(34,197,94,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--azul-deep);border:1px solid rgba(255,255,255,0.2);cursor:pointer;transition:all 0.2s;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;}
         .btn-send:hover{background:rgba(255,255,255,0.92);border-color:rgba(255,255,255,0.4);}
         /* CHAT PRIVADO */
@@ -644,7 +647,7 @@
                     <button class="btn-cerrar-chat" onclick="cerrarChatPrivado()">✕ Volver al foro</button>
                 </div>
                 <div class="foro-messages" id="forum-messages"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
-                <div style="padding:1rem;" id="foro-inputs">
+                <div id="foro-inputs">
                     <div class="foro-input-row">
                         <input class="foro-input" type="text" id="forum-input" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')enviarMensajeForo()">
                         <button class="btn-send" onclick="enviarMensajeForo()">Enviar</button>
@@ -1224,8 +1227,8 @@
             <p class="panel-desc">Vista completa del foro comunitario. Puedes responder públicamente y en privado.</p>
             <div class="section-box" style="padding:0;overflow:hidden;">
                 <div class="foro-messages" id="forum-messages-admin"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
-                <div style="padding:1rem;" id="foro-admin-reply-banner" style="display:none;"></div>
-                <div style="padding:1rem;">
+                <div id="foro-admin-reply-banner" style="display:none;padding:.6rem 1rem;"></div>
+                <div id="foro-admin-inputs">
                     <div class="foro-input-row">
                         <input class="foro-input" type="text" id="forum-input-admin" placeholder="Responder como equipo PRI..." onkeydown="if(event.key==='Enter')enviarMensajeAdmin()">
                         <button class="btn-send" onclick="enviarMensajeAdmin()">Enviar</button>
