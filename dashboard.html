@@ -135,6 +135,13 @@
         #ti-lista::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);border-radius:2px;}
         #ti-lista::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.4);border-radius:2px;}
         #ti-lista::-webkit-scrollbar-thumb:hover{background:rgba(56,189,248,0.7);}
+        #ri-chart-wrap,#ri-chart-colegio-wrap{scrollbar-width:thin;scrollbar-color:rgba(255,94,0,.35) rgba(255,255,255,.04);}
+        #ri-chart-wrap::-webkit-scrollbar,#ri-chart-colegio-wrap::-webkit-scrollbar{height:5px;}
+        #ri-chart-wrap::-webkit-scrollbar-track,#ri-chart-colegio-wrap::-webkit-scrollbar-track{background:rgba(255,255,255,.04);border-radius:3px;}
+        #ri-chart-wrap::-webkit-scrollbar-thumb,#ri-chart-colegio-wrap::-webkit-scrollbar-thumb{background:rgba(255,94,0,.4);border-radius:3px;}
+        #ri-chart-wrap::-webkit-scrollbar-thumb:hover,#ri-chart-colegio-wrap::-webkit-scrollbar-thumb:hover{background:rgba(255,94,0,.7);}
+        .ri-th-sort{cursor:pointer;user-select:none;}
+        .ri-th-sort:hover{color:rgba(255,255,255,.9);}
         .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(255,255,255,0.1);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;}
         .msg-item.mine{border-left-color:var(--naranja);}
         .msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;color:var(--azul-deep);overflow:hidden;}
@@ -1298,11 +1305,11 @@
                     <table style="width:100%;border-collapse:collapse;font-family:var(--fuente-t);font-size:.63rem;">
                         <thead>
                             <tr style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);text-align:left;">
-                                <th style="padding:.5rem .7rem;">Nombre del Estudiante</th>
-                                <th style="padding:.5rem .7rem;">Colegio</th>
-                                <th style="padding:.5rem .7rem;">Cédula</th>
+                                <th style="padding:.5rem .7rem;cursor:pointer;user-select:none;" onclick="sortResultados('nombre')" title="Ordenar por nombre">Nombre del Estudiante <span id="ri-sort-nombre"></span></th>
+                                <th style="padding:.5rem .7rem;cursor:pointer;user-select:none;" onclick="sortResultados('colegio')" title="Ordenar por colegio">Colegio <span id="ri-sort-colegio"></span></th>
+                                <th style="padding:.5rem .7rem;cursor:pointer;user-select:none;" onclick="sortResultados('cedula')" title="Ordenar por cédula">Cédula <span id="ri-sort-cedula"></span></th>
                                 <th style="padding:.5rem .7rem;">Email</th>
-                                <th style="padding:.5rem .7rem;text-align:center;">Promedio · Forms</th>
+                                <th style="padding:.5rem .7rem;text-align:center;cursor:pointer;user-select:none;" onclick="sortResultados('promedio')" title="Ordenar por promedio">Promedio · Forms <span id="ri-sort-promedio"></span></th>
                             </tr>
                         </thead>
                         <tbody id="ri-tbody"></tbody>
@@ -5270,9 +5277,18 @@ function renderResultadosICFES() {
             (e.colegio||'').toLowerCase().includes(buscar)
         );
     }
-    // Ordenar según selector
+    // Ordenar: _riSortCol tiene prioridad sobre el selector de orden
     const orden = document.getElementById('ri-orden')?.value || 'nombre';
-    if (orden === 'reciente') {
+    const sortDir = _riSortAsc ? 1 : -1;
+    if (_riSortCol === 'colegio') {
+        estudiantes.sort((a,b) => sortDir * (a.colegio||'zzz').localeCompare(b.colegio||'zzz','es'));
+    } else if (_riSortCol === 'cedula') {
+        estudiantes.sort((a,b) => sortDir * (a.cedula||'').localeCompare(b.cedula||'','es'));
+    } else if (_riSortCol === 'promedio') {
+        // promedio se calcula después de _maxPorHoja; aquí usamos _pct simple como proxy
+        const _promEst = e => { const ps = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n)); return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : -1; };
+        estudiantes.sort((a,b) => sortDir * (_promEst(b) - _promEst(a)));
+    } else if (orden === 'reciente') {
         const _ultimaFecha = e => {
             const ts = e.formularios.map(f => _parseFechaRobusta(f.fecha)).filter(t => t > 0);
             return ts.length ? Math.max(...ts) : 0;
@@ -5282,12 +5298,18 @@ function renderResultadosICFES() {
         estudiantes.sort((a,b) => b.formularios.length - a.formularios.length);
     } else {
         // Alfabético por nombre; los sin nombre van al final
+        const dir = _riSortCol === 'nombre' ? sortDir : 1;
         estudiantes.sort((a,b) => {
             const na = a.nombre==='—' ? 'zzz'+a.email : a.nombre;
             const nb = b.nombre==='—' ? 'zzz'+b.email : b.nombre;
-            return na.localeCompare(nb, 'es');
+            return dir * na.localeCompare(nb, 'es');
         });
     }
+    // Actualizar indicadores de flecha en cabeceras
+    ['nombre','colegio','cedula','promedio'].forEach(c => {
+        const el = document.getElementById('ri-sort-'+c);
+        if (el) el.textContent = _riSortCol===c ? (_riSortAsc?'▲':'▼') : '';
+    });
 
     // Computar _maxPorHoja UNA sola vez (no dentro del loop por estudiante)
     const _maxPorHoja = {};
@@ -5352,7 +5374,7 @@ function renderResultadosICFES() {
     if(_riChart) _riChart.destroy();
     _riChart = new Chart(canvasArea,{type:'bar',data:{labels:labelsArea,datasets:[{label:'Promedio %',data:valoresArea,backgroundColor:coloresArea,borderRadius:5}]},
         options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y}%`}}},
-        scales:{x:{ticks:{color:'rgba(240,244,248,.5)',font:{size:10},maxRotation:30},grid:{color:'rgba(255,255,255,.05)'}},
+        scales:{x:{ticks:{color:'rgba(240,244,248,.5)',font:{size:10},maxRotation:0,callback:v=>v.length>14?v.slice(0,13)+'…':v},grid:{color:'rgba(255,255,255,.05)'}},
                 y:{ticks:{color:'rgba(240,244,248,.5)',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'},suggestedMin:0,suggestedMax:100}}}});
 
     // Gráfico 2: promedio por colegio
@@ -5371,12 +5393,17 @@ function renderResultadosICFES() {
     const coloresCol = valoresCol.map(v=>parseFloat(v)>=70?'rgba(134,239,172,.7)':parseFloat(v)>=40?'rgba(251,191,36,.7)':'rgba(252,165,165,.7)');
     const canvasCol  = document.getElementById('ri-chart-colegio');
     if (canvasCol) {
-        canvasCol.width = Math.max(labelsCol.length*80, 320);
+        canvasCol.width = Math.max(labelsCol.length*75, 320);
         if(_riChartColegio) _riChartColegio.destroy();
         if (labelsCol.length) {
+            // Abbreviate: "IE San Andrés de Tumaco" → "IE San Andrés…"
+            const _abrevCol = l => {
+                l = l.replace(/^(Institución Educativa|Institución|Colegio)\s+/i,'').replace(/^IE\s+/i,'');
+                return l.length>13 ? l.slice(0,12)+'…' : l;
+            };
             _riChartColegio = new Chart(canvasCol,{type:'bar',data:{labels:labelsCol,datasets:[{label:'Promedio %',data:valoresCol,backgroundColor:coloresCol,borderRadius:5}]},
-                options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y}%`}}},
-                scales:{x:{ticks:{color:'rgba(240,244,248,.5)',font:{size:10},maxRotation:35},grid:{color:'rgba(255,255,255,.05)'}},
+                options:{responsive:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>labelsCol[items[0].dataIndex],label:ctx=>` ${ctx.parsed.y}%`}}},
+                scales:{x:{ticks:{color:'rgba(240,244,248,.5)',font:{size:10},maxRotation:0,callback:(_,i)=>_abrevCol(labelsCol[i])},grid:{color:'rgba(255,255,255,.05)'}},
                         y:{ticks:{color:'rgba(240,244,248,.5)',font:{size:9}},grid:{color:'rgba(255,255,255,.06)'},suggestedMin:0,suggestedMax:100}}}});
         } else {
             const ctx2 = canvasCol.getContext('2d'); ctx2.clearRect(0,0,canvasCol.width,canvasCol.height);
@@ -5499,6 +5526,12 @@ function renderResultadosICFES() {
 window.sortResultados = function(col) {
     if (_riSortCol === col) _riSortAsc = !_riSortAsc;
     else { _riSortCol = col; _riSortAsc = true; }
+    // Sync "Ordenar por" select if applicable
+    const sel = document.getElementById('ri-orden');
+    if (sel) {
+        if (col === 'nombre') sel.value = 'nombre';
+        else if (col !== 'colegio' && col !== 'cedula' && col !== 'promedio') sel.value = 'nombre';
+    }
     renderResultadosICFES();
 };
 
