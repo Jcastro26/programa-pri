@@ -142,8 +142,10 @@
         #ri-chart-wrap::-webkit-scrollbar-thumb:hover,#ri-chart-colegio-wrap::-webkit-scrollbar-thumb:hover{background:rgba(255,94,0,.7);}
         .ri-th-sort{cursor:pointer;user-select:none;}
         .ri-th-sort:hover{color:rgba(255,255,255,.9);}
-        .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(255,255,255,0.1);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;}
-        .msg-item.mine{border-left-color:var(--naranja);}
+        .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(56,189,248,0.2);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;max-width:85%;border-radius:0 12px 12px 12px;}
+        .msg-item.mine{border-left:none;border-right:3px solid var(--naranja);background:rgba(255,94,0,0.07);flex-direction:row-reverse;align-self:flex-end;border-radius:12px 0 12px 12px;}
+        .msg-item.mine .msg-author{color:rgba(255,190,130,0.7);}
+        .msg-item.mine .msg-author .msg-time{float:left;margin-right:.4rem;}
         .msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;color:var(--azul-deep);overflow:hidden;}
         .msg-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
         .msg-item-body{flex:1;min-width:0;}
@@ -363,12 +365,23 @@
             .qa-label{font-size:.6rem;}
             .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
 
-            /* Foro / Chat — scroll táctil obligatorio en móvil */
-            .foro-messages{height:clamp(240px,42vh,400px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
-            /* Inbox chat móvil — mismo tamaño adaptable que el foro */
-            #inbox-chat-mensajes{height:clamp(240px,42vh,400px) !important;}
+            /* Foro / Chat — scroll táctil + dvh para teclado virtual */
+            .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
+            /* Inbox chat móvil */
+            #inbox-chat-mensajes{height:clamp(220px,38dvh,380px) !important;}
+            /* Input táctil: apilado, fuente ≥16px para evitar zoom en iOS, safe-area para notch */
             .foro-input-row{flex-direction:column;}
-            .btn-send{width:100%;}
+            .foro-input{font-size:16px !important;}
+            .btn-send{width:100%;min-height:44px;}
+            #foro-inputs,#foro-admin-inputs{padding:.75rem .75rem calc(.75rem + env(safe-area-inset-bottom)) .75rem;}
+            /* Chat privado header: permite wrap en pantallas muy estrechas */
+            .chat-priv-header{flex-wrap:wrap;gap:.4rem;padding:.6rem .75rem;}
+            .btn-cerrar-chat{font-size:.85rem;padding:.25rem .5rem;}
+            /* Burbujas: reducir max-width en móvil */
+            .msg-item{max-width:92% !important;}
+            /* Threads del inbox: touch target cómodo */
+            .inbox-thread{padding:.9rem .75rem;}
+            .inbox-avatar{width:38px;height:38px;}
 
             /* Botones de acción en talleres */
             .btn-add{font-size:.65rem;padding:.6rem 1rem;}
