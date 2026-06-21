@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LC1 · Conectores Lógicos — Programa PRI</title>
+<link rel="icon" type="image/png" href="logo.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#04080f;--card:#080f1e;
+  --purple:#7c3aed;--orange:#ff5e00;--teal:#38bdf8;
+  --green:#10b981;--red:#ef4444;--yellow:#fbbf24;
+  --text:#e8f4ff;--muted:#6b9ab8;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+
+/* Topbar */
+#topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+
+/* Progress */
+@keyframes _prog-glow{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.65);}50%{box-shadow:0 0 28px rgba(124,58,237,.95),0 0 52px rgba(56,189,248,.22);}}
+#prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;flex-shrink:0;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));border-radius:3px;transition:width .65s cubic-bezier(.34,1.56,.64,1);animation:_prog-glow 2.5s ease-in-out infinite;}
+
+/* Slide card */
+@keyframes _card-pulse{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08);}50%{box-shadow:0 0 65px rgba(124,58,237,.22),0 0 110px rgba(56,189,248,.06);}}
+#slide-card{flex:1;background:rgba(8,15,30,.95);border:1px solid rgba(124,58,237,.28);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;animation:_card-pulse 3s ease-in-out infinite;}
+#slide-inner{flex:1;padding:1.6rem 2rem;overflow-y:auto;display:flex;flex-direction:column;}
+
+/* Nav */
+#nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;}
+.nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
+.nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.nav-btn:hover:not(:disabled){background:rgba(124,58,237,.32);border-color:var(--purple);box-shadow:0 0 22px rgba(124,58,237,.6);transform:translateY(-2px);}
+.nav-btn:disabled{opacity:.2;cursor:not-allowed;}
+#dots{display:flex;gap:6px;align-items:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;}
+.dot.active{background:var(--purple);transform:scale(1.5);box-shadow:0 0 10px rgba(124,58,237,.75);}
+
+/* Typography */
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.55rem;text-shadow:0 0 12px rgba(56,189,248,.5);}
+.s-title{font-size:1.7rem;font-weight:900;line-height:1.2;margin-bottom:.35rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.s-sub{font-size:.87rem;color:var(--muted);margin-bottom:1rem;}
+.step{display:flex;align-items:flex-start;gap:.7rem;margin:.42rem 0;font-size:.86rem;line-height:1.5;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;box-shadow:0 0 12px rgba(124,58,237,.5);}
+.example{background:rgba(56,189,248,.06);border-left:3px solid var(--teal);padding:.65rem 1rem;border-radius:0 8px 8px 0;margin:.55rem 0;font-size:.86rem;}
+.formula{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.38);border-radius:12px;padding:.8rem 1.3rem;font-size:1rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.8rem 0;box-shadow:0 0 22px rgba(124,58,237,.12);}
+
+/* Connector type cards */
+.conn-type-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.7rem .9rem;margin:.38rem 0;transition:border-color .3s,box-shadow .3s;}
+.conn-type-card:hover{border-color:rgba(124,58,237,.35);box-shadow:0 0 15px rgba(124,58,237,.1);}
+.ctype-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:.28rem;}
+.ctype-words{font-family:'Courier New',monospace;font-size:.86rem;font-weight:600;}
+.ctype-use{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+
+/* Game area */
+.conn-area{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem;margin:.7rem 0;transition:border-color .4s,box-shadow .4s;}
+.sentence-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:.93rem;font-weight:600;margin-bottom:1.1rem;line-height:2;}
+.blank-slot{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:115px;height:34px;
+  border:2px dashed rgba(124,58,237,.5);border-radius:8px;
+  color:rgba(124,58,237,.55);font-size:.75rem;font-weight:700;letter-spacing:1px;
+  cursor:pointer;transition:all .2s;padding:0 .6rem;font-family:'Courier New',monospace;
+}
+.blank-slot:hover{border-color:var(--purple);background:rgba(124,58,237,.1);box-shadow:0 0 12px rgba(124,58,237,.22);}
+.blank-slot.filled{border-style:solid;color:var(--green);border-color:var(--green);background:rgba(16,185,129,.12);box-shadow:0 0 16px rgba(16,185,129,.22);cursor:default;}
+.chips-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.conn-chip{
+  padding:.42rem 1rem;border-radius:20px;font-size:.79rem;font-weight:700;
+  cursor:pointer;transition:all .2s;border:1.5px solid;user-select:none;
+}
+.conn-chip.type-adv{background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.5);color:#fb923c;}
+.conn-chip.type-cons{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.5);color:#7dd3fc;}
+.conn-chip.type-add{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.5);color:#6ee7b7;}
+.conn-chip.type-caus{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.55);color:#c4b5fd;}
+.conn-chip:hover:not(.used){transform:scale(1.08);filter:brightness(1.3);}
+.conn-chip.selected{transform:scale(1.13);box-shadow:0 0 20px currentColor;filter:brightness(1.55);}
+.conn-chip.used{opacity:.22;pointer-events:none;transform:scale(.88);}
+.hint-text{font-size:.71rem;color:var(--muted);text-align:center;margin-top:.45rem;}
+.feedback-msg{margin-top:.55rem;font-size:.81rem;padding:.45rem .75rem;border-radius:8px;display:none;text-align:center;}
+.feedback-msg.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#a7f3d0;display:block;}
+.feedback-msg.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
+
+/* Quiz */
+.q-q{font-size:.92rem;font-weight:600;margin-bottom:.85rem;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.42rem;}
+.q-opt{padding:.62rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);box-shadow:0 0 12px rgba(124,58,237,.2);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;box-shadow:0 0 16px rgba(16,185,129,.22);}
+.q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
+.q-fb{margin-top:.6rem;font-size:.81rem;padding:.5rem .75rem;border-radius:8px;display:none;}
+.q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
+.q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
+
+/* Score screen */
+#score-screen{display:none;text-align:center;padding:.8rem 0;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;">PROGRAMA·PRI · LECTURA CRÍTICA</span>
+    <span id="counter" style="font-size:.7rem;color:var(--muted);">1 / 6</span>
+  </div>
+  <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
+  <div id="slide-card"><div id="slide-inner"></div></div>
+  <div id="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Anterior</button>
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Siguiente →</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   AB ENGINE — partículas + burst
+══════════════════════════════════════════ */
+var _AB_T=true;
+(function(){
+  var cv=document.createElement('canvas');
+  cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.09;';
+  document.body.insertBefore(cv,document.body.firstChild);
+  var ctx=cv.getContext('2d');
+  var S=['→','←','…','¿','?','!','sin','no','sí','·','"','"','A','B'];
+  var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];
+  var P=[];
+  function rsz(){cv.width=innerWidth;cv.height=innerHeight;}rsz();
+  window.addEventListener('resize',rsz);
+  for(var i=0;i<32;i++)P.push({
+    x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+    vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.05),
+    s:S[i%S.length],sz:8+Math.random()*12,
+    a:.12+Math.random()*.45,c:C[i%C.length],
+    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.008
+  });
+  (function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    P.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
+      if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}
+      if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;
+      ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
+      ctx.font='bold '+p.sz+'px Courier New';
+      ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillText(p.s,0,0);ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  })();
+})();
+
+function burst(el,color,count){
+  if(!el)return;
+  var r=(el.getBoundingClientRect?el:document.getElementById(el)).getBoundingClientRect();
+  var cx=r.left+r.width/2,cy=r.top+r.height/2;
+  for(var i=0;i<(count||12);i++){
+    var p=document.createElement('div');
+    var sz=3+Math.random()*7;
+    p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+color+';border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);';
+    document.body.appendChild(p);
+    var ang=Math.random()*Math.PI*2,d=38+Math.random()*80;
+    (function(ep){gsap.to(ep,{x:Math.cos(ang)*d,y:Math.sin(ang)*d-Math.random()*28,opacity:0,scale:0,duration:.5+Math.random()*.4,ease:'power2.out',onComplete:function(){ep.remove();}});})(p);
+  }
+}
+
+/* ══════════════════════════════════════════
+   CORE — slides, transitions, progress
+══════════════════════════════════════════ */
+const TOTAL=6;
+let cur=0,busy=false;
+let _sel=null; // selected connector chip
+
+const SLIDES=[s0,s1,s2,s3,s4,s5];
+const ANIMS =[a0,a1,a2,a3,a4,a5];
+
+function render(){SLIDES[cur](document.getElementById('slide-inner'));}
+function anim(){ANIMS[cur]();}
+
+function go(d){
+  if(busy)return;
+  const n=cur+d;if(n<0||n>=TOTAL)return;
+  busy=true;_sel=null;
+  const el=document.getElementById('slide-inner');
+  gsap.to(el,{opacity:0,x:d<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:()=>{
+    cur=n;upd();render();
+    gsap.fromTo(el,{opacity:0,x:d<0?-65:65,scale:.94},{opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:()=>{anim();busy=false;}});
+  }});
+}
+
+function upd(){
+  document.getElementById('counter').textContent=`${cur+1} / ${TOTAL}`;
+  document.getElementById('prog-fill').style.width=`${((cur+1)/TOTAL)*100}%`;
+  document.getElementById('btn-prev').disabled=cur===0;
+  document.getElementById('btn-next').disabled=cur===TOTAL-1;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+}
+
+function mkDots(){
+  const c=document.getElementById('dots');
+  for(let i=0;i<TOTAL;i++){
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' active':'');
+    d.onclick=()=>{if(!busy&&i!==cur){const dv=i-cur;const cv2=cur;cur=i-dv;go(dv);}};
+    c.appendChild(d);
+  }
+}
+
+/* ══════════════════════════════════════════
+   SLIDE 0 — INTRO
+══════════════════════════════════════════ */
+function s0(el){
+  const title='CONECTORES LÓGICOS';
+  const sub='Y COHESIÓN TEXTUAL';
+  el.innerHTML=`
+<div style="text-align:center;padding:.2rem 0;">
+  <div class="s-tag">Lección 1 · Lectura Crítica ICFES 8°-9°</div>
+  <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:.04rem;margin-bottom:.18rem;">
+    ${Array.from(title).map((c,i)=>`<span id="tl${i}" style="display:inline-block;font-size:${c===' '?'.2rem':'1.85rem'};font-weight:900;${c===' '?'width:.38rem;':''}background:linear-gradient(135deg,#fff 30%,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${c}</span>`).join('')}
+  </div>
+  <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:.04rem;margin-bottom:.9rem;">
+    ${Array.from(sub).map((c,i)=>`<span id="sl${i}" style="display:inline-block;font-size:${c===' '?'.2rem':'.95rem'};font-weight:700;${c===' '?'width:.28rem;':''}color:#7dd3fc;opacity:0;">${c}</span>`).join('')}
+  </div>
+
+  <div id="chains0" style="display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:.55rem 0 .9rem;">
+    ${[['sin embargo','type-adv'],['por lo tanto','type-cons'],['además','type-add'],['porque','type-caus'],['en consecuencia','type-cons'],['no obstante','type-adv']].map((c,i)=>`<span id="ch${i}" class="conn-chip ${c[1]}" style="opacity:0;">${c[0]}</span>`).join('')}
+  </div>
+
+  <div id="obj0" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1rem 1.25rem;max-width:460px;margin:0 auto;text-align:left;">
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.55rem;">🎯 OBJETIVOS DE LA LECCIÓN</div>
+    ${['Identificar conectores lógicos en textos ICFES','Clasificar conectores por función (adversativos, causales…)','Completar oraciones eligiendo el conector correcto','Resolver preguntas tipo Saber 11 con confianza'].map((o,i)=>`<div id="ob${i}" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>${o}</span></div>`).join('')}
+  </div>
+</div>`;
+}
+function a0(){
+  const tl=gsap.timeline();
+  Array.from('CONECTORES LÓGICOS').forEach((c,i)=>{
+    if(c!==' ')tl.from(`#tl${i}`,{y:-115,rotation:(Math.random()-.5)*38,scale:.25,opacity:0,duration:.5,ease:'bounce.out'},i*.038);
+  });
+  Array.from('Y COHESIÓN TEXTUAL').forEach((c,i)=>{
+    tl.to(`#sl${i}`,{opacity:1,y:0,duration:.22,ease:'back.out(2)'},0.6+i*.02);
+  });
+  tl.fromTo(['#ch0','#ch1','#ch2','#ch3','#ch4','#ch5'],
+      {opacity:0,scale:.4,y:-25},
+      {opacity:1,scale:1,y:0,duration:.38,stagger:.09,ease:'elastic.out(1,.5)'},'-=.2')
+    .fromTo(['#ob0','#ob1','#ob2','#ob3'],
+      {opacity:0,x:-42},
+      {opacity:1,x:0,duration:.38,stagger:.11,ease:'back.out(2.5)'},'-=.1');
+  // Floating shimmer on chips
+  gsap.to('.conn-chip',{y:-4,duration:1.4,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:{amount:1.2},delay:.8});
+}
+
+/* ══════════════════════════════════════════
+   SLIDE 1 — ¿QUÉ ES UN CONECTOR?
+══════════════════════════════════════════ */
+function s1(el){
+  el.innerHTML=`
+<div>
+  <div class="s-tag">Concepto base</div>
+  <div class="s-title" id="t1">¿Qué es un Conector Lógico?</div>
+  <div class="s-sub">Palabras que unen ideas y revelan la relación entre ellas</div>
+
+  <div id="chain-demo" style="display:flex;justify-content:center;align-items:center;gap:.42rem;margin:.85rem 0;flex-wrap:wrap;">
+    <div id="ideaA" style="background:rgba(56,189,248,.15);border:1.5px solid #38bdf8;border-radius:10px;padding:.52rem .85rem;font-size:.81rem;font-weight:700;color:#7dd3fc;text-align:center;max-width:150px;">💡 Idea A<br><span style="font-weight:400;font-size:.7rem;color:var(--muted);">"Estudié mucho"</span></div>
+    <div id="chain1" style="font-size:1.35rem;color:var(--orange);font-weight:900;text-shadow:0 0 12px rgba(255,94,0,.6);">⛓</div>
+    <div id="conn-word" style="background:rgba(255,94,0,.18);border:1.5px solid var(--orange);border-radius:20px;padding:.38rem .88rem;font-family:monospace;font-weight:800;color:#fb923c;font-size:.86rem;white-space:nowrap;">SIN EMBARGO</div>
+    <div id="chain2" style="font-size:1.35rem;color:var(--orange);font-weight:900;text-shadow:0 0 12px rgba(255,94,0,.6);">⛓</div>
+    <div id="ideaB" style="background:rgba(16,185,129,.12);border:1.5px solid #10b981;border-radius:10px;padding:.52rem .85rem;font-size:.81rem;font-weight:700;color:#6ee7b7;text-align:center;max-width:150px;">💡 Idea B<br><span style="font-weight:400;font-size:.7rem;color:var(--muted);">"reprobé el examen"</span></div>
+  </div>
+
+  <div class="formula" id="f1">Idea A + [CONECTOR] + Idea B = Texto cohesionado</div>
+
+  <div id="st1" class="step"><div class="step-n">1</div><div><strong>Cohesión vs. Coherencia:</strong> La cohesión es la conexión gramatical (los conectores la forman). La coherencia es la relación lógica entre las ideas.</div></div>
+  <div id="st2" class="step"><div class="step-n">2</div><div><strong>En el ICFES</strong> debes elegir el conector que mejor expresa la relación entre dos fragmentos. Primero detecta si hay <em style="color:var(--teal);">contraste, causa, consecuencia o suma</em>.</div></div>
+
+  <div class="example" id="e1">
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">⚡ CLAVE ICFES</div>
+    Identifica la relación entre oraciones <strong>antes</strong> de elegir el conector. Si la segunda idea contradice a la primera → es contraste. Si la segunda es resultado → es consecuencia.
+  </div>
+</div>`;
+}
+function a1(){
+  gsap.timeline()
+    .from('#t1',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'})
+    .from('#f1',{scaleX:.35,scaleY:.35,opacity:0,duration:.5,ease:'back.out(2.8)'},'-=.15')
+    .from(['#ideaA','#chain1','#conn-word','#chain2','#ideaB'],{y:-42,opacity:0,scale:.65,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1')
+    .from(['#st1','#st2'],{x:-40,opacity:0,duration:.4,stagger:.16,ease:'back.out(2)'})
+    .from('#e1',{y:16,opacity:0,duration:.36},'-=.1');
+  gsap.to(['#chain1','#chain2'],{rotation:18,duration:1,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:.35,delay:.9});
+}
+
+/* ══════════════════════════════════════════
+   SLIDE 2 — TIPOS DE CONECTORES
+══════════════════════════════════════════ */
+function s2(el){
+  el.innerHTML=`
+<div>
+  <div class="s-tag">Clasificación · 4 familias clave ICFES</div>
+  <div class="s-title" id="t2">Tipos de Conectores</div>
+  <div class="s-sub">Cada tipo expresa una relación lógica distinta</div>
+
+  <div style="margin-top:.35rem;">
+    <div class="conn-type-card" id="ct1">
+      <div class="ctype-name" style="color:var(--orange);">⚡ Adversativos — contraste / oposición</div>
+      <div class="ctype-words" style="color:#fb923c;">sin embargo · pero · no obstante · aunque · a pesar de · mas</div>
+      <div class="ctype-use">La Idea B contradice, limita o sorprende respecto a la Idea A.</div>
+    </div>
+    <div class="conn-type-card" id="ct2">
+      <div class="ctype-name" style="color:var(--teal);">→ Consecutivos — consecuencia / resultado</div>
+      <div class="ctype-words" style="color:#7dd3fc;">por lo tanto · en consecuencia · así que · por ende · de modo que</div>
+      <div class="ctype-use">La Idea B es el efecto o resultado lógico de la Idea A.</div>
+    </div>
+    <div class="conn-type-card" id="ct3">
+      <div class="ctype-name" style="color:var(--green);">+ Aditivos — suma de ideas</div>
+      <div class="ctype-words" style="color:#6ee7b7;">además · también · incluso · asimismo · igualmente · del mismo modo</div>
+      <div class="ctype-use">La Idea B añade información complementaria a la Idea A.</div>
+    </div>
+    <div class="conn-type-card" id="ct4">
+      <div class="ctype-name" style="color:#c4b5fd;">∵ Causales — razón / explicación</div>
+      <div class="ctype-words" style="color:#a78bfa;">porque · ya que · puesto que · dado que · pues · debido a que</div>
+      <div class="ctype-use">La Idea B explica la causa o motivo de la Idea A.</div>
+    </div>
+  </div>
+
+  <div id="tip2" style="margin-top:.55rem;background:rgba(255,94,0,.1);border:1px solid rgba(255,94,0,.28);border-radius:10px;padding:.58rem .88rem;font-size:.79rem;">
+    💡 <strong>Truco mental:</strong> Reemplaza el conector por "pero" (→ adversativo), "entonces" (→ consecutivo), "también" (→ aditivo) o "porque" (→ causal) y verifica cuál encaja.
+  </div>
+</div>`;
+}
+function a2(){
+  gsap.timeline()
+    .from('#t2',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'})
+    .from(['#ct1','#ct2','#ct3','#ct4'],{y:72,rotation:-3,opacity:0,duration:.54,stagger:.13,ease:'back.out(2.2)'},'-=.1')
+    .from('#tip2',{x:-30,opacity:0,duration:.4,ease:'back.out(2)'},'-=.1');
+}
+
+/* ══════════════════════════════════════════
+   SLIDE 3 — JUEGO INTERACTIVO 1
+══════════════════════════════════════════ */
+function s3(el){
+  _sel=null;
+  el.innerHTML=`
+<div>
+  <div class="s-tag">🎮 Juego 1 · Selecciona el conector correcto</div>
+  <div class="s-title" id="t3">¡A conectar ideas!</div>
+  <div class="s-sub">Haz clic en el conector y luego en el espacio vacío</div>
+
+  <div class="conn-area" id="ca3">
+    <div class="sentence-row">
+      <span id="sp3a">Sebastián estudió toda la noche;</span>
+      <span class="blank-slot" id="slot3" onclick="tryPlace('slot3','sin embargo','#10b981')">[ · · · ]</span>
+      <span id="sp3b">, suspendió el examen.</span>
+    </div>
+    <div class="chips-row" id="chips3">
+      <span class="conn-chip type-add" id="c3_0" onclick="selectChip(this,'además')">además</span>
+      <span class="conn-chip type-adv" id="c3_1" onclick="selectChip(this,'sin embargo')">sin embargo</span>
+      <span class="conn-chip type-cons" id="c3_2" onclick="selectChip(this,'por lo tanto')">por lo tanto</span>
+      <span class="conn-chip type-caus" id="c3_3" onclick="selectChip(this,'porque')">porque</span>
+    </div>
+    <div class="hint-text" id="hint3">👆 Selecciona un conector y tócalo en el espacio [ · · · ]</div>
+    <div class="feedback-msg" id="msg3"></div>
+  </div>
+
+  <div class="example" id="ex3">
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">💡 PISTA</div>
+    Estudiar mucho y luego <em>suspender</em> son resultados opuestos. ¿Es eso contraste o consecuencia?
+  </div>
+</div>`;
+}
+function a3(){
+  gsap.timeline()
+    .from('#t3',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'})
+    .from('#ca3',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15')
+    .from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1')
+    .from('#ex3',{x:-25,opacity:0,duration:.36},'-=.1');
+}
+
+/* ══════════════════════════════════════════
+   SLIDE 4 — JUEGO INTERACTIVO 2
+══════════════════════════════════════════ */
+function s4(el){
+  _sel=null;
+  el.innerHTML=`
+<div>
+  <div class="s-tag">🎮 Juego 2 · Contexto científico</div>
+  <div class="s-title" id="t4">Segundo reto</div>
+  <div class="s-sub">Aplica lo aprendido con un fragmento de tipo científico</div>
+
+  <div class="conn-area" id="ca4">
+    <div class="sentence-row">
+      <span id="sp4a">La temperatura global ha aumentado 1.5°C en el último siglo;</span>
+      <span class="blank-slot" id="slot4" onclick="tryPlace('slot4','en consecuencia','#38bdf8')">[ · · · ]</span>
+      <span id="sp4b">, los glaciares se derriten a un ritmo acelerado.</span>
+    </div>
+    <div class="chips-row" id="chips4">
+      <span class="conn-chip type-adv" id="c4_0" onclick="selectChip(this,'sin embargo')">sin embargo</span>
+      <span class="conn-chip type-add" id="c4_1" onclick="selectChip(this,'también')">también</span>
+      <span class="conn-chip type-cons" id="c4_2" onclick="selectChip(this,'en consecuencia')">en consecuencia</span>
+      <span class="conn-chip type-caus" id="c4_3" onclick="selectChip(this,'ya que')">ya que</span>
+    </div>
+    <div class="hint-text" id="hint4">👆 Selecciona un conector y tócalo en el espacio [ · · · ]</div>
+    <div class="feedback-msg" id="msg4"></div>
+  </div>
+
+  <div class="example" id="ex4">
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">💡 PISTA</div>
+    ¿Los glaciares se derriten <em>a pesar de</em> la temperatura, o <em>como resultado</em> de ella?
+  </div>
+</div>`;
+}
+function a4(){
+  gsap.timeline()
+    .from('#t4',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'})
+    .from('#ca4',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15')
+    .from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1')
+    .from('#ex4',{x:-25,opacity:0,duration:.36},'-=.1');
+}
+
+/* ══════════════════════════════════════════
+   SLIDE 5 — QUIZ ICFES
+══════════════════════════════════════════ */
+const QUIZ=[
+  {
+    q:'Lee el fragmento: "El candidato prometió grandes cambios; __________, los problemas sociales persisten." ¿Qué conector completa mejor la oración?',
+    opts:['por lo tanto','sin embargo','además','ya que'],ok:1,
+    fb:'"Sin embargo" indica contraste: prometió cambios, PERO los problemas persisten. ✓ Adversativo.'
+  },
+  {
+    q:'¿Qué tipo de conector es "por ende"?',
+    opts:['Aditivo','Adversativo','Causal','Consecutivo'],ok:3,
+    fb:'"Por ende" introduce una consecuencia o resultado → Conector CONSECUTIVO. ✓'
+  },
+  {
+    q:'En el texto: "No llevé paraguas; __________, me mojé." el conector correcto expresa:',
+    opts:['Contraste (adversativo)','Causa (causal)','Consecuencia (consecutivo)','Adición (aditivo)'],ok:2,
+    fb:'Mojarse es el RESULTADO de no llevar paraguas → conector de consecuencia (por eso, en consecuencia…). ✓'
+  }
+];
+const qAns=[null,null,null];
+
+function s5(el){
+  el.innerHTML=`
+<div>
+  <div class="s-tag">Mini Quiz · 3 preguntas tipo ICFES Saber 11</div>
+  <div class="s-title" id="t5">¿Cuánto aprendiste?</div>
+  <div id="qw"></div>
+  <div id="score-screen"></div>
+</div>`;
+  qAns.fill(null);
+  rQ(0);
+}
+function a5(){
+  gsap.from('#t5',{y:-55,rotation:-4,opacity:0,duration:.62,ease:'elastic.out(1,.48)'});
+}
+
+function rQ(i){
+  if(i>=QUIZ.length){setTimeout(showScore,420);return;}
+  const q=QUIZ[i];
+  const w=document.getElementById('qw');
+  if(!w)return;
+  w.innerHTML=`
+<div style="font-size:.68rem;color:var(--muted);margin-bottom:.38rem;">Pregunta ${i+1} de ${QUIZ.length}</div>
+<div class="q-q">${q.q}</div>
+<div class="q-opts" id="qo${i}">
+  ${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}_${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}
+</div>
+<div class="q-fb" id="qfb${i}"></div>`;
+  gsap.from('.q-opt',{y:18,opacity:0,duration:.3,stagger:.07,ease:'back.out(2)'});
+}
+
+function ansQ(qi,oi){
+  if(qAns[qi]!==null)return;
+  qAns[qi]=oi;
+  const q=QUIZ[qi];const isOk=oi===q.ok;
+  document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{
+    b.classList.add('locked');b.style.pointerEvents='none';
+    if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');
+  });
+  const fb=document.getElementById(`qfb${qi}`);
+  if(fb){fb.className='q-fb '+(isOk?'ok':'bad');fb.textContent=(isOk?'✅ ':'❌ ')+q.fb;}
+  const btn=document.getElementById(`qo${qi}_${oi}`);
+  if(isOk&&btn){burst(btn,'#10b981',16);gsap.from(btn,{scale:1.1,duration:.4,ease:'elastic.out(1,.4)'});}
+  else if(btn){gsap.to(btn,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.4,ease:'none'});}
+  setTimeout(()=>rQ(qi+1),2200);
+}
+
+function showScore(){
+  const ok=qAns.filter((a,i)=>a===QUIZ[i].ok).length;
+  const w=document.getElementById('qw');
+  const ss=document.getElementById('score-screen');
+  if(w)w.innerHTML='';
+  if(!ss)return;
+  ss.style.display='block';
+  const em=ok===QUIZ.length?'🏆':ok>=2?'⭐':'📚';
+  const msg=ok===QUIZ.length?'¡Perfecto! Dominas los conectores lógicos.':ok>=2?'¡Muy bien! Practica un poco más.':'Repasa los tipos de conectores.';
+  ss.innerHTML=`
+<div id="sc-inner" style="padding:.6rem 0;">
+  <div style="font-size:3rem;font-weight:900;margin-bottom:.32rem;">${em} ${ok}/${QUIZ.length}</div>
+  <div style="color:var(--muted);font-size:.87rem;margin-bottom:1rem;">${msg}</div>
+  <button onclick="resetQuiz()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.4rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 0 22px rgba(124,58,237,.45);">🔄 Reintentar</button>
+</div>`;
+  gsap.from('#sc-inner',{scale:.52,rotation:-8,opacity:0,duration:.72,ease:'elastic.out(1,.42)'});
+  if(ok===QUIZ.length){
+    const cols=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];
+    for(let ii=0;ii<24;ii++)(function(n){setTimeout(function(){
+      const pp={getBoundingClientRect:function(){return{left:innerWidth*.25+Math.random()*innerWidth*.5,top:innerHeight*.2,width:0,height:0};}};
+      burst(pp,cols[n%cols.length],6);
+    },n*90);}(ii));
+  }
+}
+
+function resetQuiz(){
+  qAns.fill(null);
+  const ss=document.getElementById('score-screen');
+  if(ss)ss.style.display='none';
+  rQ(0);
+}
+
+/* ══════════════════════════════════════════
+   GAME MECHANICS — select chip + place
+══════════════════════════════════════════ */
+function selectChip(el,val){
+  document.querySelectorAll('.conn-chip').forEach(c=>c.classList.remove('selected'));
+  if(_sel===val){_sel=null;return;}
+  _sel=val;
+  el.classList.add('selected');
+  gsap.from(el,{scale:.82,duration:.35,ease:'elastic.out(1,.4)'});
+}
+
+function tryPlace(slotId,correct,color){
+  const slot=document.getElementById(slotId);
+  if(!slot||slot.classList.contains('filled'))return;
+
+  if(!_sel){
+    // Prompt user to select first
+    gsap.to(slot,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.36,ease:'none'});
+    gsap.to(slot,{borderColor:'rgba(124,58,237,.9)',duration:.15,yoyo:true,repeat:3,onComplete:()=>gsap.set(slot,{clearProps:'borderColor'})});
+    return;
+  }
+
+  const chosen=_sel;
+  const chip=document.querySelector('.conn-chip.selected');
+  const gameIdx=slotId.slice(-1); // '3' or '4'
+  const msg=document.getElementById('msg'+gameIdx);
+  const hint=document.getElementById('hint'+gameIdx);
+  const area=slot.closest('.conn-area');
+
+  _sel=null;
+  document.querySelectorAll('.conn-chip').forEach(c=>c.classList.remove('selected'));
+
+  if(chosen===correct){
+    /* ── CORRECT ─ magnetic snap effect ─────────────── */
+    // 1. Slot fills with elastic bounce
+    slot.textContent=chosen.toUpperCase();
+    slot.classList.add('filled');
+    gsap.from(slot,{scale:0,rotation:-22,opacity:0,duration:.68,ease:'elastic.out(1,.42)'});
+
+    // 2. Sentence parts magnetically snap (scale pulse)
+    const parts=slot.parentElement.querySelectorAll('span:not(.blank-slot)');
+    gsap.from(parts,{scale:.9,duration:.5,ease:'elastic.out(1,.5)',stagger:.07});
+
+    // 3. Particle burst
+    burst(slot,color||'#10b981',22);
+
+    // 4. Used chip fades out
+    if(chip){gsap.to(chip,{scale:0,opacity:0,duration:.3,ease:'back.in(2)',onComplete:()=>chip.classList.add('used')});}
+
+    // 5. Area border glows green
+    if(area)gsap.to(area,{borderColor:'rgba(16,185,129,.5)',boxShadow:'0 0 32px rgba(16,185,129,.18)',duration:.4});
+
+    // 6. Feedback
+    if(hint)hint.style.display='none';
+    if(msg){
+      msg.className='feedback-msg ok';
+      msg.innerHTML=`✅ ¡Correcto! <strong>${chosen.toUpperCase()}</strong> expresa ${chosen==='sin embargo'?'contraste (adversativo)':chosen==='en consecuencia'?'consecuencia (consecutivo)':'la relación correcta'}. ✓`;
+      gsap.from(msg,{y:10,opacity:0,duration:.38});
+    }
+
+  } else {
+    /* ── WRONG ─ repel / collision effect ───────────── */
+    // Chip bounces back
+    if(chip){
+      gsap.timeline()
+        .to(chip,{x:0,y:-28,rotation:18,scale:1.15,duration:.18,ease:'power2.out'})
+        .to(chip,{x:0,y:0,rotation:0,scale:1,duration:.55,ease:'elastic.out(1,.4)'});
+    }
+    // Slot shakes (repels)
+    gsap.to(slot,{keyframes:[{x:-8},{x:8},{x:-6},{x:6},{x:-3},{x:3},{x:0}],duration:.42,ease:'none'});
+    // Flash red
+    burst(chip||slot,'#ef4444',9);
+    gsap.to(slot,{borderColor:'#ef4444',duration:.12,yoyo:true,repeat:4,onComplete:()=>gsap.set(slot,{clearProps:'borderColor'})});
+  }
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+mkDots();
+render();
+anim();
+</script>
+</body>
+</html>
