@@ -7497,31 +7497,43 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     const chatBox = document.getElementById('inbox-chat-box');
     chatBox.style.display = 'block';
     chatBox.classList.add('inbox-open');
-    document.getElementById('inbox-chat-nombre').textContent = nombre || '…';
+
+    // Nombre: prioridad → argumento → DOM del thread (ya actualizado por lookup previo) → Firestore
+    const nombreDOM = document.getElementById(`inbox-nm-${chatId}`)?.textContent || '';
+    const nombreValPN = n => n && n !== '…' && n !== 'Conversación';
+    const nombreMostrar = nombreValPN(nombre) ? nombre : nombreValPN(nombreDOM) ? nombreDOM : null;
+    document.getElementById('inbox-chat-nombre').textContent = nombreMostrar || '…';
     document.getElementById('inbox-chat-input').value = '';
 
-    // Obtener foto del otro usuario para mostrarla en sus mensajes
+    // Un solo getDoc: resuelve nombre Y foto del otro usuario
     getDoc(doc(db, 'usuarios', uid)).then(uSnap => {
-        if (uSnap.exists()) {
-            _inboxOtroFotoUrl = uSnap.data().fotoUrl || uSnap.data().foto || '';
+        if (!uSnap.exists()) return;
+        const ud = uSnap.data();
+        // Foto
+        const foto = ud.fotoUrl || ud.foto || ud.fotoPerfil || ud.photoURL || '';
+        if (foto) {
+            _inboxOtroFotoUrl = foto;
+            // Re-pintar avatares de mensajes ya renderizados que aún sean inicial de texto
+            document.querySelectorAll('#inbox-chat-mensajes .msg-item:not(.mine) .msg-avatar').forEach(av => {
+                if (!av.querySelector('img')) {
+                    const img = new Image();
+                    img.onload = () => { av.textContent = ''; av.appendChild(img); };
+                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+                    img.src = foto; img.alt = av.textContent;
+                }
+            });
         }
+        // Nombre
+        const realName = ud.nombre || ud.nombres || ud.nombreCompleto || ud.displayName || '';
+        if (realName && !nombreValPN(nombreMostrar)) {
+            document.getElementById('inbox-chat-nombre').textContent = realName;
+        }
+        // Persistir para carga futura sin lookup
+        const updates = {};
+        if (realName) updates[`nombres.${uid}`] = realName;
+        if (foto)     updates[`fotos.${uid}`]   = foto;
+        if (Object.keys(updates).length) updateDoc(doc(db,'chats_privados',chatId), updates).catch(()=>{});
     }).catch(()=>{});
-
-    // Si el nombre no se resolvió (chat antiguo sin mapa "nombres"), buscar en Firestore
-    if (!nombre || nombre === 'Conversación') {
-        getDoc(doc(db, 'usuarios', uid)).then(uSnap => {
-            const realName = uSnap.exists()
-                ? (uSnap.data().nombre || uSnap.data().nombres || nombre)
-                : nombre;
-            if (realName && realName !== 'Conversación') {
-                document.getElementById('inbox-chat-nombre').textContent = realName;
-                // Persistir en el doc para que próximas cargas lo muestren directo
-                updateDoc(doc(db,'chats_privados',chatId), {
-                    [`nombres.${uid}`]: realName
-                }).catch(()=>{});
-            }
-        }).catch(()=>{});
-    }
     if (inboxUnsubscribe) inboxUnsubscribe();
     const q = query(collection(db,"chats_privados",chatId,"mensajes"), orderBy("timestamp","asc"), limit(60));
     inboxUnsubscribe = onSnapshot(q, snap => {
