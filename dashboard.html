@@ -294,9 +294,14 @@
         /* ═══════════════════════════════════════════
            RESPONSIVE MÓVIL — MENÚ HAMBURGUESA
         ═══════════════════════════════════════════ */
-        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:8px;padding:3px 5px 2px;cursor:pointer;flex-shrink:0;min-height:unset;}
-        .btn-hamburger .bar{display:block;width:16px;height:2px;background:var(--naranja);border-radius:2px;transition:all .3s ease;}
-        .btn-hamburger::after{content:'MENÚ';font-family:var(--fuente-t);font-size:0.36rem;font-weight:900;letter-spacing:1px;color:var(--naranja);margin-top:1px;}
+        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:8px;padding:7px 9px 4px;cursor:pointer;flex-shrink:0;min-width:42px;min-height:unset;transition:background 0.2s ease;}
+        .btn-hamburger:hover,.btn-hamburger.is-active{background:rgba(255,94,0,0.22);border-color:rgba(255,94,0,0.8);}
+        .btn-hamburger .bar{display:block;width:22px;height:2.5px;background:var(--naranja);border-radius:2px;transition:all .3s ease-in-out;}
+        .btn-hamburger.is-active .bar:nth-child(2){opacity:0;}
+        .btn-hamburger.is-active .bar:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
+        .btn-hamburger.is-active .bar:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+        .btn-hamburger::after{content:'MENÚ';font-family:var(--fuente-t);font-size:0.45rem;font-weight:900;letter-spacing:1px;color:var(--naranja);margin-top:1px;}
+        .btn-hamburger.is-active::after{content:'CERRAR';}
         #dash-mobile-pill{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--naranja);font-family:var(--fuente-t);font-weight:900;font-size:0.75rem;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,94,0,0.5);}
         #dash-mobile-pill img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
 
@@ -371,13 +376,41 @@
             .qa-label{font-size:.6rem;}
             .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
 
-            /* Foro global móvil — JS calcula altura directamente sobre .foro-messages */
-            body.foro-abierto .foro-messages{
+            /* Foro global móvil — mismo enfoque flex que inbox: panel = columna, inputs anclados */
+            body.foro-abierto #panel-foro,
+            body.foro-abierto #panel-foro-admin{
+                display:flex !important;
+                flex-direction:column !important;
+                overflow:hidden !important;
+            }
+            /* Ocultar título/desc mientras el foro está abierto (igual que inbox) */
+            body.foro-abierto #panel-foro .panel-title,
+            body.foro-abierto #panel-foro .panel-heading,
+            body.foro-abierto #panel-foro .panel-desc,
+            body.foro-abierto #panel-foro-admin .panel-title,
+            body.foro-abierto #panel-foro-admin .panel-heading,
+            body.foro-abierto #panel-foro-admin .panel-desc{display:none !important;}
+            /* section-box (contiene .foro-messages) crece para llenar el espacio */
+            body.foro-abierto #panel-foro .section-box,
+            body.foro-abierto #panel-foro-admin .section-box{
+                flex:1 !important;
+                min-height:0 !important;
+                overflow:hidden !important;
+                margin-bottom:0 !important;
+            }
+            /* Mensajes ocupa el 100% del section-box */
+            body.foro-abierto #panel-foro .foro-messages,
+            body.foro-abierto #panel-foro-admin .foro-messages{
+                height:100% !important;
+                max-height:100% !important;
                 overflow-y:scroll !important;
                 -webkit-overflow-scrolling:touch !important;
                 overscroll-behavior-y:contain !important;
                 touch-action:pan-y !important;
             }
+            /* Inputs anclados al fondo, nunca se comprimen */
+            body.foro-abierto #foro-inputs,
+            body.foro-abierto #foro-admin-inputs{flex-shrink:0 !important;}
             /* Fallback cuando foro-abierto no está activo */
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             /* Footer: siempre oculto en móvil */
@@ -1876,11 +1909,20 @@ import {
     collection, onSnapshot, addDoc, getDocs, setDoc, deleteDoc,
     query, orderBy, serverTimestamp, doc, getDoc, updateDoc, increment, where, limit, writeBatch, Timestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-// ── Cloudinary (modo Unsigned – NO enviar public_id) ──────────────
-async function subirImagenCloudinary(file) {
+// ── Cloudinary upload ──────────────────────────────────────────────
+// publicId opcional: si se pasa, sobreescribe el mismo asset (foto de perfil por UID).
+// Requiere que el preset "fotos_perfil" tenga "Overwrite" habilitado en Cloudinary.
+// Para preguntas/talleres se llama sin publicId → Cloudinary genera ID único normal.
+async function subirImagenCloudinary(file, publicId) {
     const fd = new FormData();
     fd.append('file', file);
     fd.append('upload_preset', 'fotos_perfil');
+    if (publicId) {
+        fd.append('public_id', publicId);
+        fd.append('overwrite', 'true');
+        fd.append('unique_filename', 'false');
+        fd.append('invalidate', 'true'); // purga caché CDN
+    }
     const res = await fetch('https://api.cloudinary.com/v1_1/dmh5xpxcg/image/upload', { method:'POST', body:fd });
     if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -2250,12 +2292,14 @@ function abrirMenuMovil() {
     }
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    document.querySelector('.btn-hamburger')?.classList.add('is-active');
 }
 
 function cerrarMenuMovil() {
     const overlay = document.getElementById('mobile-menu-overlay');
     if (overlay) overlay.classList.remove('open');
     document.body.style.overflow = '';
+    document.querySelector('.btn-hamburger')?.classList.remove('is-active');
 }
 window.abrirMenuMovil = abrirMenuMovil;
 window.cerrarMenuMovil = cerrarMenuMovil;
@@ -7470,7 +7514,8 @@ window.guardarFotoPerfil = async function() {
     if (!file) { notif('Sin imagen','Selecciona una imagen primero.','⚠️','warn'); return; }
     notif('Subiendo foto','Procesando con Cloudinary...','⏳','info');
     try {
-        const url = await subirImagenCloudinary(file);
+        // Pasar public_id basado en UID → Cloudinary sobreescribe la foto anterior del usuario
+        const url = await subirImagenCloudinary(file, `programa-pri/perfil_${currentUser.uid}`);
         // Guardar en usuarios (todos los roles)
         await setDoc(doc(db,'usuarios',currentUser.uid), { fotoUrl: url }, {merge: true});
         // Guardar en docentes (docente, voluntario, admin también visible en pág. Docentes)
@@ -7683,21 +7728,17 @@ window._removerChatFixedMobile = function() {
     window.scrollTo(0, scrollY);
 };
 
-// ── Foro global: calcula altura directamente sobre .foro-messages ─────────
+// ── Foro global: mismo enfoque que inbox — altura en el PANEL, flex distribuye internamente ──
 window._aplicarForoFixedMobile = function(panelId) {
-    const msgId    = panelId === 'panel-foro' ? 'forum-messages' : 'forum-messages-admin';
-    const inputsId = panelId === 'panel-foro' ? 'foro-inputs'    : 'foro-admin-inputs';
-    const msgEl    = document.getElementById(msgId);
-    const inputsEl = document.getElementById(inputsId);
-    const header   = document.querySelector('.site-header');
-    if (!msgEl) return;
-    const headerH  = header    ? header.offsetHeight    : 65;
-    const inputsH  = inputsEl  ? inputsEl.offsetHeight  : 80;
-    // Altura disponible = viewport - header - inputs - pequeño margen
-    const h = Math.max(180, window.innerHeight - headerH - inputsH - 24);
-    msgEl.style.setProperty('height',     `${h}px`, 'important');
-    msgEl.style.setProperty('max-height', `${h}px`, 'important');
-    // iOS scroll-lock sobre el body (idéntico al inbox)
+    const panelEl    = document.getElementById(panelId);
+    const siteHeader = document.querySelector('.site-header');
+    const mainEl     = document.querySelector('.main-layout');
+    if (!panelEl) return;
+    const headerH = siteHeader ? siteHeader.offsetHeight : 65;
+    const mainPT  = mainEl ? parseFloat(getComputedStyle(mainEl).paddingTop) : 14;
+    // Altura del panel = toda la pantalla menos header y padding del contenedor
+    panelEl.style.setProperty('height', `calc(100dvh - ${headerH + mainPT}px)`, 'important');
+    // iOS scroll-lock (idéntico al inbox)
     document.body.dataset.foroScrollY = window.scrollY;
     document.body.style.position  = 'fixed';
     document.body.style.top       = `-${window.scrollY}px`;
@@ -7706,11 +7747,10 @@ window._aplicarForoFixedMobile = function(panelId) {
 };
 
 window._removerForoFixedMobile = function() {
-    const panelId  = document.body.dataset.foroActivoId;
+    const panelId = document.body.dataset.foroActivoId;
     if (panelId) {
-        const msgId = panelId === 'panel-foro' ? 'forum-messages' : 'forum-messages-admin';
-        const el = document.getElementById(msgId);
-        if (el) { el.style.removeProperty('height'); el.style.removeProperty('max-height'); }
+        const panelEl = document.getElementById(panelId);
+        if (panelEl) panelEl.style.removeProperty('height');
     }
     const scrollY = parseFloat(document.body.dataset.foroScrollY || '0');
     document.body.style.position  = '';
