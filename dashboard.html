@@ -7519,45 +7519,52 @@ let _inboxOtroFotoUrl = ''; // foto del otro usuario en el chat activo
 // exactas medidas desde el viewport. La página queda de ~100px → no scrollea
 // → iOS enruta todos los touches al div fijo. El sticky header NO se toca.
 
+// sp = setProperty con priority 'important' — única forma correcta de forzar
+// inline !important; cssText con '!important' es ignorado por los navegadores
+const _sp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
+const _rp = (el, prop)      => el.style.removeProperty(prop);
+
 window._aplicarChatFixedMobile = function() {
     const mensajes = document.getElementById('inbox-chat-mensajes');
     const inputs   = document.getElementById('foro-inputs');
     if (!mensajes || !inputs) return;
 
-    // Medir ANTES de fijarlos (todavía están en flujo normal)
-    const inputsRect = inputs.getBoundingClientRect();
-    const inputsH    = inputsRect.height;
-    const chatHdr    = document.querySelector('.chat-priv-header');
-    const chatHdrRect = chatHdr ? chatHdr.getBoundingClientRect() : null;
-    const topMensajes = chatHdrRect ? Math.ceil(chatHdrRect.bottom) : 101;
+    // Medir ANTES de fijar (elementos todavía en flujo normal)
+    const inputsH       = inputs.getBoundingClientRect().height;
+    const chatHdr       = document.querySelector('.chat-priv-header');
+    const topMensajes   = chatHdr ? Math.ceil(chatHdr.getBoundingClientRect().bottom) : 101;
+    const bottomInputs  = Math.ceil(inputsH);
 
-    // Fijar inputs al fondo del viewport
-    inputs.style.cssText += ';position:fixed!important;bottom:0!important;left:0!important;right:0!important;z-index:30!important;background:rgba(2,14,36,0.97)!important;box-shadow:0 -2px 12px rgba(0,0,0,0.4)!important;';
+    // Anclar inputs al fondo del viewport
+    _sp(inputs, 'position', 'fixed');
+    _sp(inputs, 'bottom',   '0');
+    _sp(inputs, 'left',     '0');
+    _sp(inputs, 'right',    '0');
+    _sp(inputs, 'z-index',  '30');
+    _sp(inputs, 'background', 'rgba(2,14,36,0.97)');
+    _sp(inputs, 'box-shadow', '0 -2px 12px rgba(0,0,0,0.4)');
 
-    // Fijar mensajes entre el chat-header y los inputs
-    mensajes.style.cssText += `;position:fixed!important;top:${topMensajes}px!important;left:0!important;right:0!important;bottom:${Math.ceil(inputsH)}px!important;height:auto!important;max-height:none!important;z-index:20!important;border-radius:0!important;margin-bottom:0!important;`;
+    // Anclar mensajes entre el chat-header y el área de inputs
+    _sp(mensajes, 'position',      'fixed');
+    _sp(mensajes, 'top',           topMensajes + 'px');
+    _sp(mensajes, 'left',          '0');
+    _sp(mensajes, 'right',         '0');
+    _sp(mensajes, 'bottom',        bottomInputs + 'px');
+    _sp(mensajes, 'height',        'auto');
+    _sp(mensajes, 'max-height',    'none');
+    _sp(mensajes, 'z-index',       '20');
+    _sp(mensajes, 'border-radius', '0');
+    _sp(mensajes, 'margin-bottom', '0');
 };
 
 window._removerChatFixedMobile = function() {
     const mensajes = document.getElementById('inbox-chat-mensajes');
     const inputs   = document.getElementById('foro-inputs');
-    const propsMensajes = ['position','top','left','right','bottom','height','max-height','z-index','border-radius','margin-bottom'];
-    const propsInputs   = ['position','bottom','left','right','z-index','background','box-shadow'];
-    const remover = (el, props) => {
-        if (!el) return;
-        const s = el.style;
-        props.forEach(p => s.removeProperty(p));
-        // limpiar también versiones con !important aplicadas por cssText
-        props.forEach(p => { try { s.setProperty(p, ''); } catch(_){} });
-        el.style.cssText = el.style.cssText; // forzar reparseo
-    };
-    remover(mensajes, propsMensajes);
-    remover(inputs, propsInputs);
-    if (mensajes) { mensajes.style.height = ''; mensajes.style.maxHeight = ''; mensajes.style.position = ''; }
-    if (inputs)   { inputs.style.position = ''; inputs.style.bottom = ''; inputs.style.left = ''; inputs.style.right = ''; inputs.style.zIndex = ''; inputs.style.background = ''; inputs.style.boxShadow = ''; }
+    ['position','top','left','right','bottom','height','max-height','z-index','border-radius','margin-bottom'].forEach(p => _rp(mensajes, p));
+    ['position','bottom','left','right','z-index','background','box-shadow'].forEach(p => _rp(inputs, p));
 };
 
-// Re-calcular al rotar o al aparecer/ocultar teclado virtual
+// Re-calcular al rotar pantalla o al aparecer/desaparecer el teclado virtual
 window.addEventListener('resize', () => {
     if (document.body.classList.contains('inbox-chat-abierto')) {
         window._removerChatFixedMobile();
@@ -7575,10 +7582,9 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     chatBox.classList.add('inbox-open');
     if (window.innerWidth <= 900) {
         document.body.classList.add('inbox-chat-abierto');
-        // Dos frames: CSS oculta headings → layout se recalcula → medimos y fijamos
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            window._aplicarChatFixedMobile();
-        }));
+        // 80ms: tiempo suficiente para que el CSS aplique display:none en headings
+        // y el layout se recalcule antes de medir y fijar las posiciones exactas
+        setTimeout(() => window._aplicarChatFixedMobile(), 80);
     }
 
     // Nombre: prioridad → argumento → DOM del thread (ya actualizado por lookup previo) → Firestore
