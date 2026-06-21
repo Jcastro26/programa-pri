@@ -326,7 +326,16 @@
         @media(max-width:900px){
             /* Sidebar escondida — reemplazada por overlay */
             .sidebar{display:none;}
-            .btn-hamburger{display:flex;}
+            .btn-hamburger{
+                display:flex !important;
+                border-radius:4px !important;
+                padding:4px 7px 2px !important;
+                gap:5px !important;
+                width:auto !important;
+                height:auto !important;
+                min-width:unset !important;
+                max-width:unset !important;
+            }
             #dash-mobile-pill{display:flex;}
 
             /* Header compacto */
@@ -8229,6 +8238,22 @@ window.mpActualizarMunicipios = function() {
         ''
     );
 };
+// ── Forzar tamaño exacto del botón hamburguesa vía JS (último recurso ante caché CSS) ──
+(function(){
+    function _fixHamburger(){
+        const btn = document.querySelector('.btn-hamburger');
+        if (!btn) return;
+        btn.style.setProperty('border-radius','4px','important');
+        btn.style.setProperty('padding','4px 7px 2px','important');
+        btn.style.setProperty('gap','5px','important');
+        btn.style.setProperty('width','auto','important');
+        btn.style.setProperty('height','auto','important');
+        btn.style.setProperty('min-width','unset','important');
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', _fixHamburger);
+    else _fixHamburger();
+})();
+
 // Listener para "Otra institución" en panel perfil
 document.addEventListener('DOMContentLoaded', () => {
     const dpColegio = document.getElementById('dp-colegio');
