@@ -366,12 +366,11 @@
 
             /* Foro / Chat — scroll táctil + dvh para teclado virtual */
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
-            /* Inbox chat móvil — scroll explícito (altura puesta por JS al abrir) */
+            /* Footer: siempre oculto en móvil */
+            .footer-industrial,.footer-minimal{display:none !important;}
+            /* Inbox chat móvil — overflow scroll base (top/bottom puestos por JS con position:fixed) */
             #inbox-chat-mensajes{overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
-            /* Cuando el chat está abierto: ocultar footer para liberar espacio vertical */
-            body.inbox-chat-abierto .footer-industrial,
-            body.inbox-chat-abierto .footer-minimal{display:none !important;}
-            /* Ocultar el título/desc del panel para maximizar espacio del chat */
+            /* Cuando el chat está abierto: ocultar título/desc del panel */
             body.inbox-chat-abierto #panel-inbox .panel-title,
             body.inbox-chat-abierto #panel-inbox .panel-heading,
             body.inbox-chat-abierto #panel-inbox .panel-desc{display:none !important;}
@@ -2067,9 +2066,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 window.activarPanel = function(id) {
     // Limpiar estado chat si el usuario cambia de panel con el chat abierto
     document.body.classList.remove('inbox-chat-abierto');
-    window._removerTouchBlocker?.();
-    const _m = document.getElementById('inbox-chat-mensajes');
-    if (_m) { _m.style.height = ''; _m.style.maxHeight = ''; }
+    window._removerChatFixedMobile?.();
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     const p = document.getElementById(id);
     if (p) p.classList.add('active');
@@ -7515,67 +7512,56 @@ async function cargarInbox() {
 
 let _inboxOtroFotoUrl = ''; // foto del otro usuario en el chat activo
 
-// ── SCROLL MÓVIL INBOX ──────────────────────────────────────────────────────
-// Estrategia: medir el top real del div de mensajes con getBoundingClientRect
-// para saber exactamente cuánto espacio hay encima, y bloquear touchmove en el
-// panel padre salvo cuando el dedo está dentro del div de mensajes (iOS fix).
+// ── SCROLL MÓVIL INBOX — SOLUCIÓN DEFINITIVA iOS ────────────────────────────
+// iOS Safari da prioridad al scroll de la página sobre divs internos.
+// Única solución 100% confiable: extraer SOLO el div de mensajes y el área
+// de input del flujo normal con position:fixed, posicionados con coordenadas
+// exactas medidas desde el viewport. La página queda de ~100px → no scrollea
+// → iOS enruta todos los touches al div fijo. El sticky header NO se toca.
 
-let _inboxTouchBlocker = null; // referencia para limpiar el listener
-
-window._ajustarAlturaChat = function() {
+window._aplicarChatFixedMobile = function() {
     const mensajes = document.getElementById('inbox-chat-mensajes');
-    if (!mensajes) return;
-
-    // Top del div relativo al viewport — incluye header sticky, chat-header,
-    // padding del panel y cualquier otra cosa visible encima
-    const topPos = mensajes.getBoundingClientRect().top;
-
-    // Espacio debajo del div: input-box + margin-bottom del div + padding panel + padding main
     const inputs   = document.getElementById('foro-inputs');
-    const inputsH  = inputs ? inputs.getBoundingClientRect().height : 100;
-    const mStyle   = window.getComputedStyle(mensajes);
-    const mMarginB = parseFloat(mStyle.marginBottom) || 0;
-    const panelEl  = document.getElementById('panel-inbox');
-    const pStyle   = panelEl ? window.getComputedStyle(panelEl) : null;
-    const panelPB  = pStyle ? parseFloat(pStyle.paddingBottom) : 32;
-    const mainEl   = document.querySelector('.main-layout');
-    const lStyle   = mainEl ? window.getComputedStyle(mainEl) : null;
-    const mainPB   = lStyle ? parseFloat(lStyle.paddingBottom) : 14;
+    if (!mensajes || !inputs) return;
 
-    const below     = inputsH + mMarginB + panelPB + mainPB;
-    const newHeight = Math.max(120, window.innerHeight - topPos - below);
-    mensajes.style.height    = newHeight + 'px';
-    mensajes.style.maxHeight = 'none';
+    // Medir ANTES de fijarlos (todavía están en flujo normal)
+    const inputsRect = inputs.getBoundingClientRect();
+    const inputsH    = inputsRect.height;
+    const chatHdr    = document.querySelector('.chat-priv-header');
+    const chatHdrRect = chatHdr ? chatHdr.getBoundingClientRect() : null;
+    const topMensajes = chatHdrRect ? Math.ceil(chatHdrRect.bottom) : 101;
+
+    // Fijar inputs al fondo del viewport
+    inputs.style.cssText += ';position:fixed!important;bottom:0!important;left:0!important;right:0!important;z-index:30!important;background:rgba(2,14,36,0.97)!important;box-shadow:0 -2px 12px rgba(0,0,0,0.4)!important;';
+
+    // Fijar mensajes entre el chat-header y los inputs
+    mensajes.style.cssText += `;position:fixed!important;top:${topMensajes}px!important;left:0!important;right:0!important;bottom:${Math.ceil(inputsH)}px!important;height:auto!important;max-height:none!important;z-index:20!important;border-radius:0!important;margin-bottom:0!important;`;
 };
 
-// Bloquea touchmove en el panel EXCEPTO cuando el dedo está dentro del div de
-// mensajes — obliga a iOS Safari a dejar que el div haga su propio scroll
-window._instalarTouchBlocker = function() {
-    window._removerTouchBlocker();
-    const panel    = document.getElementById('panel-inbox');
+window._removerChatFixedMobile = function() {
     const mensajes = document.getElementById('inbox-chat-mensajes');
-    if (!panel || !mensajes) return;
-    _inboxTouchBlocker = function(e) {
-        if (!mensajes.contains(e.target)) {
-            e.preventDefault(); // evita que la página scrollee fuera del div
-        }
-        // dentro del div: dejar pasar → el overflow:scroll nativo actúa
+    const inputs   = document.getElementById('foro-inputs');
+    const propsMensajes = ['position','top','left','right','bottom','height','max-height','z-index','border-radius','margin-bottom'];
+    const propsInputs   = ['position','bottom','left','right','z-index','background','box-shadow'];
+    const remover = (el, props) => {
+        if (!el) return;
+        const s = el.style;
+        props.forEach(p => s.removeProperty(p));
+        // limpiar también versiones con !important aplicadas por cssText
+        props.forEach(p => { try { s.setProperty(p, ''); } catch(_){} });
+        el.style.cssText = el.style.cssText; // forzar reparseo
     };
-    panel.addEventListener('touchmove', _inboxTouchBlocker, { passive: false });
+    remover(mensajes, propsMensajes);
+    remover(inputs, propsInputs);
+    if (mensajes) { mensajes.style.height = ''; mensajes.style.maxHeight = ''; mensajes.style.position = ''; }
+    if (inputs)   { inputs.style.position = ''; inputs.style.bottom = ''; inputs.style.left = ''; inputs.style.right = ''; inputs.style.zIndex = ''; inputs.style.background = ''; inputs.style.boxShadow = ''; }
 };
 
-window._removerTouchBlocker = function() {
-    const panel = document.getElementById('panel-inbox');
-    if (panel && _inboxTouchBlocker) {
-        panel.removeEventListener('touchmove', _inboxTouchBlocker, { passive: false });
-    }
-    _inboxTouchBlocker = null;
-};
-
-// Re-calcular al rotar pantalla o al aparecer/ocultar el teclado virtual
+// Re-calcular al rotar o al aparecer/ocultar teclado virtual
 window.addEventListener('resize', () => {
     if (document.body.classList.contains('inbox-chat-abierto')) {
-        window._ajustarAlturaChat();
+        window._removerChatFixedMobile();
+        requestAnimationFrame(() => window._aplicarChatFixedMobile());
     }
 });
 // ────────────────────────────────────────────────────────────────────────────
@@ -7589,11 +7575,9 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     chatBox.classList.add('inbox-open');
     if (window.innerWidth <= 900) {
         document.body.classList.add('inbox-chat-abierto');
-        // Esperar dos frames: primero el CSS aplica display:none en footer/headings,
-        // luego el segundo frame tiene el layout final para medir correctamente
+        // Dos frames: CSS oculta headings → layout se recalcula → medimos y fijamos
         requestAnimationFrame(() => requestAnimationFrame(() => {
-            window._ajustarAlturaChat();
-            window._instalarTouchBlocker();
+            window._aplicarChatFixedMobile();
         }));
     }
 
@@ -7690,9 +7674,7 @@ window.cerrarInboxChat = function() {
     chatBox.style.display = 'none';
     chatBox.classList.remove('inbox-open');
     document.body.classList.remove('inbox-chat-abierto');
-    window._removerTouchBlocker();
-    const mensajes = document.getElementById('inbox-chat-mensajes');
-    if (mensajes) { mensajes.style.height = ''; mensajes.style.maxHeight = ''; }
+    window._removerChatFixedMobile();
 };
 
 window.enviarMensajeInbox = async function() {
