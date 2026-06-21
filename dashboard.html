@@ -5248,18 +5248,41 @@ function renderResultadosICFES() {
     const filtroColegio = document.getElementById('ri-filtro-colegio')?.value || '';
     const buscar        = (document.getElementById('ri-buscar')?.value || '').toLowerCase().trim();
 
-    // Agrupar por estudiante (cedula o email como clave)
-    const mapaEst = {};
+    // Agrupar por estudiante: deduplicación en dos pasos cruzando cédula ↔ email
+    // Mismo estudiante puede llenar form A con cédula y form B solo con email → deben unirse.
+    const mapaEst   = {};
+    const cedulaIdx = {};  // cedula  → clave canónica
+    const emailIdx  = {};  // email   → clave canónica
+    let   anonRespCount = 0; // respuestas sin identidad (no se cuentan como estudiantes)
+
     _riDatos.forEach(r => {
         const e = _extraerEstudiante(r);
-        const clave = e.cedula !== '—' ? e.cedula : (e.email !== '—' ? e.email : 'anon-'+Math.random());
         const areaRaw = _areaDeRegistro(r);
         const area = areaRaw || '(sin área)';
         if (filtroArea && area !== filtroArea) return;
+
+        const ced   = e.cedula !== '—' ? e.cedula : null;
+        const email = e.email  !== '—' ? e.email  : null;
+
+        // Si no hay ninguna identificación, contar la respuesta pero no crear estudiante
+        if (!ced && !email) { anonRespCount++; return; }
+
+        // Resolver clave canónica cruzando cédula ↔ email
+        let clave = null;
+        if (ced)   clave = clave || cedulaIdx[ced];
+        if (email) clave = clave || emailIdx[email];
+        if (!clave) clave = ced ? ('c:'+ced) : ('e:'+email);
+
+        // Registrar en los índices para que futuros registros del mismo alumno encuentren la clave
+        if (ced   && !cedulaIdx[ced])   cedulaIdx[ced]   = clave;
+        if (email && !emailIdx[email])  emailIdx[email]  = clave;
+
         if (!mapaEst[clave]) mapaEst[clave] = { ...e, formularios:[] };
-        if (e.nombre   !== '—'  && mapaEst[clave].nombre   === '—')  mapaEst[clave].nombre   = e.nombre;
-        if (e.email    !== '—'  && mapaEst[clave].email    === '—')  mapaEst[clave].email    = e.email;
-        if (e.colegio  && !mapaEst[clave].colegio)                   mapaEst[clave].colegio  = e.colegio;
+        // Enriquecer el perfil con datos de registros posteriores
+        if (e.nombre !== '—' && mapaEst[clave].nombre === '—') mapaEst[clave].nombre = e.nombre;
+        if (email    && mapaEst[clave].email   === '—')         mapaEst[clave].email  = email;
+        if (ced      && mapaEst[clave].cedula  === '—')         mapaEst[clave].cedula = ced;
+        if (e.colegio && !mapaEst[clave].colegio)               mapaEst[clave].colegio = e.colegio;
         mapaEst[clave].formularios.push({ area, pts:e.pts, fecha:e.fecha, hoja:r._hoja||'' });
     });
 
@@ -5354,7 +5377,7 @@ function renderResultadosICFES() {
     };
 
     // KPIs
-    const totalResp = estudiantes.reduce((s,e)=>s+e.formularios.length,0);
+    const totalResp = estudiantes.reduce((s,e)=>s+e.formularios.length,0) + anonRespCount;
     const todasPcts = estudiantes.flatMap(e=>e.formularios.map(f=>_pctConTotal(f.pts, f.hoja))).filter(n=>!isNaN(n));
     const promGlobal = todasPcts.length ? (todasPcts.reduce((a,b)=>a+b,0)/todasPcts.length).toFixed(0) : '—';
 
