@@ -37,6 +37,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 .q-fb{margin-top:.65rem;font-size:.82rem;padding:.5rem .75rem;border-radius:8px;display:none;}
 .q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
 .q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
+
+/* ══ AB-NEON ENGINE ══ */
+@keyframes _card-pulse{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08),inset 0 1px 0 rgba(255,255,255,.03);}50%{box-shadow:0 0 65px rgba(124,58,237,.2),0 0 110px rgba(56,189,248,.05),inset 0 1px 0 rgba(255,255,255,.06);}}
+@keyframes _prog-glow{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.6);}50%{box-shadow:0 0 26px rgba(124,58,237,.95),0 0 50px rgba(56,189,248,.22);}}
+#slide-card{animation:_card-pulse 3s ease-in-out infinite;border-color:rgba(124,58,237,.3)!important;background:rgba(7,13,27,.96)!important;}
+#prog-fill{transition:width .65s cubic-bezier(.34,1.56,.64,1)!important;animation:_prog-glow 2.5s ease-in-out infinite;background:linear-gradient(90deg,#7c3aed,#ff5e00,#38bdf8)!important;}
+#prog-track{overflow:visible!important;}
+.nav-btn:hover:not(:disabled){box-shadow:0 0 22px rgba(124,58,237,.6)!important;transform:translateY(-2px)!important;}
+.dot.active{box-shadow:0 0 10px rgba(124,58,237,.75);background:#7c3aed!important;transform:scale(1.55)!important;}
+.step-n{box-shadow:0 0 12px rgba(124,58,237,.5);}
+.q-opt:hover:not(.locked){box-shadow:0 0 12px rgba(124,58,237,.22);}
+.q-opt.ok{box-shadow:0 0 16px rgba(16,185,129,.28);}
+.s-tag{text-shadow:0 0 12px rgba(56,189,248,.55);}
+.formula{box-shadow:0 0 22px rgba(124,58,237,.13),inset 0 1px 0 rgba(255,255,255,.04)!important;}
 </style>
 </head>
 <body>
@@ -54,6 +68,50 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   </div>
 </div>
 <script>
+
+/* ═══ AB ENGINE v2 ═══ */
+var _AB_LOADED=true;
+(function(){
+  var cv=document.createElement('canvas');
+  cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.13;';
+  document.body.insertBefore(cv,document.body.firstChild);
+  var ap=document.getElementById('app');if(ap){ap.style.position='relative';ap.style.zIndex='1';}
+  var ctx=cv.getContext('2d');
+  var S=['x','y','a','b','²','³','√','∑','π','+','−','=','(',')','^','n','v','F'];
+  var C=['#7c3aed','#38bdf8','#10b981','#ff5e00','#a78bfa'];
+  var P=[];
+  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
+  rsz();window.addEventListener('resize',rsz);
+  for(var i=0;i<36;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+    vx:(Math.random()-.5)*.33,vy:-(Math.random()*.43+.07),
+    s:S[Math.floor(Math.random()*S.length)],sz:10+Math.random()*15,
+    a:.17+Math.random()*.58,c:C[Math.floor(Math.random()*C.length)],
+    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.011});
+  (function tk(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    P.forEach(function(p){
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
+      if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}
+      if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;
+      ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
+      ctx.font='bold '+p.sz+'px Courier New';
+      ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();
+    });requestAnimationFrame(tk);
+  })();
+})();
+function burst(el,color,count){
+  count=count||12;if(!el||!el.getBoundingClientRect)return;
+  var r=el.getBoundingClientRect();
+  var cx=r.left+r.width/2,cy=r.top+r.height/2;
+  for(var i=0;i<count;i++){
+    var p=document.createElement('div');var sz=3+Math.random()*7;
+    p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+color+';border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);';
+    document.body.appendChild(p);
+    var ang=Math.random()*Math.PI*2,d=35+Math.random()*75;
+    (function(el_){gsap.to(el_,{x:Math.cos(ang)*d,y:Math.sin(ang)*d-Math.random()*25,opacity:0,scale:0,duration:.5+Math.random()*.45,ease:'power2.out',onComplete:function(){el_.remove();}});})(p);
+  }
+}
+
 const TOTAL=5;let cur=0,busy=false;const qAns=[null,null,null];
 const quiz=[
   {q:"¿Cuánto es sen(30°)?",opts:["√3/2","1","0.5","√2/2"],ok:2,fb:"sen(30°) = ½ = 0.5 ✓"},
@@ -61,23 +119,23 @@ const quiz=[
   {q:"¿Cuál es la identidad pitagórica fundamental?",opts:["sen+cos=1","sen²+cos²=1","tan²+1=cos²","sen×cos=1"],ok:1,fb:"sen²(θ) + cos²(θ) = 1 siempre — ¡identidad fundamental! ✓"},
 ];
 function s0(el){el.innerHTML=`<div style="text-align:center;padding:.5rem 0;"><div class="s-tag">Lección 3 · MATEMÁTICAS</div><div class="s-title" id="t0" style="font-size:1.9rem;">Trigonometría Esencial</div><div class="s-sub" id="s0">El círculo unitario, seno, coseno y triángulos rectángulos</div><div id="i0" style="font-size:2.4rem;margin:1rem 0;">📐 sin cos tan</div></div>`;}
-function a0(){gsap.timeline().from('#t0',{y:-35,opacity:0,duration:.6,ease:'power3.out'}).from('#s0',{y:-18,opacity:0,duration:.4},'-=.2').from('#i0',{scale:.2,opacity:0,duration:.5,ease:'back.out(2)'});}
+function a0(){gsap.timeline().from('#t0',{y:-60,rotation:-3,opacity:0,duration:.65,ease:'elastic.out(1,.5)'}).from('#s0',{y:-22,opacity:0,duration:.42,ease:'power2.out'},'-=.28').from('#i0',{scale:.15,rotation:-22,opacity:0,duration:.68,ease:'elastic.out(1,.45)'});}
 function s1(el){el.innerHTML=`<div><div class="s-tag">Concepto Base</div><div class="s-title" id="t1">¿Qué estudia la Trigonometría?</div><div class="s-sub">Relaciones entre ángulos y lados de triángulos rectángulos</div><div class="formula" id="f1">SOH CAH TOA</div><div id="st0_0" class="step"><div class="step-n">1</div><div><strong>Seno</strong><br>sen(θ) = opuesto / hipotenusa<br><span style="color:var(--muted);font-size:.8rem;">El lado opuesto al ángulo sobre la hipotenusa</span></div></div><div id="st0_1" class="step"><div class="step-n">2</div><div><strong>Coseno</strong><br>cos(θ) = adyacente / hipotenusa<br><span style="color:var(--muted);font-size:.8rem;">El lado adyacente sobre la hipotenusa</span></div></div><div id="st0_2" class="step"><div class="step-n">3</div><div><strong>Tangente</strong><br>tan(θ) = opuesto / adyacente = sen/cos<br><span style="color:var(--muted);font-size:.8rem;">Razón del opuesto al adyacente</span></div></div></div>`;}
-function a1(){gsap.timeline().from('#t1',{y:-28,opacity:0,duration:.5}).from('#f1',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from(['#st0_0','#st0_1','#st0_2'],{x:-25,opacity:0,duration:.35,stagger:.18});}
+function a1(){gsap.timeline().from('#t1',{y:-52,rotation:-3,opacity:0,duration:.6,ease:'elastic.out(1,.5)'}).from('#f1',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from(['#st0_0','#st0_1','#st0_2'],{x:-38,opacity:0,duration:.4,stagger:.17,ease:'back.out(2)'});}
 function s2(el){el.innerHTML=`<div><div class="s-tag">Ángulos Especiales</div><div class="s-title" id="t2">Valores Exactos que Debes Memorizar</div><div class="s-sub">Estos ángulos SIEMPRE salen en el ICFES</div><div class="formula" id="f2">0°, 30°, 45°, 60°, 90°</div><div id="st1_0" class="step"><div class="step-n">1</div><div><strong>0°</strong><br>sen=0, cos=1, tan=0<br><span style="color:var(--muted);font-size:.8rem;">El punto de inicio del círculo</span></div></div><div id="st1_1" class="step"><div class="step-n">2</div><div><strong>30°</strong><br>sen=½, cos=√3/2, tan=√3/3<br><span style="color:var(--muted);font-size:.8rem;">Un tercio de cuadrante</span></div></div><div id="st1_2" class="step"><div class="step-n">3</div><div><strong>45°</strong><br>sen=cos=√2/2, tan=1<br><span style="color:var(--muted);font-size:.8rem;">Ángulo simétrico</span></div></div><div id="st1_3" class="step"><div class="step-n">4</div><div><strong>90°</strong><br>sen=1, cos=0, tan=indefinido<br><span style="color:var(--muted);font-size:.8rem;">El eje Y positivo</span></div></div></div>`;}
-function a2(){gsap.timeline().from('#t2',{y:-28,opacity:0,duration:.5}).from('#f2',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from(['#st1_0','#st1_1','#st1_2','#st1_3'],{x:-25,opacity:0,duration:.35,stagger:.18});}
+function a2(){gsap.timeline().from('#t2',{y:-52,rotation:-3,opacity:0,duration:.6,ease:'elastic.out(1,.5)'}).from('#f2',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from(['#st1_0','#st1_1','#st1_2','#st1_3'],{x:-38,opacity:0,duration:.4,stagger:.17,ease:'back.out(2)'});}
 function s3(el){el.innerHTML=`<div><div class="s-tag">Identidades</div><div class="s-title" id="t3">Identidades Trigonométricas Clave</div><div class="s-sub">Las relaciones que nunca cambian</div><div class="formula" id="f3">sen²(θ) + cos²(θ) = 1</div><div id="st2_0" class="step"><div class="step-n">1</div><div><strong>Pitágoras</strong><br>sen²θ + cos²θ = 1<br><span style="color:var(--muted);font-size:.8rem;">La identidad fundamental de toda la trigonometría</span></div></div><div id="st2_1" class="step"><div class="step-n">2</div><div><strong>Recíprocos</strong><br>csc=1/sen · sec=1/cos · cot=1/tan<br><span style="color:var(--muted);font-size:.8rem;">Los inversos de las funciones básicas</span></div></div><div id="st2_2" class="step"><div class="step-n">3</div><div><strong>Ley de senos</strong><br>a/sen A = b/sen B = c/sen C<br><span style="color:var(--muted);font-size:.8rem;">Para triángulos no rectángulos</span></div></div></div>`;}
-function a3(){gsap.timeline().from('#t3',{y:-28,opacity:0,duration:.5}).from('#f3',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from(['#st2_0','#st2_1','#st2_2'],{x:-25,opacity:0,duration:.35,stagger:.18});}
+function a3(){gsap.timeline().from('#t3',{y:-52,rotation:-3,opacity:0,duration:.6,ease:'elastic.out(1,.5)'}).from('#f3',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1').from(['#st2_0','#st2_1','#st2_2'],{x:-38,opacity:0,duration:.4,stagger:.17,ease:'back.out(2)'});}
 function s4(el){el.innerHTML=`<div><div class="s-tag">Mini Quiz · 3 Preguntas</div><div class="s-title" id="t4">¿Cuánto aprendiste?</div><div id="qw"></div><div id="qf" style="display:none;text-align:center;padding:.8rem 0;"><div id="qs" style="font-size:2.6rem;font-weight:900;margin-bottom:.35rem;"></div><div id="qm" style="color:var(--muted);font-size:.88rem;margin-bottom:.9rem;"></div><button onclick="rQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.3rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button></div></div>`;rQ2(0);}
-function a4(){gsap.from('#t4',{y:-28,opacity:0,duration:.5});}
+function a4(){gsap.from('#t4',{y:-52,rotation:-3,opacity:0,duration:.6,ease:'elastic.out(1,.5)'});}
 function render(){[s0,s1,s2,s3,s4][cur](document.getElementById('slide-inner'));}
 function anim(){[a0,a1,a2,a3,a4][cur]();}
-function go(d){if(busy)return;const n=cur+d;if(n<0||n>=TOTAL)return;busy=true;const el=document.getElementById('slide-inner');gsap.to(el,{opacity:0,x:d<0?50:-50,duration:.28,ease:'power2.in',onComplete:()=>{cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-50:50},{opacity:1,x:0,duration:.35,ease:'power2.out',onComplete:()=>{anim();busy=false;}});}});}
+function go(d){if(busy)return;const n=cur+d;if(n<0||n>=TOTAL)return;busy=true;const el=document.getElementById('slide-inner');gsap.to(el,{opacity:0,x:d<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:()=>{cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-65:65,scale:.94},{opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:()=>{anim();busy=false;}});}});}
 function upd(){document.getElementById('counter').textContent=`${cur+1} / 5`;document.getElementById('prog-fill').style.width=`${((cur+1)/5)*100}%`;document.getElementById('btn-prev').disabled=cur===0;document.getElementById('btn-next').disabled=cur===TOTAL-1;document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));}
 function mkDots(){const c=document.getElementById('dots');for(let i=0;i<TOTAL;i++){const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>{if(!busy){const dr=i-cur;if(!dr)return;cur=i-dr;go(dr);}};c.appendChild(d);}}
-function rQ2(i){if(i>=quiz.length){setTimeout(showSc,400);return;}const q=quiz[i];const w=document.getElementById('qw');if(!w)return;w.innerHTML=`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem;">Pregunta ${i+1} de ${quiz.length}</div><div class="q-q">${q.q}</div><div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div><div class="q-fb" id="qf${i}"></div>`;gsap.from('.q-opt',{y:6,duration:.22,ease:'power2.out'});}
-function ansQ(qi,oi){if(qAns[qi]!==null)return;qAns[qi]=oi;const q=quiz[qi];document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});const fb=document.getElementById(`qf${qi}`);if(fb){fb.className='q-fb '+(oi===q.ok?'ok':'bad');fb.textContent=(oi===q.ok?'✅ ':'❌ ')+q.fb;}setTimeout(()=>rQ2(qi+1),2100);}
-function showSc(){const ok=qAns.filter((a,i)=>a===quiz[i].ok).length;const w=document.getElementById('qw');const f=document.getElementById('qf');if(w)w.innerHTML='';if(f){f.style.display='block';const e=ok===quiz.length?'🏆':ok>=2?'⭐':'📚';document.getElementById('qs').textContent=`${e} ${ok}/${quiz.length}`;document.getElementById('qm').textContent=ok===quiz.length?'¡Perfecto!':ok>=2?'¡Bien! Sigue practicando.':'Repasa la lección.';gsap.from('#qf',{scale:.8,opacity:0,duration:.45,ease:'back.out(1.7)'});}}
+function rQ2(i){if(i>=quiz.length){setTimeout(showSc,400);return;}const q=quiz[i];const w=document.getElementById('qw');if(!w)return;w.innerHTML=`<div style="font-size:.68rem;color:var(--muted);margin-bottom:.4rem;">Pregunta ${i+1} de ${quiz.length}</div><div class="q-q">${q.q}</div><div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div><div class="q-fb" id="qf${i}"></div>`;gsap.from('.q-opt',{y:18,opacity:0,duration:.3,stagger:.07,ease:'back.out(2)'});}
+function ansQ(qi,oi){if(qAns[qi]!==null)return;qAns[qi]=oi;const q=quiz[qi];document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});const fb=document.getElementById(`qf${qi}`);if(fb){fb.className='q-fb '+(oi===q.ok?'ok':'bad');fb.textContent=(oi===q.ok?'✅ ':'❌ ')+q.fb;}var _b=document.getElementById('qo'+qi+'-'+oi);if(oi===q.ok){if(_b){burst(_b,'#10b981',16);gsap.from(_b,{scale:1.1,duration:.4,ease:'elastic.out(1,.4)'});}}else if(_b){gsap.to(_b,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.4,ease:'none'});}setTimeout(()=>rQ2(qi+1),2100);}
+function showSc(){const ok=qAns.filter((a,i)=>a===quiz[i].ok).length;const w=document.getElementById('qw');const f=document.getElementById('qf');if(w)w.innerHTML='';if(f){f.style.display='block';const e=ok===quiz.length?'🏆':ok>=2?'⭐':'📚';document.getElementById('qs').textContent=`${e} ${ok}/${quiz.length}`;document.getElementById('qm').textContent=ok===quiz.length?'¡Perfecto!':ok>=2?'¡Bien! Sigue practicando.':'Repasa la lección.';gsap.from('#qf',{scale:.55,rotation:-6,opacity:0,duration:.72,ease:'elastic.out(1,.42)'});if(ok===quiz.length){var _cc=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];for(var _ii=0;_ii<22;_ii++)(function(_n){setTimeout(function(){var _pp={getBoundingClientRect:function(){return{left:window.innerWidth*.3+Math.random()*window.innerWidth*.4,top:window.innerHeight*.25,width:0,height:0};}};burst(_pp,_cc[_n%_cc.length],5);},_n*88);}(_ii));}}}
 function rQ(){qAns.fill(null);document.getElementById('qf').style.display='none';rQ2(0);}
 mkDots();render();anim();
 </script>
