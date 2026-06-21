@@ -1260,10 +1260,11 @@
                     </div>
                     <div style="display:flex;flex-direction:column;gap:.3rem;">
                         <label style="font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.5);">Ordenar por</label>
-                        <select id="ri-orden" onchange="renderResultadosICFES()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;">
+                        <select id="ri-orden" onchange="riOrdenChange()" style="font-family:var(--fuente-t);font-size:.65rem;background:#0a1e32;color:#a8c4d8;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:.3rem .6rem;">
                             <option value="nombre">A → Z (nombre)</option>
                             <option value="reciente">Últimos en responder</option>
                             <option value="forms">Más formularios primero</option>
+                            <option value="promedio">Mayor promedio</option>
                         </select>
                     </div>
                     <button class="btn-add secondary" style="height:2rem;font-size:.65rem;" onclick="cargarResultadosICFES()">🔄 Recargar</button>
@@ -4406,7 +4407,7 @@ function descargarCSV(csv, nombre) {
 // ─── RESULTADOS ICFES ─────────────────────────────────────────────────────────
 let _riDatos         = [];   // registros de diagnostico_colegios
 let _riTalleres      = [];   // talleres para mapear _hoja → área
-let _riSortCol       = 'nombre';
+let _riSortCol       = null;   // null = usar dropdown; 'nombre'|'colegio'|'cedula'|'promedio' = click encabezado
 let _riSortAsc       = true;
 let _riChart         = null;
 let _riChartColegio  = null;
@@ -5277,17 +5278,23 @@ function renderResultadosICFES() {
             (e.colegio||'').toLowerCase().includes(buscar)
         );
     }
-    // Ordenar: _riSortCol tiene prioridad sobre el selector de orden
-    const orden = document.getElementById('ri-orden')?.value || 'nombre';
+    // Ordenar: si el usuario hizo clic en un encabezado (_riSortCol != null) toma prioridad;
+    // si no, usa el selector "Ordenar por"
+    const orden  = document.getElementById('ri-orden')?.value || 'nombre';
     const sortDir = _riSortAsc ? 1 : -1;
     if (_riSortCol === 'colegio') {
         estudiantes.sort((a,b) => sortDir * (a.colegio||'zzz').localeCompare(b.colegio||'zzz','es'));
     } else if (_riSortCol === 'cedula') {
         estudiantes.sort((a,b) => sortDir * (a.cedula||'').localeCompare(b.cedula||'','es'));
     } else if (_riSortCol === 'promedio') {
-        // promedio se calcula después de _maxPorHoja; aquí usamos _pct simple como proxy
         const _promEst = e => { const ps = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n)); return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : -1; };
         estudiantes.sort((a,b) => sortDir * (_promEst(b) - _promEst(a)));
+    } else if (_riSortCol === 'nombre') {
+        estudiantes.sort((a,b) => {
+            const na = a.nombre==='—' ? 'zzz'+a.email : a.nombre;
+            const nb = b.nombre==='—' ? 'zzz'+b.email : b.nombre;
+            return sortDir * na.localeCompare(nb, 'es');
+        });
     } else if (orden === 'reciente') {
         const _ultimaFecha = e => {
             const ts = e.formularios.map(f => _parseFechaRobusta(f.fecha)).filter(t => t > 0);
@@ -5296,13 +5303,15 @@ function renderResultadosICFES() {
         estudiantes.sort((a,b) => _ultimaFecha(b) - _ultimaFecha(a));
     } else if (orden === 'forms') {
         estudiantes.sort((a,b) => b.formularios.length - a.formularios.length);
+    } else if (orden === 'promedio') {
+        const _promEst = e => { const ps = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n)); return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : -1; };
+        estudiantes.sort((a,b) => _promEst(b) - _promEst(a));
     } else {
-        // Alfabético por nombre; los sin nombre van al final
-        const dir = _riSortCol === 'nombre' ? sortDir : 1;
+        // default: A→Z nombre
         estudiantes.sort((a,b) => {
             const na = a.nombre==='—' ? 'zzz'+a.email : a.nombre;
             const nb = b.nombre==='—' ? 'zzz'+b.email : b.nombre;
-            return dir * na.localeCompare(nb, 'es');
+            return na.localeCompare(nb, 'es');
         });
     }
     // Actualizar indicadores de flecha en cabeceras
@@ -5526,14 +5535,9 @@ function renderResultadosICFES() {
 window.sortResultados = function(col) {
     if (_riSortCol === col) _riSortAsc = !_riSortAsc;
     else { _riSortCol = col; _riSortAsc = true; }
-    // Sync "Ordenar por" select if applicable
-    const sel = document.getElementById('ri-orden');
-    if (sel) {
-        if (col === 'nombre') sel.value = 'nombre';
-        else if (col !== 'colegio' && col !== 'cedula' && col !== 'promedio') sel.value = 'nombre';
-    }
     renderResultadosICFES();
 };
+window.riOrdenChange = function() { _riSortCol = null; _riSortAsc = true; renderResultadosICFES(); };
 
 window.exportarResultadosCSV = function() {
     if (!_riDatos.length) return;
