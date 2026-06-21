@@ -151,8 +151,8 @@
         .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(56,189,248,0.2);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;max-width:85%;border-radius:0 12px 12px 12px;align-self:flex-start;}
         .msg-item.mine{border-left:none;border-right:3px solid var(--naranja);background:rgba(255,94,0,0.07);flex-direction:row-reverse;align-self:flex-end;border-radius:12px 0 12px 12px;}
         .msg-item.mine .msg-author{color:rgba(255,190,130,0.7);}
-        .msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;color:var(--azul-deep);overflow:hidden;}
-        .msg-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+        .msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;color:var(--azul-deep);overflow:hidden;position:relative;}
+        .msg-avatar img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:50%;}
         .msg-item-body{flex:1;min-width:0;}
         .msg-author{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;color:var(--teal);margin-bottom:0.2rem;}
         .msg-author .msg-time{float:right;color:rgba(255,255,255,0.25);font-weight:400;}
@@ -506,16 +506,16 @@
         /* Edit modal */
         .modal-edit-section{background:var(--azul-panel);border:1px solid rgba(255,94,0,0.3);padding:1.5rem;margin-top:1rem;}
         /* ── BANCO DE PREGUNTAS MATEMÁTICAS ── */
-        .banco-form-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:1.1rem 1.2rem;margin-bottom:.6rem;transition:border-color .2s;}
+        .banco-form-card{background:var(--azul-card);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:1.1rem 1.2rem;margin-bottom:.6rem;transition:border-color .2s;}
         .banco-form-card:hover{border-color:rgba(255,94,0,0.25);}
         .banco-titulo{font-family:var(--fuente-t);font-weight:900;font-size:.88rem;color:var(--blanco);}
         .banco-meta{font-family:var(--fuente-t);font-size:.6rem;color:rgba(255,255,255,.4);letter-spacing:.8px;margin-top:.2rem;}
-        .banco-q-block{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:6px;padding:1rem;margin-bottom:.75rem;position:relative;}
+        .banco-q-block{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:10px;padding:1rem;margin-bottom:.75rem;position:relative;}
         .banco-q-num{font-family:var(--fuente-t);font-size:.58rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--naranja);margin-bottom:.6rem;}
-        .banco-q-img{width:100%;max-height:160px;object-fit:contain;border-radius:4px;margin:.4rem 0;border:1px solid rgba(255,255,255,.1);}
-        .banco-q-img-placeholder{width:100%;height:90px;background:rgba(255,255,255,.03);border:2px dashed rgba(255,255,255,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s;}
+        .banco-q-img{width:100%;max-height:160px;object-fit:contain;border-radius:8px;margin:.4rem 0;border:1px solid rgba(255,255,255,.1);}
+        .banco-q-img-placeholder{width:100%;height:90px;background:rgba(255,255,255,.03);border:2px dashed rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.3);cursor:pointer;transition:all .2s;}
         .banco-q-img-placeholder:hover{border-color:var(--naranja);color:var(--naranja);}
-        .badge-grado{display:inline-block;padding:.18rem .55rem;background:rgba(56,189,248,.1);color:var(--teal);font-family:var(--fuente-t);font-size:.55rem;font-weight:900;letter-spacing:1.5px;border-radius:3px;text-transform:uppercase;}
+        .badge-grado{display:inline-block;padding:.18rem .55rem;background:rgba(56,189,248,.1);color:var(--teal);font-family:var(--fuente-t);font-size:.55rem;font-weight:900;letter-spacing:1.5px;border-radius:6px;text-transform:uppercase;}
         .badge-publicado{background:rgba(34,197,94,.12);color:var(--verde);}
         .badge-borrador{background:rgba(255,94,0,.08);color:var(--naranja);}
         /* ── QUIZ MODAL ── */
@@ -526,6 +526,10 @@
         .quiz-opcion.seleccionado{border-color:var(--naranja);background:rgba(255,94,0,.1);color:var(--naranja);}
         .quiz-opcion.correcta-final{border-color:var(--verde)!important;background:rgba(34,197,94,.1)!important;color:var(--verde)!important;}
         .quiz-opcion.incorrecta-final{border-color:var(--rojo)!important;background:rgba(239,68,68,.08)!important;color:#fca5a5!important;}
+        /* ── Bordes redondeados globales: todos los botones e inputs ── */
+        button:not([style*="border-radius:50%"]):not([style*="border-radius: 50%"]){border-radius:10px !important;}
+        input:not([type="radio"]):not([type="checkbox"]):not([type="range"]):not([type="color"]):not([style*="border-radius:50%"]),
+        select,textarea{border-radius:8px !important;}
     </style>
 </head>
 <body>
@@ -2841,24 +2845,14 @@ function crearMsgItem(m, esMio) {
 
     const div = document.createElement('div');
     div.className = `msg-item${esMio?' mine':''}`;
+    // Img va absolute encima del inicial; onerror la elimina y el inicial queda visible
+    const imgHtml = foto ? `<img src="${foto}" alt="${iniciales}" onerror="this.remove()">` : '';
     div.innerHTML = `
-        <div class="msg-avatar">${iniciales}</div>
+        <div class="msg-avatar">${imgHtml}${iniciales}</div>
         <div class="msg-item-body">
             <p class="msg-author">${m.autor||'Anónimo'} <span class="msg-time">${hora}</span></p>
             <p class="msg-text">${m.mensaje}</p>
         </div>`;
-    // Cargar foto por JS: onload = reemplaza inicial; onerror = conserva inicial (sin imagen rota)
-    if (foto) {
-        const img = new Image();
-        img.onload = () => {
-            const av = div.querySelector('.msg-avatar');
-            if (av) { av.textContent = ''; av.appendChild(img); }
-        };
-        img.onerror = () => { /* falla silenciosamente; el avatar conserva la inicial */ };
-        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
-        img.src = foto;
-        img.alt = iniciales;
-    }
     return div;
 }
 
@@ -7632,10 +7626,12 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
         _inboxOtroFotoUrl = foto;
         document.querySelectorAll('#inbox-chat-mensajes .msg-item:not(.mine) .msg-avatar').forEach(av => {
             if (!av.querySelector('img')) {
-                const img = new Image();
-                img.onload = () => { av.textContent = ''; av.appendChild(img); };
-                img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
-                img.src = foto; img.alt = av.textContent;
+                const inicial = av.textContent.trim();
+                const img = document.createElement('img');
+                img.src = foto;
+                img.alt = inicial;
+                img.onerror = () => img.remove();
+                av.insertAdjacentElement('afterbegin', img);
             }
         });
     };
