@@ -240,7 +240,7 @@
         .libreta-preview img{width:130px;height:auto;border-radius:4px;box-shadow:0 4px 18px rgba(0,0,0,0.5);transition:transform .25s ease;}
         .libreta-preview img:hover{transform:scale(1.06) rotate(-1deg);}
         .lib-label{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,215,0,0.65);}
-        .btn-tienda-libreta{position:relative;display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fuente-t);font-size:.68rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:2px;animation:pulseBtn 2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(255,94,0,0.5);}
+        .btn-tienda-libreta{position:relative;display:inline-flex;align-items:center;gap:.4rem;font-family:var(--fuente-t);font-size:.68rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;background:linear-gradient(135deg,#FF5E00,#ff8c00);color:#fff;padding:.65rem 1.3rem;border-radius:10px;animation:pulseBtn 2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(255,94,0,0.5);}
         .btn-tienda-libreta:hover{animation:none;transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,94,0,0.4);}
         @keyframes pulseBtn{0%{box-shadow:0 0 0 0 rgba(255,94,0,0.6);}50%{box-shadow:0 0 0 10px rgba(255,94,0,0);}100%{box-shadow:0 0 0 0 rgba(255,94,0,0);}}
         /* PERFIL */
@@ -294,7 +294,7 @@
         /* ═══════════════════════════════════════════
            RESPONSIVE MÓVIL — MENÚ HAMBURGUESA
         ═══════════════════════════════════════════ */
-        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:3px;padding:3px 5px 2px;cursor:pointer;flex-shrink:0;min-height:unset;}
+        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:8px;padding:3px 5px 2px;cursor:pointer;flex-shrink:0;min-height:unset;}
         .btn-hamburger .bar{display:block;width:16px;height:2px;background:var(--naranja);border-radius:2px;transition:all .3s ease;}
         .btn-hamburger::after{content:'MENÚ';font-family:var(--fuente-t);font-size:0.36rem;font-weight:900;letter-spacing:1px;color:var(--naranja);margin-top:1px;}
         #dash-mobile-pill{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--naranja);font-family:var(--fuente-t);font-weight:900;font-size:0.75rem;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,94,0,0.5);}
@@ -521,7 +521,7 @@
         /* ── QUIZ MODAL ── */
         .quiz-progress{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-bottom:1.1rem;}
         .quiz-progress-fill{height:100%;background:var(--naranja);border-radius:2px;transition:width .3s ease;}
-        .quiz-opcion{width:100%;padding:.8rem 1rem;margin-bottom:.4rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--blanco);font-family:var(--fuente-t);font-size:.78rem;font-weight:700;cursor:pointer;text-align:left;transition:all .18s;border-radius:4px;display:block;}
+        .quiz-opcion{width:100%;padding:.8rem 1rem;margin-bottom:.4rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--blanco);font-family:var(--fuente-t);font-size:.78rem;font-weight:700;cursor:pointer;text-align:left;transition:all .18s;border-radius:10px;display:block;}
         .quiz-opcion:hover{border-color:rgba(255,94,0,.45);background:rgba(255,94,0,.07);}
         .quiz-opcion.seleccionado{border-color:var(--naranja);background:rgba(255,94,0,.1);color:var(--naranja);}
         .quiz-opcion.correcta-final{border-color:var(--verde)!important;background:rgba(34,197,94,.1)!important;color:var(--verde)!important;}
@@ -2031,7 +2031,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dashPill = document.getElementById('dash-mobile-pill');
     if (dashPill) {
         if (currentUser.fotoUrl) {
-            dashPill.innerHTML = `<img src="${currentUser.fotoUrl}" alt="avatar">`;
+            const _ini = (currentUser.nombre || currentUser.email || 'U')[0].toUpperCase();
+            const _img = new Image();
+            _img.onload  = () => { dashPill.innerHTML = ''; dashPill.appendChild(_img); };
+            _img.onerror = () => { dashPill.textContent = _ini; };
+            _img.alt = _ini; _img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+            _img.src = currentUser.fotoUrl;
         } else {
             const inicial = (currentUser.nombre || currentUser.email || 'U')[0].toUpperCase();
             dashPill.textContent = inicial;
@@ -2716,7 +2721,10 @@ function cargarTutores() {
         container.innerHTML = '';
         snap.forEach(d => {
             const t = d.data(); if (!t.nombre) return;
-            const avatar = t.fotoUrl ? `<img src="${t.fotoUrl}" onerror="this.style.display='none'">` : t.nombre[0];
+            const _ti = (t.nombre||'?')[0].toUpperCase();
+            const avatar = t.fotoUrl
+                ? `<img src="${t.fotoUrl}" alt="${_ti}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';this.parentElement.textContent='${_ti}'">`
+                : _ti;
             container.insertAdjacentHTML('beforeend',`
                 <div class="tutor-item">
                     <div class="tutor-avatar">${avatar}</div>
@@ -2839,13 +2847,14 @@ function crearMsgItem(m, esMio) {
             <p class="msg-author">${m.autor||'Anónimo'} <span class="msg-time">${hora}</span></p>
             <p class="msg-text">${m.mensaje}</p>
         </div>`;
-    // Cargar foto por JS para tener control total del fallback
+    // Cargar foto por JS: onload = reemplaza inicial; onerror = conserva inicial (sin imagen rota)
     if (foto) {
         const img = new Image();
         img.onload = () => {
             const av = div.querySelector('.msg-avatar');
             if (av) { av.textContent = ''; av.appendChild(img); }
         };
+        img.onerror = () => { /* falla silenciosamente; el avatar conserva la inicial */ };
         img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
         img.src = foto;
         img.alt = iniciales;
@@ -7474,7 +7483,7 @@ async function cargarInbox() {
             const inicial   = (displayNombre)[0].toUpperCase();
             const esc       = (s) => (s||'').replace(/'/g,"\\'");
             const avatarInner = fotoOtro
-                ? `<img src="${fotoOtro}" alt="" style="width:100%;height:100%;object-fit:cover;">`
+                ? `<img src="${fotoOtro}" alt="${inicial}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.textContent='${inicial}'">`
                 : inicial;
 
             cont.insertAdjacentHTML('beforeend',`
@@ -7512,10 +7521,12 @@ async function cargarInbox() {
                         nmEl.textContent = realName;
                     }
                     if (avEl) {
+                        const _ri = (realName || '?')[0].toUpperCase();
                         if (realFoto) {
-                            avEl.innerHTML = `<img src="${realFoto}" alt="" style="width:100%;height:100%;object-fit:cover;">`;
-                        } else if (realName) {
-                            avEl.textContent = realName[0].toUpperCase();
+                            const _ri2 = _ri;
+                            avEl.innerHTML = `<img src="${realFoto}" alt="${_ri2}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.parentElement.textContent='${_ri2}'">`;
+                        } else {
+                            avEl.textContent = _ri;
                         }
                     }
                     // Actualizar onclick con nombre real
@@ -7766,7 +7777,7 @@ window.buscarUsuarioChat = async function() {
             const esc = s => (s||'').replace(/'/g,"\\'");
             cont.insertAdjacentHTML('beforeend',`
                 <div style="display:flex;align-items:center;gap:0.75rem;padding:0.65rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);margin-bottom:0.4rem;cursor:pointer;" onclick="iniciarNuevaConv('${u.id}','${esc(u.nombre)}','${esc(u.fotoUrl||'')}')">
-                    <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,94,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;color:var(--naranja);flex-shrink:0;overflow:hidden;">${u.fotoUrl ? `<img src="${u.fotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">` : (u.nombre||'?')[0].toUpperCase()}</div>
+                    <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,94,0,0.2);display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;font-weight:900;font-size:0.85rem;color:var(--naranja);flex-shrink:0;overflow:hidden;">${u.fotoUrl ? `<img src="${u.fotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';this.parentElement.textContent='${(u.nombre||'?')[0].toUpperCase()}'">` : (u.nombre||'?')[0].toUpperCase()}</div>
                     <div>
                         <p style="font-family:'Montserrat',sans-serif;font-size:0.75rem;font-weight:700;color:var(--blanco);margin:0;">${u.nombre||'—'}</p>
                         <p style="font-family:'Montserrat',sans-serif;font-size:0.55rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin:0;">${u.rol||'—'}</p>
@@ -7825,7 +7836,7 @@ function iniciarBadgeInbox() {
                 if (!badge) {
                     badge = document.createElement('span');
                     badge.className = 'msg-badge';
-                    badge.style.cssText = 'margin-left:auto;background:var(--naranja);color:#fff;font-family:Montserrat,sans-serif;font-size:0.55rem;font-weight:900;padding:0.15rem 0.45rem;border-radius:0;min-width:18px;text-align:center;';
+                    badge.style.cssText = 'margin-left:auto;background:var(--naranja);color:#fff;font-family:Montserrat,sans-serif;font-size:0.55rem;font-weight:900;padding:0.15rem 0.5rem;border-radius:10px;min-width:18px;text-align:center;';
                     btn.appendChild(badge);
                 }
                 badge.textContent = total > 0 ? total : '';
