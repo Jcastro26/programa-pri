@@ -2053,6 +2053,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     iniciarBadgeInbox();
     // Verificar si el perfil está completo (muestra modal si no)
     _checkPerfilCompleto();
+
+    // ── Auto-seed silencioso para admin: garantiza que los 26 talleres existan
+    // y estén publicados ANTES de que cualquier estudiante consulte Firestore.
+    if (rol === 'admin') {
+        setTimeout(async () => {
+            try {
+                if (typeof seedTalleresInteractivos === 'function') {
+                    _seedAutoEjecutado = true; // evitar doble seed si abren el panel admin
+                    await seedTalleresInteractivos();
+                }
+            } catch(e) { /* silencioso — no interrumpir la carga del dashboard */ }
+        }, 1500);
+    }
 });
 
 // ===================== MENU =====================
