@@ -129,6 +129,12 @@
             scrollbar-width:thin;scrollbar-color:var(--naranja) transparent;border-radius:12px;}
         #inbox-chat-mensajes::-webkit-scrollbar{width:5px;}
         #inbox-chat-mensajes::-webkit-scrollbar-thumb{background:var(--naranja);border-radius:4px;}
+        /* Móvil: scrollbar más ancho para poder tocarlo con el dedo */
+        @media(max-width:900px){
+            #inbox-chat-mensajes::-webkit-scrollbar{width:10px;}
+            #inbox-chat-mensajes::-webkit-scrollbar-thumb{background:var(--naranja);border-radius:6px;min-height:40px;}
+            #inbox-chat-mensajes{scrollbar-width:auto;scrollbar-color:var(--naranja) rgba(255,255,255,0.06);}
+        }
         /* Cuando está abierto, quitar el section-box extra para no duplicar estilos */
         #inbox-chat-box.inbox-open .section-box{padding:0;border:none;background:none;backdrop-filter:none;box-shadow:none;margin-bottom:0;}
         #ti-lista::-webkit-scrollbar{width:4px;}
@@ -7543,9 +7549,14 @@ window._aplicarChatFixedMobile = function() {
     mensajes.style.setProperty('height',     alturaFinal + 'px', 'important');
     mensajes.style.setProperty('max-height', 'none',             'important');
 
-    // Bloquear scroll de la página: iOS deja de competir → touches van al div
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.overflow            = 'hidden';
+    // iOS scroll-lock: overflow:hidden en body NO funciona en Safari iOS.
+    // La única técnica fiable: body { position:fixed } → el body deja de ser
+    // un contenedor con scroll → iOS enruta todos los touches al div interno.
+    document.body.dataset.chatScrollY = window.scrollY;
+    document.body.style.position  = 'fixed';
+    document.body.style.top       = `-${window.scrollY}px`;
+    document.body.style.width     = '100%';
+    document.body.style.overflowY = 'hidden';
 };
 
 window._removerChatFixedMobile = function() {
@@ -7554,8 +7565,13 @@ window._removerChatFixedMobile = function() {
         mensajes.style.removeProperty('height');
         mensajes.style.removeProperty('max-height');
     }
-    document.documentElement.style.overflow = '';
-    document.body.style.overflow            = '';
+    const scrollY = parseFloat(document.body.dataset.chatScrollY || '0');
+    document.body.style.position  = '';
+    document.body.style.top       = '';
+    document.body.style.width     = '';
+    document.body.style.overflowY = '';
+    delete document.body.dataset.chatScrollY;
+    window.scrollTo(0, scrollY);
 };
 
 // Re-calcular al rotar pantalla o al aparecer/desaparecer el teclado virtual
