@@ -2837,9 +2837,13 @@ function crearMsgItem(m, esMio) {
     const iniciales = (m.autor||'?')[0].toUpperCase();
     // Solo aceptar URLs http/https — descartar blobs revocados, strings vacíos, etc.
     const esUrlHttp = u => typeof u === 'string' && (u.startsWith('http://') || u.startsWith('https://'));
-    const foto = esUrlHttp(m.autorFoto) ? m.autorFoto
-               : esMio ? (esUrlHttp(currentUser?.fotoUrl) ? currentUser.fotoUrl : '')
-               : (esUrlHttp(_inboxOtroFotoUrl) ? _inboxOtroFotoUrl : '');
+    // Mensajes propios: siempre la foto actual del usuario (nunca la vieja guardada en m.autorFoto)
+    // Mensajes ajenos: m.autorFoto primero (más específico), luego _inboxOtroFotoUrl
+    const foto = esMio
+        ? (esUrlHttp(currentUser?.fotoUrl) ? currentUser.fotoUrl
+           : esUrlHttp(m.autorFoto) ? m.autorFoto : '')
+        : (esUrlHttp(m.autorFoto) ? m.autorFoto
+           : esUrlHttp(_inboxOtroFotoUrl) ? _inboxOtroFotoUrl : '');
 
     const div = document.createElement('div');
     div.className = `msg-item${esMio?' mine':''}`;
@@ -7370,6 +7374,35 @@ window.previewFotoFile = function(input) {
     reader.readAsDataURL(file);
 };
 
+// Refresca en tiempo real TODOS los círculos de avatar del usuario actual en la página
+function _refrescarAvataresPropios(url) {
+    const ini = (currentUser.nombre || currentUser.email || 'U')[0].toUpperCase();
+
+    // 1. Pill del header móvil
+    const dashPill = document.getElementById('dash-mobile-pill');
+    if (dashPill) dashPill.innerHTML = `<img src="${url}" alt="${ini}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent='${ini}'">`;
+
+    // 2. Todos los .msg-avatar dentro de mensajes propios (.msg-item.mine)
+    document.querySelectorAll('.msg-item.mine .msg-avatar').forEach(av => {
+        const img = av.querySelector('img');
+        if (img) {
+            img.src = url; // reemplazar URL vieja
+        } else {
+            // No tenía img (foto vacía al renderizar) → insertar ahora
+            const newImg = document.createElement('img');
+            newImg.src = url;
+            newImg.alt = ini;
+            newImg.onerror = () => newImg.remove();
+            av.insertAdjacentElement('afterbegin', newImg);
+        }
+    });
+
+    // 3. Header desktop: si hay un .header-icon con img del usuario (no el logo PRI)
+    document.querySelectorAll('.header-icon img[data-user-avatar]').forEach(img => {
+        img.src = url;
+    });
+}
+
 window.guardarFotoPerfil = async function() {
     if (!currentUser.uid) return;
     const fileInput = document.getElementById('input-foto-file');
@@ -7393,9 +7426,8 @@ window.guardarFotoPerfil = async function() {
         // Actualizar preview del panel
         const prev = document.getElementById('foto-perfil-preview');
         if (prev) { prev.src = url; prev.style.display = 'block'; }
-        // Actualizar pill del menú móvil inmediatamente
-        const dashPill = document.getElementById('dash-mobile-pill');
-        if (dashPill) dashPill.innerHTML = `<img src="${url}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+        // Refrescar TODOS los círculos de avatar del usuario actual en el DOM
+        _refrescarAvataresPropios(url);
         fileInput.value = '';
         const msg = (rol === 'docente' || rol === 'voluntario') ? 'Tu foto ya aparece en la página de Docentes.' : 'Tu foto de perfil fue actualizada.';
         notif('Foto actualizada', msg, '📸','success');
