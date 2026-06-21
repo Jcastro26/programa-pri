@@ -9231,11 +9231,19 @@ window.abrirTallerInteractivo = function(tallerData) {
     document.getElementById('ti-titulo').textContent = tallerData.titulo || '';
     document.getElementById('ti-iframe').src = tallerData.url;
     document.getElementById('modal-taller-interactivo').classList.add('open');
+    // Ocultar cursor personalizado dentro del iframe (no recibe mousemove del padre)
+    const cdot = document.getElementById('cdot'), cring = document.getElementById('cring');
+    if (cdot) cdot.style.opacity = '0';
+    if (cring) cring.style.opacity = '0';
 };
 
 window.cerrarTallerInteractivo = function() {
     document.getElementById('modal-taller-interactivo').classList.remove('open');
     document.getElementById('ti-iframe').src = '';
+    // Restaurar cursor personalizado
+    const cdot = document.getElementById('cdot'), cring = document.getElementById('cring');
+    if (cdot) cdot.style.opacity = '';
+    if (cring) cring.style.opacity = '';
 };
 
 // Escucha mensajes del iframe interactivo
