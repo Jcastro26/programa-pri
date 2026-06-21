@@ -2801,19 +2801,31 @@ window.cerrarChatPrivado = function() {
 function crearMsgItem(m, esMio) {
     const hora = m.timestamp ? new Date(m.timestamp.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
     const iniciales = (m.autor||'?')[0].toUpperCase();
-    // Fallback: foto guardada en el msg → foto actual del user → foto cacheada del interlocutor
-    const foto = m.autorFoto || (esMio ? (currentUser?.fotoUrl||'') : (_inboxOtroFotoUrl||''));
-    const avatarInner = foto
-        ? `<img src="${foto}" onerror="this.parentElement.textContent='${iniciales}'">`
-        : iniciales;
+    // Solo aceptar URLs http/https — descartar blobs revocados, strings vacíos, etc.
+    const esUrlHttp = u => typeof u === 'string' && (u.startsWith('http://') || u.startsWith('https://'));
+    const foto = esUrlHttp(m.autorFoto) ? m.autorFoto
+               : esMio ? (esUrlHttp(currentUser?.fotoUrl) ? currentUser.fotoUrl : '')
+               : (esUrlHttp(_inboxOtroFotoUrl) ? _inboxOtroFotoUrl : '');
+
     const div = document.createElement('div');
     div.className = `msg-item${esMio?' mine':''}`;
     div.innerHTML = `
-        <div class="msg-avatar">${avatarInner}</div>
+        <div class="msg-avatar">${iniciales}</div>
         <div class="msg-item-body">
             <p class="msg-author">${m.autor||'Anónimo'} <span class="msg-time">${hora}</span></p>
             <p class="msg-text">${m.mensaje}</p>
         </div>`;
+    // Cargar foto por JS para tener control total del fallback
+    if (foto) {
+        const img = new Image();
+        img.onload = () => {
+            const av = div.querySelector('.msg-avatar');
+            if (av) { av.textContent = ''; av.appendChild(img); }
+        };
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+        img.src = foto;
+        img.alt = iniciales;
+    }
     return div;
 }
 
