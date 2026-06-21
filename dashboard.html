@@ -7387,15 +7387,10 @@ window.adaptarPanelFoto = function() {
     if (desc) desc.textContent = esMentor ? 'Actualiza tu foto, descripción y materias. Visible en la página de Docentes.' : 'Mantén tus datos actualizados para acceder a todos los beneficios del programa.';
     if (camposMentor) camposMentor.style.display = esMentor ? '' : 'none';
     if (btnActualizar) btnActualizar.style.display = esMentor ? '' : 'none';
-    // Cargar foto actual desde Firestore
-    getDoc(doc(db,'usuarios',currentUser.uid)).then(snap => {
-        if (!snap.exists()) return;
-        const fotoUrl = snap.data().fotoUrl;
-        if (fotoUrl) {
-            const prev = document.getElementById('foto-perfil-preview');
-            prev.src = fotoUrl; prev.style.display = 'block';
-        }
-    }).catch(()=>{});
+    // Mostrar foto actual directamente desde currentUser (ya sincronizado, evita race condition
+    // con cargarPerfilDocente que podría sobreescribir con URL vieja del doc docentes)
+    const prev = document.getElementById('foto-perfil-preview');
+    if (prev && currentUser.fotoUrl) { prev.src = currentUser.fotoUrl; prev.style.display = 'block'; }
     // Cargar datos personales
     cargarDatosPersonales();
 };
@@ -7406,7 +7401,12 @@ function cargarPerfilDocente() {
     getDoc(doc(db,"docentes",currentUser.uid)).then(snap => {
         if (!snap.exists()) return;
         const d = snap.data();
-        if (d.fotoUrl) { document.getElementById('foto-perfil-preview').src=d.fotoUrl; document.getElementById('foto-perfil-preview').style.display='block'; }
+        // NO sobreescribir la foto — adaptarPanelFoto() ya puso currentUser.fotoUrl (siempre fresco).
+        // Solo mostrar si por alguna razón la preview está vacía y no hay foto propia.
+        const _prev = document.getElementById('foto-perfil-preview');
+        if (_prev && _prev.style.display === 'none' && !currentUser.fotoUrl && d.fotoUrl) {
+            _prev.src = d.fotoUrl; _prev.style.display = 'block';
+        }
         if (d.bio) document.getElementById('input-bio').value=d.bio;
         if (d.materias) document.getElementById('input-materias').value=d.materias;
         if (d.materialUrl) document.getElementById('input-material-url').value=d.materialUrl;
