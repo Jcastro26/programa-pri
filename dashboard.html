@@ -170,7 +170,7 @@
         .btn-send{font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:0.75rem 1.25rem;background:rgba(34,197,94,0.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:var(--azul-deep);border:1px solid rgba(255,255,255,0.2);cursor:pointer;transition:all 0.2s;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;}
         .btn-send:hover{background:rgba(255,255,255,0.92);border-color:rgba(255,255,255,0.4);}
         /* CHAT PRIVADO */
-        .chat-priv-header{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);padding:0.75rem 1rem;background:rgba(56,189,248,0.07);border-bottom:1px solid rgba(56,189,248,0.15);display:flex;align-items:center;justify-content:space-between;}
+        .chat-priv-header{font-family:var(--fuente-t);font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal);padding:0.75rem 1rem;background:rgba(56,189,248,0.07);border:1px solid rgba(56,189,248,0.15);border-radius:12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
         .btn-cerrar-chat{background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem;transition:color 0.2s;}
         .btn-cerrar-chat:hover{color:var(--blanco);}
         /* ADMIN TABLE */
@@ -294,13 +294,13 @@
         /* ═══════════════════════════════════════════
            RESPONSIVE MÓVIL — MENÚ HAMBURGUESA
         ═══════════════════════════════════════════ */
-        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:8px;padding:7px 9px 4px;cursor:pointer;flex-shrink:0;min-width:42px;min-height:unset;transition:background 0.2s ease;}
+        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:8px;padding:4px 6px 2px;cursor:pointer;flex-shrink:0;width:auto;height:auto;transition:background 0.2s ease;}
         .btn-hamburger:hover,.btn-hamburger.is-active{background:rgba(255,94,0,0.22);border-color:rgba(255,94,0,0.8);}
-        .btn-hamburger .bar{display:block;width:22px;height:2.5px;background:var(--naranja);border-radius:2px;transition:all .3s ease-in-out;}
+        .btn-hamburger .bar{display:block;width:16px;height:2px;background:var(--naranja);border-radius:2px;transition:all .3s ease-in-out;}
         .btn-hamburger.is-active .bar:nth-child(2){opacity:0;}
-        .btn-hamburger.is-active .bar:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
-        .btn-hamburger.is-active .bar:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
-        .btn-hamburger::after{content:'MENÚ';font-family:var(--fuente-t);font-size:0.45rem;font-weight:900;letter-spacing:1px;color:var(--naranja);margin-top:1px;}
+        .btn-hamburger.is-active .bar:nth-child(1){transform:translateY(6px) rotate(45deg);}
+        .btn-hamburger.is-active .bar:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+        .btn-hamburger::after{content:'MENÚ';font-family:var(--fuente-t);font-size:0.38rem;font-weight:900;letter-spacing:1px;color:var(--naranja);margin-top:1px;}
         .btn-hamburger.is-active::after{content:'CERRAR';}
         #dash-mobile-pill{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--naranja);font-family:var(--fuente-t);font-weight:900;font-size:0.75rem;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,94,0,0.5);}
         #dash-mobile-pill img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
@@ -390,19 +390,28 @@
             body.foro-abierto #panel-foro-admin .panel-title,
             body.foro-abierto #panel-foro-admin .panel-heading,
             body.foro-abierto #panel-foro-admin .panel-desc{display:none !important;}
-            /* section-box (contiene .foro-messages) crece para llenar el espacio */
+            /* section-box crece para llenar el espacio Y se convierte en flex para
+               que .foro-messages pueda usar flex:1 en vez de height:100%
+               (height:100% tiene bugs en iOS Safari cuando el padre es flex item) */
             body.foro-abierto #panel-foro .section-box,
             body.foro-abierto #panel-foro-admin .section-box{
                 flex:1 !important;
                 min-height:0 !important;
+                display:flex !important;
+                flex-direction:column !important;
                 overflow:hidden !important;
                 margin-bottom:0 !important;
+                padding:0 !important;
+                background:none !important;
+                border:none !important;
             }
-            /* Mensajes ocupa el 100% del section-box */
+            /* Mensajes = flex:1 dentro de section-box → evita height:100% bugs en iOS */
             body.foro-abierto #panel-foro .foro-messages,
             body.foro-abierto #panel-foro-admin .foro-messages{
-                height:100% !important;
-                max-height:100% !important;
+                flex:1 !important;
+                min-height:0 !important;
+                height:auto !important;
+                max-height:none !important;
                 overflow-y:scroll !important;
                 -webkit-overflow-scrolling:touch !important;
                 overscroll-behavior-y:contain !important;
