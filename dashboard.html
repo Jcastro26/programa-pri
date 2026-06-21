@@ -7495,7 +7495,7 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     _inboxOtroFotoUrl = '';
     document.getElementById('inbox-lista-sec').style.display = 'none';
     const chatBox = document.getElementById('inbox-chat-box');
-    chatBox.style.display = 'flex';
+    chatBox.style.display = 'block';
     chatBox.classList.add('inbox-open');
     document.getElementById('inbox-chat-nombre').textContent = nombre || '…';
     document.getElementById('inbox-chat-input').value = '';
