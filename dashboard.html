@@ -131,6 +131,8 @@
         #inbox-chat-box.inbox-open #inbox-chat-mensajes{flex:1 !important;height:auto !important;min-height:0 !important;max-height:none !important;overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
         #inbox-chat-box.inbox-open .chat-priv-header{flex-shrink:0;}
         #inbox-chat-box.inbox-open .foro-input-row+div,#inbox-chat-box.inbox-open>div>.foro-input-row{flex-shrink:0;}
+        /* El wrapper del input dentro del inbox-open no debe aplastarse */
+        #inbox-chat-box.inbox-open .section-box>div:last-child{flex-shrink:0;}
         #ti-lista::-webkit-scrollbar{width:4px;}
         #ti-lista::-webkit-scrollbar-track{background:rgba(255,255,255,0.04);border-radius:2px;}
         #ti-lista::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.4);border-radius:2px;}
@@ -395,6 +397,7 @@
                 overscroll-behavior-y:contain !important;
                 touch-action:pan-y !important;
             }
+            #inbox-chat-box.inbox-open .section-box>div:last-child{flex-shrink:0 !important;}
             .foro-input-row{flex-direction:column;}
             .btn-send{width:100%;}
 
