@@ -375,8 +375,28 @@
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             /* Footer: siempre oculto en móvil */
             .footer-industrial,.footer-minimal{display:none !important;}
-            /* Inbox chat móvil — altura puesta por JS; overflow-y:scroll permite scroll interno */
-            #inbox-chat-mensajes{overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
+            /* Inbox chat móvil — layout flex cuando el chat está abierto */
+            /* El chatbox ocupa todo el espacio debajo del header (altura puesta por JS) */
+            body.inbox-chat-abierto #inbox-chat-box{
+                display:flex !important;
+                flex-direction:column !important;
+                overflow:hidden !important;
+            }
+            /* Mensajes llena el espacio disponible entre el header del chat y el input */
+            body.inbox-chat-abierto #inbox-chat-mensajes{
+                flex:1 !important;
+                min-height:0 !important;
+                height:auto !important;
+                max-height:none !important;
+                overflow-y:scroll !important;
+                -webkit-overflow-scrolling:touch !important;
+                overscroll-behavior-y:contain !important;
+                touch-action:pan-y !important;
+            }
+            /* Input anclado al fondo, nunca se comprime */
+            body.inbox-chat-abierto #inbox-foro-inputs{
+                flex-shrink:0 !important;
+            }
             /* Cuando el chat está abierto: ocultar título/desc del panel */
             body.inbox-chat-abierto #panel-inbox .panel-title,
             body.inbox-chat-abierto #panel-inbox .panel-heading,
@@ -7526,32 +7546,19 @@ let _inboxOtroFotoUrl = ''; // foto del otro usuario en el chat activo
 // Ningún elemento cambia de position → header sticky y inputs quedan intactos.
 
 window._aplicarChatFixedMobile = function() {
-    const mensajes = document.getElementById('inbox-chat-mensajes');
-    if (!mensajes) return;
+    const chatBox    = document.getElementById('inbox-chat-box');
+    const siteHeader = document.querySelector('.site-header');
+    const mainEl     = document.querySelector('.main-layout');
+    if (!chatBox) return;
 
-    // Medir todos los elementos que ocupan espacio arriba y abajo del div
-    const chatHdr  = document.querySelector('.chat-priv-header');
-    const inputs   = document.getElementById('inbox-foro-inputs');
-    const panelEl  = document.getElementById('panel-inbox');
-    const mainEl   = document.querySelector('.main-layout');
+    // Altura del chatbox = viewport - altura del sticky header - padding-top del main-layout
+    // El CSS flex distribuye el espacio: chat-priv-header (fijo) + mensajes (flex:1) + input (fijo)
+    const headerH = siteHeader ? siteHeader.offsetHeight : 65;
+    const mainPT  = mainEl ? parseFloat(getComputedStyle(mainEl).paddingTop) : 14;
+    chatBox.style.setProperty('height', `calc(100dvh - ${headerH + mainPT}px)`, 'important');
 
-    const chatHdrBottom = chatHdr ? chatHdr.getBoundingClientRect().bottom : 101;
-    const inputsH       = inputs  ? inputs.offsetHeight : 100;
-    const panelPB       = panelEl ? parseFloat(getComputedStyle(panelEl).paddingBottom) : 32;
-    const mainPB        = mainEl  ? parseFloat(getComputedStyle(mainEl).paddingBottom)  : 14;
-    const mensajesMarginB = parseFloat(getComputedStyle(mensajes).marginBottom) || 0;
-
-    // Espacio consumido debajo del div de mensajes
-    const abajo = inputsH + mensajesMarginB + panelPB + mainPB;
-    // Altura disponible para mensajes = viewport - lo que hay arriba - lo que hay abajo
-    const alturaFinal = Math.max(120, window.innerHeight - chatHdrBottom - abajo);
-
-    mensajes.style.setProperty('height',     alturaFinal + 'px', 'important');
-    mensajes.style.setProperty('max-height', 'none',             'important');
-
-    // iOS scroll-lock: overflow:hidden en body NO funciona en Safari iOS.
-    // La única técnica fiable: body { position:fixed } → el body deja de ser
-    // un contenedor con scroll → iOS enruta todos los touches al div interno.
+    // iOS scroll-lock: overflow:hidden en body es ignorado por Safari iOS.
+    // body{position:fixed} elimina el scroll de página → iOS enruta touches al div interno.
     document.body.dataset.chatScrollY = window.scrollY;
     document.body.style.position  = 'fixed';
     document.body.style.top       = `-${window.scrollY}px`;
@@ -7560,11 +7567,10 @@ window._aplicarChatFixedMobile = function() {
 };
 
 window._removerChatFixedMobile = function() {
+    const chatBox  = document.getElementById('inbox-chat-box');
     const mensajes = document.getElementById('inbox-chat-mensajes');
-    if (mensajes) {
-        mensajes.style.removeProperty('height');
-        mensajes.style.removeProperty('max-height');
-    }
+    if (chatBox)  chatBox.style.removeProperty('height');
+    if (mensajes) { mensajes.style.removeProperty('height'); mensajes.style.removeProperty('max-height'); }
     const scrollY = parseFloat(document.body.dataset.chatScrollY || '0');
     document.body.style.position  = '';
     document.body.style.top       = '';
