@@ -1975,6 +1975,7 @@ let _unsubEstudiantes    = null;
 let _unsubForoAdmin      = null;
 let _unsubRetos          = null;
 let inboxUnsubscribe     = null;
+let inboxChatDocUnsub    = null; // listener en el doc raíz del chat activo (detecta cambios de foto)
 let _unsubNotifTienda    = null;
 
 // ===================== NOTIF =====================
@@ -2129,6 +2130,7 @@ window.activarPanel = function(id) {
     // Limpiar estado chat inbox si el usuario cambia de panel
     document.body.classList.remove('inbox-chat-abierto');
     window._removerChatFixedMobile?.();
+    if (window.inboxChatDocUnsub) { window.inboxChatDocUnsub(); window.inboxChatDocUnsub = null; }
     // Limpiar estado foro
     if (document.body.classList.contains('foro-abierto')) {
         document.body.classList.remove('foro-abierto');
@@ -7467,8 +7469,14 @@ window.guardarFotoPerfil = async function() {
         // Actualizar preview del panel
         const prev = document.getElementById('foto-perfil-preview');
         if (prev) { prev.src = url; prev.style.display = 'block'; }
-        // Refrescar TODOS los círculos de avatar del usuario actual en el DOM
+        // Refrescar TODOS los círculos de avatar del usuario actual en el DOM (propio)
         _refrescarAvataresPropios(url);
+        // Propagar foto nueva a todos los chats privados donde participa (en paralelo, sin bloquear)
+        // Esto garantiza que otros usuarios vean la foto nueva en su lista de conversaciones
+        getDocs(query(collection(db,'chats_privados'), where('participantes','array-contains',currentUser.uid)))
+            .then(snap => Promise.all(
+                snap.docs.map(d => updateDoc(d.ref, {[`fotos.${currentUser.uid}`]: url}).catch(()=>{}))
+            )).catch(()=>{});
         fileInput.value = '';
         const msg = (rol === 'docente' || rol === 'voluntario') ? 'Tu foto ya aparece en la página de Docentes.' : 'Tu foto de perfil fue actualizada.';
         notif('Foto actualizada', msg, '📸','success');
@@ -7787,6 +7795,24 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
         if (Object.keys(updates).length) updateDoc(doc(db,'chats_privados',chatId), updates).catch(()=>{});
     }).catch(()=>{});
 
+    // Listener en tiempo real sobre el doc raíz del chat:
+    // detecta cambios en fotos.{uid} para actualizar avatares sin recargar
+    if (inboxChatDocUnsub) { inboxChatDocUnsub(); inboxChatDocUnsub = null; }
+    inboxChatDocUnsub = onSnapshot(doc(db,'chats_privados',chatId), chatDocSnap => {
+        if (!chatDocSnap.exists()) return;
+        const cd = chatDocSnap.data();
+        // Foto del otro → actualizar avatares del otro en los mensajes y en el thread
+        const fotoOtroNueva = uid && cd.fotos?.[uid] ? cd.fotos[uid] : '';
+        if (fotoOtroNueva && fotoOtroNueva !== _inboxOtroFotoUrl) _aplicarFotoOtro(fotoOtroNueva);
+        // Foto mía (me la cambié desde otra pestaña/dispositivo) → refrescar mis propios avatares
+        const fotoPropiaNueva = cd.fotos?.[currentUser.uid] || '';
+        if (fotoPropiaNueva && fotoPropiaNueva !== currentUser.fotoUrl) {
+            currentUser.fotoUrl = fotoPropiaNueva;
+            localStorage.setItem('usuario_sesion_activa', JSON.stringify(currentUser));
+            _refrescarAvataresPropios(fotoPropiaNueva);
+        }
+    }, ()=>{});
+
     if (inboxUnsubscribe) inboxUnsubscribe();
     const q = query(collection(db,"chats_privados",chatId,"mensajes"), orderBy("timestamp","asc"), limit(60));
     inboxUnsubscribe = onSnapshot(q, snap => {
@@ -7806,7 +7832,8 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
 };
 
 window.cerrarInboxChat = function() {
-    if (inboxUnsubscribe) { inboxUnsubscribe(); inboxUnsubscribe = null; }
+    if (inboxUnsubscribe)    { inboxUnsubscribe();    inboxUnsubscribe    = null; }
+    if (inboxChatDocUnsub)   { inboxChatDocUnsub();   inboxChatDocUnsub   = null; }
     inboxChatUid = null; inboxChatId = null;
     _inboxOtroFotoUrl = '';
     document.getElementById('inbox-lista-sec').style.display = '';
