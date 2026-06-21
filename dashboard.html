@@ -5287,6 +5287,7 @@ function renderResultadosICFES() {
     } else if (_riSortCol === 'cedula') {
         estudiantes.sort((a,b) => sortDir * (a.cedula||'').localeCompare(b.cedula||'','es'));
     } else if (_riSortCol === 'promedio') {
+        // _pctConTotal se define más abajo; usamos _pct como proxy rápido para el sort
         const _promEst = e => { const ps = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n)); return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : -1; };
         estudiantes.sort((a,b) => sortDir * (_promEst(b) - _promEst(a)));
     } else if (_riSortCol === 'nombre') {
@@ -5304,8 +5305,8 @@ function renderResultadosICFES() {
     } else if (orden === 'forms') {
         estudiantes.sort((a,b) => b.formularios.length - a.formularios.length);
     } else if (orden === 'promedio') {
-        const _promEst = e => { const ps = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n)); return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : -1; };
-        estudiantes.sort((a,b) => _promEst(b) - _promEst(a));
+        const _promEst2 = e => { const ps = e.formularios.map(f=>_pct(f.pts)).filter(n=>!isNaN(n)); return ps.length ? ps.reduce((a,b)=>a+b,0)/ps.length : -1; };
+        estudiantes.sort((a,b) => _promEst2(b) - _promEst2(a));
     } else {
         // default: A→Z nombre
         estudiantes.sort((a,b) => {
@@ -5320,32 +5321,35 @@ function renderResultadosICFES() {
         if (el) el.textContent = _riSortCol===c ? (_riSortAsc?'▲':'▼') : '';
     });
 
-    // Computar _maxPorHoja UNA sola vez (no dentro del loop por estudiante)
+    // Computar _maxPorHoja UNA sola vez (SOLO desde registros con formato "X/Y" — los números crudos son ambiguos)
     const _maxPorHoja = {};
     _riDatos.forEach(rr => {
-        // Todos los posibles nombres del campo puntaje
         const pts = (rr['Puntuación']||rr['Puntuacion']||rr.puntuacion||rr.PUNTUACION||rr['Puntaje']||rr.puntaje||rr.PUNTAJE||rr.Score||rr.score||rr.Puntaje_Total||rr.total||'');
-        const hojaKey = rr._hoja || '';  // agrupar registros sin _hoja bajo clave vacía
-        const pm  = String(pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
+        const hojaKey = rr._hoja || '';
+        const pm = String(pts).match(/(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)/);
         if (pm) {
             const tot = parseFloat(pm[2]);
-            if (!isNaN(tot)) {
+            if (!isNaN(tot) && tot > 0) {
                 if (!_maxPorHoja[hojaKey] || tot > _maxPorHoja[hojaKey]) _maxPorHoja[hojaKey] = tot;
             }
-        } else {
-            const n = parseFloat(pts);
-            if (!isNaN(n)) {
-                if (!_maxPorHoja[hojaKey] || n > _maxPorHoja[hojaKey]) _maxPorHoja[hojaKey] = n;
-            }
         }
+        // No registramos números crudos en _maxPorHoja — solo denominadores de fracciones explícitas
     });
-    // Helper: % real usando _maxPorHoja como denominador para puntajes brutos
+    // Helper: % real usando _maxPorHoja como denominador cuando el puntaje es un número crudo
     const _pctConTotal = (pts, hoja) => {
-        const p = _pct(pts);
-        if (!isNaN(p)) return p;
-        const n = parseFloat(String(pts||'').trim());
+        if (!pts || pts === '—') return NaN;
+        const s = String(pts).trim();
+        // Formato fracción "X/Y" → _pct es confiable
+        if (/\d/.test(s) && s.includes('/')) return _pct(pts);
+        // Porcentaje explícito "56%"
+        if (s.endsWith('%')) return parseFloat(s);
+        // Número crudo: normalizar con el total conocido para esta hoja
+        const n = parseFloat(s);
+        if (isNaN(n) || n < 0) return NaN;
         const mx = _maxPorHoja[hoja];
-        if (!isNaN(n) && n >= 0 && mx && mx > 0) return Math.round(n / mx * 100);
+        if (mx && mx > 0) return Math.min(100, Math.round(n / mx * 100));
+        // Sin total conocido: solo tratar como % si parece razonable (≤ 100)
+        if (n <= 100) return n;
         return NaN;
     };
 
