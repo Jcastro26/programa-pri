@@ -2067,8 +2067,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 window.activarPanel = function(id) {
     // Limpiar estado chat si el usuario cambia de panel con el chat abierto
     document.body.classList.remove('inbox-chat-abierto');
+    window._removerTouchBlocker?.();
     const _m = document.getElementById('inbox-chat-mensajes');
-    if (_m) _m.style.height = '';
+    if (_m) { _m.style.height = ''; _m.style.maxHeight = ''; }
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     const p = document.getElementById(id);
     if (p) p.classList.add('active');
@@ -7514,28 +7515,70 @@ async function cargarInbox() {
 
 let _inboxOtroFotoUrl = ''; // foto del otro usuario en el chat activo
 
-// Ajusta la altura del contenedor de mensajes para llenar el espacio disponible en móvil
-// sin depender de position:fixed — la página no scrollea → iOS ruta touch al div interno
+// ── SCROLL MÓVIL INBOX ──────────────────────────────────────────────────────
+// Estrategia: medir el top real del div de mensajes con getBoundingClientRect
+// para saber exactamente cuánto espacio hay encima, y bloquear touchmove en el
+// panel padre salvo cuando el dedo está dentro del div de mensajes (iOS fix).
+
+let _inboxTouchBlocker = null; // referencia para limpiar el listener
+
 window._ajustarAlturaChat = function() {
     const mensajes = document.getElementById('inbox-chat-mensajes');
     if (!mensajes) return;
-    const header    = document.querySelector('.site-header');
-    const chatHdr   = document.querySelector('.chat-priv-header');
-    const inputs    = document.getElementById('foro-inputs');
-    const headerH   = header  ? header.getBoundingClientRect().height  : 55;
-    const chatHdrH  = chatHdr ? chatHdr.getBoundingClientRect().height : 46;
-    const inputsH   = inputs  ? inputs.getBoundingClientRect().height  : 110;
-    // Reservar 8px de margen inferior + margin-bottom del propio div (.75rem ≈ 12px)
-    const ocupado = headerH + chatHdrH + inputsH + 20;
-    mensajes.style.height = `calc(100dvh - ${ocupado}px)`;
-    mensajes.style.maxHeight = '';
+
+    // Top del div relativo al viewport — incluye header sticky, chat-header,
+    // padding del panel y cualquier otra cosa visible encima
+    const topPos = mensajes.getBoundingClientRect().top;
+
+    // Espacio debajo del div: input-box + margin-bottom del div + padding panel + padding main
+    const inputs   = document.getElementById('foro-inputs');
+    const inputsH  = inputs ? inputs.getBoundingClientRect().height : 100;
+    const mStyle   = window.getComputedStyle(mensajes);
+    const mMarginB = parseFloat(mStyle.marginBottom) || 0;
+    const panelEl  = document.getElementById('panel-inbox');
+    const pStyle   = panelEl ? window.getComputedStyle(panelEl) : null;
+    const panelPB  = pStyle ? parseFloat(pStyle.paddingBottom) : 32;
+    const mainEl   = document.querySelector('.main-layout');
+    const lStyle   = mainEl ? window.getComputedStyle(mainEl) : null;
+    const mainPB   = lStyle ? parseFloat(lStyle.paddingBottom) : 14;
+
+    const below     = inputsH + mMarginB + panelPB + mainPB;
+    const newHeight = Math.max(120, window.innerHeight - topPos - below);
+    mensajes.style.height    = newHeight + 'px';
+    mensajes.style.maxHeight = 'none';
 };
-// Re-calcular al rotar pantalla o aparecer/ocultar teclado virtual
+
+// Bloquea touchmove en el panel EXCEPTO cuando el dedo está dentro del div de
+// mensajes — obliga a iOS Safari a dejar que el div haga su propio scroll
+window._instalarTouchBlocker = function() {
+    window._removerTouchBlocker();
+    const panel    = document.getElementById('panel-inbox');
+    const mensajes = document.getElementById('inbox-chat-mensajes');
+    if (!panel || !mensajes) return;
+    _inboxTouchBlocker = function(e) {
+        if (!mensajes.contains(e.target)) {
+            e.preventDefault(); // evita que la página scrollee fuera del div
+        }
+        // dentro del div: dejar pasar → el overflow:scroll nativo actúa
+    };
+    panel.addEventListener('touchmove', _inboxTouchBlocker, { passive: false });
+};
+
+window._removerTouchBlocker = function() {
+    const panel = document.getElementById('panel-inbox');
+    if (panel && _inboxTouchBlocker) {
+        panel.removeEventListener('touchmove', _inboxTouchBlocker, { passive: false });
+    }
+    _inboxTouchBlocker = null;
+};
+
+// Re-calcular al rotar pantalla o al aparecer/ocultar el teclado virtual
 window.addEventListener('resize', () => {
     if (document.body.classList.contains('inbox-chat-abierto')) {
         window._ajustarAlturaChat();
     }
 });
+// ────────────────────────────────────────────────────────────────────────────
 
 window.abrirConversacionInbox = function(uid, nombre, chatId) {
     inboxChatUid = uid; inboxChatId = chatId;
@@ -7546,9 +7589,12 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     chatBox.classList.add('inbox-open');
     if (window.innerWidth <= 900) {
         document.body.classList.add('inbox-chat-abierto');
-        // Esperar un frame para que el DOM aplique los display:none del CSS
-        // antes de medir los elementos visibles
-        requestAnimationFrame(() => window._ajustarAlturaChat());
+        // Esperar dos frames: primero el CSS aplica display:none en footer/headings,
+        // luego el segundo frame tiene el layout final para medir correctamente
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            window._ajustarAlturaChat();
+            window._instalarTouchBlocker();
+        }));
     }
 
     // Nombre: prioridad → argumento → DOM del thread (ya actualizado por lookup previo) → Firestore
@@ -7644,8 +7690,9 @@ window.cerrarInboxChat = function() {
     chatBox.style.display = 'none';
     chatBox.classList.remove('inbox-open');
     document.body.classList.remove('inbox-chat-abierto');
+    window._removerTouchBlocker();
     const mensajes = document.getElementById('inbox-chat-mensajes');
-    if (mensajes) mensajes.style.height = '';
+    if (mensajes) { mensajes.style.height = ''; mensajes.style.maxHeight = ''; }
 };
 
 window.enviarMensajeInbox = async function() {
