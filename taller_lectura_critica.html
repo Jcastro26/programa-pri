@@ -2,354 +2,115 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Lectura Crítica · Taller Interactivo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura Crítica · ICFES Saber 11 — Programa PRI</title>
+<link rel="icon" type="image/png" href="logo.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
-
-  /* HEADER */
-  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
-  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
-  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
-  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
-  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
-  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
-
-  /* BARRA DE PROGRESO */
-  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
-  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--naranja));transition:width .5s ease;}
-
-  /* CHAT */
-  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
-  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
-  .bubble-wrap.bot{flex-direction:row;}
-  .bubble-wrap.user{flex-direction:row-reverse;}
-  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
-  .avatar.bot{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);}
-  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
-  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
-  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
-  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
-  .bubble strong{color:var(--teal);}
-  .bubble em{color:var(--oro);}
-  .tip{background:rgba(255,94,0,.1);border-left:3px solid var(--naranja);padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
-  .check{color:var(--verde);font-weight:900;}
-  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(56,189,248,.35);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(56,189,248,.65);text-align:center;}
-
-  /* OPCIONES */
-  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
-  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
-  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
-  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);color:var(--blanco);}
-  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);color:var(--blanco);}
-  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
-
-  /* INPUT LIBRE */
-  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
-  #input-row{display:flex;gap:.5rem;}
-  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
-  #txt-input:focus{border-color:var(--teal);}
-  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:1px solid rgba(255,255,255,.2);font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;transition:all .2s;}
-  #btn-send:hover{background:#fff;}
-
-  /* FIN */
-  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
-  #fin-overlay.show{display:flex;}
-  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
-  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
-  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-top:.5rem;}
-
-/* ══ AB-NEON TALLER ══ */
-@keyframes _pt{0%,100%{opacity:.13;}50%{opacity:.18;}}
-#progress-bar{transition:width .65s cubic-bezier(.34,1.56,.64,1)!important;box-shadow:0 0 12px rgba(56,189,248,.5)!important;}
-.opt-btn:hover{box-shadow:0 0 14px rgba(255,94,0,.35)!important;}
-.opt-btn.selected{box-shadow:0 0 18px rgba(255,94,0,.45)!important;}
-.bubble.bot{box-shadow:0 0 0 1px rgba(56,189,248,.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#04080f;--card:#080f1e;--purple:#7c3aed;--orange:#ff5e00;--teal:#38bdf8;--green:#10b981;--red:#ef4444;--yellow:#fbbf24;--text:#e8f4ff;--muted:#6b9ab8;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+#topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+@keyframes _pg{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.65);}50%{box-shadow:0 0 28px rgba(124,58,237,.95),0 0 52px rgba(56,189,248,.22);}}
+#prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;flex-shrink:0;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));border-radius:3px;transition:width .65s cubic-bezier(.34,1.56,.64,1);animation:_pg 2.5s ease-in-out infinite;}
+@keyframes _cp{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08);}50%{box-shadow:0 0 65px rgba(124,58,237,.22),0 0 110px rgba(56,189,248,.06);}}
+#slide-card{flex:1;background:rgba(8,15,30,.95);border:1px solid rgba(124,58,237,.28);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;animation:_cp 3s ease-in-out infinite;}
+#slide-inner{flex:1;padding:1.6rem 2rem;overflow-y:auto;display:flex;flex-direction:column;}
+#nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;}
+.nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
+.nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.nav-btn:hover:not(:disabled){background:rgba(124,58,237,.32);border-color:var(--purple);box-shadow:0 0 22px rgba(124,58,237,.6);transform:translateY(-2px);}
+.nav-btn:disabled{opacity:.2;cursor:not-allowed;}
+#dots{display:flex;gap:6px;align-items:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;}
+.dot.active{background:var(--purple);transform:scale(1.5);box-shadow:0 0 10px rgba(124,58,237,.75);}
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.55rem;text-shadow:0 0 12px rgba(56,189,248,.5);}
+.s-title{font-size:1.7rem;font-weight:900;line-height:1.2;margin-bottom:.35rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.s-sub{font-size:.87rem;color:var(--muted);margin-bottom:1rem;}
+.step{display:flex;align-items:flex-start;gap:.7rem;margin:.42rem 0;font-size:.86rem;line-height:1.5;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;box-shadow:0 0 12px rgba(124,58,237,.5);}
+.example{background:rgba(56,189,248,.06);border-left:3px solid var(--teal);padding:.65rem 1rem;border-radius:0 8px 8px 0;margin:.55rem 0;font-size:.86rem;}
+.formula{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.38);border-radius:12px;padding:.8rem 1.3rem;font-size:1rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.8rem 0;}
+.ctype-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.7rem .9rem;margin:.38rem 0;transition:border-color .3s,box-shadow .3s;}
+.ctype-card:hover{border-color:rgba(124,58,237,.35);box-shadow:0 0 15px rgba(124,58,237,.1);}
+.ctype-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:.28rem;}
+.ctype-words{font-family:'Courier New',monospace;font-size:.86rem;font-weight:600;}
+.ctype-use{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+.conn-area{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem;margin:.7rem 0;transition:border-color .4s,box-shadow .4s;}
+.passage{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.6;margin-bottom:.85rem;font-style:italic;}
+.chips-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.conn-chip{padding:.42rem 1rem;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid;user-select:none;}
+.conn-chip.type-adv{background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.5);color:#fb923c;}
+.conn-chip.type-cons{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.5);color:#7dd3fc;}
+.conn-chip.type-add{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.5);color:#6ee7b7;}
+.conn-chip.type-caus{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.55);color:#c4b5fd;}
+.conn-chip:hover:not(.used){transform:scale(1.08);filter:brightness(1.3);}
+.conn-chip.selected{transform:scale(1.13);box-shadow:0 0 20px currentColor;filter:brightness(1.55);}
+.conn-chip.used{opacity:.22;pointer-events:none;transform:scale(.88);}
+.fb-msg{margin-top:.55rem;font-size:.81rem;padding:.45rem .75rem;border-radius:8px;display:none;text-align:center;}
+.fb-msg.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#a7f3d0;display:block;}
+.q-q{font-size:.9rem;font-weight:600;margin-bottom:.8rem;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.42rem;}
+.q-opt{padding:.6rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
+.q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
+.q-fb{margin-top:.6rem;font-size:.81rem;padding:.5rem .75rem;border-radius:8px;display:none;}
+.q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
+.q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<div id="header">
-  <div>
-    <div id="header-title">📖 Lectura Crítica — ICFES</div>
-    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+<div id="app">
+  <div id="topbar">
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;">PROGRAMA·PRI · Lectura Crítica</span>
+    <span id="counter" style="font-size:.7rem;color:var(--muted);">1 / 6</span>
   </div>
-  <div style="display:flex;align-items:center;gap:.6rem;">
-    <span id="pts-badge">0 pts</span>
-    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
-  </div>
-</div>
-<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-
-<div id="chat"></div>
-
-<div id="options-area"><div id="options-grid"></div></div>
-<div id="input-area">
-  <div id="input-row">
-    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="200">
-    <button id="btn-send">Enviar →</button>
+  <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
+  <div id="slide-card"><div id="slide-inner"></div></div>
+  <div id="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Anterior</button>
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Siguiente →</button>
   </div>
 </div>
-
-<div id="fin-overlay">
-  <div id="fin-title">🏆 ¡Lectura completada!</div>
-  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">
-    Dominaste los conceptos clave de Lectura Crítica: tipos de texto, propósito comunicativo, argumentación e inferencia.
-  </p>
-  <div id="fin-pts"></div>
-  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
-</div>
-
 <script>
-
-/* ═══ AB ENGINE TALLER ═══ */
 var _AB_T=true;
-(function(){
-  var cv=document.createElement('canvas');
-  cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.08;';
-  document.body.insertBefore(cv,document.body.firstChild);
-  var ctx=cv.getContext('2d');
-  var S=['x','y','²','F','v','Σ','π','+','−','=','a','b','n'];
-  var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];
-  var P=[];
-  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-  rsz();window.addEventListener('resize',rsz);
-  for(var i=0;i<24;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
-    vx:(Math.random()-.5)*.28,vy:-(Math.random()*.35+.06),
-    s:S[Math.floor(Math.random()*S.length)],sz:9+Math.random()*12,
-    a:.12+Math.random()*.38,c:C[Math.floor(Math.random()*C.length)],
-    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.009});
-  (function tk(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){
-    p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
-    if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}
-    if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;
-    ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
-    ctx.font='bold '+p.sz+'px Courier New';
-    ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();
-  });requestAnimationFrame(tk);})();
-})();
-
-let pts = 0, paso = 0;
-const TOTAL_PASOS = 10;
-const chat = document.getElementById('chat');
-const optGrid = document.getElementById('options-grid');
-const ptsEl = document.getElementById('pts-badge');
-const progressBar = document.getElementById('progress-bar');
-
-function sumarPts(n){ pts += n; ptsEl.textContent = pts + ' pts'; }
-function avanzarBarra(){ paso = Math.min(paso+1,TOTAL_PASOS); progressBar.style.width=(paso/TOTAL_PASOS*100)+'%'; }
-function limpiarOpciones(){ optGrid.innerHTML=''; document.getElementById('options-area').style.display='none'; document.getElementById('input-area').style.display='none'; }
-
-function addBot(html, delay=0){
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const wrap = document.createElement('div');
-      wrap.className = 'bubble-wrap bot';
-      wrap.innerHTML = `<div class="avatar bot">📖</div><div class="bubble bot">${html}</div>`;
-      chat.appendChild(wrap);
-      chat.scrollTop = chat.scrollHeight;
-      resolve();
-    }, delay);
-  });
-}
-function addUser(text){
-  const wrap = document.createElement('div');
-  wrap.className = 'bubble-wrap user';
-  wrap.innerHTML = `<div class="avatar user">🧑</div><div class="bubble user">${text}</div>`;
-  chat.appendChild(wrap);
-  chat.scrollTop = chat.scrollHeight;
-}
-function mostrarOpciones(opciones){
-  document.getElementById('options-area').style.display='block';
-  optGrid.innerHTML='';
-  opciones.forEach(op => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.textContent = op.label;
-    btn.onclick = () => {
-      document.querySelectorAll('.opt-btn').forEach(b => b.disabled=true);
-      btn.classList.add('selected');
-      addUser(op.label);
-      limpiarOpciones();
-      setTimeout(()=>op.fn(), 400);
-    };
-    optGrid.appendChild(btn);
-  });
-}
-function mostrarInput(placeholder, fn){
-  document.getElementById('input-area').style.display='block';
-  const inp = document.getElementById('txt-input');
-  inp.placeholder = placeholder; inp.value=''; inp.focus();
-  const send = () => { const val=inp.value.trim(); if(!val)return; addUser(val); limpiarOpciones(); setTimeout(()=>fn(val),400); };
-  document.getElementById('btn-send').onclick = send;
-  inp.onkeydown = e => { if(e.key==='Enter') send(); };
-}
-
-// ─── FLUJO ────────────────────────────────────────────────
-
-async function paso0(){
-  await addBot(`¡Bienvenido/a al taller de <strong>Lectura Crítica</strong>! 📖<br><br>
-En el ICFES, Lectura Crítica evalúa tres competencias:<br>
-<strong>1.</strong> Identificar y entender el contenido.<br>
-<strong>2.</strong> Comprender cómo se articula el texto.<br>
-<strong>3.</strong> Reflexionar y evaluar el texto críticamente.<br><br>
-¿Con cuál de estas competencias crees que tienes más dificultad?`, 300);
-  mostrarOpciones([
-    { label: '🔍 Entender de qué trata el texto', fn: () => { addBot(`¡Perfecto punto de partida! Trabajaremos comprensión literal e inferencial en este taller.`, 300); setTimeout(paso1,1500); } },
-    { label: '🧩 Ver cómo se conectan las ideas', fn: () => { addBot(`Eso es la coherencia y cohesión textual — lo trabajamos en los pasos 4 y 5.`, 300); setTimeout(paso1,1500); } },
-    { label: '⚖️ Evaluar si el texto tiene buenos argumentos', fn: () => { addBot(`¡Eso es pensar críticamente! Lo abordamos en los últimos pasos con falacias y argumentación.`, 300); setTimeout(paso1,1500); } },
-  ]);
-}
-
-async function paso1(){
-  avanzarBarra();
-  await addBot(`Primero: los <strong>tipos de texto</strong>. Todo texto tiene un propósito que define su estructura.<br><br>
-<div class="img-placeholder">📸 [IMAGEN: tabla comparativa de tipos de texto — narrativo, expositivo, argumentativo, descriptivo, instructivo]</div><br>
-Un texto como una novela o cuento es principalmente:`, 400);
-  mostrarOpciones([
-    { label: '📊 Expositivo — explica información objetiva', fn: () => { avanzarBarra(); addBot(`No del todo — los expositivos informan (artículos, enciclopedias). Los cuentos <em>cuentan historias</em>. Son <strong>narrativos</strong>.`, 300); setTimeout(paso2,1600); } },
-    { label: '📖 Narrativo — cuenta una historia con personajes y hechos', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> El texto <strong>narrativo</strong> tiene narrador, personajes, tiempo y espacio. Es el tipo más frecuente en el ICFES.`, 300); setTimeout(paso2,1600); } },
-    { label: '💬 Argumentativo — defiende una posición con razones', fn: () => { avanzarBarra(); addBot(`Ese es el argumentativo — columnas de opinión, ensayos. Importante en el ICFES, pero diferente al narrativo.`, 300); setTimeout(paso2,1600); } },
-  ]);
-}
-
-async function paso2(){
-  avanzarBarra();
-  await addBot(`El <strong>propósito comunicativo</strong> es la intención del autor al escribir. Puede ser:<br><br>
-<strong>• Informar</strong> — datos y hechos objetivos.<br>
-<strong>• Persuadir</strong> — convencer al lector de algo.<br>
-<strong>• Entretener</strong> — generar placer estético o emocional.<br>
-<strong>• Instruir</strong> — dar pasos o procedimientos.<br><br>
-Lee este fragmento:<br>
-<div class="tip">💬 <em>"El consumo de bebidas azucaradas aumenta el riesgo de diabetes en un 26%. Por eso, es urgente que el gobierno aplique impuestos a estas bebidas."</em></div>
-¿Cuál es el propósito principal?`, 400);
-  mostrarOpciones([
-    { label: '📰 Informar sobre estadísticas de salud', fn: () => { addBot(`Es parte de la estrategia, pero el autor va más allá de informar — quiere que el gobierno actúe. El propósito es <strong>persuadir</strong>.`, 300); setTimeout(paso3,1600); } },
-    { label: '🗣️ Persuadir al lector de apoyar una política', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Usa el dato estadístico <em>como argumento</em> para convencer. Eso es texto <strong>argumentativo-persuasivo</strong>.`, 300); setTimeout(paso3,1600); } },
-    { label: '🎭 Entretener con una historia de salud', fn: () => { addBot(`No hay personajes ni narrativa. Es un argumento con datos — propósito <strong>persuasivo</strong>.`, 300); setTimeout(paso3,1600); } },
-  ]);
-}
-
-async function paso3(){
-  avanzarBarra();
-  await addBot(`En Lectura Crítica, debes distinguir entre <strong>afirmar</strong>, <strong>suponer</strong> e <strong>implicar</strong>.<br><br>
-<strong>• Afirmación explícita:</strong> lo que el texto dice directamente.<br>
-<strong>• Presuposición:</strong> lo que el texto da por hecho sin decirlo.<br>
-<strong>• Implicación:</strong> lo que se puede deducir lógicamente.<br><br>
-<div class="tip">💬 <em>"María dejó de fumar gracias al programa."</em></div>
-¿Qué <em>presupone</em> esta oración?`, 400);
-  mostrarOpciones([
-    { label: '🚬 Que María fumaba antes', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Perfecto! ✅ <strong>+15 pts.</strong> "Dejó de fumar" <em>presupone</em> que antes fumaba. Eso no se dice, ¡pero es necesario para que la frase tenga sentido!`, 300); setTimeout(paso4,1600); } },
-    { label: '📋 Que el programa es bueno', fn: () => { addBot(`Eso sería una <em>implicación</em> o inferencia, pero no una presuposición. La presuposición es algo que el texto da por hecho para poder existir: que ella <strong>fumaba</strong>.`, 300); setTimeout(paso4,1600); } },
-    { label: '💊 Que María tiene problemas de salud', fn: () => { addBot(`Es una suposición tuya, no una presuposición del texto. Las presuposiciones son ideas sin las cuales la frase no tendría sentido.`, 300); setTimeout(paso4,1600); } },
-  ]);
-}
-
-async function paso4(){
-  avanzarBarra();
-  await addBot(`Ahora veamos <strong>coherencia y cohesión</strong> — cómo se conectan las ideas en un texto.<br><br>
-<strong>Cohesión:</strong> uso de conectores, pronombres y sinónimos para enlazar frases.<br>
-<strong>Coherencia:</strong> unidad temática y lógica del texto completo.<br><br>
-<div class="img-placeholder">📸 [IMAGEN: diagrama de conectores textuales — causa, consecuencia, contraste, adición, conclusión con ejemplos]</div><br>
-¿Qué conector expresa <em>consecuencia</em>?`, 400);
-  mostrarOpciones([
-    { label: '🔗 "Sin embargo"', fn: () => { addBot(`"Sin embargo" expresa <strong>contraste o concesión</strong>. Los de consecuencia son: <em>por lo tanto, en consecuencia, así que, por eso</em>.`, 300); setTimeout(paso5,1600); } },
-    { label: '🔗 "Por lo tanto"', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> "Por lo tanto" introduce una <em>conclusión o consecuencia</em>. Es el conector más evaluado en el ICFES junto con "sin embargo" (contraste) y "además" (adición).`, 300); setTimeout(paso5,1600); } },
-    { label: '🔗 "Además"', fn: () => { addBot(`"Además" expresa <strong>adición</strong> — suma ideas. Los de consecuencia son: <em>por lo tanto, en consecuencia, así que, por ende</em>.`, 300); setTimeout(paso5,1600); } },
-  ]);
-}
-
-async function paso5(){
-  avanzarBarra();
-  await addBot(`Los textos <strong>discontinuos</strong> combinan elementos visuales y escritos: infografías, tablas, caricaturas, gráficas.<br><br>
-<div class="img-placeholder">📸 [IMAGEN: ejemplo de caricatura política con globo de texto y símbolo visual — sin texto que revele la respuesta]</div><br>
-En una caricatura política, el mensaje principal suele transmitirse mediante:`, 400);
-  mostrarOpciones([
-    { label: '📝 El título de la caricatura', fn: () => { addBot(`El título ayuda, pero en una caricatura el mensaje está en la <strong>exageración visual y los símbolos</strong> — eso es lo que hay que interpretar.`, 300); setTimeout(paso6,1600); } },
-    { label: '🎭 La exageración de rasgos y símbolos visuales', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La caricatura es <strong>texto icónico-verbal</strong>. Los símbolos exageran para criticar o hacer humor. Siempre pregúntate: ¿qué representa ese símbolo?`, 300); setTimeout(paso6,1600); } },
-    { label: '🔤 Las palabras en los globos de texto', fn: () => { addBot(`Las palabras importan, pero el mensaje central viene de la imagen exagerada — la <strong>ironía visual</strong>. El texto refuerza, no define solo.`, 300); setTimeout(paso6,1600); } },
-  ]);
-}
-
-async function paso6(){
-  avanzarBarra();
-  await addBot(`La <strong>argumentación</strong> tiene partes clave:<br><br>
-<strong>• Tesis:</strong> la posición del autor.<br>
-<strong>• Argumentos:</strong> razones que sostienen la tesis.<br>
-<strong>• Conclusión:</strong> cierre que reafirma la tesis.<br><br>
-Lee:<br>
-<div class="tip">💬 <em>"Las redes sociales afectan la salud mental de los jóvenes. Estudios muestran que el uso excesivo genera ansiedad. Además, la comparación social reduce la autoestima. Por eso, los colegios deben restringir su uso durante el día escolar."</em></div>
-¿Cuál es la <em>tesis</em> de este texto?`, 400);
-  mostrarOpciones([
-    { label: '📊 Las redes sociales generan ansiedad según estudios', fn: () => { addBot(`Eso es un <em>argumento</em> (evidencia), no la tesis. La tesis es la <strong>posición central</strong> del autor, no uno de los datos.`, 300); setTimeout(paso7,1600); } },
-    { label: '🏫 Los colegios deben restringir las redes durante el día', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> Esa es la <strong>tesis</strong> — la propuesta que el autor defiende. El resto son argumentos que la sustentan.`, 300); setTimeout(paso7,1600); } },
-    { label: '📉 La comparación social reduce la autoestima', fn: () => { addBot(`Es otro argumento de apoyo. La <strong>tesis</strong> es la idea principal que el autor quiere defender, generalmente al inicio o al final.`, 300); setTimeout(paso7,1600); } },
-  ]);
-}
-
-async function paso7(){
-  avanzarBarra();
-  await addBot(`Las <strong>falacias</strong> son errores en el razonamiento que parecen válidos pero no lo son. Las más frecuentes en el ICFES:<br><br>
-<strong>• Ad hominem:</strong> atacar a la persona, no al argumento.<br>
-<strong>• Generalización apresurada:</strong> concluir de pocos casos.<br>
-<strong>• Pendiente resbaladiza:</strong> asumir que un paso lleva inevitablemente al peor resultado.<br>
-<strong>• Falsa dicotomía:</strong> presentar solo dos opciones cuando hay más.<br><br>
-<div class="tip">💬 <em>"No puedes hablar de economía porque no has trabajado nunca."</em></div>
-¿Qué falacia es?`, 400);
-  mostrarOpciones([
-    { label: '🎯 Ad hominem', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Perfecto! ✅ <strong>+15 pts.</strong> El <strong>ad hominem</strong> ataca al hablante en vez de refutar su argumento. No tiene nada que ver si trabajó o no — eso no invalida sus ideas.`, 300); setTimeout(paso8,1600); } },
-    { label: '📉 Generalización apresurada', fn: () => { addBot(`No — aquí no se generaliza de pocos casos. El argumento ataca <em>a la persona</em>, no a sus ideas. Eso es <strong>ad hominem</strong>.`, 300); setTimeout(paso8,1600); } },
-    { label: '🚪 Falsa dicotomía', fn: () => { addBot(`La falsa dicotomía presenta solo dos opciones. Aquí el problema es atacar a quien habla en lugar de rebatir sus ideas: es <strong>ad hominem</strong>.`, 300); setTimeout(paso8,1600); } },
-  ]);
-}
-
-async function paso8(){
-  avanzarBarra();
-  await addBot(`Último reto: <strong>la voz narrativa</strong>.<br><br>
-<strong>1ª persona:</strong> el narrador participa en la historia ("yo…").<br>
-<strong>2ª persona:</strong> se dirige al lector ("tú…").<br>
-<strong>3ª persona omnisciente:</strong> el narrador sabe todo sobre los personajes.<br>
-<strong>3ª persona testigo:</strong> el narrador solo ve lo externo, como una cámara.<br><br>
-<div class="tip">💬 <em>"Carlos caminó hacia la puerta sin saber que, en ese momento, su vida cambiaría para siempre."</em></div>
-¿Qué tipo de narrador es?`, 400);
-  mostrarOpciones([
-    { label: '👁️ 3ª persona omnisciente', fn: () => { sumarPts(15); avanzarBarra(); addBot(`¡Excelente! ✅ <strong>+15 pts.</strong> "Sin saber" revela el estado interno de Carlos — solo el narrador <strong>omnisciente</strong> puede saber lo que el personaje desconoce.`, 300); setTimeout(paso9,1600); } },
-    { label: '👤 1ª persona protagonista', fn: () => { addBot(`Si fuera 1ª persona diría "yo caminé…". En 3ª persona el narrador habla del personaje desde afuera.`, 300); setTimeout(paso9,1600); } },
-    { label: '📷 3ª persona testigo', fn: () => { addBot(`El testigo solo ve lo externo. Pero aquí el narrador sabe lo que Carlos <em>siente y desconoce</em> — eso es conocimiento interior: narrador <strong>omnisciente</strong>.`, 300); setTimeout(paso9,1600); } },
-  ]);
-}
-
-async function paso9(){
-  avanzarBarra();
-  await addBot(`¡Increíble trabajo! 🎉 Repasemos lo que dominaste:<br><br>
-<span class="check">✅</span> <strong>Tipos de texto:</strong> narrativo, expositivo, argumentativo, descriptivo.<br>
-<span class="check">✅</span> <strong>Propósito comunicativo:</strong> informar, persuadir, entretener, instruir.<br>
-<span class="check">✅</span> <strong>Presuposición e implicación.</strong><br>
-<span class="check">✅</span> <strong>Conectores textuales.</strong><br>
-<span class="check">✅</span> <strong>Textos discontinuos (caricaturas, infografías).</strong><br>
-<span class="check">✅</span> <strong>Argumentación: tesis, argumentos, conclusión.</strong><br>
-<span class="check">✅</span> <strong>Falacias: ad hominem, generalización, pendiente, dicotomía.</strong><br>
-<span class="check">✅</span> <strong>Voces narrativas.</strong><br><br>
-<em>¡Estás listo/a para el ICFES!</em> 🚀`, 400);
-  setTimeout(() => { avanzarBarra(); mostrarFin(); }, 2500);
-}
-
-function mostrarFin(){
-  document.getElementById('fin-overlay').classList.add('show');
-  document.getElementById('fin-pts').textContent = `✨ Acumulaste ${pts} puntos en este taller`;
-  try { window.parent.postMessage({ type:'taller-completado', tallerExternoId:'taller_lectura_critica', pts }, '*'); } catch(e){}
-}
-function cerrarTaller(){
-  try { window.parent.postMessage({ type:'cerrar-taller-interactivo' }, '*'); } catch(e){}
-  window.close();
-}
-
-paso0();
+(function(){var cv=document.createElement('canvas');cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.09;';document.body.insertBefore(cv,document.body.firstChild);var ctx=cv.getContext('2d');var S=['→','←','…','¿','?','!','∑','√','∞','·','"','"','A','B'];var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];var P=[];function rsz(){cv.width=innerWidth;cv.height=innerHeight;}rsz();window.addEventListener('resize',rsz);for(var i=0;i<32;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.05),s:S[i%S.length],sz:8+Math.random()*12,a:.12+Math.random()*.45,c:C[i%C.length],rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.008});(function tick(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.font='bold '+p.sz+'px Courier New';ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();});requestAnimationFrame(tick);})();})();
+function burst(el,color,count){if(!el)return;var r=(typeof el==='string'?document.getElementById(el):el).getBoundingClientRect();var cx=r.left+r.width/2,cy=r.top+r.height/2;for(var i=0;i<(count||12);i++){var p=document.createElement('div');var sz=3+Math.random()*7;p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+color+';border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);';document.body.appendChild(p);(function(ep){var ang=Math.random()*Math.PI*2,d=38+Math.random()*80;gsap.to(ep,{x:Math.cos(ang)*d,y:Math.sin(ang)*d-Math.random()*28,opacity:0,scale:0,duration:.5+Math.random()*.4,ease:'power2.out',onComplete:function(){ep.remove();}});})(p);}}
+const TOTAL=6;let cur=0,busy=false,_sel=null;
+function render(){[s0,s1,s2,s3,s4,s5][cur](document.getElementById('slide-inner'));}
+function anim(){[a0,a1,a2,a3,a4,a5][cur]();}
+function go(d){if(busy)return;var n=cur+d;if(n<0||n>=TOTAL)return;busy=true;_sel=null;var el=document.getElementById('slide-inner');gsap.to(el,{opacity:0,x:d<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:function(){cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-65:65,scale:.94},{opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:function(){anim();busy=false;}});}});}
+function upd(){document.getElementById('counter').textContent=(cur+1)+' / '+TOTAL;document.getElementById('prog-fill').style.width=(((cur+1)/TOTAL)*100)+'%';document.getElementById('btn-prev').disabled=cur===0;document.getElementById('btn-next').disabled=cur===TOTAL-1;document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('active',i===cur);});}
+function mkDots(){var c=document.getElementById('dots');for(var i=0;i<TOTAL;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');(function(idx){d.onclick=function(){if(!busy&&idx!==cur){var dv=idx-cur;cur=idx-dv;go(dv);}};})(i);c.appendChild(d);}}
+function selectChip(el,val){document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(_sel===val){_sel=null;return;}_sel=val;el.classList.add('selected');gsap.from(el,{scale:.82,duration:.35,ease:'elastic.out(1,.4)'});}
+function tryPlace(slotId,correct,color){var slot=document.getElementById(slotId);if(!slot||slot.classList.contains('filled'))return;if(!_sel){gsap.to(slot,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.36,ease:'none'});return;}var chosen=_sel;var chip=document.querySelector('.conn-chip.selected');var aEl=slot.closest('.conn-area');_sel=null;document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(chosen===correct){slot.textContent=chosen.toUpperCase();slot.classList.add('filled');slot.style.cssText+='border-style:solid !important;color:var(--green) !important;border-color:var(--green) !important;background:rgba(16,185,129,.12) !important;';gsap.from(slot,{scale:0,rotation:-22,opacity:0,duration:.68,ease:'elastic.out(1,.42)'});burst(slot,color||'#10b981',20);if(chip){gsap.to(chip,{scale:0,opacity:0,duration:.3,ease:'back.in(2)',onComplete:function(){chip.classList.add('used');}});}if(aEl)gsap.to(aEl,{borderColor:'rgba(16,185,129,.5)',boxShadow:'0 0 32px rgba(16,185,129,.18)',duration:.4});var fbEl=document.getElementById('fb'+slotId.replace('slot',''));if(fbEl){fbEl.className='fb-msg ok';gsap.from(fbEl,{y:10,opacity:0,duration:.38});}var hintEl=document.getElementById('hint'+slotId.replace('slot',''));if(hintEl)hintEl.style.display='none';}else{if(chip){gsap.timeline().to(chip,{y:-28,rotation:18,scale:1.15,duration:.18,ease:'power2.out'}).to(chip,{y:0,rotation:0,scale:1,duration:.55,ease:'elastic.out(1,.4)'});}gsap.to(slot,{keyframes:[{x:-8},{x:8},{x:-6},{x:6},{x:0}],duration:.42,ease:'none'});burst(chip||slot,'#ef4444',9);gsap.to(slot,{borderColor:'#ef4444',duration:.12,yoyo:true,repeat:4,onComplete:function(){gsap.set(slot,{clearProps:'borderColor'});}});}}
+var _QUIZ=[{q:"Un texto que empieza con 'Érase una vez…' y cuenta la aventura de un personaje en orden cronológico es principalmente:",opts:["Expositivo","Argumentativo","Narrativo","Instructivo"],ok:2,fb:"Personajes, hechos en orden temporal, narrador → texto NARRATIVO. ✓"},{q:"En la oración: 'La economía mejoró; __________, el desempleo aumentó', ¿qué tipo de conector se necesita?",opts:["Consecutivo (por lo tanto)","Causal (porque)","Adversativo (sin embargo)","Aditivo (además)"],ok:2,fb:"'Mejoró' vs 'desempleo aumentó' es una contradicción → adversativo (sin embargo). ✓"},{q:"'No deberías votar por ese partido — su líder tiene antecedentes penales.' Esta afirmación comete la falacia de:",opts:["Generalización Apresurada","Ad Hominem","Pendiente Resbaladiza","Falsa Dicotomía"],ok:1,fb:"Ataca al líder (persona) en lugar de refutar las propuestas del partido → Ad Hominem. ✓"}];
+var _qAns=[null,null,null];
+function rQ(i){if(i>=_QUIZ.length){setTimeout(showScore,420);return;}var q=_QUIZ[i];var w=document.getElementById('qw');if(!w)return;w.innerHTML='<div style="font-size:.68rem;color:var(--muted);margin-bottom:.38rem;">Pregunta '+(i+1)+' de '+_QUIZ.length+'</div><div class="q-q">'+q.q+'</div><div class="q-opts" id="qo'+i+'">'+q.opts.map(function(o,j){return '<button class="q-opt" onclick="ansQ('+i+','+j+')" id="qo'+i+'_'+j+'">'+String.fromCharCode(65+j)+'. '+o+'</button>';}).join('')+'</div><div class="q-fb" id="qfb'+i+'"></div>';gsap.from('.q-opt',{y:18,opacity:0,duration:.3,stagger:.07,ease:'back.out(2)'});}
+function ansQ(qi,oi){if(_qAns[qi]!==null)return;_qAns[qi]=oi;var q=_QUIZ[qi];var isOk=oi===q.ok;document.querySelectorAll('#qo'+qi+' .q-opt').forEach(function(b,i){b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});var fb=document.getElementById('qfb'+qi);if(fb){fb.className='q-fb '+(isOk?'ok':'bad');fb.textContent=(isOk?'✅ ':'❌ ')+q.fb;}var btn=document.getElementById('qo'+qi+'_'+oi);if(isOk&&btn){burst(btn,'#10b981',16);gsap.from(btn,{scale:1.1,duration:.4,ease:'elastic.out(1,.4)'});}else if(btn){gsap.to(btn,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.4,ease:'none'});}setTimeout(function(){rQ(qi+1);},2200);}
+function showScore(){var ok=_qAns.filter(function(a,i){return a===_QUIZ[i].ok;}).length;var w=document.getElementById('qw');var ss=document.getElementById('sc');if(w)w.innerHTML='';if(!ss)return;ss.style.display='block';var em=ok===_QUIZ.length?'🏆':ok>=2?'⭐':'📚';var msg=ok===_QUIZ.length?'¡Perfecto! Dominas este tema.':ok>=2?'¡Muy bien! Sigue practicando.':'Repasa los conceptos clave.';ss.innerHTML='<div id="sci" style="padding:.6rem 0;text-align:center;"><div style="font-size:3rem;font-weight:900;margin-bottom:.32rem;">'+em+' '+ok+'/'+_QUIZ.length+'</div><div style="color:var(--muted);font-size:.87rem;margin-bottom:1rem;">'+msg+'</div><button onclick="resetQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.4rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button></div>';gsap.from('#sci',{scale:.52,rotation:-8,opacity:0,duration:.72,ease:'elastic.out(1,.42)'});if(ok===_QUIZ.length){var cols=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];for(var ii=0;ii<24;ii++)(function(n){setTimeout(function(){var pp={getBoundingClientRect:function(){return{left:innerWidth*.25+Math.random()*innerWidth*.5,top:innerHeight*.2,width:0,height:0};}};burst(pp,cols[n%cols.length],6);},n*90);}(ii));}}
+function resetQ(){_qAns=[null,null,null];var ss=document.getElementById('sc');if(ss)ss.style.display='none';rQ(0);}
+function s0(el){el.innerHTML=`<div style="text-align:center;padding:.2rem 0;"><div class="s-tag">Lectura Crítica · ICFES Saber 11</div><div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fff 30%,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.55rem;" id="mt0">Lectura Crítica — Repaso Completo</div><div id="chains0" style="display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:.55rem 0 .9rem;"><span id="ch0" class="conn-chip type-adv" style="opacity:0;">tipos de texto</span><span id="ch1" class="conn-chip type-cons" style="opacity:0;">argumentación</span><span id="ch2" class="conn-chip type-add" style="opacity:0;">inferencia</span><span id="ch3" class="conn-chip type-caus" style="opacity:0;">falacias</span><span id="ch4" class="conn-chip type-adv" style="opacity:0;">conectores</span></div><div id="obj0" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1rem 1.25rem;max-width:460px;margin:0 auto;text-align:left;"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.55rem;">🎯 OBJETIVOS</div><div id="ob0" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Identificar el propósito comunicativo y tipo de texto</span></div><div id="ob1" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Analizar la estructura argumentativa (tesis, premisas)</span></div><div id="ob2" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Reconocer falacias argumentativas en textos ICFES</span></div><div id="ob3" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Hacer inferencias e interpretar implícitos en un texto</span></div></div></div>`;}
+function a0(){var tl=gsap.timeline();tl.from('#mt0',{y:-80,rotation:-5,opacity:0,duration:.7,ease:'bounce.out'});tl.fromTo(['#ch0','#ch1','#ch2','#ch3','#ch4'],{opacity:0,scale:.4,y:-25},{opacity:1,scale:1,y:0,duration:.38,stagger:.09,ease:'elastic.out(1,.5)'},'-=.2');tl.fromTo(['#ob0','#ob1','#ob2','#ob3'],{opacity:0,x:-42},{opacity:1,x:0,duration:.38,stagger:.11,ease:'back.out(2.5)'},'-=.1');gsap.to('.conn-chip',{y:-4,duration:1.4,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:{amount:1.2},delay:.8});}
+function s1(el){el.innerHTML=`<div><div class="s-tag">Concepto base</div><div class="s-title" id="t1">Propósito Comunicativo y Tipos de Texto</div><div class="s-sub">La primera pregunta que siempre hace el ICFES</div><div class="formula" id="f1">Narrativo · Argumentativo · Expositivo · Descriptivo · Instructivo</div><div id="st1" class="step"><div class="step-n">1</div><div><strong>Clave:</strong> ¿qué hace el autor? Narra → narrativo. Convence → argumentativo. Informa/explica → expositivo. Describe → descriptivo. Instruye pasos → instructivo.</div></div><div id="st2" class="step"><div class="step-n">2</div><div><strong>Inferencia:</strong> la respuesta NO está en el texto — la deduces. Pregunta: "¿Qué se puede concluir de este fragmento?"</div></div><div class="example" id="e1"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">⚡ ESTRATEGIA ICFES</div>Lee las preguntas ANTES del texto. En preguntas de inferencia, elimina las respuestas que dicen literalmente lo que está en el texto — las inferencias van más allá.</div></div>`;}
+function a1(){gsap.timeline().from('#t1',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#f1',{scaleX:.35,scaleY:.35,opacity:0,duration:.5,ease:'back.out(2.8)'},'-=.15').from(['#st1','#st2'],{x:-40,opacity:0,duration:.4,stagger:.16,ease:'back.out(2)'}).from('#e1',{y:16,opacity:0,duration:.36},'-=.1');}
+function s2(el){el.innerHTML=`<div><div class="s-tag">Clasificación</div><div class="s-title" id="t2">Argumentación y Falacias</div><div class="s-sub">Cómo evalúa el ICFES el pensamiento crítico</div><div style="margin-top:.35rem;"><div class="ctype-card" id="ct1"><div class="ctype-name" style="color:#fb923c;">Estructura del Argumento</div><div class="ctype-words" style="color:#fb923c;">Tesis + Premisas → Conclusión.</div><div class="ctype-use">Señal: 'por lo tanto', 'en conclusión', 'así que' → lo que sigue es la CONCLUSIÓN.</div></div>
+<div class="ctype-card" id="ct2"><div class="ctype-name" style="color:#7dd3fc;">Ad Hominem</div><div class="ctype-words" style="color:#7dd3fc;">Ataca a la persona, no al argumento.</div><div class="ctype-use">'No te creo porque eres joven' → ad hominem.</div></div>
+<div class="ctype-card" id="ct3"><div class="ctype-name" style="color:#6ee7b7;">Generalización Apresurada</div><div class="ctype-words" style="color:#6ee7b7;">Concluye sobre todos a partir de pocos casos.</div><div class="ctype-use">'Vi dos conductores agresivos → todos los conductores son agresivos.'</div></div>
+<div class="ctype-card" id="ct4"><div class="ctype-name" style="color:#c4b5fd;">Conectores Lógicos</div><div class="ctype-words" style="color:#c4b5fd;">Adversativos: sin embargo, pero. Consecutivos: por lo tanto, en consecuencia. Causales: porque, ya que.</div><div class="ctype-use">Identifica la relación entre ideas ANTES de elegir el conector.</div></div></div></div>`;}
+function a2(){gsap.timeline().from('#t2',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from(['#ct1','#ct2','#ct3','#ct4'],{y:72,rotation:-3,opacity:0,duration:.54,stagger:.13,ease:'back.out(2.2)'},'-=.1');}
+function s3(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 1 · ¿Qué tipo de texto es?</div><div class="s-title" id="t3">Identifica el tipo de texto</div><div class="s-sub">Lee y selecciona la clasificación correcta</div><div class="conn-area" id="ca3"><div class="passage">"La inteligencia artificial (IA) transformará el mercado laboral de manera radical en los próximos 20 años. Según un estudio de McKinsey, el 30% de las tareas actuales podrían ser automatizadas. Por ello, los gobiernos deben invertir urgentemente en educación y reentrenamiento laboral."</div><div class="chips-row"><span class="conn-chip type-cons" onclick="selectChip(this,'Narrativo' )">Narrativo</span><span class="conn-chip type-adv" onclick="selectChip(this,'Descriptivo' )">Descriptivo</span><span class="conn-chip type-add" onclick="selectChip(this,'Argumentativo' )">Argumentativo</span><span class="conn-chip type-caus" onclick="selectChip(this,'Instructivo' )">Instructivo</span></div><div class="hint-text" id="hints3">👆 ¿El texto cuenta, describe, informa objetivamente o defiende una posición con evidencias?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot3" class="conn-chip type-add" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot3','Argumentativo','#10b981')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb3">✅ ARGUMENTATIVO — presenta una tesis ('debe invertir') respaldada con datos (McKinsey, 30%). ✓</div></div></div>`;}
+function a3(){gsap.timeline().from('#t3',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca3',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s4(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 2 · Identifica la falacia</div><div class="s-title" id="t4">¿Qué falacia se usa?</div><div class="s-sub">Selecciona el tipo de argumento inválido</div><div class="conn-area" id="ca4"><div class="passage">"Mi vecino es médico y fuma. Mi primo también es médico y fuma. Por lo tanto, todos los médicos fuman."</div><div class="chips-row"><span class="conn-chip type-adv" onclick="selectChip(this,'Ad Hominem' )">Ad Hominem</span><span class="conn-chip type-cons" onclick="selectChip(this,'Falsa Dicotomía' )">Falsa Dicotomía</span><span class="conn-chip type-add" onclick="selectChip(this,'Generalización Apresurada' )">Generalización Apresurada</span><span class="conn-chip type-caus" onclick="selectChip(this,'Pendiente Resbaladiza' )">Pendiente Resbaladiza</span></div><div class="hint-text" id="hints4">👆 ¿Se concluye sobre TODOS a partir de solo unos pocos casos?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot4" class="conn-chip type-cons" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot4','Generalización Apresurada','#38bdf8')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb4">✅ GENERALIZACIÓN APRESURADA — de 2 casos se concluye sobre todos los médicos. ✓</div></div></div>`;}
+function a4(){gsap.timeline().from('#t4',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca4',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s5(el){_qAns=[null,null,null];el.innerHTML=`<div><div class="s-tag">Mini Quiz · 3 preguntas tipo ICFES Saber 11</div><div class="s-title" id="t5">¿Cuánto aprendiste?</div><div id="qw"></div><div id="sc" style="display:none;"></div></div>`;rQ(0);}
+function a5(){gsap.from('#t5',{y:-55,rotation:-4,opacity:0,duration:.62,ease:'elastic.out(1,.48)'});}
+mkDots();render();anim();
 </script>
 </body>
 </html>

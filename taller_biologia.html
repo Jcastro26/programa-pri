@@ -2,282 +2,115 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Biología · Taller Interactivo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biología · Ciencias Naturales ICFES — Programa PRI</title>
+<link rel="icon" type="image/png" href="logo.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
-  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
-  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
-  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
-  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
-  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
-  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
-  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
-  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--verde),var(--teal));transition:width .5s ease;}
-  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
-  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
-  .bubble-wrap.bot{flex-direction:row;}
-  .bubble-wrap.user{flex-direction:row-reverse;}
-  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
-  .avatar.bot{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);}
-  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
-  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
-  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
-  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
-  .bubble strong{color:var(--teal);}
-  .bubble em{color:var(--oro);}
-  .tip{background:rgba(34,197,94,.08);border-left:3px solid var(--verde);padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
-  .check{color:var(--verde);font-weight:900;}
-  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(34,197,94,.35);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(34,197,94,.65);text-align:center;}
-  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
-  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
-  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
-  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);}
-  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);}
-  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
-  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
-  #input-row{display:flex;gap:.5rem;}
-  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
-  #txt-input:focus{border-color:var(--teal);}
-  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:none;font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;}
-  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
-  #fin-overlay.show{display:flex;}
-  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
-  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
-  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;}
-
-/* ══ AB-NEON TALLER ══ */
-@keyframes _pt{0%,100%{opacity:.13;}50%{opacity:.18;}}
-#progress-bar{transition:width .65s cubic-bezier(.34,1.56,.64,1)!important;box-shadow:0 0 12px rgba(56,189,248,.5)!important;}
-.opt-btn:hover{box-shadow:0 0 14px rgba(255,94,0,.35)!important;}
-.opt-btn.selected{box-shadow:0 0 18px rgba(255,94,0,.45)!important;}
-.bubble.bot{box-shadow:0 0 0 1px rgba(56,189,248,.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#04080f;--card:#080f1e;--purple:#7c3aed;--orange:#ff5e00;--teal:#38bdf8;--green:#10b981;--red:#ef4444;--yellow:#fbbf24;--text:#e8f4ff;--muted:#6b9ab8;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+#topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+@keyframes _pg{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.65);}50%{box-shadow:0 0 28px rgba(124,58,237,.95),0 0 52px rgba(56,189,248,.22);}}
+#prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;flex-shrink:0;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));border-radius:3px;transition:width .65s cubic-bezier(.34,1.56,.64,1);animation:_pg 2.5s ease-in-out infinite;}
+@keyframes _cp{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08);}50%{box-shadow:0 0 65px rgba(124,58,237,.22),0 0 110px rgba(56,189,248,.06);}}
+#slide-card{flex:1;background:rgba(8,15,30,.95);border:1px solid rgba(124,58,237,.28);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;animation:_cp 3s ease-in-out infinite;}
+#slide-inner{flex:1;padding:1.6rem 2rem;overflow-y:auto;display:flex;flex-direction:column;}
+#nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;}
+.nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
+.nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.nav-btn:hover:not(:disabled){background:rgba(124,58,237,.32);border-color:var(--purple);box-shadow:0 0 22px rgba(124,58,237,.6);transform:translateY(-2px);}
+.nav-btn:disabled{opacity:.2;cursor:not-allowed;}
+#dots{display:flex;gap:6px;align-items:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;}
+.dot.active{background:var(--purple);transform:scale(1.5);box-shadow:0 0 10px rgba(124,58,237,.75);}
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.55rem;text-shadow:0 0 12px rgba(56,189,248,.5);}
+.s-title{font-size:1.7rem;font-weight:900;line-height:1.2;margin-bottom:.35rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.s-sub{font-size:.87rem;color:var(--muted);margin-bottom:1rem;}
+.step{display:flex;align-items:flex-start;gap:.7rem;margin:.42rem 0;font-size:.86rem;line-height:1.5;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;box-shadow:0 0 12px rgba(124,58,237,.5);}
+.example{background:rgba(56,189,248,.06);border-left:3px solid var(--teal);padding:.65rem 1rem;border-radius:0 8px 8px 0;margin:.55rem 0;font-size:.86rem;}
+.formula{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.38);border-radius:12px;padding:.8rem 1.3rem;font-size:1rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.8rem 0;}
+.ctype-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.7rem .9rem;margin:.38rem 0;transition:border-color .3s,box-shadow .3s;}
+.ctype-card:hover{border-color:rgba(124,58,237,.35);box-shadow:0 0 15px rgba(124,58,237,.1);}
+.ctype-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:.28rem;}
+.ctype-words{font-family:'Courier New',monospace;font-size:.86rem;font-weight:600;}
+.ctype-use{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+.conn-area{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem;margin:.7rem 0;transition:border-color .4s,box-shadow .4s;}
+.passage{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.6;margin-bottom:.85rem;font-style:italic;}
+.chips-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.conn-chip{padding:.42rem 1rem;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid;user-select:none;}
+.conn-chip.type-adv{background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.5);color:#fb923c;}
+.conn-chip.type-cons{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.5);color:#7dd3fc;}
+.conn-chip.type-add{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.5);color:#6ee7b7;}
+.conn-chip.type-caus{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.55);color:#c4b5fd;}
+.conn-chip:hover:not(.used){transform:scale(1.08);filter:brightness(1.3);}
+.conn-chip.selected{transform:scale(1.13);box-shadow:0 0 20px currentColor;filter:brightness(1.55);}
+.conn-chip.used{opacity:.22;pointer-events:none;transform:scale(.88);}
+.fb-msg{margin-top:.55rem;font-size:.81rem;padding:.45rem .75rem;border-radius:8px;display:none;text-align:center;}
+.fb-msg.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#a7f3d0;display:block;}
+.q-q{font-size:.9rem;font-weight:600;margin-bottom:.8rem;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.42rem;}
+.q-opt{padding:.6rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
+.q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
+.q-fb{margin-top:.6rem;font-size:.81rem;padding:.5rem .75rem;border-radius:8px;display:none;}
+.q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
+.q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<div id="header">
-  <div>
-    <div id="header-title">🧬 Biología — ICFES</div>
-    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+<div id="app">
+  <div id="topbar">
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;">PROGRAMA·PRI · Biología</span>
+    <span id="counter" style="font-size:.7rem;color:var(--muted);">1 / 6</span>
   </div>
-  <div style="display:flex;align-items:center;gap:.6rem;">
-    <span id="pts-badge">0 pts</span>
-    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
-  </div>
-</div>
-<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-<div id="chat"></div>
-<div id="options-area"><div id="options-grid"></div></div>
-<div id="input-area">
-  <div id="input-row">
-    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="200">
-    <button id="btn-send">Enviar →</button>
+  <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
+  <div id="slide-card"><div id="slide-inner"></div></div>
+  <div id="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Anterior</button>
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Siguiente →</button>
   </div>
 </div>
-<div id="fin-overlay">
-  <div id="fin-title">🏆 ¡Biología dominada!</div>
-  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">Repasaste célula, genética, ecosistemas, evolución y fisiología humana. ¡Estás listo/a para el ICFES!</p>
-  <div id="fin-pts"></div>
-  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
-</div>
-
 <script>
-
-/* ═══ AB ENGINE TALLER ═══ */
 var _AB_T=true;
-(function(){
-  var cv=document.createElement('canvas');
-  cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.08;';
-  document.body.insertBefore(cv,document.body.firstChild);
-  var ctx=cv.getContext('2d');
-  var S=['x','y','²','F','v','Σ','π','+','−','=','a','b','n'];
-  var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];
-  var P=[];
-  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-  rsz();window.addEventListener('resize',rsz);
-  for(var i=0;i<24;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
-    vx:(Math.random()-.5)*.28,vy:-(Math.random()*.35+.06),
-    s:S[Math.floor(Math.random()*S.length)],sz:9+Math.random()*12,
-    a:.12+Math.random()*.38,c:C[Math.floor(Math.random()*C.length)],
-    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.009});
-  (function tk(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){
-    p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
-    if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}
-    if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;
-    ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
-    ctx.font='bold '+p.sz+'px Courier New';
-    ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();
-  });requestAnimationFrame(tk);})();
-})();
-
-let pts=0,paso=0;
-const TOTAL_PASOS=10;
-const chat=document.getElementById('chat');
-const optGrid=document.getElementById('options-grid');
-const ptsEl=document.getElementById('pts-badge');
-const progressBar=document.getElementById('progress-bar');
-
-function sumarPts(n){pts+=n;ptsEl.textContent=pts+' pts';}
-function avanzarBarra(){paso=Math.min(paso+1,TOTAL_PASOS);progressBar.style.width=(paso/TOTAL_PASOS*100)+'%';}
-function limpiarOpciones(){optGrid.innerHTML='';document.getElementById('options-area').style.display='none';document.getElementById('input-area').style.display='none';}
-function addBot(html,delay=0){return new Promise(r=>{setTimeout(()=>{const w=document.createElement('div');w.className='bubble-wrap bot';w.innerHTML=`<div class="avatar bot">🧬</div><div class="bubble bot">${html}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;r();},delay);});}
-function addUser(t){const w=document.createElement('div');w.className='bubble-wrap user';w.innerHTML=`<div class="avatar user">🧑</div><div class="bubble user">${t}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;}
-function mostrarOpciones(ops){document.getElementById('options-area').style.display='block';optGrid.innerHTML='';ops.forEach(op=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=op.label;b.onclick=()=>{document.querySelectorAll('.opt-btn').forEach(x=>x.disabled=true);b.classList.add('selected');addUser(op.label);limpiarOpciones();setTimeout(()=>op.fn(),400);};optGrid.appendChild(b);});}
-function mostrarInput(ph,fn){document.getElementById('input-area').style.display='block';const inp=document.getElementById('txt-input');inp.placeholder=ph;inp.value='';inp.focus();const s=()=>{const v=inp.value.trim();if(!v)return;addUser(v);limpiarOpciones();setTimeout(()=>fn(v),400);};document.getElementById('btn-send').onclick=s;inp.onkeydown=e=>{if(e.key==='Enter')s();};}
-
-async function paso0(){
-  await addBot(`¡Bienvenido/a al taller de <strong>Biología ICFES</strong>! 🧬<br><br>
-El ICFES evalúa Biología dentro de <em>Ciencias Naturales</em> junto con Química y Física.<br><br>
-Los grandes temas son:<br>
-<strong>• La célula</strong> — unidad de la vida.<br>
-<strong>• Genética y herencia</strong> — ADN, genes, cromosomas.<br>
-<strong>• Ecosistemas</strong> — relaciones entre seres vivos.<br>
-<strong>• Evolución</strong> — Darwin y selección natural.<br>
-<strong>• Fisiología humana</strong> — sistemas del cuerpo.<br>
-<strong>• Biología molecular</strong> — fotosíntesis y respiración celular.<br><br>
-¿Comenzamos?`, 300);
-  mostrarOpciones([
-    { label: '🚀 ¡Sí, arrancamos!', fn:()=>{addBot(`¡Perfecto! Empezamos con la célula — la unidad básica de la vida.`,300);setTimeout(paso1,1200);} },
-    { label: '🤔 ¿Qué tanto vale Biología en el ICFES?', fn:()=>{addBot(`Ciencias Naturales (Bio + Química + Física) vale <strong>~30 preguntas</strong> del ICFES. ¡Vale muchísimo! Vamos a repasar todo.`,300);setTimeout(paso1,1500);} },
-  ]);
-}
-
-async function paso1(){
-  avanzarBarra();
-  await addBot(`<strong>La Célula</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: comparación célula procariota vs eucariota — señalando núcleo, membrana, pared celular, mitocondria, ribosomas]</div><br>
-La diferencia principal entre una célula <strong>procariota</strong> y una <strong>eucariota</strong> es:`, 400);
-  mostrarOpciones([
-    { label: '🔵 La procariota tiene núcleo definido y la eucariota no', fn:()=>{addBot(`Al contrario — es la eucariota la que tiene núcleo definido. Las procariotas (bacterias) tienen ADN libre en el citoplasma.`,300);setTimeout(paso2,1600);} },
-    { label: '🟢 La eucariota tiene núcleo definido; la procariota no tiene membrana nuclear', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Las <strong>procariotas</strong> (bacterias, arqueas) no tienen núcleo membranoso. Las <strong>eucariotas</strong> (animales, plantas, hongos, protistas) sí.`,300);setTimeout(paso2,1600);} },
-    { label: '⚪ Las dos tienen las mismas organelas', fn:()=>{addBot(`No — las procariotas no tienen mitocondrias, retículo endoplasmático ni aparato de Golgi. Las eucariotas sí tienen organelas especializadas.`,300);setTimeout(paso2,1600);} },
-  ]);
-}
-
-async function paso2(){
-  avanzarBarra();
-  await addBot(`<strong>Fotosíntesis y Respiración Celular</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: ecuación general de fotosíntesis: 6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂ — con cloroplasto ilustrado]</div><br>
-La fotosíntesis ocurre en los <strong>cloroplastos</strong> y produce glucosa y oxígeno. La respiración celular ocurre en las <strong>mitocondrias</strong> y hace lo contrario.<br><br>
-¿Qué organela es el "motor energético" de la célula?`, 400);
-  mostrarOpciones([
-    { label: '🟢 Ribosoma', fn:()=>{addBot(`Los ribosomas <em>sintetizan proteínas</em>, no producen energía. El motor energético es la mitocondria.`,300);setTimeout(paso3,1600);} },
-    { label: '⚡ Mitocondria', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La mitocondria es donde ocurre la <strong>respiración celular aeróbica</strong>: produce ATP (adenosín trifosfato), la moneda energética de la célula.`,300);setTimeout(paso3,1600);} },
-    { label: '💧 Vacuola', fn:()=>{addBot(`La vacuola almacena agua, nutrientes o desechos. La energía celular la produce la <strong>mitocondria</strong>.`,300);setTimeout(paso3,1600);} },
-  ]);
-}
-
-async function paso3(){
-  avanzarBarra();
-  await addBot(`<strong>Genética — ADN y Cromosomas</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: jerarquía: gen → ADN → cromosoma → núcleo celular — con doble hélice]</div><br>
-El ADN está organizado en <strong>genes</strong> → <strong>cromosomas</strong> → <strong>núcleo</strong>.<br>
-Los humanos tenemos <em>23 pares de cromosomas</em> (46 en total).<br><br>
-Los cromosomas sexuales en los humanos son:`, 400);
-  mostrarOpciones([
-    { label: '🧬 XX en hombres, XY en mujeres', fn:()=>{addBot(`Al contrario — las mujeres son <strong>XX</strong> y los hombres <strong>XY</strong>. El cromosoma Y determina el sexo masculino.`,300);setTimeout(paso4,1600);} },
-    { label: '🧬 XX en mujeres, XY en hombres', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> Las mujeres tienen dos cromosomas X (<strong>XX</strong>); los hombres tienen un X y un Y (<strong>XY</strong>). El espermatozoide determina el sexo del bebé.`,300);setTimeout(paso4,1600);} },
-    { label: '🧬 Solo hay un tipo de cromosoma sexual', fn:()=>{addBot(`Existen dos tipos: <strong>X</strong> e <strong>Y</strong>. Las mujeres (XX) tienen dos X; los hombres (XY) tienen uno de cada uno.`,300);setTimeout(paso4,1600);} },
-  ]);
-}
-
-async function paso4(){
-  avanzarBarra();
-  await addBot(`<strong>Leyes de Mendel y Herencia</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: cuadrado de Punnett para un cruce Aa × Aa — mostrando proporción 3:1 fenotípica]</div><br>
-En un cruce entre dos individuos <strong>Aa</strong> (heterocigotos) para un rasgo con dominancia simple:<br>
-¿Cuántos de cada 4 hijos serán fenotípicamente recesivos (aa)?`, 400);
-  mostrarOpciones([
-    { label: '1 de 4 (25%)', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> El cuadrado de Punnett da: AA, Aa, Aa, aa → <strong>1 recesivo de 4</strong>. La proporción fenotípica es 3 dominantes : 1 recesivo.`,300);setTimeout(paso5,1600);} },
-    { label: '2 de 4 (50%)', fn:()=>{addBot(`50% sería si uno de los padres fuera recesivo (Aa × aa). Con Aa × Aa la proporción recesiva es <strong>1:4 (25%)</strong>.`,300);setTimeout(paso5,1600);} },
-    { label: '4 de 4 (100%)', fn:()=>{addBot(`100% recesivo ocurriría con aa × aa. Con Aa × Aa, solo <strong>1 de 4</strong> hereda los dos alelos recesivos.`,300);setTimeout(paso5,1600);} },
-  ]);
-}
-
-async function paso5(){
-  avanzarBarra();
-  await addBot(`<strong>Ecosistemas y Relaciones Ecológicas</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: cadena alimentaria — productor → consumidor primario → consumidor secundario → descomponedor]</div><br>
-En un ecosistema, los <strong>productores</strong> son los seres vivos que fabrican su propio alimento usando energía solar.<br><br>
-¿Cuál de estos organismos es un <em>productor</em>?`, 400);
-  mostrarOpciones([
-    { label: '🌿 Las plantas con clorofila', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> Las plantas son <strong>autótrofos fotosintéticos</strong> — producen glucosa con luz solar, CO₂ y agua. Son la base de las cadenas alimentarias.`,300);setTimeout(paso6,1600);} },
-    { label: '🦁 Los leones', fn:()=>{addBot(`Los leones son <strong>consumidores terciarios</strong> — dependen de otros animales para alimentarse. No producen su propio alimento.`,300);setTimeout(paso6,1600);} },
-    { label: '🍄 Los hongos', fn:()=>{addBot(`Los hongos son <strong>descomponedores</strong> — degradan materia orgánica muerta. No producen su propio alimento por fotosíntesis.`,300);setTimeout(paso6,1600);} },
-  ]);
-}
-
-async function paso6(){
-  avanzarBarra();
-  await addBot(`<strong>Relaciones entre organismos</strong><br><br>
-<strong>• Mutualismo (+/+):</strong> ambos se benefician. Ej: abeja y flor.<br>
-<strong>• Comensalismo (+/0):</strong> uno se beneficia, el otro no se afecta. Ej: rémora y tiburón.<br>
-<strong>• Parasitismo (+/-):</strong> uno se beneficia, el otro es perjudicado. Ej: pulga y perro.<br>
-<strong>• Competencia (-/-):</strong> ambos compiten por recursos.<br>
-<strong>• Depredación (+/-):</strong> un depredador caza a su presa.<br><br>
-¿Qué tipo de relación es la de los líquenes? (alga + hongo conviven y ambos se benefician)`, 400);
-  mostrarOpciones([
-    { label: '🤝 Mutualismo', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> El alga produce alimento por fotosíntesis y el hongo proporciona estructura y absorbe agua — ambos ganan. ¡Ejemplo clásico de mutualismo!`,300);setTimeout(paso7,1600);} },
-    { label: '🦠 Parasitismo', fn:()=>{addBot(`En el parasitismo uno daña al otro. Aquí ambos organismos del liquen se <em>benefician mutuamente</em> — es <strong>mutualismo</strong>.`,300);setTimeout(paso7,1600);} },
-    { label: '🐡 Comensalismo', fn:()=>{addBot(`En el comensalismo uno se beneficia y el otro es indiferente (0). En los líquenes <strong>ambos</strong> obtienen beneficios — eso es <strong>mutualismo</strong>.`,300);setTimeout(paso7,1600);} },
-  ]);
-}
-
-async function paso7(){
-  avanzarBarra();
-  await addBot(`<strong>Evolución y Selección Natural</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: árbol evolutivo (cladograma) mostrando divergencia de especies a partir de ancestro común]</div><br>
-Darwin propuso que las especies evolucionan mediante <strong>selección natural</strong>: los individuos con variaciones favorables para el ambiente sobreviven y se reproducen más.<br><br>
-¿Cuál de estas afirmaciones describe correctamente la selección natural?`, 400);
-  mostrarOpciones([
-    { label: '🧠 Los animales cambian porque quieren adaptarse', fn:()=>{addBot(`Eso sería la teoría de Lamarck. La selección natural de Darwin NO implica voluntad — las variaciones <em>ya existen</em> en la población y el ambiente selecciona las más favorables.`,300);setTimeout(paso8,1600);} },
-    { label: '🌿 Los individuos con variaciones favorables sobreviven y transmiten esos rasgos', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> La selección natural actúa sobre variaciones <em>ya existentes</em>. Los más aptos sobreviven y se reproducen → sus genes pasan a la siguiente generación.`,300);setTimeout(paso8,1600);} },
-    { label: '🔬 Las mutaciones siempre son beneficiosas', fn:()=>{addBot(`La mayoría de mutaciones son neutras o perjudiciales. Solo las que dan ventaja en un ambiente específico son favorecidas por la selección natural.`,300);setTimeout(paso8,1600);} },
-  ]);
-}
-
-async function paso8(){
-  avanzarBarra();
-  await addBot(`<strong>Sistemas del Cuerpo Humano</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: esquema del sistema circulatorio humano — corazón, arterias, venas, capilares con flujo de sangre oxigenada y desoxigenada]</div><br>
-¿Cuál es la función principal del sistema <strong>circulatorio</strong>?`, 400);
-  mostrarOpciones([
-    { label: '🫁 Intercambiar gases con el ambiente', fn:()=>{addBot(`Esa es la función del sistema <strong>respiratorio</strong>. El sistema circulatorio <em>transporta</em> esos gases (y nutrientes, hormonas, desechos) por el cuerpo.`,300);setTimeout(paso9,1600);} },
-    { label: '❤️ Transportar oxígeno, nutrientes, hormonas y desechos por el cuerpo', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> El sistema circulatorio (corazón + vasos + sangre) es el sistema de transporte del cuerpo. La sangre lleva O₂, glucosa, hormonas y recoge CO₂ y urea.`,300);setTimeout(paso9,1600);} },
-    { label: '🦴 Dar soporte y proteger órganos', fn:()=>{addBot(`Esa es la función del sistema <strong>óseo (esquelético)</strong>. El circulatorio transporta sustancias vitales.`,300);setTimeout(paso9,1600);} },
-  ]);
-}
-
-async function paso9(){
-  avanzarBarra();
-  await addBot(`¡Excelente trabajo! 🎉 Resumen de lo que dominaste:<br><br>
-<span class="check">✅</span> <strong>Célula:</strong> procariota vs eucariota y organelas.<br>
-<span class="check">✅</span> <strong>Fotosíntesis y respiración celular:</strong> cloroplasto y mitocondria.<br>
-<span class="check">✅</span> <strong>Genética:</strong> ADN, cromosomas sexuales, cuadrado de Punnett.<br>
-<span class="check">✅</span> <strong>Ecosistemas:</strong> productores, consumidores, descomponedores.<br>
-<span class="check">✅</span> <strong>Relaciones ecológicas:</strong> mutualismo, parasitismo, comensalismo.<br>
-<span class="check">✅</span> <strong>Evolución:</strong> selección natural de Darwin.<br>
-<span class="check">✅</span> <strong>Fisiología:</strong> sistemas del cuerpo humano.<br><br>
-<em>¡Estás listo/a para el ICFES!</em> 🚀`, 400);
-  setTimeout(()=>{avanzarBarra();mostrarFin();},2500);
-}
-
-function mostrarFin(){
-  document.getElementById('fin-overlay').classList.add('show');
-  document.getElementById('fin-pts').textContent=`✨ Acumulaste ${pts} puntos en este taller`;
-  try{window.parent.postMessage({type:'taller-completado',tallerExternoId:'taller_biologia',pts},'*');}catch(e){}
-}
-function cerrarTaller(){
-  try{window.parent.postMessage({type:'cerrar-taller-interactivo'},'*');}catch(e){}
-  window.close();
-}
-paso0();
+(function(){var cv=document.createElement('canvas');cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.09;';document.body.insertBefore(cv,document.body.firstChild);var ctx=cv.getContext('2d');var S=['→','←','…','¿','?','!','∑','√','∞','·','"','"','A','B'];var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];var P=[];function rsz(){cv.width=innerWidth;cv.height=innerHeight;}rsz();window.addEventListener('resize',rsz);for(var i=0;i<32;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.05),s:S[i%S.length],sz:8+Math.random()*12,a:.12+Math.random()*.45,c:C[i%C.length],rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.008});(function tick(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.font='bold '+p.sz+'px Courier New';ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();});requestAnimationFrame(tick);})();})();
+function burst(el,color,count){if(!el)return;var r=(typeof el==='string'?document.getElementById(el):el).getBoundingClientRect();var cx=r.left+r.width/2,cy=r.top+r.height/2;for(var i=0;i<(count||12);i++){var p=document.createElement('div');var sz=3+Math.random()*7;p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+color+';border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);';document.body.appendChild(p);(function(ep){var ang=Math.random()*Math.PI*2,d=38+Math.random()*80;gsap.to(ep,{x:Math.cos(ang)*d,y:Math.sin(ang)*d-Math.random()*28,opacity:0,scale:0,duration:.5+Math.random()*.4,ease:'power2.out',onComplete:function(){ep.remove();}});})(p);}}
+const TOTAL=6;let cur=0,busy=false,_sel=null;
+function render(){[s0,s1,s2,s3,s4,s5][cur](document.getElementById('slide-inner'));}
+function anim(){[a0,a1,a2,a3,a4,a5][cur]();}
+function go(d){if(busy)return;var n=cur+d;if(n<0||n>=TOTAL)return;busy=true;_sel=null;var el=document.getElementById('slide-inner');gsap.to(el,{opacity:0,x:d<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:function(){cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-65:65,scale:.94},{opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:function(){anim();busy=false;}});}});}
+function upd(){document.getElementById('counter').textContent=(cur+1)+' / '+TOTAL;document.getElementById('prog-fill').style.width=(((cur+1)/TOTAL)*100)+'%';document.getElementById('btn-prev').disabled=cur===0;document.getElementById('btn-next').disabled=cur===TOTAL-1;document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('active',i===cur);});}
+function mkDots(){var c=document.getElementById('dots');for(var i=0;i<TOTAL;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');(function(idx){d.onclick=function(){if(!busy&&idx!==cur){var dv=idx-cur;cur=idx-dv;go(dv);}};})(i);c.appendChild(d);}}
+function selectChip(el,val){document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(_sel===val){_sel=null;return;}_sel=val;el.classList.add('selected');gsap.from(el,{scale:.82,duration:.35,ease:'elastic.out(1,.4)'});}
+function tryPlace(slotId,correct,color){var slot=document.getElementById(slotId);if(!slot||slot.classList.contains('filled'))return;if(!_sel){gsap.to(slot,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.36,ease:'none'});return;}var chosen=_sel;var chip=document.querySelector('.conn-chip.selected');var aEl=slot.closest('.conn-area');_sel=null;document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(chosen===correct){slot.textContent=chosen.toUpperCase();slot.classList.add('filled');slot.style.cssText+='border-style:solid !important;color:var(--green) !important;border-color:var(--green) !important;background:rgba(16,185,129,.12) !important;';gsap.from(slot,{scale:0,rotation:-22,opacity:0,duration:.68,ease:'elastic.out(1,.42)'});burst(slot,color||'#10b981',20);if(chip){gsap.to(chip,{scale:0,opacity:0,duration:.3,ease:'back.in(2)',onComplete:function(){chip.classList.add('used');}});}if(aEl)gsap.to(aEl,{borderColor:'rgba(16,185,129,.5)',boxShadow:'0 0 32px rgba(16,185,129,.18)',duration:.4});var fbEl=document.getElementById('fb'+slotId.replace('slot',''));if(fbEl){fbEl.className='fb-msg ok';gsap.from(fbEl,{y:10,opacity:0,duration:.38});}var hintEl=document.getElementById('hint'+slotId.replace('slot',''));if(hintEl)hintEl.style.display='none';}else{if(chip){gsap.timeline().to(chip,{y:-28,rotation:18,scale:1.15,duration:.18,ease:'power2.out'}).to(chip,{y:0,rotation:0,scale:1,duration:.55,ease:'elastic.out(1,.4)'});}gsap.to(slot,{keyframes:[{x:-8},{x:8},{x:-6},{x:6},{x:0}],duration:.42,ease:'none'});burst(chip||slot,'#ef4444',9);gsap.to(slot,{borderColor:'#ef4444',duration:.12,yoyo:true,repeat:4,onComplete:function(){gsap.set(slot,{clearProps:'borderColor'});}});}}
+var _QUIZ=[{q:"¿Qué organela produce la mayor parte del ATP en una célula eucariota?",opts:["Cloroplasto","Ribosoma","Mitocondria","Núcleo"],ok:2,fb:"La mitocondria realiza la respiración celular aeróbica y produce ATP. ✓"},{q:"En un cruce Aa × Aa, ¿qué porcentaje de descendientes mostrará el fenotipo recesivo (aa)?",opts:["0%","25%","50%","75%"],ok:1,fb:"Cuadrado de Punnett: AA, Aa, Aa, aa → 1/4 = 25% fenotipo recesivo. ✓"},{q:"Darwin propuso que las especies evolucionan porque:",opts:["Los individuos deciden cambiar para adaptarse","Las variaciones favorables se heredan y los más aptos se reproducen más","Las mutaciones siempre mejoran la especie","El ambiente crea nuevas características en los organismos"],ok:1,fb:"Selección natural: variaciones PREEXISTENTES. El ambiente selecciona a los más aptos. ✓"}];
+var _qAns=[null,null,null];
+function rQ(i){if(i>=_QUIZ.length){setTimeout(showScore,420);return;}var q=_QUIZ[i];var w=document.getElementById('qw');if(!w)return;w.innerHTML='<div style="font-size:.68rem;color:var(--muted);margin-bottom:.38rem;">Pregunta '+(i+1)+' de '+_QUIZ.length+'</div><div class="q-q">'+q.q+'</div><div class="q-opts" id="qo'+i+'">'+q.opts.map(function(o,j){return '<button class="q-opt" onclick="ansQ('+i+','+j+')" id="qo'+i+'_'+j+'">'+String.fromCharCode(65+j)+'. '+o+'</button>';}).join('')+'</div><div class="q-fb" id="qfb'+i+'"></div>';gsap.from('.q-opt',{y:18,opacity:0,duration:.3,stagger:.07,ease:'back.out(2)'});}
+function ansQ(qi,oi){if(_qAns[qi]!==null)return;_qAns[qi]=oi;var q=_QUIZ[qi];var isOk=oi===q.ok;document.querySelectorAll('#qo'+qi+' .q-opt').forEach(function(b,i){b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});var fb=document.getElementById('qfb'+qi);if(fb){fb.className='q-fb '+(isOk?'ok':'bad');fb.textContent=(isOk?'✅ ':'❌ ')+q.fb;}var btn=document.getElementById('qo'+qi+'_'+oi);if(isOk&&btn){burst(btn,'#10b981',16);gsap.from(btn,{scale:1.1,duration:.4,ease:'elastic.out(1,.4)'});}else if(btn){gsap.to(btn,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.4,ease:'none'});}setTimeout(function(){rQ(qi+1);},2200);}
+function showScore(){var ok=_qAns.filter(function(a,i){return a===_QUIZ[i].ok;}).length;var w=document.getElementById('qw');var ss=document.getElementById('sc');if(w)w.innerHTML='';if(!ss)return;ss.style.display='block';var em=ok===_QUIZ.length?'🏆':ok>=2?'⭐':'📚';var msg=ok===_QUIZ.length?'¡Perfecto! Dominas este tema.':ok>=2?'¡Muy bien! Sigue practicando.':'Repasa los conceptos clave.';ss.innerHTML='<div id="sci" style="padding:.6rem 0;text-align:center;"><div style="font-size:3rem;font-weight:900;margin-bottom:.32rem;">'+em+' '+ok+'/'+_QUIZ.length+'</div><div style="color:var(--muted);font-size:.87rem;margin-bottom:1rem;">'+msg+'</div><button onclick="resetQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.4rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button></div>';gsap.from('#sci',{scale:.52,rotation:-8,opacity:0,duration:.72,ease:'elastic.out(1,.42)'});if(ok===_QUIZ.length){var cols=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];for(var ii=0;ii<24;ii++)(function(n){setTimeout(function(){var pp={getBoundingClientRect:function(){return{left:innerWidth*.25+Math.random()*innerWidth*.5,top:innerHeight*.2,width:0,height:0};}};burst(pp,cols[n%cols.length],6);},n*90);}(ii));}}
+function resetQ(){_qAns=[null,null,null];var ss=document.getElementById('sc');if(ss)ss.style.display='none';rQ(0);}
+function s0(el){el.innerHTML=`<div style="text-align:center;padding:.2rem 0;"><div class="s-tag">Biología · Ciencias Naturales ICFES</div><div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fff 30%,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.55rem;" id="mt0">Biología Completa ICFES</div><div id="chains0" style="display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:.55rem 0 .9rem;"><span id="ch0" class="conn-chip type-add" style="opacity:0;">célula</span><span id="ch1" class="conn-chip type-adv" style="opacity:0;">genética</span><span id="ch2" class="conn-chip type-cons" style="opacity:0;">ecosistema</span><span id="ch3" class="conn-chip type-caus" style="opacity:0;">evolución</span><span id="ch4" class="conn-chip type-adv" style="opacity:0;">fisiología</span></div><div id="obj0" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1rem 1.25rem;max-width:460px;margin:0 auto;text-align:left;"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.55rem;">🎯 OBJETIVOS</div><div id="ob0" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Distinguir célula procariota de eucariota y sus orgánulos</span></div><div id="ob1" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Resolver problemas de genética mendeliana (cuadrado de Punnett)</span></div><div id="ob2" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Identificar niveles tróficos y relaciones ecológicas</span></div><div id="ob3" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Comprender la selección natural y los sistemas del cuerpo humano</span></div></div></div>`;}
+function a0(){var tl=gsap.timeline();tl.from('#mt0',{y:-80,rotation:-5,opacity:0,duration:.7,ease:'bounce.out'});tl.fromTo(['#ch0','#ch1','#ch2','#ch3','#ch4'],{opacity:0,scale:.4,y:-25},{opacity:1,scale:1,y:0,duration:.38,stagger:.09,ease:'elastic.out(1,.5)'},'-=.2');tl.fromTo(['#ob0','#ob1','#ob2','#ob3'],{opacity:0,x:-42},{opacity:1,x:0,duration:.38,stagger:.11,ease:'back.out(2.5)'},'-=.1');gsap.to('.conn-chip',{y:-4,duration:1.4,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:{amount:1.2},delay:.8});}
+function s1(el){el.innerHTML=`<div><div class="s-tag">Concepto base</div><div class="s-title" id="t1">La Célula — Unidad de la Vida</div><div class="s-sub">La diferencia fundamental que el ICFES siempre pregunta</div><div class="formula" id="f1">Procariota (sin núcleo) &nbsp;·&nbsp; Eucariota (con núcleo y organelas)</div><div id="st1" class="step"><div class="step-n">1</div><div><strong>Organelas clave:</strong> Mitocondria → ATP (energía). Cloroplasto → fotosíntesis. Ribosoma → síntesis de proteínas. Vacuola → almacenamiento.</div></div><div id="st2" class="step"><div class="step-n">2</div><div><strong>Fotosíntesis:</strong> 6CO₂ + 6H₂O + luz → C₆H₁₂O₆ + 6O₂ (en el cloroplasto). <strong>Respiración:</strong> glucosa + O₂ → CO₂ + H₂O + ATP (en la mitocondria).</div></div><div class="example" id="e1"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">⚡ CLAVE ICFES</div>Si la pregunta menciona clorofila o fotosíntesis → cloroplasto (solo en vegetal). Si menciona producción de energía (ATP) → mitocondria.</div></div>`;}
+function a1(){gsap.timeline().from('#t1',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#f1',{scaleX:.35,scaleY:.35,opacity:0,duration:.5,ease:'back.out(2.8)'},'-=.15').from(['#st1','#st2'],{x:-40,opacity:0,duration:.4,stagger:.16,ease:'back.out(2)'}).from('#e1',{y:16,opacity:0,duration:.36},'-=.1');}
+function s2(el){el.innerHTML=`<div><div class="s-tag">Clasificación</div><div class="s-title" id="t2">Genética, Ecosistemas y Evolución</div><div class="s-sub">Los otros tres grandes temas de Biología ICFES</div><div style="margin-top:.35rem;"><div class="ctype-card" id="ct1"><div class="ctype-name" style="color:#fb923c;">Genética Mendeliana</div><div class="ctype-words" style="color:#fb923c;">Cruce Aa × Aa → 3 dominantes : 1 recesivo (25% aa).</div><div class="ctype-use">Cromosomas sexuales: mujer=XX, hombre=XY.</div></div>
+<div class="ctype-card" id="ct2"><div class="ctype-name" style="color:#7dd3fc;">Ecosistemas</div><div class="ctype-words" style="color:#7dd3fc;">Productor → C1 → C2 → Descomponedor. Solo 10% de energía pasa a cada nivel.</div><div class="ctype-use">Regla del 10%: las cadenas son cortas.</div></div>
+<div class="ctype-card" id="ct3"><div class="ctype-name" style="color:#6ee7b7;">Relaciones Ecológicas</div><div class="ctype-words" style="color:#6ee7b7;">Mutualismo(+/+), Comensalismo(+/0), Parasitismo(+/-), Depredación(+/-).</div><div class="ctype-use">Liquen = mutualismo (hongo+alga). Pulga y perro = parasitismo.</div></div>
+<div class="ctype-card" id="ct4"><div class="ctype-name" style="color:#c4b5fd;">Evolución</div><div class="ctype-words" style="color:#c4b5fd;">Selección natural de Darwin: las variaciones favorables se heredan.</div><div class="ctype-use">Las mutaciones no son intencionales — el ambiente selecciona.</div></div></div></div>`;}
+function a2(){gsap.timeline().from('#t2',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from(['#ct1','#ct2','#ct3','#ct4'],{y:72,rotation:-3,opacity:0,duration:.54,stagger:.13,ease:'back.out(2.2)'},'-=.1');}
+function s3(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 1 · Identifica la organela</div><div class="s-title" id="t3">¿Qué organela es?</div><div class="s-sub">Selecciona la que corresponde a la descripción</div><div class="conn-area" id="ca3"><div class="passage">"Organela con doble membrana, presente SOLO en células vegetales, que contiene clorofila y realiza la fotosíntesis convirtiendo luz solar en glucosa."</div><div class="chips-row"><span class="conn-chip type-adv" onclick="selectChip(this,'Mitocondria' )">Mitocondria</span><span class="conn-chip type-cons" onclick="selectChip(this,'Ribosoma' )">Ribosoma</span><span class="conn-chip type-add" onclick="selectChip(this,'Cloroplasto' )">Cloroplasto</span><span class="conn-chip type-caus" onclick="selectChip(this,'Vacuola' )">Vacuola</span></div><div class="hint-text" id="hints3">👆 ¿Qué organela captura la luz solar? ¿En qué tipo de célula?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot3" class="conn-chip type-add" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot3','Cloroplasto','#10b981')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb3">✅ CLOROPLASTO — doble membrana, clorofila, fotosíntesis, exclusivo de plantas y algas. ✓</div></div></div>`;}
+function a3(){gsap.timeline().from('#t3',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca3',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s4(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 2 · Relación ecológica</div><div class="s-title" id="t4">¿Qué relación es esta?</div><div class="s-sub">Clasifica la interacción entre organismos</div><div class="conn-area" id="ca4"><div class="passage">"Un pájaro llamado Oxpecker come parásitos de la piel de los búfalos. El pájaro obtiene alimento y el búfalo queda limpio de parásitos. <strong>Ambos se benefician.</strong>"</div><div class="chips-row"><span class="conn-chip type-adv" onclick="selectChip(this,'Parasitismo' )">Parasitismo</span><span class="conn-chip type-cons" onclick="selectChip(this,'Depredación' )">Depredación</span><span class="conn-chip type-add" onclick="selectChip(this,'Mutualismo' )">Mutualismo</span><span class="conn-chip type-caus" onclick="selectChip(this,'Comensalismo' )">Comensalismo</span></div><div class="hint-text" id="hints4">👆 ¿Cuántos organismos ganan en esta interacción?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot4" class="conn-chip type-cons" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot4','Mutualismo','#38bdf8')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb4">✅ MUTUALISMO (+/+) — ambos organismos se benefician. ✓</div></div></div>`;}
+function a4(){gsap.timeline().from('#t4',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca4',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s5(el){_qAns=[null,null,null];el.innerHTML=`<div><div class="s-tag">Mini Quiz · 3 preguntas tipo ICFES Saber 11</div><div class="s-title" id="t5">¿Cuánto aprendiste?</div><div id="qw"></div><div id="sc" style="display:none;"></div></div>`;rQ(0);}
+function a5(){gsap.from('#t5',{y:-55,rotation:-4,opacity:0,duration:.62,ease:'elastic.out(1,.48)'});}
+mkDots();render();anim();
 </script>
 </body>
 </html>

@@ -2,613 +2,115 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estadística y Probabilidad · Matemáticas ICFES — Programa PRI</title>
 <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-    <meta name="theme-color" content="#021a36">
-    <title>Estadística y Probabilidad | Programa PRI</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-:root{
-  --bg:#021226; --surface:#0a1f38; --card:#0d2a4a;
-  --orange:#ff5e00; --teal:#38bdf8; --green:#10b981; --red:#f87171;
-  --gold:#fbbf24; --purple:#a78bfa; --text:#e8f0f8; --muted:rgba(232,240,248,.45);
-  --border:rgba(56,189,248,.18);
-  --font-t:'Montserrat',sans-serif; --font-b:'Inter',sans-serif;
-}
-html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);}
-#app{display:flex;flex-direction:column;height:100%;max-width:600px;margin:0 auto;}
-
-.hdr{padding:.75rem 1rem .5rem;display:flex;align-items:center;gap:.6rem;flex-shrink:0;border-bottom:1px solid var(--border);}
-.hdr-icon{font-size:1.4rem;}
-.hdr-title{font-family:var(--font-t);font-size:.78rem;font-weight:900;color:var(--teal);letter-spacing:.5px;line-height:1.2;}
-.hdr-sub{font-family:var(--font-b);font-size:.6rem;color:var(--muted);}
-.hdr-pts{margin-left:auto;font-family:var(--font-t);font-size:.72rem;font-weight:700;color:var(--gold);white-space:nowrap;}
-.prog-wrap{height:4px;background:rgba(255,255,255,.08);flex-shrink:0;}
-.prog-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));transition:width .4s ease;border-radius:0 2px 2px 0;}
-#stage{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:1rem;}
-
-.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.2rem;margin-bottom:.9rem;}
-.card-label{font-family:var(--font-t);font-size:.55rem;font-weight:700;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase;margin-bottom:.4rem;}
-.card h2{font-family:var(--font-t);font-size:1.05rem;font-weight:900;line-height:1.3;margin-bottom:.6rem;}
-.card p{font-family:var(--font-b);font-size:.78rem;line-height:1.65;color:rgba(232,240,248,.85);}
-.card p+p{margin-top:.5rem;}
-.highlight{background:rgba(56,189,248,.08);border-left:3px solid var(--teal);padding:.6rem .9rem;border-radius:0 8px 8px 0;margin:.7rem 0;font-family:var(--font-b);font-size:.76rem;line-height:1.6;}
-.formula{font-family:monospace;font-size:.88rem;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.25);padding:.35rem .7rem;border-radius:6px;display:inline-block;color:var(--purple);margin:.3rem 0;}
-
-.opciones{display:flex;flex-direction:column;gap:.55rem;margin-top:.9rem;}
-.op{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:10px;padding:.75rem 1rem;cursor:pointer;font-family:var(--font-b);font-size:.78rem;line-height:1.4;transition:all .18s ease;user-select:none;}
-.op:active{transform:scale(.97);}
-.op.correcto{background:rgba(16,185,129,.12);border-color:var(--green);color:var(--green);}
-.op.incorrecto{background:rgba(248,113,113,.1);border-color:var(--red);color:var(--red);}
-.op.disabled{pointer-events:none;}
-.feedback{border-radius:10px;padding:.75rem 1rem;margin-top:.7rem;font-family:var(--font-b);font-size:.76rem;line-height:1.5;display:none;}
-.feedback.show{display:block;}
-.feedback.ok{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#86efac;}
-.feedback.ko{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:#fca5a5;}
-
-.btn-next{width:100%;padding:.85rem;background:linear-gradient(90deg,var(--teal),#0ea5e9);border:none;border-radius:10px;color:#021226;font-family:var(--font-t);font-size:.78rem;font-weight:700;letter-spacing:.5px;cursor:pointer;margin-top:1rem;transition:opacity .2s;}
-.btn-next:disabled{opacity:.35;cursor:not-allowed;}
-.btn-next:active{opacity:.8;}
-
-/* TABLA */
-.tabla{width:100%;border-collapse:collapse;font-family:var(--font-b);font-size:.72rem;margin:.7rem 0;}
-.tabla th{background:rgba(56,189,248,.12);color:var(--teal);padding:.45rem .7rem;text-align:center;font-weight:600;font-size:.65rem;}
-.tabla td{padding:.4rem .7rem;border-bottom:1px solid rgba(255,255,255,.06);text-align:center;color:rgba(232,240,248,.85);}
-.tabla td:first-child{text-align:left;font-weight:500;}
-
-/* RULETA */
-#wheelWrap{display:flex;flex-direction:column;align-items:center;gap:.8rem;margin:.9rem 0;}
-#wheelCanvas{border-radius:50%;border:3px solid rgba(255,255,255,.15);}
-#spin-btn{padding:.6rem 1.6rem;background:linear-gradient(90deg,var(--orange),#ff8c00);border:none;border-radius:8px;color:#fff;font-family:var(--font-t);font-size:.76rem;font-weight:700;cursor:pointer;}
-#spin-btn:disabled{opacity:.4;cursor:not-allowed;}
-#spin-result{font-family:var(--font-t);font-size:.8rem;font-weight:700;color:var(--gold);min-height:1.2rem;text-align:center;}
-.spin-stats{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;}
-.stat-badge{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:.35rem .7rem;font-family:var(--font-b);font-size:.68rem;text-align:center;}
-.stat-badge b{display:block;font-family:var(--font-t);font-size:.9rem;color:var(--teal);}
-
-/* BAR CHART */
-.bar-chart{display:flex;align-items:flex-end;gap:.4rem;height:100px;margin:.9rem 0;padding:.3rem 0;}
-.bar-col{display:flex;flex-direction:column;align-items:center;gap:.3rem;flex:1;}
-.bar{border-radius:4px 4px 0 0;width:100%;transition:height .6s ease;}
-.bar-lbl{font-family:var(--font-b);font-size:.6rem;color:var(--muted);text-align:center;}
-.bar-val{font-family:var(--font-t);font-size:.65rem;color:var(--text);}
-
-/* SCORE */
-.score-circle{width:90px;height:90px;border-radius:50%;border:3px solid var(--teal);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:.9rem auto;}
-.score-n{font-family:var(--font-t);font-size:1.8rem;font-weight:900;color:var(--teal);}
-.score-lbl{font-family:var(--font-b);font-size:.6rem;color:var(--muted);}
-
-.confetti-piece{position:fixed;width:8px;height:8px;border-radius:2px;opacity:0;pointer-events:none;animation:fall 1.8s ease-in forwards;}
-@keyframes fall{0%{opacity:1;transform:translateY(-20px) rotate(0deg);}100%{opacity:0;transform:translateY(110vh) rotate(720deg);}}
-.slide-in{animation:slideIn .3s ease;}
-@keyframes slideIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-
-/* ══ AB-NEON TALLER ══ */
-@keyframes _pt{0%,100%{opacity:.13;}50%{opacity:.18;}}
-#progress-bar{transition:width .65s cubic-bezier(.34,1.56,.64,1)!important;box-shadow:0 0 12px rgba(56,189,248,.5)!important;}
-.opt-btn:hover{box-shadow:0 0 14px rgba(255,94,0,.35)!important;}
-.opt-btn.selected{box-shadow:0 0 18px rgba(255,94,0,.45)!important;}
-.bubble.bot{box-shadow:0 0 0 1px rgba(56,189,248,.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#04080f;--card:#080f1e;--purple:#7c3aed;--orange:#ff5e00;--teal:#38bdf8;--green:#10b981;--red:#ef4444;--yellow:#fbbf24;--text:#e8f4ff;--muted:#6b9ab8;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+#topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+@keyframes _pg{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.65);}50%{box-shadow:0 0 28px rgba(124,58,237,.95),0 0 52px rgba(56,189,248,.22);}}
+#prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;flex-shrink:0;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));border-radius:3px;transition:width .65s cubic-bezier(.34,1.56,.64,1);animation:_pg 2.5s ease-in-out infinite;}
+@keyframes _cp{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08);}50%{box-shadow:0 0 65px rgba(124,58,237,.22),0 0 110px rgba(56,189,248,.06);}}
+#slide-card{flex:1;background:rgba(8,15,30,.95);border:1px solid rgba(124,58,237,.28);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;animation:_cp 3s ease-in-out infinite;}
+#slide-inner{flex:1;padding:1.6rem 2rem;overflow-y:auto;display:flex;flex-direction:column;}
+#nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;}
+.nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
+.nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.nav-btn:hover:not(:disabled){background:rgba(124,58,237,.32);border-color:var(--purple);box-shadow:0 0 22px rgba(124,58,237,.6);transform:translateY(-2px);}
+.nav-btn:disabled{opacity:.2;cursor:not-allowed;}
+#dots{display:flex;gap:6px;align-items:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;}
+.dot.active{background:var(--purple);transform:scale(1.5);box-shadow:0 0 10px rgba(124,58,237,.75);}
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.55rem;text-shadow:0 0 12px rgba(56,189,248,.5);}
+.s-title{font-size:1.7rem;font-weight:900;line-height:1.2;margin-bottom:.35rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.s-sub{font-size:.87rem;color:var(--muted);margin-bottom:1rem;}
+.step{display:flex;align-items:flex-start;gap:.7rem;margin:.42rem 0;font-size:.86rem;line-height:1.5;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;box-shadow:0 0 12px rgba(124,58,237,.5);}
+.example{background:rgba(56,189,248,.06);border-left:3px solid var(--teal);padding:.65rem 1rem;border-radius:0 8px 8px 0;margin:.55rem 0;font-size:.86rem;}
+.formula{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.38);border-radius:12px;padding:.8rem 1.3rem;font-size:1rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.8rem 0;}
+.ctype-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.7rem .9rem;margin:.38rem 0;transition:border-color .3s,box-shadow .3s;}
+.ctype-card:hover{border-color:rgba(124,58,237,.35);box-shadow:0 0 15px rgba(124,58,237,.1);}
+.ctype-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:.28rem;}
+.ctype-words{font-family:'Courier New',monospace;font-size:.86rem;font-weight:600;}
+.ctype-use{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+.conn-area{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem;margin:.7rem 0;transition:border-color .4s,box-shadow .4s;}
+.passage{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.6;margin-bottom:.85rem;font-style:italic;}
+.chips-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.conn-chip{padding:.42rem 1rem;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid;user-select:none;}
+.conn-chip.type-adv{background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.5);color:#fb923c;}
+.conn-chip.type-cons{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.5);color:#7dd3fc;}
+.conn-chip.type-add{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.5);color:#6ee7b7;}
+.conn-chip.type-caus{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.55);color:#c4b5fd;}
+.conn-chip:hover:not(.used){transform:scale(1.08);filter:brightness(1.3);}
+.conn-chip.selected{transform:scale(1.13);box-shadow:0 0 20px currentColor;filter:brightness(1.55);}
+.conn-chip.used{opacity:.22;pointer-events:none;transform:scale(.88);}
+.fb-msg{margin-top:.55rem;font-size:.81rem;padding:.45rem .75rem;border-radius:8px;display:none;text-align:center;}
+.fb-msg.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#a7f3d0;display:block;}
+.q-q{font-size:.9rem;font-weight:600;margin-bottom:.8rem;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.42rem;}
+.q-opt{padding:.6rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
+.q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
+.q-fb{margin-top:.6rem;font-size:.81rem;padding:.5rem .75rem;border-radius:8px;display:none;}
+.q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
+.q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="hdr">
-    <span class="hdr-icon">📊</span>
-    <div>
-      <div class="hdr-title">ESTADÍSTICA Y PROBABILIDAD</div>
-      <div class="hdr-sub">Taller Interactivo · Pre-ICFES</div>
-    </div>
-    <div class="hdr-pts">⭐ <span id="pts">0</span> pts</div>
+  <div id="topbar">
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;">PROGRAMA·PRI · Estadística y Probabilidad</span>
+    <span id="counter" style="font-size:.7rem;color:var(--muted);">1 / 6</span>
   </div>
-  <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
-  <div id="stage"></div>
+  <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
+  <div id="slide-card"><div id="slide-inner"></div></div>
+  <div id="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Anterior</button>
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Siguiente →</button>
+  </div>
 </div>
-
 <script>
-
-/* ═══ AB ENGINE TALLER ═══ */
 var _AB_T=true;
-(function(){
-  var cv=document.createElement('canvas');
-  cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.08;';
-  document.body.insertBefore(cv,document.body.firstChild);
-  var ctx=cv.getContext('2d');
-  var S=['x','y','²','F','v','Σ','π','+','−','=','a','b','n'];
-  var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];
-  var P=[];
-  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-  rsz();window.addEventListener('resize',rsz);
-  for(var i=0;i<24;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
-    vx:(Math.random()-.5)*.28,vy:-(Math.random()*.35+.06),
-    s:S[Math.floor(Math.random()*S.length)],sz:9+Math.random()*12,
-    a:.12+Math.random()*.38,c:C[Math.floor(Math.random()*C.length)],
-    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.009});
-  (function tk(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){
-    p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
-    if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}
-    if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;
-    ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
-    ctx.font='bold '+p.sz+'px Courier New';
-    ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();
-  });requestAnimationFrame(tk);})();
-})();
-
-const STAGES = ['intro','probabilidad','ruleta','tablas','graficas','icfes','fin'];
-let stageIdx=0, pts=0;
-
-function setPts(n){pts=n;document.getElementById('pts').textContent=n;}
-function addPts(n){setPts(pts+n);}
-function updateProg(){document.getElementById('progBar').style.width=((stageIdx/STAGES.length)*100)+'%';}
-
-function goTo(idx){
-  stageIdx=idx; updateProg();
-  const s=document.getElementById('stage');
-  s.innerHTML='';
-  const fn=stages[STAGES[idx]];
-  if(fn)fn();
-  s.scrollTop=0;
-}
-function nextStage(){goTo(stageIdx+1);}
-function html(str){document.getElementById('stage').insertAdjacentHTML('beforeend',str);}
-function el(id){return document.getElementById(id);}
-
-function opciones(items, correctaIdx, feedOk, feedKo){
-  let done=false;
-  const div=document.createElement('div');
-  div.className='opciones';
-  items.forEach((txt,i)=>{
-    const b=document.createElement('div');
-    b.className='op'; b.innerHTML=txt;
-    b.onclick=()=>{
-      if(done)return; done=true;
-      div.querySelectorAll('.op').forEach(x=>x.classList.add('disabled'));
-      if(i===correctaIdx){
-        b.classList.add('correcto');
-        addPts(20);
-        showFb(div, true, '✅ '+feedOk);
-      } else {
-        b.classList.add('incorrecto');
-        div.querySelectorAll('.op')[correctaIdx].classList.add('correcto');
-        showFb(div, false, '❌ '+feedKo);
-      }
-      const btn=el('btn-cont');
-      if(btn) btn.disabled=false;
-    };
-    div.appendChild(b);
-  });
-  el('stage').appendChild(div);
-}
-
-function showFb(parent, ok, msg){
-  const fb=document.createElement('div');
-  fb.className=`feedback ${ok?'ok':'ko'} show`;
-  fb.innerHTML=msg;
-  parent.appendChild(fb);
-}
-
-function btnNext(label,fn){
-  const b=document.createElement('button');
-  b.className='btn-next'; b.id='btn-cont';
-  b.textContent=label||'Continuar →';
-  b.onclick=fn||nextStage;
-  el('stage').appendChild(b);
-  return b;
-}
-
-/* ════ STAGE 0 – INTRO ════ */
-const stages={};
-stages.intro=()=>{
-  html(`
-  <div class="card slide-in">
-    <div class="card-label">Bienvenida</div>
-    <h2>Datos que cuentan historias 📊</h2>
-    <p>La <strong>estadística</strong> y la <strong>probabilidad</strong> son pilares del razonamiento cuantitativo ICFES. Aprenderás a:</p>
-    <div style="display:flex;flex-direction:column;gap:.4rem;margin:.8rem 0;">
-      ${['🎯 Calcular probabilidades básicas','🎡 Experimentar con una ruleta virtual','📈 Leer tablas y gráficas de datos','🏆 Resolver preguntas reales ICFES'].map((t,i)=>`
-      <div style="display:flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.03);border-radius:8px;padding:.5rem .8rem;font-family:var(--font-b);font-size:.76rem;">
-        <span style="background:var(--teal);color:#021226;border-radius:50%;width:1.3rem;height:1.3rem;display:flex;align-items:center;justify-content:center;font-family:var(--font-t);font-size:.6rem;font-weight:700;flex-shrink:0;">${i+1}</span>
-        ${t}
-      </div>`).join('')}
-    </div>
-  </div>`);
-  btnNext('¡Empezar! 🎯');
-};
-
-/* ════ STAGE 1 – PROBABILIDAD ════ */
-stages.probabilidad=()=>{
-  html(`
-  <div class="card slide-in">
-    <div class="card-label">Etapa 1 de 5</div>
-    <h2>¿Qué es la Probabilidad? 🎯</h2>
-    <p>La probabilidad mide <strong>qué tan probable</strong> es que un evento ocurra.</p>
-    <div class="formula">P(A) = Casos favorables / Casos posibles</div>
-    <div class="highlight">
-      En un dado normal (6 caras):<br>
-      P(sacar 4) = 1/6 ≈ 0.167 ≈ 16.7%<br>
-      P(sacar par) = 3/6 = 1/2 = 50%
-    </div>
-    <p>Los valores van de <strong>0</strong> (imposible) a <strong>1</strong> (seguro).</p>
-  </div>
-
-  <div class="card slide-in" style="animation-delay:.1s;">
-    <div class="card-label">Contexto · Sorteo</div>
-    <h2>El Sorteo GANAMÁXIMO 🎲</h2>
-    <p>Un sorteo vende boletas con signo zodiacal (12 signos) y último dígito (0-9). El sorteo premia el signo <strong>Cáncer</strong> con último dígito <strong>8</strong>.</p>
-    <p style="margin-top:.4rem;">Total de boletas posibles = 12 × 10 = <strong>120</strong>. Solo <strong>1</strong> boleta es ganadora.</p>
-  </div>
-
-  <div class="card slide-in" style="animation-delay:.15s;">
-    <div class="card-label">Pregunta 1</div>
-    <h2>¿Cuál es la probabilidad de ganar con una sola boleta?</h2>
-  </div>`);
-
-  opciones(
-    ['A.  1/160.000','B.  1/6.000','C.  1/120','D.  1/12'],
-    2,
-    '¡Correcto! Hay 1 boleta ganadora de 120 posibles → P = 1/120.',
-    'Total = 12 signos × 10 dígitos = 120. Solo 1 gana → P = 1/120.',
-  );
-
-  html(`<div class="card slide-in" style="margin-top:.9rem;animation-delay:.2s;">
-    <div class="card-label">Pregunta 2</div>
-    <h2>¿Cuántas boletas distintas hay con el signo Cáncer y último dígito 8?</h2>
-    <p style="margin-top:.3rem;">Cáncer = 1 signo, dígito 8 = 1 opción. ¿Cuántas combinaciones?</p>
-  </div>`);
-
-  opciones(
-    ['A. 28','B. 100','C. 500','D. Solo 1'],
-    3,
-    '¡Correcto! Cáncer-8 es solo 1 combinación única. Por eso la probabilidad es 1/120.',
-    'Una boleta = 1 signo + 1 dígito. Cáncer + 8 = solo 1 boleta posible.',
-  );
-
-  btnNext('Siguiente →');
-};
-
-/* ════ STAGE 2 – RULETA ════ */
-stages.ruleta=()=>{
-  html(`
-  <div class="card slide-in">
-    <div class="card-label">Etapa 2 de 5 · Experimento</div>
-    <h2>Ruleta de Probabilidades 🎡</h2>
-    <p>Cuatro colores, distintas probabilidades. Gira 10 veces y compara los resultados con lo esperado.</p>
-    <div id="wheelWrap">
-      <canvas id="wheelCanvas" width="200" height="200"></canvas>
-      <button id="spin-btn" onclick="girar()">Girar 🎡</button>
-      <div id="spin-result">—</div>
-    </div>
-    <div class="spin-stats" id="spinStats"></div>
-    <div id="spin-tip" style="font-family:var(--font-b);font-size:.7rem;color:var(--muted);text-align:center;margin:.5rem 0;"></div>
-    <div class="feedback" id="spin-fb"></div>
-  </div>`);
-
-  const sectors=[
-    {label:'Amarillo', prob:0.40, color:'#fbbf24'},
-    {label:'Azul',     prob:0.30, color:'#38bdf8'},
-    {label:'Rojo',     prob:0.20, color:'#f87171'},
-    {label:'Verde',    prob:0.10, color:'#10b981'},
-  ];
-
-  const counts={Amarillo:0,Azul:0,Rojo:0,Verde:0};
-  let totalSpins=0, spinning=false;
-
-  const canvas=el('wheelCanvas');
-  const ctx=canvas.getContext('2d');
-  let currentAngle=0;
-
-  function drawWheel(angle=0){
-    ctx.clearRect(0,0,200,200);
-    let start=angle;
-    sectors.forEach(({label,prob,color})=>{
-      const slice=prob*2*Math.PI;
-      ctx.beginPath();
-      ctx.moveTo(100,100);
-      ctx.arc(100,100,95,start,start+slice);
-      ctx.closePath();
-      ctx.fillStyle=color;
-      ctx.fill();
-      ctx.strokeStyle='rgba(2,18,38,.5)';
-      ctx.lineWidth=2;
-      ctx.stroke();
-      // label
-      ctx.save();
-      ctx.translate(100,100);
-      ctx.rotate(start+slice/2);
-      ctx.textAlign='right';
-      ctx.fillStyle='#021226';
-      ctx.font='bold 10px Montserrat,sans-serif';
-      ctx.fillText(label,88,4);
-      ctx.restore();
-      start+=slice;
-    });
-    // pointer
-    ctx.beginPath();
-    ctx.moveTo(100,8);
-    ctx.lineTo(94,22);
-    ctx.lineTo(106,22);
-    ctx.closePath();
-    ctx.fillStyle='#fff';
-    ctx.fill();
-  }
-
-  drawWheel();
-
-  function updateStats(){
-    const st=el('spinStats');
-    st.innerHTML=sectors.map(({label,color})=>`
-      <div class="stat-badge">
-        <span style="color:${color};font-size:.7rem;">●</span> ${label}
-        <b>${counts[label]}</b>
-        <span style="font-size:.58rem;color:var(--muted);">esp.${Math.round(sectors.find(s=>s.label===label).prob*10)}</span>
-      </div>`).join('');
-    el('spin-tip').textContent=totalSpins>=10?`${totalSpins} giros realizados. Observa cómo los resultados se acercan a las probabilidades teóricas.`:`${totalSpins}/10 giros`;
-    if(totalSpins>=10){
-      const fb=el('spin-fb');
-      fb.className='feedback ok show';
-      fb.innerHTML='🎯 ¡Completado! Con más giros los resultados se acercan a las probabilidades reales. ¡Ley de los Grandes Números!';
-      addPts(20);
-      const b=el('btn-spin-next');
-      if(b) b.disabled=false;
-    }
-  }
-
-  window.girar=function(){
-    if(spinning||totalSpins>=10)return;
-    spinning=true;
-    el('spin-btn').disabled=true;
-    // elegir resultado
-    const r=Math.random();
-    let acum=0, resultado=null;
-    for(const s of sectors){acum+=s.prob;if(r<acum){resultado=s;break;}}
-    if(!resultado)resultado=sectors[sectors.length-1];
-    // calcular ángulo final
-    let targetStart=0;
-    for(const s of sectors){
-      if(s===resultado){targetStart+=s.prob*Math.PI; break;}
-      targetStart+=s.prob*2*Math.PI;
-    }
-    const fullSpins=Math.PI*2*(4+Math.floor(Math.random()*4));
-    const finalAngle=fullSpins - targetStart - currentAngle;
-    const startTime=Date.now();
-    const duration=2200;
-
-    function animate(){
-      const elapsed=Date.now()-startTime;
-      const t=Math.min(elapsed/duration,1);
-      const ease=t<0.5?4*t*t*t:(1-Math.pow(-2*t+2,3)/2);
-      const angle=currentAngle+finalAngle*ease;
-      drawWheel(angle);
-      if(t<1){requestAnimationFrame(animate);}
-      else{
-        currentAngle=(currentAngle+finalAngle)%(2*Math.PI);
-        spinning=false;
-        totalSpins++;
-        counts[resultado.label]++;
-        el('spin-result').textContent=`🎡 Cayó: ${resultado.label}`;
-        el('spin-result').style.color=resultado.color;
-        el('spin-btn').disabled=totalSpins>=10;
-        updateStats();
-      }
-    }
-    requestAnimationFrame(animate);
-  };
-
-  updateStats();
-
-  const b=document.createElement('button');
-  b.className='btn-next'; b.id='btn-spin-next'; b.disabled=true; b.textContent='Siguiente →'; b.onclick=nextStage;
-  el('stage').appendChild(b);
-};
-
-/* ════ STAGE 3 – TABLAS ════ */
-stages.tablas=()=>{
-  html(`
-  <div class="card slide-in">
-    <div class="card-label">Etapa 3 de 5 · Análisis de Datos</div>
-    <h2>Lectura de Tablas 📈</h2>
-    <p>Las tablas permiten identificar <strong>patrones, tendencias y relaciones</strong> entre variables.</p>
-    <div class="highlight">
-      Esta tabla muestra la estatura de Felipe (Pipe) durante sus primeros 5 años de vida:
-    </div>
-    <table class="tabla">
-      <tr><th>Tiempo (años)</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
-      <tr><td>Estatura (cm)</td><td>53</td><td>56</td><td>59</td><td>62</td><td>65</td></tr>
-    </table>
-    <p>Observa que cada año crece <strong>3 cm</strong>. Esto indica una relación <em>lineal</em>.</p>
-    <div class="formula">h = 3t + 50</div>
-    <p style="margin-top:.4rem;">¿Por qué +50? Cuando t=1 → h=53 cm → 3(1)+50 = 53 ✓</p>
-  </div>
-
-  <div class="card slide-in" style="animation-delay:.1s;">
-    <div class="card-label">Gráfica de barras interactiva</div>
-    <h2>Estatura de Felipe 📊</h2>
-    <div class="bar-chart" id="barChart"></div>
-    <p style="font-family:var(--font-b);font-size:.68rem;color:var(--muted);text-align:center;">Toca cada barra para ver el valor</p>
-  </div>
-
-  <div class="card slide-in" style="animation-delay:.15s;">
-    <div class="card-label">Pregunta</div>
-    <h2>¿Qué expresión determina la estatura (h) en función del tiempo (t)?</h2>
-  </div>`);
-
-  // Render bar chart
-  const datos=[{t:1,h:53},{t:2,h:56},{t:3,h:59},{t:4,h:62},{t:5,h:65}];
-  const bc=el('barChart');
-  const colores=['#38bdf8','#38bdf8','#38bdf8','#38bdf8','#38bdf8'];
-  datos.forEach(({t,h},i)=>{
-    const col=document.createElement('div');
-    col.className='bar-col';
-    const maxH=65; const minH=50; const pct=((h-minH)/(maxH-minH)*85+5);
-    col.innerHTML=`
-      <div class="bar-val" id="bv${i}">${h}</div>
-      <div class="bar" style="height:${pct}px;background:${colores[i]};cursor:pointer;" onclick="this.parentElement.querySelector('.bar-val').style.color='var(--gold)'"></div>
-      <div class="bar-lbl">Año ${t}</div>`;
-    bc.appendChild(col);
-  });
-
-  opciones(
-    ['A.  h = 2t + 50','B.  h = 3t² + 50','C.  h = 3t + 50','D.  h = 2t² + 50'],
-    2,
-    '¡Correcto! Crece 3 cm/año → pendiente 3. Al año 0 medía ~50 → ordenada 50. h = 3t + 50.',
-    'Cada año crece 3 cm (relación constante → lineal, no cuadrática). h = 3t + 50.',
-  );
-
-  btnNext('Siguiente →');
-};
-
-/* ════ STAGE 4 – GRÁFICAS ════ */
-stages.graficas=()=>{
-  html(`
-  <div class="card slide-in">
-    <div class="card-label">Etapa 4 de 5 · Interpretación</div>
-    <h2>Errores al Leer Gráficas 🔍</h2>
-    <p>Una habilidad clave ICFES es <strong>identificar interpretaciones erróneas</strong> de datos estadísticos.</p>
-    <div class="highlight">
-      Reglas para no equivocarse:<br>
-      ✓ Lee el título y los ejes antes de sacar conclusiones<br>
-      ✓ Diferencia entre "y" (intersección) vs "o" (unión)<br>
-      ✓ Porcentajes se calculan sobre el total correcto
-    </div>
-    <p>Contexto: una investigación sobre consumo de sustancias en jóvenes arrojó estos porcentajes:</p>
-    <table class="tabla">
-      <tr><th>Sustancia</th><th>% consumo</th></tr>
-      <tr><td>Tabaco</td><td>60%</td></tr>
-      <tr><td>Alcohol</td><td>55%</td></tr>
-      <tr><td>Marihuana</td><td>15%</td></tr>
-      <tr><td>Inhalantes</td><td>8%</td></tr>
-      <tr><td>Cocaína</td><td>3%</td></tr>
-      <tr><td>Drogas farmacéuticas</td><td>12%</td></tr>
-    </table>
-    <p style="font-size:.72rem;color:var(--muted);">Total encuestados: ~200 jóvenes</p>
-  </div>
-
-  <div class="card slide-in" style="animation-delay:.1s;">
-    <div class="card-label">Pregunta 1</div>
-    <h2>¿Cuál de estas afirmaciones es <u>incorrecta</u>?</h2>
-  </div>`);
-
-  opciones(
-    ['A. Más del 50% ha consumido tabaco y alcohol',
-     'B. Unos 100 jóvenes han consumido tabaco o marihuana',
-     'C. El 8% de los jóvenes consume inhalantes y alcohol simultáneamente',
-     'D. El consumo de cocaína es menor que el de drogas farmacéuticas'],
-    2,
-    '¡Correcto! La opción C confunde: 8% consume inhalantes, pero no se sabe cuántos consumen AMBOS (inhalantes Y alcohol) simultáneamente. Eso requiere datos de intersección.',
-    'C es incorrecta: el 8% es para inhalantes solos, no para la intersección con alcohol. "y" (intersección) ≠ porcentaje de uno solo.',
-  );
-
-  html(`<div class="card slide-in" style="margin-top:.9rem;animation-delay:.15s;">
-    <div class="card-label">Pregunta 2</div>
-    <h2>Un periodista afirma que "el 24% consumió drogas farmacéuticas". ¿Es correcto?</h2>
-    <p style="margin-top:.3rem;">Los datos muestran 12%. El periodista leyó mal y duplicó el valor.</p>
-  </div>`);
-
-  opciones(
-    ['A. Sí, porque incluyó a quienes consumieron también otras drogas',
-     'B. No, el dato correcto es 12% según la investigación',
-     'C. Sí, porque sumó las drogas farmacéuticas con los inhalantes',
-     'D. Depende del total de jóvenes encuestados'],
-    1,
-    '¡Correcto! El 12% es la cifra correcta. El periodista duplicó el valor por error al leer la gráfica.',
-    'El dato de la tabla es 12%. 24% es incorrecto — el periodista cometió un error de lectura.',
-  );
-
-  btnNext('Siguiente →');
-};
-
-/* ════ STAGE 5 – ICFES ════ */
-stages.icfes=()=>{
-  html(`
-  <div class="card slide-in">
-    <div class="card-label">Etapa 5 de 5 · Tipo ICFES</div>
-    <h2>Reto Final: Preguntas ICFES 🏆</h2>
-    <p>Basadas en el libro <em>Competencia & Éxito Matemáticas</em>. ¡+20 pts por correcta!</p>
-  </div>
-
-  <div class="card slide-in" style="animation-delay:.08s;">
-    <div class="card-label">Pregunta 1 · Probabilidad combinada</div>
-    <h2>Mariana le propone a Daniela: "Extraes dos bolas una después de otra de una bolsa con 3 rojas y 2 azules. Ganas si son del mismo color." ¿Qué probabilidad tiene Daniela de ganar?</h2>
-  </div>`);
-
-  opciones(
-    ['A.  2/5','B.  2/10','C.  4/10','D.  3/10'],
-    2,
-    '¡Correcto! P(RR) = 3/5 × 2/4 = 6/20. P(AA) = 2/5 × 1/4 = 2/20. Total = 8/20 = 4/10.',
-    'P(RR) = (3/5)(2/4) = 6/20. P(AA) = (2/5)(1/4) = 2/20. Total favorable = 8/20 = 4/10.',
-  );
-
-  html(`<div class="card slide-in" style="margin-top:.9rem;animation-delay:.13s;">
-    <div class="card-label">Pregunta 2 · Funciones lineales</div>
-    <h2>Un café ofrece dos tarifas para llamadas. Tarifa B: $10.000 fijos + $200 por minuto. ¿Cuál es el costo para 30 minutos?</h2>
-  </div>`);
-
-  opciones(
-    ['A.  $6.000','B.  $16.000','C.  $22.000','D.  $28.000'],
-    1,
-    '¡Correcto! C = 10.000 + 200×30 = 10.000 + 6.000 = $16.000.',
-    '10.000 (fijo) + 200×30 (variable) = 10.000 + 6.000 = $16.000.',
-  );
-
-  html(`<div class="card slide-in" style="margin-top:.9rem;animation-delay:.18s;">
-    <div class="card-label">Pregunta 3 · Geometría-Probabilidad</div>
-    <h2>Un juego tiene fichas de 5 colores. Diego tiene amarillo (2/5 prob.), Valentina rojo (1/5), Felipe azul (1/5), Daniela verde (1/5). ¿Por qué Diego tiene más probabilidad de ganar?</h2>
-  </div>`);
-
-  opciones(
-    ['A. El amarillo tiene más alternativas de ganar que los demás',
-     'B. Tiene tantas como Felipe pero inicia primero',
-     'C. Su probabilidad es 2/5 y la de los demás es 1/5 cada uno',
-     'D. Los de menor probabilidad son Valentina y Daniela'],
-    2,
-    '¡Correcto! Diego = 2/5 = 0.40. Los demás = 1/5 = 0.20 cada uno. Diego tiene el doble de probabilidad.',
-    'P(Diego) = 2/5 frente a 1/5 de los demás. 2/5 > 1/5, por lo tanto Diego tiene mayor probabilidad.',
-  );
-
-  btnNext('Ver resultado final →', ()=>goTo(STAGES.indexOf('fin')));
-};
-
-/* ════ STAGE 6 – FIN ════ */
-stages.fin=()=>{
-  const max=220;
-  const pct=Math.round(pts/max*100);
-  const nivel=pct>=80?'🏆 ¡Experto en datos!':pct>=60?'🎯 ¡Buen análisis!':'💪 ¡Sigue practicando!';
-  confetti();
-  html(`
-  <div class="card slide-in" style="text-align:center;">
-    <div class="card-label">¡Taller completado!</div>
-    <h2>${nivel}</h2>
-    <div class="score-circle"><span class="score-n">${pts}</span><span class="score-lbl">de ${max} pts</span></div>
-    <p>Completaste el taller de <strong>Estadística y Probabilidad</strong>.</p>
-  </div>
-  <div class="card slide-in" style="animation-delay:.1s;">
-    <div class="card-label">Resumen de conceptos</div>
-    ${['P(A) = favorables / posibles','Probabilidad ∈ [0, 1]','Decimal periódico = Racional','Tabla → pendiente = cambio por unidad','Leer gráficas: cuidado con "y" vs "o"'].map(t=>`<div style="display:flex;align-items:center;gap:.5rem;margin:.35rem 0;font-family:var(--font-b);font-size:.76rem;"><span style="color:var(--teal);">✓</span>${t}</div>`).join('')}
-  </div>
-  <button class="btn-next" onclick="completar()">✅ Recibir puntos en PRI →</button>`);
-};
-
-function completar(){
-  try{window.parent.postMessage({type:'taller-completado',tallerExternoId:'taller_mat_probabilidad',pts},'*');}catch(e){}
-  const btns=document.querySelectorAll('.btn-next');
-  btns.forEach(b=>{b.textContent='¡Listo! Cerrando…';b.disabled=true;});
-  setTimeout(()=>{try{window.parent.postMessage({type:'cerrar-taller-interactivo'},'*');}catch(e){}},1200);
-}
-
-function confetti(){
-  const colors=['#38bdf8','#fbbf24','#10b981','#f87171','#a78bfa'];
-  for(let i=0;i<50;i++){
-    const p=document.createElement('div');
-    p.className='confetti-piece';
-    p.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*30}%;background:${colors[i%5]};animation-delay:${Math.random()*.8}s;animation-duration:${1.4+Math.random()*.8}s;`;
-    document.body.appendChild(p);
-    setTimeout(()=>p.remove(),3000);
-  }
-}
-
-goTo(0);
+(function(){var cv=document.createElement('canvas');cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.09;';document.body.insertBefore(cv,document.body.firstChild);var ctx=cv.getContext('2d');var S=['→','←','…','¿','?','!','∑','√','∞','·','"','"','A','B'];var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];var P=[];function rsz(){cv.width=innerWidth;cv.height=innerHeight;}rsz();window.addEventListener('resize',rsz);for(var i=0;i<32;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.05),s:S[i%S.length],sz:8+Math.random()*12,a:.12+Math.random()*.45,c:C[i%C.length],rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.008});(function tick(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.font='bold '+p.sz+'px Courier New';ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();});requestAnimationFrame(tick);})();})();
+function burst(el,color,count){if(!el)return;var r=(typeof el==='string'?document.getElementById(el):el).getBoundingClientRect();var cx=r.left+r.width/2,cy=r.top+r.height/2;for(var i=0;i<(count||12);i++){var p=document.createElement('div');var sz=3+Math.random()*7;p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+color+';border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);';document.body.appendChild(p);(function(ep){var ang=Math.random()*Math.PI*2,d=38+Math.random()*80;gsap.to(ep,{x:Math.cos(ang)*d,y:Math.sin(ang)*d-Math.random()*28,opacity:0,scale:0,duration:.5+Math.random()*.4,ease:'power2.out',onComplete:function(){ep.remove();}});})(p);}}
+const TOTAL=6;let cur=0,busy=false,_sel=null;
+function render(){[s0,s1,s2,s3,s4,s5][cur](document.getElementById('slide-inner'));}
+function anim(){[a0,a1,a2,a3,a4,a5][cur]();}
+function go(d){if(busy)return;var n=cur+d;if(n<0||n>=TOTAL)return;busy=true;_sel=null;var el=document.getElementById('slide-inner');gsap.to(el,{opacity:0,x:d<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:function(){cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-65:65,scale:.94},{opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:function(){anim();busy=false;}});}});}
+function upd(){document.getElementById('counter').textContent=(cur+1)+' / '+TOTAL;document.getElementById('prog-fill').style.width=(((cur+1)/TOTAL)*100)+'%';document.getElementById('btn-prev').disabled=cur===0;document.getElementById('btn-next').disabled=cur===TOTAL-1;document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('active',i===cur);});}
+function mkDots(){var c=document.getElementById('dots');for(var i=0;i<TOTAL;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');(function(idx){d.onclick=function(){if(!busy&&idx!==cur){var dv=idx-cur;cur=idx-dv;go(dv);}};})(i);c.appendChild(d);}}
+function selectChip(el,val){document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(_sel===val){_sel=null;return;}_sel=val;el.classList.add('selected');gsap.from(el,{scale:.82,duration:.35,ease:'elastic.out(1,.4)'});}
+function tryPlace(slotId,correct,color){var slot=document.getElementById(slotId);if(!slot||slot.classList.contains('filled'))return;if(!_sel){gsap.to(slot,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.36,ease:'none'});return;}var chosen=_sel;var chip=document.querySelector('.conn-chip.selected');var aEl=slot.closest('.conn-area');_sel=null;document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(chosen===correct){slot.textContent=chosen.toUpperCase();slot.classList.add('filled');slot.style.cssText+='border-style:solid !important;color:var(--green) !important;border-color:var(--green) !important;background:rgba(16,185,129,.12) !important;';gsap.from(slot,{scale:0,rotation:-22,opacity:0,duration:.68,ease:'elastic.out(1,.42)'});burst(slot,color||'#10b981',20);if(chip){gsap.to(chip,{scale:0,opacity:0,duration:.3,ease:'back.in(2)',onComplete:function(){chip.classList.add('used');}});}if(aEl)gsap.to(aEl,{borderColor:'rgba(16,185,129,.5)',boxShadow:'0 0 32px rgba(16,185,129,.18)',duration:.4});var fbEl=document.getElementById('fb'+slotId.replace('slot',''));if(fbEl){fbEl.className='fb-msg ok';gsap.from(fbEl,{y:10,opacity:0,duration:.38});}var hintEl=document.getElementById('hint'+slotId.replace('slot',''));if(hintEl)hintEl.style.display='none';}else{if(chip){gsap.timeline().to(chip,{y:-28,rotation:18,scale:1.15,duration:.18,ease:'power2.out'}).to(chip,{y:0,rotation:0,scale:1,duration:.55,ease:'elastic.out(1,.4)'});}gsap.to(slot,{keyframes:[{x:-8},{x:8},{x:-6},{x:6},{x:0}],duration:.42,ease:'none'});burst(chip||slot,'#ef4444',9);gsap.to(slot,{borderColor:'#ef4444',duration:.12,yoyo:true,repeat:4,onComplete:function(){gsap.set(slot,{clearProps:'borderColor'});}});}}
+var _QUIZ=[{q:"Se lanzan dos monedas. ¿Cuál es la probabilidad de obtener dos caras?",opts:["1/4","1/2","2/4","1/8"],ok:0,fb:"Espacio muestral: {CC, CS, SC, SS} → P(CC)=1/4=25%. ✓"},{q:"Una tabla de frecuencias muestra que 30 de 120 estudiantes llegaron tarde. ¿Cuál es la frecuencia relativa de tardanzas?",opts:["25%","30%","40%","15%"],ok:0,fb:"f.relativa = 30/120 = 0.25 = 25%. ✓"},{q:"En un diagrama circular, si el 40% de los datos corresponde a una categoría, ¿cuántos grados ocupa ese sector?",opts:["40°","90°","144°","180°"],ok:2,fb:"Ángulo = 0.40 × 360° = 144°. ✓"}];
+var _qAns=[null,null,null];
+function rQ(i){if(i>=_QUIZ.length){setTimeout(showScore,420);return;}var q=_QUIZ[i];var w=document.getElementById('qw');if(!w)return;w.innerHTML='<div style="font-size:.68rem;color:var(--muted);margin-bottom:.38rem;">Pregunta '+(i+1)+' de '+_QUIZ.length+'</div><div class="q-q">'+q.q+'</div><div class="q-opts" id="qo'+i+'">'+q.opts.map(function(o,j){return '<button class="q-opt" onclick="ansQ('+i+','+j+')" id="qo'+i+'_'+j+'">'+String.fromCharCode(65+j)+'. '+o+'</button>';}).join('')+'</div><div class="q-fb" id="qfb'+i+'"></div>';gsap.from('.q-opt',{y:18,opacity:0,duration:.3,stagger:.07,ease:'back.out(2)'});}
+function ansQ(qi,oi){if(_qAns[qi]!==null)return;_qAns[qi]=oi;var q=_QUIZ[qi];var isOk=oi===q.ok;document.querySelectorAll('#qo'+qi+' .q-opt').forEach(function(b,i){b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});var fb=document.getElementById('qfb'+qi);if(fb){fb.className='q-fb '+(isOk?'ok':'bad');fb.textContent=(isOk?'✅ ':'❌ ')+q.fb;}var btn=document.getElementById('qo'+qi+'_'+oi);if(isOk&&btn){burst(btn,'#10b981',16);gsap.from(btn,{scale:1.1,duration:.4,ease:'elastic.out(1,.4)'});}else if(btn){gsap.to(btn,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.4,ease:'none'});}setTimeout(function(){rQ(qi+1);},2200);}
+function showScore(){var ok=_qAns.filter(function(a,i){return a===_QUIZ[i].ok;}).length;var w=document.getElementById('qw');var ss=document.getElementById('sc');if(w)w.innerHTML='';if(!ss)return;ss.style.display='block';var em=ok===_QUIZ.length?'🏆':ok>=2?'⭐':'📚';var msg=ok===_QUIZ.length?'¡Perfecto! Dominas este tema.':ok>=2?'¡Muy bien! Sigue practicando.':'Repasa los conceptos clave.';ss.innerHTML='<div id="sci" style="padding:.6rem 0;text-align:center;"><div style="font-size:3rem;font-weight:900;margin-bottom:.32rem;">'+em+' '+ok+'/'+_QUIZ.length+'</div><div style="color:var(--muted);font-size:.87rem;margin-bottom:1rem;">'+msg+'</div><button onclick="resetQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.4rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button></div>';gsap.from('#sci',{scale:.52,rotation:-8,opacity:0,duration:.72,ease:'elastic.out(1,.42)'});if(ok===_QUIZ.length){var cols=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];for(var ii=0;ii<24;ii++)(function(n){setTimeout(function(){var pp={getBoundingClientRect:function(){return{left:innerWidth*.25+Math.random()*innerWidth*.5,top:innerHeight*.2,width:0,height:0};}};burst(pp,cols[n%cols.length],6);},n*90);}(ii));}}
+function resetQ(){_qAns=[null,null,null];var ss=document.getElementById('sc');if(ss)ss.style.display='none';rQ(0);}
+function s0(el){el.innerHTML=`<div style="text-align:center;padding:.2rem 0;"><div class="s-tag">Estadística y Probabilidad · Matemáticas ICFES</div><div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fff 30%,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.55rem;" id="mt0">Estadística y Probabilidad ICFES</div><div id="chains0" style="display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:.55rem 0 .9rem;"><span id="ch0" class="conn-chip type-adv" style="opacity:0;">probabilidad</span><span id="ch1" class="conn-chip type-cons" style="opacity:0;">frecuencia</span><span id="ch2" class="conn-chip type-add" style="opacity:0;">media</span><span id="ch3" class="conn-chip type-caus" style="opacity:0;">distribución</span><span id="ch4" class="conn-chip type-adv" style="opacity:0;">gráficas</span></div><div id="obj0" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1rem 1.25rem;max-width:460px;margin:0 auto;text-align:left;"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.55rem;">🎯 OBJETIVOS</div><div id="ob0" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Calcular probabilidad teórica y experimental</span></div><div id="ob1" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Interpretar tablas de frecuencia absoluta y relativa</span></div><div id="ob2" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Calcular media, mediana y moda de datos agrupados</span></div><div id="ob3" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Leer e interpretar gráficas estadísticas tipo ICFES</span></div></div></div>`;}
+function a0(){var tl=gsap.timeline();tl.from('#mt0',{y:-80,rotation:-5,opacity:0,duration:.7,ease:'bounce.out'});tl.fromTo(['#ch0','#ch1','#ch2','#ch3','#ch4'],{opacity:0,scale:.4,y:-25},{opacity:1,scale:1,y:0,duration:.38,stagger:.09,ease:'elastic.out(1,.5)'},'-=.2');tl.fromTo(['#ob0','#ob1','#ob2','#ob3'],{opacity:0,x:-42},{opacity:1,x:0,duration:.38,stagger:.11,ease:'back.out(2.5)'},'-=.1');gsap.to('.conn-chip',{y:-4,duration:1.4,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:{amount:1.2},delay:.8});}
+function s1(el){el.innerHTML=`<div><div class="s-tag">Concepto base</div><div class="s-title" id="t1">Probabilidad Teórica y Experimental</div><div class="s-sub">Predecir y medir la ocurrencia de eventos</div><div class="formula" id="f1">P(A) = casos favorables / casos totales &nbsp;·&nbsp; P(A∪B) = P(A)+P(B)−P(A∩B)</div><div id="st1" class="step"><div class="step-n">1</div><div><strong>Probabilidad teórica:</strong> calculada matemáticamente. Dado justo: P(par) = 3/6 = 1/2. <strong>Experimental:</strong> basada en resultados reales de experimentos.</div></div><div id="st2" class="step"><div class="step-n">2</div><div><strong>Eventos mutuamente excluyentes:</strong> no pueden ocurrir al mismo tiempo. P(A∪B) = P(A)+P(B). Ejemplo: sacar cara Y sello en la misma tirada.</div></div><div class="example" id="e1"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">⚡ TRUCO ICFES</div>Si el problema da una tabla con frecuencias y pide probabilidad → divide la frecuencia del evento entre el total de datos. Simple.</div></div>`;}
+function a1(){gsap.timeline().from('#t1',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#f1',{scaleX:.35,scaleY:.35,opacity:0,duration:.5,ease:'back.out(2.8)'},'-=.15').from(['#st1','#st2'],{x:-40,opacity:0,duration:.4,stagger:.16,ease:'back.out(2)'}).from('#e1',{y:16,opacity:0,duration:.36},'-=.1');}
+function s2(el){el.innerHTML=`<div><div class="s-tag">Clasificación</div><div class="s-title" id="t2">Tablas de Frecuencia y Gráficas</div><div class="s-sub">Cómo leer y analizar datos estadísticos</div><div style="margin-top:.35rem;"><div class="ctype-card" id="ct1"><div class="ctype-name" style="color:#fb923c;">Frecuencia Absoluta</div><div class="ctype-words" style="color:#fb923c;">Cuántas veces aparece un valor en el conjunto de datos.</div><div class="ctype-use">Si 12 de 50 estudiantes sacaron 5.0 → f.absoluta=12.</div></div>
+<div class="ctype-card" id="ct2"><div class="ctype-name" style="color:#7dd3fc;">Frecuencia Relativa</div><div class="ctype-words" style="color:#7dd3fc;">Qué fracción del total representa cada valor.</div><div class="ctype-use">f.relativa = f.absoluta / total = 12/50 = 0.24 = 24%.</div></div>
+<div class="ctype-card" id="ct3"><div class="ctype-name" style="color:#6ee7b7;">Diagrama de Barras</div><div class="ctype-words" style="color:#6ee7b7;">Compara categorías. Barra más alta = mayor frecuencia.</div><div class="ctype-use">El eje Y siempre muestra la frecuencia o el valor.</div></div>
+<div class="ctype-card" id="ct4"><div class="ctype-name" style="color:#c4b5fd;">Diagrama Circular</div><div class="ctype-words" style="color:#c4b5fd;">Muestra proporciones. Ángulo = (f.relativa) × 360°.</div><div class="ctype-use">Si 25% de los datos → sector de 90°.</div></div></div></div>`;}
+function a2(){gsap.timeline().from('#t2',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from(['#ct1','#ct2','#ct3','#ct4'],{y:72,rotation:-3,opacity:0,duration:.54,stagger:.13,ease:'back.out(2.2)'},'-=.1');}
+function s3(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 1 · Calcula la probabilidad</div><div class="s-title" id="t3">¿Cuál es la probabilidad?</div><div class="s-sub">Elige la respuesta correcta</div><div class="conn-area" id="ca3"><div class="passage">Una urna contiene <strong>4 bolas rojas, 6 azules y 2 verdes</strong> (12 en total).<br>¿Cuál es la probabilidad de sacar una bola <strong>azul</strong>?</div><div class="chips-row"><span class="conn-chip type-cons" onclick="selectChip(this,'1/6' )">1/6</span><span class="conn-chip type-adv" onclick="selectChip(this,'1/2' )">1/2</span><span class="conn-chip type-add" onclick="selectChip(this,'1/4' )">1/4</span><span class="conn-chip type-caus" onclick="selectChip(this,'2/3' )">2/3</span></div><div class="hint-text" id="hints3">👆 P(azul) = bolas azules / total = 6 / 12 = ?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot3" class="conn-chip type-add" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot3','1/2','#10b981')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb3">✅ P(azul) = 6/12 = 1/2 = 50%. ✓</div></div></div>`;}
+function a3(){gsap.timeline().from('#t3',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca3',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s4(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 2 · Frecuencia relativa</div><div class="s-title" id="t4">¿Cuál es la frecuencia relativa?</div><div class="s-sub">Calcula el porcentaje correcto</div><div class="conn-area" id="ca4"><div class="passage">En una encuesta a <strong>200 estudiantes</strong>, <strong>50 prefieren ciencias</strong> sobre las demás materias.<br>¿Cuál es la frecuencia relativa de los que prefieren ciencias?</div><div class="chips-row"><span class="conn-chip type-cons" onclick="selectChip(this,'10%' )">10%</span><span class="conn-chip type-adv" onclick="selectChip(this,'20%' )">20%</span><span class="conn-chip type-add" onclick="selectChip(this,'25%' )">25%</span><span class="conn-chip type-caus" onclick="selectChip(this,'50%' )">50%</span></div><div class="hint-text" id="hints4">👆 f.relativa = 50/200 = 0.25 = ?%</div><div style="text-align:center;margin-top:.7rem;"><span id="slot4" class="conn-chip type-cons" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot4','25%','#38bdf8')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb4">✅ 25% — f.relativa = 50/200 = 0.25 = 25%. ✓</div></div></div>`;}
+function a4(){gsap.timeline().from('#t4',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca4',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s5(el){_qAns=[null,null,null];el.innerHTML=`<div><div class="s-tag">Mini Quiz · 3 preguntas tipo ICFES Saber 11</div><div class="s-title" id="t5">¿Cuánto aprendiste?</div><div id="qw"></div><div id="sc" style="display:none;"></div></div>`;rQ(0);}
+function a5(){gsap.from('#t5',{y:-55,rotation:-4,opacity:0,duration:.62,ease:'elastic.out(1,.48)'});}
+mkDots();render();anim();
 </script>
 </body>
 </html>

@@ -3,415 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>¿Cómo crear mi primer proyecto? | PROGRAMA-PRI</title>
+<title>Proyectos Sociales · Competencias Ciudadanas — Programa PRI</title>
 <link rel="icon" type="image/png" href="logo.png">
-<meta name="theme-color" content="#021a36">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  :root{
-    --azul:#021a36;--panel:#062040;--card:#041830;
-    --naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;
-    --blanco:#f0f4f8;
-    --fuente:'Montserrat',sans-serif;
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--fuente);background:var(--azul);color:var(--blanco);
-       min-height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-
-  /* ── HEADER ── */
-  #header{display:flex;align-items:center;justify-content:space-between;
-          padding:.75rem 1.25rem;background:rgba(4,24,48,.9);
-          border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;gap:.75rem;}
-  #header-title{font-size:.65rem;font-weight:900;letter-spacing:1.5px;
-                text-transform:uppercase;color:var(--teal);}
-  #header-sub{font-size:.55rem;color:rgba(255,255,255,.35);margin-top:.1rem;}
-  #pts-badge{font-size:.6rem;font-weight:900;color:var(--oro);
-             background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.2);
-             border-radius:20px;padding:.2rem .65rem;white-space:nowrap;}
-  #btn-cerrar{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);
-              color:#fca5a5;font-size:.6rem;font-weight:700;padding:.3rem .75rem;
-              border-radius:8px;cursor:pointer;transition:all .2s;white-space:nowrap;}
-  #btn-cerrar:hover{background:rgba(239,68,68,.25);}
-
-  /* ── PROGRESS ── */
-  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.06);flex-shrink:0;}
-  #progress-bar{height:100%;background:linear-gradient(90deg,var(--naranja),var(--teal));
-                transition:width .6s ease;width:0%;}
-
-  /* ── CHAT AREA ── */
-  #chat{flex:1;overflow-y:auto;padding:1rem 1rem 1.25rem;
-        display:flex;flex-direction:column;gap:.75rem;
-        scroll-behavior:smooth;
-        -webkit-overflow-scrolling:touch;}
-  #chat::-webkit-scrollbar{width:4px;}
-  #chat::-webkit-scrollbar-thumb{background:rgba(255,94,0,.3);border-radius:2px;}
-
-  /* ── BUBBLES ── */
-  .bubble-wrap{display:flex;gap:.55rem;align-items:flex-end;max-width:90%;animation:slideIn .35s ease;}
-  .bubble-wrap.bot{align-self:flex-start;}
-  .bubble-wrap.user{align-self:flex-end;flex-direction:row-reverse;}
-  @keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-  .avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;
-          display:flex;align-items:center;justify-content:center;font-size:1rem;}
-  .avatar.bot{background:linear-gradient(135deg,var(--naranja),#cc4400);}
-  .avatar.user{background:linear-gradient(135deg,var(--teal),#0284c7);}
-
-  .bubble{padding:.6rem .85rem;border-radius:14px;font-size:.78rem;
-          line-height:1.55;max-width:100%;word-break:break-word;}
-  .bubble.bot{background:rgba(6,32,64,.9);border:1px solid rgba(255,255,255,.09);
-              border-bottom-left-radius:4px;color:rgba(240,244,248,.9);}
-  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);
-               border-bottom-right-radius:4px;color:var(--blanco);}
-  .bubble strong{color:var(--teal);}
-  .bubble em{color:var(--oro);font-style:normal;}
-  .bubble code{background:rgba(255,255,255,.08);border-radius:4px;
-               padding:.1rem .35rem;font-family:monospace;font-size:.72rem;color:#86efac;}
-  .bubble .tip{background:rgba(255,94,0,.1);border-left:3px solid var(--naranja);
-               border-radius:0 8px 8px 0;padding:.4rem .6rem;margin:.4rem 0 0;
-               font-size:.72rem;color:rgba(240,244,248,.75);}
-  .bubble .check{color:#86efac;margin-right:.3rem;}
-
-  /* ── OPTIONS ── */
-  #options-area{padding:.6rem 1rem .9rem;flex-shrink:0;}
-  #options-grid{display:flex;flex-wrap:wrap;gap:.5rem;}
-  .opt-btn{font-family:var(--fuente);font-size:.68rem;font-weight:700;
-           padding:.45rem .9rem;border-radius:10px;cursor:pointer;transition:all .2s;
-           border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);
-           color:rgba(240,244,248,.8);text-align:left;line-height:1.4;}
-  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);color:var(--blanco);}
-  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);color:var(--blanco);}
-  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
-
-  /* ── INPUT LIBRE ── */
-  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
-  #input-row{display:flex;gap:.5rem;}
-  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);
-             color:var(--blanco);font-family:var(--fuente);font-size:.78rem;
-             padding:.55rem .9rem;border-radius:10px;outline:none;}
-  #txt-input:focus{border-color:var(--teal);}
-  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:1px solid rgba(255,255,255,.2);
-            font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;
-            border-radius:10px;cursor:pointer;transition:all .2s;}
-  #btn-send:hover{background:#fff;}
-
-  /* ── FIN ── */
-  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);
-               backdrop-filter:blur(10px);z-index:100;
-               flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
-  #fin-overlay.show{display:flex;}
-  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
-  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
-  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;
-           text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);
-           color:#fff;border:none;border-radius:10px;cursor:pointer;margin-top:.5rem;}
-
-/* ══ AB-NEON TALLER ══ */
-@keyframes _pt{0%,100%{opacity:.13;}50%{opacity:.18;}}
-#progress-bar{transition:width .65s cubic-bezier(.34,1.56,.64,1)!important;box-shadow:0 0 12px rgba(56,189,248,.5)!important;}
-.opt-btn:hover{box-shadow:0 0 14px rgba(255,94,0,.35)!important;}
-.opt-btn.selected{box-shadow:0 0 18px rgba(255,94,0,.45)!important;}
-.bubble.bot{box-shadow:0 0 0 1px rgba(56,189,248,.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#04080f;--card:#080f1e;--purple:#7c3aed;--orange:#ff5e00;--teal:#38bdf8;--green:#10b981;--red:#ef4444;--yellow:#fbbf24;--text:#e8f4ff;--muted:#6b9ab8;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+#topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+@keyframes _pg{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.65);}50%{box-shadow:0 0 28px rgba(124,58,237,.95),0 0 52px rgba(56,189,248,.22);}}
+#prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;flex-shrink:0;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));border-radius:3px;transition:width .65s cubic-bezier(.34,1.56,.64,1);animation:_pg 2.5s ease-in-out infinite;}
+@keyframes _cp{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08);}50%{box-shadow:0 0 65px rgba(124,58,237,.22),0 0 110px rgba(56,189,248,.06);}}
+#slide-card{flex:1;background:rgba(8,15,30,.95);border:1px solid rgba(124,58,237,.28);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;animation:_cp 3s ease-in-out infinite;}
+#slide-inner{flex:1;padding:1.6rem 2rem;overflow-y:auto;display:flex;flex-direction:column;}
+#nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;}
+.nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
+.nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.nav-btn:hover:not(:disabled){background:rgba(124,58,237,.32);border-color:var(--purple);box-shadow:0 0 22px rgba(124,58,237,.6);transform:translateY(-2px);}
+.nav-btn:disabled{opacity:.2;cursor:not-allowed;}
+#dots{display:flex;gap:6px;align-items:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;}
+.dot.active{background:var(--purple);transform:scale(1.5);box-shadow:0 0 10px rgba(124,58,237,.75);}
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.55rem;text-shadow:0 0 12px rgba(56,189,248,.5);}
+.s-title{font-size:1.7rem;font-weight:900;line-height:1.2;margin-bottom:.35rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.s-sub{font-size:.87rem;color:var(--muted);margin-bottom:1rem;}
+.step{display:flex;align-items:flex-start;gap:.7rem;margin:.42rem 0;font-size:.86rem;line-height:1.5;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;box-shadow:0 0 12px rgba(124,58,237,.5);}
+.example{background:rgba(56,189,248,.06);border-left:3px solid var(--teal);padding:.65rem 1rem;border-radius:0 8px 8px 0;margin:.55rem 0;font-size:.86rem;}
+.formula{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.38);border-radius:12px;padding:.8rem 1.3rem;font-size:1rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.8rem 0;}
+.ctype-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.7rem .9rem;margin:.38rem 0;transition:border-color .3s,box-shadow .3s;}
+.ctype-card:hover{border-color:rgba(124,58,237,.35);box-shadow:0 0 15px rgba(124,58,237,.1);}
+.ctype-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:.28rem;}
+.ctype-words{font-family:'Courier New',monospace;font-size:.86rem;font-weight:600;}
+.ctype-use{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+.conn-area{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem;margin:.7rem 0;transition:border-color .4s,box-shadow .4s;}
+.passage{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.6;margin-bottom:.85rem;font-style:italic;}
+.chips-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.conn-chip{padding:.42rem 1rem;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid;user-select:none;}
+.conn-chip.type-adv{background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.5);color:#fb923c;}
+.conn-chip.type-cons{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.5);color:#7dd3fc;}
+.conn-chip.type-add{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.5);color:#6ee7b7;}
+.conn-chip.type-caus{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.55);color:#c4b5fd;}
+.conn-chip:hover:not(.used){transform:scale(1.08);filter:brightness(1.3);}
+.conn-chip.selected{transform:scale(1.13);box-shadow:0 0 20px currentColor;filter:brightness(1.55);}
+.conn-chip.used{opacity:.22;pointer-events:none;transform:scale(.88);}
+.fb-msg{margin-top:.55rem;font-size:.81rem;padding:.45rem .75rem;border-radius:8px;display:none;text-align:center;}
+.fb-msg.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#a7f3d0;display:block;}
+.q-q{font-size:.9rem;font-weight:600;margin-bottom:.8rem;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.42rem;}
+.q-opt{padding:.6rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
+.q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
+.q-fb{margin-top:.6rem;font-size:.81rem;padding:.5rem .75rem;border-radius:8px;display:none;}
+.q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
+.q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<!-- HEADER -->
-<div id="header">
-  <div>
-    <div id="header-title">💡 ¿Cómo crear mi primer proyecto?</div>
-    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+<div id="app">
+  <div id="topbar">
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;">PROGRAMA·PRI · Proyectos Sociales</span>
+    <span id="counter" style="font-size:.7rem;color:var(--muted);">1 / 6</span>
   </div>
-  <div style="display:flex;align-items:center;gap:.6rem;">
-    <span id="pts-badge">0 pts</span>
-    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
-  </div>
-</div>
-<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-
-<!-- CHAT -->
-<div id="chat"></div>
-
-<!-- OPCIONES -->
-<div id="options-area"><div id="options-grid"></div></div>
-<div id="input-area">
-  <div id="input-row">
-    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="120">
-    <button id="btn-send">Enviar →</button>
+  <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
+  <div id="slide-card"><div id="slide-inner"></div></div>
+  <div id="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Anterior</button>
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Siguiente →</button>
   </div>
 </div>
-
-<!-- FIN -->
-<div id="fin-overlay">
-  <div id="fin-title">🏆 ¡Proyecto lanzado!</div>
-  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:320px;line-height:1.55;">
-    Completaste el taller. Ahora sabes qué es un proyecto social, cómo estructurarlo y cómo presentarlo.
-  </p>
-  <div id="fin-pts"></div>
-  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
-</div>
-
 <script>
-
-/* ═══ AB ENGINE TALLER ═══ */
 var _AB_T=true;
-(function(){
-  var cv=document.createElement('canvas');
-  cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.08;';
-  document.body.insertBefore(cv,document.body.firstChild);
-  var ctx=cv.getContext('2d');
-  var S=['x','y','²','F','v','Σ','π','+','−','=','a','b','n'];
-  var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];
-  var P=[];
-  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-  rsz();window.addEventListener('resize',rsz);
-  for(var i=0;i<24;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
-    vx:(Math.random()-.5)*.28,vy:-(Math.random()*.35+.06),
-    s:S[Math.floor(Math.random()*S.length)],sz:9+Math.random()*12,
-    a:.12+Math.random()*.38,c:C[Math.floor(Math.random()*C.length)],
-    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.009});
-  (function tk(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){
-    p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
-    if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}
-    if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;
-    ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
-    ctx.font='bold '+p.sz+'px Courier New';
-    ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();
-  });requestAnimationFrame(tk);})();
-})();
-
-// ─── Estado ───────────────────────────────────────────────
-let pts = 0;
-let paso = 0;
-let nombre = '';
-let proyectoTema = '';
-const TOTAL_PASOS = 9;
-
-// ─── Utilidades ───────────────────────────────────────────
-const chat = document.getElementById('chat');
-const optGrid = document.getElementById('options-grid');
-const ptsEl = document.getElementById('pts-badge');
-const progressBar = document.getElementById('progress-bar');
-
-function sumarPts(n){
-  pts += n;
-  ptsEl.textContent = pts + ' pts';
-}
-function avanzarBarra(){
-  paso = Math.min(paso + 1, TOTAL_PASOS);
-  progressBar.style.width = (paso / TOTAL_PASOS * 100) + '%';
-}
-function limpiarOpciones(){
-  optGrid.innerHTML = '';
-  document.getElementById('options-area').style.display = 'none';
-  document.getElementById('input-area').style.display = 'none';
-}
-
-function addBot(html, delay = 0){
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const wrap = document.createElement('div');
-      wrap.className = 'bubble-wrap bot';
-      wrap.innerHTML = `<div class="avatar bot">🤖</div><div class="bubble bot">${html}</div>`;
-      chat.appendChild(wrap);
-      chat.scrollTop = chat.scrollHeight;
-      resolve();
-    }, delay);
-  });
-}
-
-function addUser(text){
-  const wrap = document.createElement('div');
-  wrap.className = 'bubble-wrap user';
-  wrap.innerHTML = `<div class="avatar user">🧑</div><div class="bubble user">${text}</div>`;
-  chat.appendChild(wrap);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function mostrarOpciones(opciones){
-  document.getElementById('options-area').style.display = 'block';
-  optGrid.innerHTML = '';
-  opciones.forEach(op => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.textContent = op.label;
-    btn.onclick = () => {
-      document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-      btn.classList.add('selected');
-      addUser(op.label);
-      limpiarOpciones();
-      setTimeout(() => op.fn(), 400);
-    };
-    optGrid.appendChild(btn);
-  });
-}
-
-function mostrarInput(placeholder, fn){
-  document.getElementById('input-area').style.display = 'block';
-  const inp = document.getElementById('txt-input');
-  inp.placeholder = placeholder;
-  inp.value = '';
-  inp.focus();
-  const send = () => {
-    const val = inp.value.trim();
-    if (!val) return;
-    addUser(val);
-    limpiarOpciones();
-    setTimeout(() => fn(val), 400);
-  };
-  document.getElementById('btn-send').onclick = send;
-  inp.onkeydown = e => { if (e.key === 'Enter') send(); };
-}
-
-// ─── FLUJO ────────────────────────────────────────────────
-
-async function paso0(){
-  await addBot(`¡Hola! 👋 Soy tu guía en este taller.<br><br>
-Aquí vas a aprender <strong>paso a paso cómo diseñar un proyecto social</strong> — del tipo que puedes presentar en el colegio, en un concurso o para tu comunidad.<br><br>
-Primero dime: <em>¿cómo te llamas?</em>`, 300);
-  mostrarInput('Tu nombre…', val => {
-    nombre = val;
-    avanzarBarra();
-    paso1();
-  });
-}
-
-async function paso1(){
-  await addBot(`¡Qué bueno tenerte aquí, <em>${nombre}</em>! 🙌<br><br>
-Antes de crear, necesitas entender qué es un proyecto. Elige la definición que crees que es correcta:`, 400);
-  mostrarOpciones([
-    { label: '📄 Un documento largo con muchas páginas', fn: () => { addBot(`Mmm, no exactamente. Un proyecto no es solo papel — es una <strong>idea estructurada para resolver un problema real</strong>. ¡Vamos bien!`, 300); setTimeout(paso2, 1500); } },
-    { label: '💡 Una idea estructurada para resolver un problema real', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+20 pts.</strong> Un proyecto es una <em>hoja de ruta</em> para transformar algo que no funciona bien en algo mejor.`, 300); setTimeout(paso2, 1500); } },
-    { label: '📱 Una app o página web', fn: () => { addBot(`Eso puede ser parte de un proyecto, pero el concepto es más amplio. Un proyecto puede ser digital, artístico, ambiental… lo que importa es que resuelva algo.`, 300); setTimeout(paso2, 1500); } },
-  ]);
-}
-
-async function paso2(){
-  avanzarBarra();
-  await addBot(`Todo proyecto nace de un <strong>problema</strong>. Sin problema, no hay proyecto.<br><br>
-<div class="tip">💡 Ejemplo: "En mi colegio muchos estudiantes no saben leer bien en grado 9." → Eso es un problema que se puede trabajar.</div><br>
-¿Cuál de estas frases describe un <em>problema real</em> que se podría atacar con un proyecto?`, 400);
-  mostrarOpciones([
-    { label: '🌧️ A veces llueve mucho en mi ciudad', fn: () => { addBot(`Es una realidad del clima, pero no es un problema que un proyecto estudiantil pueda resolver directamente. Piensa en algo de tu entorno social o escolar.`, 300); setTimeout(paso3, 1600); } },
-    { label: '♻️ En mi barrio no se recicla y hay mucha basura', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Sí! ✅ <strong>+20 pts.</strong> Ese es un problema concreto, local y <em>accionable</em>. Desde ahí se pueden hacer campañas, talleres, puntos de reciclaje…`, 300); setTimeout(paso3, 1600); } },
-    { label: '😴 Me da sueño en matemáticas', fn: () => { addBot(`Jaja, ¡le pasa a muchos! Pero un proyecto necesita afectar a <em>más personas</em> y tener una causa raíz que puedas intervenir.`, 300); setTimeout(paso3, 1600); } },
-  ]);
-}
-
-async function paso3(){
-  avanzarBarra();
-  await addBot(`Perfecto. Ahora viene la parte más creativa: <strong>definir tu proyecto</strong>.<br><br>
-Cuéntame: <em>¿sobre qué tema te gustaría crear un proyecto?</em><br>
-(Puede ser ambiente, educación, tecnología, deporte, arte, salud… cualquier cosa que te apasione.)`, 400);
-  mostrarInput('Ej: educación ambiental, deportes, música…', val => {
-    proyectoTema = val;
-    avanzarBarra();
-    paso4();
-  });
-}
-
-async function paso4(){
-  await addBot(`¡Qué tema tan interesante: <em>${proyectoTema}</em>! 🔥<br><br>
-Todo buen proyecto tiene una estructura. Se llama el <strong>marco lógico</strong> y tiene 4 partes clave:<br><br>
-<strong>1. Objetivo General</strong> — ¿Qué quieres lograr?<br>
-<strong>2. Población</strong> — ¿A quién va dirigido?<br>
-<strong>3. Actividades</strong> — ¿Qué vas a hacer?<br>
-<strong>4. Indicadores</strong> — ¿Cómo sabes que funcionó?<br><br>
-¿Cuántas partes tiene el marco lógico que te acabo de enseñar?`, 400);
-  mostrarOpciones([
-    { label: '🔢 2 partes', fn: () => { addBot(`Casi — son un poco más. Relée: Objetivo, Población, Actividades, Indicadores. ¡Cuatro!`, 300); setTimeout(paso5, 1500); } },
-    { label: '🔢 4 partes', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Correcto! ✅ <strong>+20 pts.</strong> Objetivo · Población · Actividades · Indicadores. Esas 4 son la columna vertebral.`, 300); setTimeout(paso5, 1500); } },
-    { label: '🔢 6 partes', fn: () => { addBot(`Un poco más de lo que te dije — en este taller trabajamos las 4 esenciales para empezar.`, 300); setTimeout(paso5, 1500); } },
-  ]);
-}
-
-async function paso5(){
-  avanzarBarra();
-  await addBot(`Ahora apliquemos. Para tu proyecto sobre <em>${proyectoTema}</em>:<br><br>
-<em>¿A quién iría dirigido?</em> Escribe la población que quieres impactar.
-<div class="tip">💡 Ej: "Estudiantes de grado 8 y 9 del colegio" · "Familias del barrio" · "Jóvenes de 12 a 17 años"</div>`, 400);
-  mostrarInput('¿A quién va dirigido tu proyecto?', val => {
-    avanzarBarra();
-    paso6(val);
-  });
-}
-
-async function paso6(poblacion){
-  await addBot(`Perfecto: <em>${poblacion}</em>. Esa es tu <strong>población objetivo</strong> ✅<br><br>
-Ahora el <strong>objetivo general</strong>. Un buen objetivo empieza con un verbo de acción y es medible.<br><br>
-¿Cuál de estos es un buen objetivo general?`, 400);
-  mostrarOpciones([
-    {
-      label: `🎯 "Implementar talleres de ${proyectoTema} para ${poblacion} durante 3 meses"`,
-      fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Excelente! ✅ <strong>+20 pts.</strong> Tiene verbo de acción (<em>implementar</em>), población, tema y tiempo. ¡Eso es un objetivo sólido!`, 300); setTimeout(paso7, 1600); }
-    },
-    {
-      label: `💭 "Que las personas aprendan sobre ${proyectoTema}"`,
-      fn: () => { addBot(`Es vaga — no dice cuántas personas, cómo, ni en cuánto tiempo. Los objetivos deben ser <strong>específicos y medibles</strong>.`, 300); setTimeout(paso7, 1600); }
-    },
-    {
-      label: `📌 "El proyecto es sobre ${proyectoTema}"`,
-      fn: () => { addBot(`Eso describe el tema, no el objetivo. El objetivo dice <em>qué quieres lograr y para quién</em>.`, 300); setTimeout(paso7, 1600); }
-    },
-  ]);
-}
-
-async function paso7(){
-  avanzarBarra();
-  await addBot(`Ya tienes: población ✅ · objetivo ✅<br><br>
-Ahora las <strong>actividades</strong> — las acciones concretas que vas a realizar. Elige el mejor ejemplo de actividad para un proyecto de ${proyectoTema}:`, 400);
-  mostrarOpciones([
-    { label: '📋 Hacer una encuesta inicial + 3 talleres + feria final', fn: () => { sumarPts(20); avanzarBarra(); addBot(`¡Exacto! ✅ <strong>+20 pts.</strong> Son pasos concretos, secuenciados y con producto visible. ¡Así se planea un proyecto real!`, 300); setTimeout(paso8, 1600); } },
-    { label: '🗣️ Hablar con las personas sobre el tema', fn: () => { addBot(`"Hablar" es muy vago. Las actividades deben ser acciones específicas: talleres, eventos, encuestas, visitas, campañas…`, 300); setTimeout(paso8, 1600); } },
-    { label: '📱 Crear un grupo de WhatsApp', fn: () => { addBot(`Puede ser una herramienta, pero no es una actividad completa. ¿Qué van a hacer en ese grupo? Eso es lo que cuenta.`, 300); setTimeout(paso8, 1600); } },
-  ]);
-}
-
-async function paso8(){
-  avanzarBarra();
-  await addBot(`¡Increíble, ${nombre}! Ya diseñaste los 3 primeros elementos de tu proyecto. 🎉<br><br>
-Solo falta saber si funcionó: los <strong>indicadores</strong>.<br><br>
-<div class="tip">💡 Un indicador mide el impacto. Ejemplo: "El 80% de los participantes mejoró su conocimiento sobre el tema según la encuesta final."</div><br>
-¿Cómo sabrías que tu proyecto sobre <em>${proyectoTema}</em> funcionó? Escribe un indicador sencillo.`, 400);
-  mostrarInput('Ej: "El 70% de los participantes…"', val => {
-    avanzarBarra();
-    paso9(val);
-  });
-}
-
-async function paso9(indicador){
-  sumarPts(10);
-  await addBot(`¡Brillante! Indicador: <em>"${indicador}"</em> ✅<br><br>
-Ahora tienes el esqueleto de tu <strong>primer proyecto</strong>:<br><br>
-<span class="check">✅</span> <strong>Tema:</strong> ${proyectoTema}<br>
-<span class="check">✅</span> <strong>Objetivo:</strong> Implementar acciones de ${proyectoTema}<br>
-<span class="check">✅</span> <strong>Actividades:</strong> Encuesta + talleres + feria/presentación<br>
-<span class="check">✅</span> <strong>Indicador:</strong> ${indicador}<br><br>
-<em>¡Eso es un proyecto real, ${nombre}! Podrías presentarlo mañana.</em> 🚀`, 400);
-  setTimeout(() => {
-    avanzarBarra();
-    mostrarFin();
-  }, 2500);
-}
-
-function mostrarFin(){
-  document.getElementById('fin-overlay').classList.add('show');
-  document.getElementById('fin-pts').textContent = `✨ Acumulaste ${pts} puntos en este taller`;
-  // Notificar al dashboard
-  try {
-    window.parent.postMessage({ type: 'taller-completado', tallerExternoId: 'taller_primer_proyecto', pts }, '*');
-  } catch(e){}
-}
-
-function cerrarTaller(){
-  try {
-    window.parent.postMessage({ type: 'cerrar-taller-interactivo' }, '*');
-  } catch(e){}
-  window.close();
-}
-
-// ─── INICIO ───────────────────────────────────────────────
-paso0();
+(function(){var cv=document.createElement('canvas');cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.09;';document.body.insertBefore(cv,document.body.firstChild);var ctx=cv.getContext('2d');var S=['→','←','…','¿','?','!','∑','√','∞','·','"','"','A','B'];var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];var P=[];function rsz(){cv.width=innerWidth;cv.height=innerHeight;}rsz();window.addEventListener('resize',rsz);for(var i=0;i<32;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.05),s:S[i%S.length],sz:8+Math.random()*12,a:.12+Math.random()*.45,c:C[i%C.length],rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.008});(function tick(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.font='bold '+p.sz+'px Courier New';ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();});requestAnimationFrame(tick);})();})();
+function burst(el,color,count){if(!el)return;var r=(typeof el==='string'?document.getElementById(el):el).getBoundingClientRect();var cx=r.left+r.width/2,cy=r.top+r.height/2;for(var i=0;i<(count||12);i++){var p=document.createElement('div');var sz=3+Math.random()*7;p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+color+';border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);';document.body.appendChild(p);(function(ep){var ang=Math.random()*Math.PI*2,d=38+Math.random()*80;gsap.to(ep,{x:Math.cos(ang)*d,y:Math.sin(ang)*d-Math.random()*28,opacity:0,scale:0,duration:.5+Math.random()*.4,ease:'power2.out',onComplete:function(){ep.remove();}});})(p);}}
+const TOTAL=6;let cur=0,busy=false,_sel=null;
+function render(){[s0,s1,s2,s3,s4,s5][cur](document.getElementById('slide-inner'));}
+function anim(){[a0,a1,a2,a3,a4,a5][cur]();}
+function go(d){if(busy)return;var n=cur+d;if(n<0||n>=TOTAL)return;busy=true;_sel=null;var el=document.getElementById('slide-inner');gsap.to(el,{opacity:0,x:d<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:function(){cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-65:65,scale:.94},{opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:function(){anim();busy=false;}});}});}
+function upd(){document.getElementById('counter').textContent=(cur+1)+' / '+TOTAL;document.getElementById('prog-fill').style.width=(((cur+1)/TOTAL)*100)+'%';document.getElementById('btn-prev').disabled=cur===0;document.getElementById('btn-next').disabled=cur===TOTAL-1;document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('active',i===cur);});}
+function mkDots(){var c=document.getElementById('dots');for(var i=0;i<TOTAL;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');(function(idx){d.onclick=function(){if(!busy&&idx!==cur){var dv=idx-cur;cur=idx-dv;go(dv);}};})(i);c.appendChild(d);}}
+function selectChip(el,val){document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(_sel===val){_sel=null;return;}_sel=val;el.classList.add('selected');gsap.from(el,{scale:.82,duration:.35,ease:'elastic.out(1,.4)'});}
+function tryPlace(slotId,correct,color){var slot=document.getElementById(slotId);if(!slot||slot.classList.contains('filled'))return;if(!_sel){gsap.to(slot,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.36,ease:'none'});return;}var chosen=_sel;var chip=document.querySelector('.conn-chip.selected');var aEl=slot.closest('.conn-area');_sel=null;document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(chosen===correct){slot.textContent=chosen.toUpperCase();slot.classList.add('filled');slot.style.cssText+='border-style:solid !important;color:var(--green) !important;border-color:var(--green) !important;background:rgba(16,185,129,.12) !important;';gsap.from(slot,{scale:0,rotation:-22,opacity:0,duration:.68,ease:'elastic.out(1,.42)'});burst(slot,color||'#10b981',20);if(chip){gsap.to(chip,{scale:0,opacity:0,duration:.3,ease:'back.in(2)',onComplete:function(){chip.classList.add('used');}});}if(aEl)gsap.to(aEl,{borderColor:'rgba(16,185,129,.5)',boxShadow:'0 0 32px rgba(16,185,129,.18)',duration:.4});var fbEl=document.getElementById('fb'+slotId.replace('slot',''));if(fbEl){fbEl.className='fb-msg ok';gsap.from(fbEl,{y:10,opacity:0,duration:.38});}var hintEl=document.getElementById('hint'+slotId.replace('slot',''));if(hintEl)hintEl.style.display='none';}else{if(chip){gsap.timeline().to(chip,{y:-28,rotation:18,scale:1.15,duration:.18,ease:'power2.out'}).to(chip,{y:0,rotation:0,scale:1,duration:.55,ease:'elastic.out(1,.4)'});}gsap.to(slot,{keyframes:[{x:-8},{x:8},{x:-6},{x:6},{x:0}],duration:.42,ease:'none'});burst(chip||slot,'#ef4444',9);gsap.to(slot,{borderColor:'#ef4444',duration:.12,yoyo:true,repeat:4,onComplete:function(){gsap.set(slot,{clearProps:'borderColor'});}});}}
+var _QUIZ=[{q:"¿Cuál es el primer paso para diseñar un proyecto social?",opts:["Escribir las actividades","Identificar y formular el problema","Buscar presupuesto","Presentar el proyecto a las autoridades"],ok:1,fb:"Primero se identifica y formula el problema. Sin un diagnóstico claro, el proyecto no tiene dirección. ✓"},{q:"Los INDICADORES DE LOGRO en un proyecto social sirven para:",opts:["Describir el problema inicial","Definir el presupuesto","Medir si se cumplieron los objetivos","Elegir la población beneficiaria"],ok:2,fb:"Los indicadores son los criterios objetivos para verificar que el proyecto tuvo los resultados esperados. ✓"},{q:"¿Cuál de las siguientes es una buena formulación de población objetivo?",opts:["Los jóvenes","Las personas que viven cerca","50 madres de familia del barrio Olaya Herrera, Bogotá, con hijos menores de 10 años","La comunidad en general"],ok:2,fb:"Una buena definición de población es específica: número, características, lugar. ✓"}];
+var _qAns=[null,null,null];
+function rQ(i){if(i>=_QUIZ.length){setTimeout(showScore,420);return;}var q=_QUIZ[i];var w=document.getElementById('qw');if(!w)return;w.innerHTML='<div style="font-size:.68rem;color:var(--muted);margin-bottom:.38rem;">Pregunta '+(i+1)+' de '+_QUIZ.length+'</div><div class="q-q">'+q.q+'</div><div class="q-opts" id="qo'+i+'">'+q.opts.map(function(o,j){return '<button class="q-opt" onclick="ansQ('+i+','+j+')" id="qo'+i+'_'+j+'">'+String.fromCharCode(65+j)+'. '+o+'</button>';}).join('')+'</div><div class="q-fb" id="qfb'+i+'"></div>';gsap.from('.q-opt',{y:18,opacity:0,duration:.3,stagger:.07,ease:'back.out(2)'});}
+function ansQ(qi,oi){if(_qAns[qi]!==null)return;_qAns[qi]=oi;var q=_QUIZ[qi];var isOk=oi===q.ok;document.querySelectorAll('#qo'+qi+' .q-opt').forEach(function(b,i){b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});var fb=document.getElementById('qfb'+qi);if(fb){fb.className='q-fb '+(isOk?'ok':'bad');fb.textContent=(isOk?'✅ ':'❌ ')+q.fb;}var btn=document.getElementById('qo'+qi+'_'+oi);if(isOk&&btn){burst(btn,'#10b981',16);gsap.from(btn,{scale:1.1,duration:.4,ease:'elastic.out(1,.4)'});}else if(btn){gsap.to(btn,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.4,ease:'none'});}setTimeout(function(){rQ(qi+1);},2200);}
+function showScore(){var ok=_qAns.filter(function(a,i){return a===_QUIZ[i].ok;}).length;var w=document.getElementById('qw');var ss=document.getElementById('sc');if(w)w.innerHTML='';if(!ss)return;ss.style.display='block';var em=ok===_QUIZ.length?'🏆':ok>=2?'⭐':'📚';var msg=ok===_QUIZ.length?'¡Perfecto! Dominas este tema.':ok>=2?'¡Muy bien! Sigue practicando.':'Repasa los conceptos clave.';ss.innerHTML='<div id="sci" style="padding:.6rem 0;text-align:center;"><div style="font-size:3rem;font-weight:900;margin-bottom:.32rem;">'+em+' '+ok+'/'+_QUIZ.length+'</div><div style="color:var(--muted);font-size:.87rem;margin-bottom:1rem;">'+msg+'</div><button onclick="resetQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.4rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button></div>';gsap.from('#sci',{scale:.52,rotation:-8,opacity:0,duration:.72,ease:'elastic.out(1,.42)'});if(ok===_QUIZ.length){var cols=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];for(var ii=0;ii<24;ii++)(function(n){setTimeout(function(){var pp={getBoundingClientRect:function(){return{left:innerWidth*.25+Math.random()*innerWidth*.5,top:innerHeight*.2,width:0,height:0};}};burst(pp,cols[n%cols.length],6);},n*90);}(ii));}}
+function resetQ(){_qAns=[null,null,null];var ss=document.getElementById('sc');if(ss)ss.style.display='none';rQ(0);}
+function s0(el){el.innerHTML=`<div style="text-align:center;padding:.2rem 0;"><div class="s-tag">Proyectos Sociales · Competencias Ciudadanas</div><div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fff 30%,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.55rem;" id="mt0">¿Cómo Diseñar mi Primer Proyecto Social?</div><div id="chains0" style="display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:.55rem 0 .9rem;"><span id="ch0" class="conn-chip type-adv" style="opacity:0;">problema</span><span id="ch1" class="conn-chip type-cons" style="opacity:0;">objetivo</span><span id="ch2" class="conn-chip type-add" style="opacity:0;">población</span><span id="ch3" class="conn-chip type-caus" style="opacity:0;">actividades</span><span id="ch4" class="conn-chip type-adv" style="opacity:0;">indicadores</span></div><div id="obj0" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1rem 1.25rem;max-width:460px;margin:0 auto;text-align:left;"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.55rem;">🎯 OBJETIVOS</div><div id="ob0" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Identificar y formular un problema social de la comunidad</span></div><div id="ob1" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Redactar objetivos SMART (específicos, medibles, alcanzables)</span></div><div id="ob2" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Definir la población beneficiaria y las actividades del proyecto</span></div><div id="ob3" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Establecer indicadores para medir el éxito del proyecto</span></div></div></div>`;}
+function a0(){var tl=gsap.timeline();tl.from('#mt0',{y:-80,rotation:-5,opacity:0,duration:.7,ease:'bounce.out'});tl.fromTo(['#ch0','#ch1','#ch2','#ch3','#ch4'],{opacity:0,scale:.4,y:-25},{opacity:1,scale:1,y:0,duration:.38,stagger:.09,ease:'elastic.out(1,.5)'},'-=.2');tl.fromTo(['#ob0','#ob1','#ob2','#ob3'],{opacity:0,x:-42},{opacity:1,x:0,duration:.38,stagger:.11,ease:'back.out(2.5)'},'-=.1');gsap.to('.conn-chip',{y:-4,duration:1.4,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:{amount:1.2},delay:.8});}
+function s1(el){el.innerHTML=`<div><div class="s-tag">Concepto base</div><div class="s-title" id="t1">¿Qué es un Proyecto Social?</div><div class="s-sub">Una idea estructurada para resolver un problema real</div><div class="formula" id="f1">Problema → Objetivo → Actividades → Indicadores → Evaluación</div><div id="st1" class="step"><div class="step-n">1</div><div><strong>Un proyecto social</strong> es una propuesta organizada con pasos claros para resolver un problema que afecta a una comunidad. No es una queja — es una solución.</div></div><div id="st2" class="step"><div class="step-n">2</div><div><strong>Diagnóstico:</strong> antes de proponer soluciones, debes evidenciar el problema con datos. ¿A cuántas personas afecta? ¿Dónde? ¿Desde cuándo?</div></div><div class="example" id="e1"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">⚡ DIFERENCIA CLAVE</div>Problema = "En mi barrio no se recicla y hay mucha basura en las calles". Queja = "No me gusta que haya basura". El proyecto parte del problema, no de la queja.</div></div>`;}
+function a1(){gsap.timeline().from('#t1',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#f1',{scaleX:.35,scaleY:.35,opacity:0,duration:.5,ease:'back.out(2.8)'},'-=.15').from(['#st1','#st2'],{x:-40,opacity:0,duration:.4,stagger:.16,ease:'back.out(2)'}).from('#e1',{y:16,opacity:0,duration:.36},'-=.1');}
+function s2(el){el.innerHTML=`<div><div class="s-tag">Clasificación</div><div class="s-title" id="t2">Los Componentes del Proyecto</div><div class="s-sub">Cada parte cumple una función específica</div><div style="margin-top:.35rem;"><div class="ctype-card" id="ct1"><div class="ctype-name" style="color:#fb923c;">Objetivo General</div><div class="ctype-words" style="color:#fb923c;">La meta principal del proyecto. Responde: ¿qué quiero lograr?</div><div class="ctype-use">Debe ser claro, alcanzable y medible. Usa verbos en infinitivo: implementar, crear, reducir, capacitar.</div></div>
+<div class="ctype-card" id="ct2"><div class="ctype-name" style="color:#7dd3fc;">Objetivos Específicos</div><div class="ctype-words" style="color:#7dd3fc;">Metas parciales que al cumplirse logran el objetivo general.</div><div class="ctype-use">Ej: Capacitar a 50 familias, instalar 10 puntos de reciclaje, hacer seguimiento mensual.</div></div>
+<div class="ctype-card" id="ct3"><div class="ctype-name" style="color:#6ee7b7;">Población Objetivo</div><div class="ctype-words" style="color:#6ee7b7;">Las personas directamente beneficiadas por el proyecto.</div><div class="ctype-use">Sé específico: 80 estudiantes de grado 8° y 9° del colegio XYZ de Bogotá.</div></div>
+<div class="ctype-card" id="ct4"><div class="ctype-name" style="color:#c4b5fd;">Indicadores de Logro</div><div class="ctype-words" style="color:#c4b5fd;">Cómo medirás que el proyecto funcionó.</div><div class="ctype-use">Ej: Reducción del 30% de basura en calle X en 3 meses. Con datos comprobables.</div></div></div></div>`;}
+function a2(){gsap.timeline().from('#t2',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from(['#ct1','#ct2','#ct3','#ct4'],{y:72,rotation:-3,opacity:0,duration:.54,stagger:.13,ease:'back.out(2.2)'},'-=.1');}
+function s3(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 1 · ¿Es problema o queja?</div><div class="s-title" id="t3">Identifica el problema bien formulado</div><div class="s-sub">Solo uno es un problema formulado correctamente</div><div class="conn-area" id="ca3"><div class="passage">Selecciona el enunciado que describe un <strong>problema social</strong> bien formulado (con evidencia y contexto):</div><div class="chips-row"><span class="conn-chip type-cons" onclick="selectChip(this,'No me gusta que la gente tire basura' )">No me gusta que la gente tire basura</span><span class="conn-chip type-adv" onclick="selectChip(this,'El 60% de los estudiantes del colegio no practican ningún deporte fuera del horario escolar' )">El 60% de los estudiantes del colegio no practican ningún deporte fuera del horario escolar</span><span class="conn-chip type-add" onclick="selectChip(this,'Debería haber más canchas deportivas' )">Debería haber más canchas deportivas</span><span class="conn-chip type-caus" onclick="selectChip(this,'El deporte es muy importante para la salud' )">El deporte es muy importante para la salud</span></div><div class="hint-text" id="hints3">👆 ¿Cuál tiene datos concretos, contexto específico y describe una situación real a resolver?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot3" class="conn-chip type-add" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot3','El 60% de los estudiantes del colegio no practican ningún deporte fuera del horario escolar','#10b981')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb3">✅ Correcto — tiene dato (60%), población (estudiantes del colegio) y el problema específico (falta de actividad física). ✓</div></div></div>`;}
+function a3(){gsap.timeline().from('#t3',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca3',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s4(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 2 · Elige el objetivo bien formulado</div><div class="s-title" id="t4">¿Cuál es el mejor objetivo?</div><div class="s-sub">Selecciona el objetivo SMART correcto</div><div class="conn-area" id="ca4"><div class="passage">Un proyecto quiere mejorar los hábitos de reciclaje en un barrio. ¿Cuál de estos objetivos está mejor formulado?</div><div class="chips-row"><span class="conn-chip type-cons" onclick="selectChip(this,'Que la gente recicle más' )">Que la gente recicle más</span><span class="conn-chip type-adv" onclick="selectChip(this,'Mejorar el reciclaje en el barrio' )">Mejorar el reciclaje en el barrio</span><span class="conn-chip type-add" onclick="selectChip(this,'Implementar 5 puntos de reciclaje y capacitar a 100 familias del barrio La Paz en 4 meses' )">Implementar 5 puntos de reciclaje y capacitar a 100 familias del barrio La Paz en 4 meses</span><span class="conn-chip type-caus" onclick="selectChip(this,'Solucionar el problema de la basura' )">Solucionar el problema de la basura</span></div><div class="hint-text" id="hints4">👆 ¿Cuál es específico, medible, con tiempo definido y con acciones concretas?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot4" class="conn-chip type-cons" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot4','Implementar 5 puntos de reciclaje y capacitar a 100 familias del barrio La Paz en 4 meses','#38bdf8')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb4">✅ Correcto — tiene acción (implementar, capacitar), cantidad (5 puntos, 100 familias), lugar (La Paz) y tiempo (4 meses). ✓</div></div></div>`;}
+function a4(){gsap.timeline().from('#t4',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca4',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s5(el){_qAns=[null,null,null];el.innerHTML=`<div><div class="s-tag">Mini Quiz · 3 preguntas tipo ICFES Saber 11</div><div class="s-title" id="t5">¿Cuánto aprendiste?</div><div id="qw"></div><div id="sc" style="display:none;"></div></div>`;rQ(0);}
+function a5(){gsap.from('#t5',{y:-55,rotation:-4,opacity:0,duration:.62,ease:'elastic.out(1,.48)'});}
+mkDots();render();anim();
 </script>
 </body>
 </html>

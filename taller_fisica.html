@@ -2,294 +2,115 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Física · Taller Interactivo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Física · Ciencias Naturales ICFES — Programa PRI</title>
+<link rel="icon" type="image/png" href="logo.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  :root{--azul:#021a36;--naranja:#ff5e00;--teal:#38bdf8;--verde:#22c55e;--oro:#ffd700;--blanco:#f0f4f8;--fuente:'Montserrat',sans-serif;}
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--azul);color:var(--blanco);font-family:var(--fuente);display:flex;flex-direction:column;height:100dvh;overflow:hidden;}
-  #header{display:flex;justify-content:space-between;align-items:center;padding:.6rem 1rem;background:rgba(2,10,26,.9);border-bottom:1px solid rgba(255,255,255,.08);flex-shrink:0;}
-  #header-title{font-size:.72rem;font-weight:900;letter-spacing:.5px;}
-  #header-sub{font-size:.55rem;color:rgba(240,244,248,.4);letter-spacing:1px;margin-top:.1rem;}
-  #pts-badge{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.4);color:var(--naranja);font-size:.62rem;font-weight:900;padding:.3rem .7rem;border-radius:20px;}
-  #btn-cerrar{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:var(--blanco);font-family:var(--fuente);font-size:.58rem;font-weight:700;padding:.3rem .7rem;border-radius:8px;cursor:pointer;}
-  #btn-cerrar:hover{background:rgba(255,255,255,.14);}
-  #progress-bar-wrap{height:3px;background:rgba(255,255,255,.07);flex-shrink:0;}
-  #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--verde));transition:width .5s ease;}
-  #chat{flex:1;overflow-y:auto;padding:.8rem 1rem;display:flex;flex-direction:column;gap:.6rem;scroll-behavior:smooth;}
-  .bubble-wrap{display:flex;align-items:flex-end;gap:.45rem;}
-  .bubble-wrap.bot{flex-direction:row;}
-  .bubble-wrap.user{flex-direction:row-reverse;}
-  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
-  .avatar.bot{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);}
-  .avatar.user{background:rgba(255,94,0,.15);border:1px solid rgba(255,94,0,.3);}
-  .bubble{max-width:82%;padding:.55rem .8rem;border-radius:14px;font-size:.75rem;line-height:1.55;}
-  .bubble.bot{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-bottom-left-radius:4px;}
-  .bubble.user{background:rgba(255,94,0,.18);border:1px solid rgba(255,94,0,.3);border-bottom-right-radius:4px;}
-  .bubble strong{color:var(--teal);}
-  .bubble em{color:var(--oro);}
-  .tip{background:rgba(56,189,248,.09);border-left:3px solid var(--teal);padding:.45rem .65rem;border-radius:0 8px 8px 0;font-size:.7rem;margin:.3rem 0;color:rgba(240,244,248,.85);}
-  .check{color:var(--verde);font-weight:900;}
-  .img-placeholder{background:rgba(255,255,255,.05);border:1.5px dashed rgba(56,189,248,.35);border-radius:8px;padding:.55rem .7rem;margin:.3rem 0;font-size:.68rem;color:rgba(56,189,248,.65);text-align:center;}
-  #options-area{display:none;padding:.5rem 1rem .65rem;flex-shrink:0;}
-  #options-grid{display:flex;flex-direction:column;gap:.4rem;}
-  .opt-btn{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);color:rgba(240,244,248,.8);font-family:var(--fuente);font-size:.72rem;font-weight:700;padding:.6rem .9rem;border-radius:10px;cursor:pointer;text-align:left;line-height:1.4;}
-  .opt-btn:hover{background:rgba(255,94,0,.14);border-color:rgba(255,94,0,.45);}
-  .opt-btn.selected{background:rgba(255,94,0,.22);border-color:rgba(255,94,0,.6);}
-  .opt-btn:disabled{opacity:.4;cursor:not-allowed;}
-  #input-area{display:none;padding:.5rem 1rem .9rem;flex-shrink:0;}
-  #input-row{display:flex;gap:.5rem;}
-  #txt-input{flex:1;background:rgba(2,14,36,.7);border:1px solid rgba(255,255,255,.14);color:var(--blanco);font-family:var(--fuente);font-size:.78rem;padding:.55rem .9rem;border-radius:10px;outline:none;}
-  #txt-input:focus{border-color:var(--teal);}
-  #btn-send{background:rgba(56,189,248,.85);color:var(--azul);border:none;font-family:var(--fuente);font-size:.65rem;font-weight:900;padding:.55rem 1rem;border-radius:10px;cursor:pointer;}
-  #fin-overlay{display:none;position:fixed;inset:0;background:rgba(2,10,26,.85);backdrop-filter:blur(10px);z-index:100;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;text-align:center;padding:2rem;}
-  #fin-overlay.show{display:flex;}
-  #fin-title{font-size:clamp(1.2rem,5vw,2rem);font-weight:900;color:var(--oro);}
-  #fin-pts{font-size:.75rem;color:rgba(240,244,248,.6);}
-  #fin-btn{font-family:var(--fuente);font-size:.65rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;padding:.65rem 1.5rem;background:var(--naranja);color:#fff;border:none;border-radius:10px;cursor:pointer;}
-
-/* ══ AB-NEON TALLER ══ */
-@keyframes _pt{0%,100%{opacity:.13;}50%{opacity:.18;}}
-#progress-bar{transition:width .65s cubic-bezier(.34,1.56,.64,1)!important;box-shadow:0 0 12px rgba(56,189,248,.5)!important;}
-.opt-btn:hover{box-shadow:0 0 14px rgba(255,94,0,.35)!important;}
-.opt-btn.selected{box-shadow:0 0 18px rgba(255,94,0,.45)!important;}
-.bubble.bot{box-shadow:0 0 0 1px rgba(56,189,248,.08);}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#04080f;--card:#080f1e;--purple:#7c3aed;--orange:#ff5e00;--teal:#38bdf8;--green:#10b981;--red:#ef4444;--yellow:#fbbf24;--text:#e8f4ff;--muted:#6b9ab8;}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+#topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+@keyframes _pg{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.65);}50%{box-shadow:0 0 28px rgba(124,58,237,.95),0 0 52px rgba(56,189,248,.22);}}
+#prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;flex-shrink:0;}
+#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));border-radius:3px;transition:width .65s cubic-bezier(.34,1.56,.64,1);animation:_pg 2.5s ease-in-out infinite;}
+@keyframes _cp{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08);}50%{box-shadow:0 0 65px rgba(124,58,237,.22),0 0 110px rgba(56,189,248,.06);}}
+#slide-card{flex:1;background:rgba(8,15,30,.95);border:1px solid rgba(124,58,237,.28);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;animation:_cp 3s ease-in-out infinite;}
+#slide-inner{flex:1;padding:1.6rem 2rem;overflow-y:auto;display:flex;flex-direction:column;}
+#nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;}
+.nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
+.nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.nav-btn:hover:not(:disabled){background:rgba(124,58,237,.32);border-color:var(--purple);box-shadow:0 0 22px rgba(124,58,237,.6);transform:translateY(-2px);}
+.nav-btn:disabled{opacity:.2;cursor:not-allowed;}
+#dots{display:flex;gap:6px;align-items:center;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;}
+.dot.active{background:var(--purple);transform:scale(1.5);box-shadow:0 0 10px rgba(124,58,237,.75);}
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.55rem;text-shadow:0 0 12px rgba(56,189,248,.5);}
+.s-title{font-size:1.7rem;font-weight:900;line-height:1.2;margin-bottom:.35rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.s-sub{font-size:.87rem;color:var(--muted);margin-bottom:1rem;}
+.step{display:flex;align-items:flex-start;gap:.7rem;margin:.42rem 0;font-size:.86rem;line-height:1.5;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;box-shadow:0 0 12px rgba(124,58,237,.5);}
+.example{background:rgba(56,189,248,.06);border-left:3px solid var(--teal);padding:.65rem 1rem;border-radius:0 8px 8px 0;margin:.55rem 0;font-size:.86rem;}
+.formula{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.38);border-radius:12px;padding:.8rem 1.3rem;font-size:1rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.8rem 0;}
+.ctype-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:.7rem .9rem;margin:.38rem 0;transition:border-color .3s,box-shadow .3s;}
+.ctype-card:hover{border-color:rgba(124,58,237,.35);box-shadow:0 0 15px rgba(124,58,237,.1);}
+.ctype-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:.28rem;}
+.ctype-words{font-family:'Courier New',monospace;font-size:.86rem;font-weight:600;}
+.ctype-use{font-size:.72rem;color:var(--muted);margin-top:.2rem;}
+.conn-area{background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.2rem;margin:.7rem 0;transition:border-color .4s,box-shadow .4s;}
+.passage{background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.18);border-radius:10px;padding:.8rem 1rem;font-size:.86rem;line-height:1.6;margin-bottom:.85rem;font-style:italic;}
+.chips-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.conn-chip{padding:.42rem 1rem;border-radius:20px;font-size:.79rem;font-weight:700;cursor:pointer;transition:all .2s;border:1.5px solid;user-select:none;}
+.conn-chip.type-adv{background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.5);color:#fb923c;}
+.conn-chip.type-cons{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.5);color:#7dd3fc;}
+.conn-chip.type-add{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.5);color:#6ee7b7;}
+.conn-chip.type-caus{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.55);color:#c4b5fd;}
+.conn-chip:hover:not(.used){transform:scale(1.08);filter:brightness(1.3);}
+.conn-chip.selected{transform:scale(1.13);box-shadow:0 0 20px currentColor;filter:brightness(1.55);}
+.conn-chip.used{opacity:.22;pointer-events:none;transform:scale(.88);}
+.fb-msg{margin-top:.55rem;font-size:.81rem;padding:.45rem .75rem;border-radius:8px;display:none;text-align:center;}
+.fb-msg.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.28);color:#a7f3d0;display:block;}
+.q-q{font-size:.9rem;font-weight:600;margin-bottom:.8rem;line-height:1.5;}
+.q-opts{display:flex;flex-direction:column;gap:.42rem;}
+.q-opt{padding:.6rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
+.q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
+.q-fb{margin-top:.6rem;font-size:.81rem;padding:.5rem .75rem;border-radius:8px;display:none;}
+.q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
+.q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<div id="header">
-  <div>
-    <div id="header-title">⚡ Física — ICFES</div>
-    <div id="header-sub">Taller interactivo · PROGRAMA-PRI</div>
+<div id="app">
+  <div id="topbar">
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;">PROGRAMA·PRI · Física</span>
+    <span id="counter" style="font-size:.7rem;color:var(--muted);">1 / 6</span>
   </div>
-  <div style="display:flex;align-items:center;gap:.6rem;">
-    <span id="pts-badge">0 pts</span>
-    <button id="btn-cerrar" onclick="cerrarTaller()">✕ Cerrar</button>
-  </div>
-</div>
-<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-<div id="chat"></div>
-<div id="options-area"><div id="options-grid"></div></div>
-<div id="input-area">
-  <div id="input-row">
-    <input id="txt-input" type="text" placeholder="Escribe aquí…" maxlength="200">
-    <button id="btn-send">Enviar →</button>
+  <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
+  <div id="slide-card"><div id="slide-inner"></div></div>
+  <div id="nav">
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)" disabled>← Anterior</button>
+    <div id="dots"></div>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Siguiente →</button>
   </div>
 </div>
-<div id="fin-overlay">
-  <div id="fin-title">🏆 ¡Física conquistada!</div>
-  <p style="font-size:.85rem;color:rgba(240,244,248,.7);max-width:340px;line-height:1.55;">Repasaste cinemática, leyes de Newton, energía, ondas, calor y electricidad. ¡Listo/a para el ICFES!</p>
-  <div id="fin-pts"></div>
-  <button id="fin-btn" onclick="cerrarTaller()">Volver al dashboard</button>
-</div>
-
 <script>
-
-/* ═══ AB ENGINE TALLER ═══ */
 var _AB_T=true;
-(function(){
-  var cv=document.createElement('canvas');
-  cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.08;';
-  document.body.insertBefore(cv,document.body.firstChild);
-  var ctx=cv.getContext('2d');
-  var S=['x','y','²','F','v','Σ','π','+','−','=','a','b','n'];
-  var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];
-  var P=[];
-  function rsz(){cv.width=window.innerWidth;cv.height=window.innerHeight;}
-  rsz();window.addEventListener('resize',rsz);
-  for(var i=0;i<24;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
-    vx:(Math.random()-.5)*.28,vy:-(Math.random()*.35+.06),
-    s:S[Math.floor(Math.random()*S.length)],sz:9+Math.random()*12,
-    a:.12+Math.random()*.38,c:C[Math.floor(Math.random()*C.length)],
-    rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.009});
-  (function tk(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){
-    p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;
-    if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}
-    if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;
-    ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;
-    ctx.font='bold '+p.sz+'px Courier New';
-    ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();
-  });requestAnimationFrame(tk);})();
-})();
-
-let pts=0,paso=0;
-const TOTAL_PASOS=10;
-const chat=document.getElementById('chat');
-const optGrid=document.getElementById('options-grid');
-const ptsEl=document.getElementById('pts-badge');
-const progressBar=document.getElementById('progress-bar');
-
-function sumarPts(n){pts+=n;ptsEl.textContent=pts+' pts';}
-function avanzarBarra(){paso=Math.min(paso+1,TOTAL_PASOS);progressBar.style.width=(paso/TOTAL_PASOS*100)+'%';}
-function limpiarOpciones(){optGrid.innerHTML='';document.getElementById('options-area').style.display='none';document.getElementById('input-area').style.display='none';}
-function addBot(html,delay=0){return new Promise(r=>{setTimeout(()=>{const w=document.createElement('div');w.className='bubble-wrap bot';w.innerHTML=`<div class="avatar bot">⚡</div><div class="bubble bot">${html}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;r();},delay);});}
-function addUser(t){const w=document.createElement('div');w.className='bubble-wrap user';w.innerHTML=`<div class="avatar user">🧑</div><div class="bubble user">${t}</div>`;chat.appendChild(w);chat.scrollTop=chat.scrollHeight;}
-function mostrarOpciones(ops){document.getElementById('options-area').style.display='block';optGrid.innerHTML='';ops.forEach(op=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=op.label;b.onclick=()=>{document.querySelectorAll('.opt-btn').forEach(x=>x.disabled=true);b.classList.add('selected');addUser(op.label);limpiarOpciones();setTimeout(()=>op.fn(),400);};optGrid.appendChild(b);});}
-function mostrarInput(ph,fn){document.getElementById('input-area').style.display='block';const inp=document.getElementById('txt-input');inp.placeholder=ph;inp.value='';inp.focus();const s=()=>{const v=inp.value.trim();if(!v)return;addUser(v);limpiarOpciones();setTimeout(()=>fn(v),400);};document.getElementById('btn-send').onclick=s;inp.onkeydown=e=>{if(e.key==='Enter')s();};}
-
-async function paso0(){
-  await addBot(`¡Bienvenido/a al taller de <strong>Física ICFES</strong>! ⚡<br><br>
-Los temas más evaluados son:<br>
-<strong>• Cinemática</strong> — movimiento, velocidad, aceleración.<br>
-<strong>• Dinámica</strong> — Leyes de Newton.<br>
-<strong>• Trabajo y Energía</strong> — cinética, potencial, conservación.<br>
-<strong>• Ondas y Sonido</strong> — frecuencia, longitud de onda.<br>
-<strong>• Calor y Temperatura</strong> — escalas y transferencia de calor.<br>
-<strong>• Electricidad básica</strong> — carga, corriente, Ley de Ohm.<br><br>
-¡El ICFES evalúa comprensión de conceptos, no solo cálculos! ¿Empezamos?`, 300);
-  mostrarOpciones([
-    { label: '⚡ ¡Sí, encendamos los motores!', fn:()=>{addBot(`¡Perfecto! Empezamos con cinemática — el estudio del movimiento.`,300);setTimeout(paso1,1200);} },
-    { label: '😬 La física es difícil para mí', fn:()=>{addBot(`¡Lo entiendo! Pero el ICFES no pide cálculos complejos — pide <em>entender qué pasa y por qué</em>. Eso lo practicamos aquí con situaciones cotidianas. 💪`,300);setTimeout(paso1,1500);} },
-  ]);
-}
-
-async function paso1(){
-  avanzarBarra();
-  await addBot(`<strong>Cinemática — Movimiento Rectilíneo</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: gráfica posición vs tiempo y velocidad vs tiempo para MRU (línea recta) vs MRUV (parábola / recta)]</div><br>
-<strong>MRU</strong> (Movimiento Rectilíneo Uniforme): velocidad constante, aceleración = 0. La gráfica posición-tiempo es una <em>línea recta</em>.<br>
-<strong>MRUV</strong> (Movimiento Rectilíneo Uniformemente Variado): aceleración constante. La gráfica posición-tiempo es una <em>parábola</em>.<br><br>
-Un automóvil recorre 120 km en 2 horas a velocidad constante. ¿Cuál es su velocidad?`, 400);
-  mostrarOpciones([
-    { label: '🚗 60 km/h', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> v = distancia / tiempo = 120 km / 2 h = <strong>60 km/h</strong>. Velocidad constante → MRU. ¡Fórmula básica del ICFES!`,300);setTimeout(paso2,1600);} },
-    { label: '🚗 240 km/h', fn:()=>{addBot(`Eso sería distancia × tiempo. La velocidad es distancia / tiempo: 120 / 2 = <strong>60 km/h</strong>.`,300);setTimeout(paso2,1600);} },
-    { label: '🚗 0.6 km/h', fn:()=>{addBot(`120 km ÷ 2 horas = <strong>60 km/h</strong>. Parece que dividiste al revés o confundiste las unidades.`,300);setTimeout(paso2,1600);} },
-  ]);
-}
-
-async function paso2(){
-  avanzarBarra();
-  await addBot(`<strong>Leyes de Newton</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: ilustración de las 3 leyes — 1ª (objeto en reposo), 2ª (F=ma con flecha de fuerza), 3ª (pares de acción-reacción en cohete)]</div><br>
-<strong>1ª Ley (Inercia):</strong> un objeto en reposo o en movimiento uniforme permanece así si la fuerza neta es cero.<br>
-<strong>2ª Ley (F = m × a):</strong> la fuerza neta es igual a masa por aceleración.<br>
-<strong>3ª Ley (Acción-Reacción):</strong> toda fuerza tiene una reacción igual y opuesta.<br><br>
-Un cohete expulsa gases hacia abajo y se mueve hacia arriba. ¿Qué ley explica esto?`, 400);
-  mostrarOpciones([
-    { label: '1️⃣ 1ª Ley de Newton (Inercia)', fn:()=>{addBot(`La inercia habla de lo que pasa cuando <em>no hay fuerza neta</em>. El cohete involucra dos fuerzas opuestas (gases vs cohete) — eso es la 3ª ley.`,300);setTimeout(paso3,1600);} },
-    { label: '2️⃣ 2ª Ley de Newton (F = ma)', fn:()=>{addBot(`F=ma describe la relación entre fuerza, masa y aceleración. Pero aquí lo clave es el <em>par acción-reacción</em> — eso es la <strong>3ª ley</strong>.`,300);setTimeout(paso3,1600);} },
-    { label: '3️⃣ 3ª Ley de Newton (Acción-Reacción)', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> El cohete empuja los gases hacia abajo (acción) y los gases empujan el cohete hacia arriba (reacción). Misma magnitud, dirección opuesta. ¡Eso es la <strong>3ª Ley</strong>!`,300);setTimeout(paso3,1600);} },
-  ]);
-}
-
-async function paso3(){
-  avanzarBarra();
-  await addBot(`<strong>Trabajo y Energía</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: montaña rusa mostrando conversión de energía potencial (cima) a cinética (bajada) — con la ley de conservación de energía]</div><br>
-<strong>Energía cinética (Ec):</strong> energía del movimiento → Ec = ½mv²<br>
-<strong>Energía potencial gravitacional (Ep):</strong> energía por altura → Ep = mgh<br>
-<strong>Ley de conservación de energía:</strong> la energía total se conserva (se transforma, no se crea ni destruye).<br><br>
-Una pelota en lo alto de una rampa (en reposo) tiene mucha energía potencial. Cuando llega abajo rodando a máxima velocidad, ¿qué ocurrió con esa energía?`, 400);
-  mostrarOpciones([
-    { label: '💨 Se perdió por el aire', fn:()=>{addBot(`En un sistema ideal, la energía no se pierde. Se <strong>transforma</strong>: potencial → cinética. (En la vida real hay algo de rozamiento, pero el ICFES pregunta el principio ideal.)`,300);setTimeout(paso4,1600);} },
-    { label: '⚡ Se transformó en energía cinética', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La energía potencial se convirtió en <strong>energía cinética</strong>. La ley de conservación garantiza que la suma total se mantiene: Ep + Ec = constante.`,300);setTimeout(paso4,1600);} },
-    { label: '🔋 Se almacenó en la pelota', fn:()=>{addBot(`La pelota en movimiento tiene la energía en forma <em>cinética</em>, no almacenada. La energía potencial (por altura) se transformó en energía del movimiento.`,300);setTimeout(paso4,1600);} },
-  ]);
-}
-
-async function paso4(){
-  avanzarBarra();
-  await addBot(`<strong>Ondas — Frecuencia, Longitud de Onda y Velocidad</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: onda transversal con longitud de onda (λ), amplitud y frecuencia señaladas — fórmula v = f × λ]</div><br>
-La relación fundamental de las ondas: <strong>v = f × λ</strong><br>
-donde v = velocidad, f = frecuencia, λ = longitud de onda.<br><br>
-Si una onda de sonido tiene frecuencia 440 Hz y velocidad 340 m/s, ¿cuál es su longitud de onda?`, 400);
-  mostrarOpciones([
-    { label: '📏 ~0.77 m', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> λ = v/f = 340/440 ≈ <strong>0.77 m</strong>. Esta es la nota La (A4) usada para afinar instrumentos. ¡Física y música conectadas!`,300);setTimeout(paso5,1600);} },
-    { label: '📏 149.600 m', fn:()=>{addBot(`Eso sería v × f = 340 × 440. Pero la fórmula es λ = v/f = 340/440 ≈ <strong>0.77 m</strong>.`,300);setTimeout(paso5,1600);} },
-    { label: '📏 780 m', fn:()=>{addBot(`Revisemos: λ = v/f = 340 m/s ÷ 440 Hz ≈ <strong>0.77 m</strong>. Recuerda dividir, no multiplicar.`,300);setTimeout(paso5,1600);} },
-  ]);
-}
-
-async function paso5(){
-  avanzarBarra();
-  await addBot(`<strong>Calor y Temperatura</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: escala de conversión entre Celsius, Kelvin y Fahrenheit — con puntos de referencia: agua congela y agua hierve]</div><br>
-<strong>Temperatura:</strong> medida de la energía cinética promedio de las partículas.<br>
-Conversión: <strong>K = °C + 273</strong><br><br>
-Los tres mecanismos de transferencia de calor son:<br>
-<strong>• Conducción:</strong> por contacto (metal caliente).<br>
-<strong>• Convección:</strong> por movimiento de fluidos (agua caliente).<br>
-<strong>• Radiación:</strong> por ondas electromagnéticas (sol).<br><br>
-El calor del sol llega a la Tierra a través del vacío del espacio. ¿Qué mecanismo es?`, 400);
-  mostrarOpciones([
-    { label: '🔗 Conducción', fn:()=>{addBot(`La conducción requiere contacto directo entre materiales. En el vacío del espacio no hay materia — el sol calienta por <strong>radiación</strong>.`,300);setTimeout(paso6,1600);} },
-    { label: '🌊 Convección', fn:()=>{addBot(`La convección necesita un fluido (líquido o gas) para transferir calor. El espacio es vacío — el calor del sol llega por <strong>radiación</strong>.`,300);setTimeout(paso6,1600);} },
-    { label: '☀️ Radiación', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> La <strong>radiación</strong> transfiere calor mediante ondas electromagnéticas (luz infrarroja) que viajan por el vacío. Por eso el sol calienta la Tierra a 150 millones de km.`,300);setTimeout(paso6,1600);} },
-  ]);
-}
-
-async function paso6(){
-  avanzarBarra();
-  await addBot(`<strong>Electricidad — Ley de Ohm</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: circuito eléctrico simple con batería (V), resistencia (R) y amperímetro (I) — con el triángulo V=I×R]</div><br>
-<strong>Ley de Ohm: V = I × R</strong><br>
-donde V = voltaje (Voltios), I = corriente (Amperios), R = resistencia (Ohms).<br><br>
-Un circuito tiene un voltaje de 12 V y una resistencia de 4 Ω. ¿Cuántos amperios circulan?`, 400);
-  mostrarOpciones([
-    { label: '⚡ 3 A', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> I = V/R = 12/4 = <strong>3 A</strong>. La Ley de Ohm es la fórmula de electricidad más evaluada en el ICFES. ¡Memoriza el triángulo V-I-R!`,300);setTimeout(paso7,1600);} },
-    { label: '⚡ 48 A', fn:()=>{addBot(`Eso sería V × R = 12 × 4. La Ley de Ohm dice I = V/R = 12/4 = <strong>3 A</strong>.`,300);setTimeout(paso7,1600);} },
-    { label: '⚡ 8 A', fn:()=>{addBot(`I = V/R = 12 ÷ 4 = <strong>3 A</strong>. Revisa la división: 12 entre 4.`,300);setTimeout(paso7,1600);} },
-  ]);
-}
-
-async function paso7(){
-  avanzarBarra();
-  await addBot(`<strong>Presión y Fluidos</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: submarino con profundidad aumentando y presión indicada con flechas crecientes — fórmula P = F/A y P hidrostática = ρgh]</div><br>
-La <strong>presión</strong> es la fuerza por unidad de área: <strong>P = F/A</strong><br>
-La presión hidrostática aumenta con la profundidad: P = ρ × g × h<br><br>
-¿Por qué un submarino siente mayor presión a mayor profundidad?`, 400);
-  mostrarOpciones([
-    { label: '🌊 Por la temperatura del agua', fn:()=>{addBot(`La temperatura disminuye con la profundidad, pero no es la causa de la presión. La presión aumenta porque hay más <em>columna de agua</em> encima.`,300);setTimeout(paso8,1600);} },
-    { label: '💧 Porque hay más columna de agua encima que ejerce su peso', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Correcto! ✅ <strong>+15 pts.</strong> P = ρgh — a mayor profundidad (h), más agua encima y más presión. Por eso los submarinos tienen cascos muy resistentes.`,300);setTimeout(paso8,1600);} },
-    { label: '🐟 Por la densidad de los peces', fn:()=>{addBot(`Los seres vivos no generan la presión del agua. La presión hidrostática depende de la profundidad y la densidad del <em>líquido</em>.`,300);setTimeout(paso8,1600);} },
-  ]);
-}
-
-async function paso8(){
-  avanzarBarra();
-  await addBot(`<strong>Movimiento Circular y Gravitación</strong><br><br>
-<div class="img-placeholder">📸 [IMAGEN: planeta orbitando el sol con fuerza centrípeta señalada hacia el centro — Ley de Gravitación Universal de Newton]</div><br>
-Para que un objeto haga un movimiento circular, necesita una <strong>fuerza centrípeta</strong> — siempre apunta hacia el centro de la trayectoria.<br><br>
-En el caso de los planetas orbitando al sol, ¿qué fuerza actúa como fuerza centrípeta?`, 400);
-  mostrarOpciones([
-    { label: '🚀 La velocidad del planeta', fn:()=>{addBot(`La velocidad es tangencial al círculo, no centrípeta. La fuerza que mantiene la órbita circular es la <strong>gravedad</strong>.`,300);setTimeout(paso9,1600);} },
-    { label: '🌟 La gravedad del sol sobre el planeta', fn:()=>{sumarPts(15);avanzarBarra();addBot(`¡Exacto! ✅ <strong>+15 pts.</strong> La <strong>fuerza gravitacional</strong> del sol atrae al planeta hacia el centro y actúa como fuerza centrípeta. Sin ella, el planeta saldría disparado en línea recta (1ª ley de Newton).`,300);setTimeout(paso9,1600);} },
-    { label: '💨 La presión del viento solar', fn:()=>{addBot(`El viento solar existe pero es despreciable para mantener órbitas. La fuerza dominante es la <strong>gravedad</strong> según la Ley de Newton de la gravitación universal.`,300);setTimeout(paso9,1600);} },
-  ]);
-}
-
-async function paso9(){
-  avanzarBarra();
-  await addBot(`¡Física completada con éxito! ⚡🎉<br><br>
-Lo que dominaste:<br><br>
-<span class="check">✅</span> <strong>Cinemática:</strong> MRU, MRUV, v = d/t.<br>
-<span class="check">✅</span> <strong>Leyes de Newton:</strong> inercia, F=ma, acción-reacción.<br>
-<span class="check">✅</span> <strong>Energía:</strong> cinética, potencial, conservación.<br>
-<span class="check">✅</span> <strong>Ondas:</strong> v = f × λ.<br>
-<span class="check">✅</span> <strong>Calor:</strong> conducción, convección, radiación.<br>
-<span class="check">✅</span> <strong>Electricidad:</strong> Ley de Ohm V = IR.<br>
-<span class="check">✅</span> <strong>Presión:</strong> P = F/A y presión hidrostática.<br>
-<span class="check">✅</span> <strong>Movimiento circular y gravitación.</strong><br><br>
-<em>¡El universo ya no tiene secretos para ti!</em> 🌌🚀`, 400);
-  setTimeout(()=>{avanzarBarra();mostrarFin();},2500);
-}
-
-function mostrarFin(){
-  document.getElementById('fin-overlay').classList.add('show');
-  document.getElementById('fin-pts').textContent=`✨ Acumulaste ${pts} puntos en este taller`;
-  try{window.parent.postMessage({type:'taller-completado',tallerExternoId:'taller_fisica',pts},'*');}catch(e){}
-}
-function cerrarTaller(){
-  try{window.parent.postMessage({type:'cerrar-taller-interactivo'},'*');}catch(e){}
-  window.close();
-}
-paso0();
+(function(){var cv=document.createElement('canvas');cv.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:.09;';document.body.insertBefore(cv,document.body.firstChild);var ctx=cv.getContext('2d');var S=['→','←','…','¿','?','!','∑','√','∞','·','"','"','A','B'];var C=['#7c3aed','#38bdf8','#10b981','#ff5e00'];var P=[];function rsz(){cv.width=innerWidth;cv.height=innerHeight;}rsz();window.addEventListener('resize',rsz);for(var i=0;i<32;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.28,vy:-(Math.random()*.38+.05),s:S[i%S.length],sz:8+Math.random()*12,a:.12+Math.random()*.45,c:C[i%C.length],rot:Math.random()*Math.PI*2,rv:(Math.random()-.5)*.008});(function tick(){ctx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.rot+=p.rv;if(p.y<-30){p.y=cv.height+20;p.x=Math.random()*cv.width;}if(p.x<-20)p.x=cv.width+20;if(p.x>cv.width+20)p.x=-20;ctx.save();ctx.globalAlpha=p.a;ctx.fillStyle=p.c;ctx.font='bold '+p.sz+'px Courier New';ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillText(p.s,0,0);ctx.restore();});requestAnimationFrame(tick);})();})();
+function burst(el,color,count){if(!el)return;var r=(typeof el==='string'?document.getElementById(el):el).getBoundingClientRect();var cx=r.left+r.width/2,cy=r.top+r.height/2;for(var i=0;i<(count||12);i++){var p=document.createElement('div');var sz=3+Math.random()*7;p.style.cssText='position:fixed;left:'+cx+'px;top:'+cy+'px;width:'+sz+'px;height:'+sz+'px;background:'+color+';border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);';document.body.appendChild(p);(function(ep){var ang=Math.random()*Math.PI*2,d=38+Math.random()*80;gsap.to(ep,{x:Math.cos(ang)*d,y:Math.sin(ang)*d-Math.random()*28,opacity:0,scale:0,duration:.5+Math.random()*.4,ease:'power2.out',onComplete:function(){ep.remove();}});})(p);}}
+const TOTAL=6;let cur=0,busy=false,_sel=null;
+function render(){[s0,s1,s2,s3,s4,s5][cur](document.getElementById('slide-inner'));}
+function anim(){[a0,a1,a2,a3,a4,a5][cur]();}
+function go(d){if(busy)return;var n=cur+d;if(n<0||n>=TOTAL)return;busy=true;_sel=null;var el=document.getElementById('slide-inner');gsap.to(el,{opacity:0,x:d<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:function(){cur=n;upd();render();gsap.fromTo(el,{opacity:0,x:d<0?-65:65,scale:.94},{opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:function(){anim();busy=false;}});}});}
+function upd(){document.getElementById('counter').textContent=(cur+1)+' / '+TOTAL;document.getElementById('prog-fill').style.width=(((cur+1)/TOTAL)*100)+'%';document.getElementById('btn-prev').disabled=cur===0;document.getElementById('btn-next').disabled=cur===TOTAL-1;document.querySelectorAll('.dot').forEach(function(d,i){d.classList.toggle('active',i===cur);});}
+function mkDots(){var c=document.getElementById('dots');for(var i=0;i<TOTAL;i++){var d=document.createElement('div');d.className='dot'+(i===0?' active':'');(function(idx){d.onclick=function(){if(!busy&&idx!==cur){var dv=idx-cur;cur=idx-dv;go(dv);}};})(i);c.appendChild(d);}}
+function selectChip(el,val){document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(_sel===val){_sel=null;return;}_sel=val;el.classList.add('selected');gsap.from(el,{scale:.82,duration:.35,ease:'elastic.out(1,.4)'});}
+function tryPlace(slotId,correct,color){var slot=document.getElementById(slotId);if(!slot||slot.classList.contains('filled'))return;if(!_sel){gsap.to(slot,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.36,ease:'none'});return;}var chosen=_sel;var chip=document.querySelector('.conn-chip.selected');var aEl=slot.closest('.conn-area');_sel=null;document.querySelectorAll('.conn-chip').forEach(function(c){c.classList.remove('selected');});if(chosen===correct){slot.textContent=chosen.toUpperCase();slot.classList.add('filled');slot.style.cssText+='border-style:solid !important;color:var(--green) !important;border-color:var(--green) !important;background:rgba(16,185,129,.12) !important;';gsap.from(slot,{scale:0,rotation:-22,opacity:0,duration:.68,ease:'elastic.out(1,.42)'});burst(slot,color||'#10b981',20);if(chip){gsap.to(chip,{scale:0,opacity:0,duration:.3,ease:'back.in(2)',onComplete:function(){chip.classList.add('used');}});}if(aEl)gsap.to(aEl,{borderColor:'rgba(16,185,129,.5)',boxShadow:'0 0 32px rgba(16,185,129,.18)',duration:.4});var fbEl=document.getElementById('fb'+slotId.replace('slot',''));if(fbEl){fbEl.className='fb-msg ok';gsap.from(fbEl,{y:10,opacity:0,duration:.38});}var hintEl=document.getElementById('hint'+slotId.replace('slot',''));if(hintEl)hintEl.style.display='none';}else{if(chip){gsap.timeline().to(chip,{y:-28,rotation:18,scale:1.15,duration:.18,ease:'power2.out'}).to(chip,{y:0,rotation:0,scale:1,duration:.55,ease:'elastic.out(1,.4)'});}gsap.to(slot,{keyframes:[{x:-8},{x:8},{x:-6},{x:6},{x:0}],duration:.42,ease:'none'});burst(chip||slot,'#ef4444',9);gsap.to(slot,{borderColor:'#ef4444',duration:.12,yoyo:true,repeat:4,onComplete:function(){gsap.set(slot,{clearProps:'borderColor'});}});}}
+var _QUIZ=[{q:"Un objeto de 5 kg es empujado con una fuerza neta de 20 N. ¿Cuál es su aceleración?",opts:["0.25 m/s²","4 m/s²","100 m/s²","25 m/s²"],ok:1,fb:"2ª Ley de Newton: a = F/m = 20/5 = 4 m/s². ✓"},{q:"Un automóvil que va a 30 m/s frena con una aceleración de -5 m/s². ¿Cuánto tarda en detenerse?",opts:["3 s","5 s","6 s","150 s"],ok:2,fb:"vf=vi+at → 0=30+(-5)t → t=30/5=6 s. ✓"},{q:"¿Cuál de estas situaciones ilustra mejor la Primera Ley de Newton (Inercia)?",opts:["Un cohete acelera al expulsar gas","Un pasajero sale disparado hacia adelante cuando el autobús frena","Una pelota cae con aceleración 9.8 m/s²","Un puente soporta el peso de los carros"],ok:1,fb:"El pasajero tiende a seguir en movimiento cuando el bus frena → Inercia (1ª Ley). ✓"}];
+var _qAns=[null,null,null];
+function rQ(i){if(i>=_QUIZ.length){setTimeout(showScore,420);return;}var q=_QUIZ[i];var w=document.getElementById('qw');if(!w)return;w.innerHTML='<div style="font-size:.68rem;color:var(--muted);margin-bottom:.38rem;">Pregunta '+(i+1)+' de '+_QUIZ.length+'</div><div class="q-q">'+q.q+'</div><div class="q-opts" id="qo'+i+'">'+q.opts.map(function(o,j){return '<button class="q-opt" onclick="ansQ('+i+','+j+')" id="qo'+i+'_'+j+'">'+String.fromCharCode(65+j)+'. '+o+'</button>';}).join('')+'</div><div class="q-fb" id="qfb'+i+'"></div>';gsap.from('.q-opt',{y:18,opacity:0,duration:.3,stagger:.07,ease:'back.out(2)'});}
+function ansQ(qi,oi){if(_qAns[qi]!==null)return;_qAns[qi]=oi;var q=_QUIZ[qi];var isOk=oi===q.ok;document.querySelectorAll('#qo'+qi+' .q-opt').forEach(function(b,i){b.classList.add('locked');b.style.pointerEvents='none';if(i===q.ok)b.classList.add('ok');else if(i===oi)b.classList.add('bad');});var fb=document.getElementById('qfb'+qi);if(fb){fb.className='q-fb '+(isOk?'ok':'bad');fb.textContent=(isOk?'✅ ':'❌ ')+q.fb;}var btn=document.getElementById('qo'+qi+'_'+oi);if(isOk&&btn){burst(btn,'#10b981',16);gsap.from(btn,{scale:1.1,duration:.4,ease:'elastic.out(1,.4)'});}else if(btn){gsap.to(btn,{keyframes:[{x:-5},{x:5},{x:-4},{x:4},{x:0}],duration:.4,ease:'none'});}setTimeout(function(){rQ(qi+1);},2200);}
+function showScore(){var ok=_qAns.filter(function(a,i){return a===_QUIZ[i].ok;}).length;var w=document.getElementById('qw');var ss=document.getElementById('sc');if(w)w.innerHTML='';if(!ss)return;ss.style.display='block';var em=ok===_QUIZ.length?'🏆':ok>=2?'⭐':'📚';var msg=ok===_QUIZ.length?'¡Perfecto! Dominas este tema.':ok>=2?'¡Muy bien! Sigue practicando.':'Repasa los conceptos clave.';ss.innerHTML='<div id="sci" style="padding:.6rem 0;text-align:center;"><div style="font-size:3rem;font-weight:900;margin-bottom:.32rem;">'+em+' '+ok+'/'+_QUIZ.length+'</div><div style="color:var(--muted);font-size:.87rem;margin-bottom:1rem;">'+msg+'</div><button onclick="resetQ()" style="background:var(--purple);border:none;color:#fff;padding:.5rem 1.4rem;border-radius:9px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button></div>';gsap.from('#sci',{scale:.52,rotation:-8,opacity:0,duration:.72,ease:'elastic.out(1,.42)'});if(ok===_QUIZ.length){var cols=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];for(var ii=0;ii<24;ii++)(function(n){setTimeout(function(){var pp={getBoundingClientRect:function(){return{left:innerWidth*.25+Math.random()*innerWidth*.5,top:innerHeight*.2,width:0,height:0};}};burst(pp,cols[n%cols.length],6);},n*90);}(ii));}}
+function resetQ(){_qAns=[null,null,null];var ss=document.getElementById('sc');if(ss)ss.style.display='none';rQ(0);}
+function s0(el){el.innerHTML=`<div style="text-align:center;padding:.2rem 0;"><div class="s-tag">Física · Ciencias Naturales ICFES</div><div style="font-size:1.8rem;font-weight:900;background:linear-gradient(135deg,#fff 30%,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.55rem;" id="mt0">Física Completa ICFES</div><div id="chains0" style="display:flex;justify-content:center;gap:.4rem;flex-wrap:wrap;margin:.55rem 0 .9rem;"><span id="ch0" class="conn-chip type-adv" style="opacity:0;">cinemática</span><span id="ch1" class="conn-chip type-cons" style="opacity:0;">Newton</span><span id="ch2" class="conn-chip type-add" style="opacity:0;">energía</span><span id="ch3" class="conn-chip type-caus" style="opacity:0;">ondas</span><span id="ch4" class="conn-chip type-adv" style="opacity:0;">electricidad</span></div><div id="obj0" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1rem 1.25rem;max-width:460px;margin:0 auto;text-align:left;"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.55rem;">🎯 OBJETIVOS</div><div id="ob0" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Aplicar las ecuaciones de cinemática (MRU y MRUV)</span></div><div id="ob1" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Identificar y aplicar las Leyes de Newton</span></div><div id="ob2" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Calcular trabajo, energía cinética y potencial</span></div><div id="ob3" style="display:flex;gap:.5rem;align-items:flex-start;margin:.28rem 0;font-size:.81rem;color:#c4b5fd;opacity:0;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>Comprender conceptos de ondas, calor y electricidad</span></div></div></div>`;}
+function a0(){var tl=gsap.timeline();tl.from('#mt0',{y:-80,rotation:-5,opacity:0,duration:.7,ease:'bounce.out'});tl.fromTo(['#ch0','#ch1','#ch2','#ch3','#ch4'],{opacity:0,scale:.4,y:-25},{opacity:1,scale:1,y:0,duration:.38,stagger:.09,ease:'elastic.out(1,.5)'},'-=.2');tl.fromTo(['#ob0','#ob1','#ob2','#ob3'],{opacity:0,x:-42},{opacity:1,x:0,duration:.38,stagger:.11,ease:'back.out(2.5)'},'-=.1');gsap.to('.conn-chip',{y:-4,duration:1.4,yoyo:true,repeat:-1,ease:'sine.inOut',stagger:{amount:1.2},delay:.8});}
+function s1(el){el.innerHTML=`<div><div class="s-tag">Concepto base</div><div class="s-title" id="t1">Cinemática — El Movimiento</div><div class="s-sub">Describir el movimiento sin preguntar por sus causas</div><div class="formula" id="f1">MRU: v = d/t &nbsp;·&nbsp; MRUV: vf = vi + at &nbsp;·&nbsp; d = vi·t + ½at²</div><div id="st1" class="step"><div class="step-n">1</div><div><strong>MRU:</strong> velocidad constante, sin aceleración. Ej: v = 120 km ÷ 2 h = <strong>60 km/h</strong>.</div></div><div id="st2" class="step"><div class="step-n">2</div><div><strong>MRUV:</strong> aceleración constante. Caída libre: a = 9.8 m/s² (g). Un objeto cae desde el reposo → vf = g·t.</div></div><div class="example" id="e1"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.28rem;">⚡ TRUCO ICFES</div>Identifica qué dato te falta. Si hay velocidad constante → MRU (v=d/t). Si hay aceleración → MRUV. En caída libre: a=g=9.8 m/s².</div></div>`;}
+function a1(){gsap.timeline().from('#t1',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#f1',{scaleX:.35,scaleY:.35,opacity:0,duration:.5,ease:'back.out(2.8)'},'-=.15').from(['#st1','#st2'],{x:-40,opacity:0,duration:.4,stagger:.16,ease:'back.out(2)'}).from('#e1',{y:16,opacity:0,duration:.36},'-=.1');}
+function s2(el){el.innerHTML=`<div><div class="s-tag">Clasificación</div><div class="s-title" id="t2">Leyes de Newton y Energía</div><div class="s-sub">Las tres leyes y los tipos de energía mecánica</div><div style="margin-top:.35rem;"><div class="ctype-card" id="ct1"><div class="ctype-name" style="color:#fb923c;">1ª Ley (Inercia)</div><div class="ctype-words" style="color:#fb923c;">Un objeto en reposo permanece en reposo; en movimiento, sigue en movimiento. A menos que actúe una fuerza neta.</div><div class="ctype-use">Ej: Pasajero se inclina al frenar bruscamente.</div></div>
+<div class="ctype-card" id="ct2"><div class="ctype-name" style="color:#7dd3fc;">2ª Ley (F = ma)</div><div class="ctype-words" style="color:#7dd3fc;">La fuerza neta = masa × aceleración.</div><div class="ctype-use">Si F=20N y m=4kg → a=5 m/s².</div></div>
+<div class="ctype-card" id="ct3"><div class="ctype-name" style="color:#6ee7b7;">3ª Ley (Acción-Reacción)</div><div class="ctype-words" style="color:#6ee7b7;">Para cada acción hay una reacción igual y opuesta.</div><div class="ctype-use">Cohete: empuja gas (acción) → gas empuja cohete (reacción).</div></div>
+<div class="ctype-card" id="ct4"><div class="ctype-name" style="color:#c4b5fd;">Energía Mecánica</div><div class="ctype-words" style="color:#c4b5fd;">Ec = ½mv² (cinética). Ep = mgh (potencial gravitacional).</div><div class="ctype-use">Conservación: Ec + Ep = constante (sin rozamiento).</div></div></div></div>`;}
+function a2(){gsap.timeline().from('#t2',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from(['#ct1','#ct2','#ct3','#ct4'],{y:72,rotation:-3,opacity:0,duration:.54,stagger:.13,ease:'back.out(2.2)'},'-=.1');}
+function s3(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 1 · Identifica la Ley de Newton</div><div class="s-title" id="t3">¿Qué ley explica esto?</div><div class="s-sub">Selecciona la ley de Newton correcta</div><div class="conn-area" id="ca3"><div class="passage">"Un cohete expulsa gases hacia abajo con gran fuerza. Como resultado, el cohete sube hacia arriba con la misma magnitud de fuerza."</div><div class="chips-row"><span class="conn-chip type-adv" onclick="selectChip(this,'1ª Ley — Inercia' )">1ª Ley — Inercia</span><span class="conn-chip type-cons" onclick="selectChip(this,'2ª Ley — F=ma' )">2ª Ley — F=ma</span><span class="conn-chip type-add" onclick="selectChip(this,'3ª Ley — Acción/Reacción' )">3ª Ley — Acción/Reacción</span><span class="conn-chip type-caus" onclick="selectChip(this,'Ley de gravitación' )">Ley de gravitación</span></div><div class="hint-text" id="hints3">👆 ¿La descripción habla de un par de fuerzas iguales y opuestas?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot3" class="conn-chip type-add" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot3','3ª Ley — Acción/Reacción','#10b981')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb3">✅ 3ª LEY — acción (gas hacia abajo) y reacción (cohete hacia arriba), misma magnitud, dirección opuesta. ✓</div></div></div>`;}
+function a3(){gsap.timeline().from('#t3',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca3',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s4(el){_sel=null;el.innerHTML=`<div><div class="s-tag">🎮 Juego 2 · Calcula la velocidad</div><div class="s-title" id="t4">Problema de cinemática</div><div class="s-sub">Elige la respuesta correcta</div><div class="conn-area" id="ca4"><div class="passage">Un automóvil recorre <strong>240 km en 4 horas</strong> a velocidad constante (MRU).<br>¿Cuál es su velocidad promedio?<br><span style="font-size:.75rem;color:var(--muted);">v = distancia ÷ tiempo = 240 ÷ 4 = ?</span></div><div class="chips-row"><span class="conn-chip type-cons" onclick="selectChip(this,'40 km/h' )">40 km/h</span><span class="conn-chip type-adv" onclick="selectChip(this,'60 km/h' )">60 km/h</span><span class="conn-chip type-add" onclick="selectChip(this,'80 km/h' )">80 km/h</span><span class="conn-chip type-caus" onclick="selectChip(this,'960 km/h' )">960 km/h</span></div><div class="hint-text" id="hints4">👆 v = d/t = 240 km / 4 h = ?</div><div style="text-align:center;margin-top:.7rem;"><span id="slot4" class="conn-chip type-cons" style="font-size:.72rem;border-style:dashed;opacity:.7;" onclick="tryPlace('slot4','60 km/h','#38bdf8')">✓ Confirmar selección</span></div><div class="fb-msg" id="fb4">✅ 60 km/h — v = 240/4 = 60 km/h. MRU: velocidad constante. ✓</div></div></div>`;}
+function a4(){gsap.timeline().from('#t4',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'}).from('#ca4',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15').from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1');}
+function s5(el){_qAns=[null,null,null];el.innerHTML=`<div><div class="s-tag">Mini Quiz · 3 preguntas tipo ICFES Saber 11</div><div class="s-title" id="t5">¿Cuánto aprendiste?</div><div id="qw"></div><div id="sc" style="display:none;"></div></div>`;rQ(0);}
+function a5(){gsap.from('#t5',{y:-55,rotation:-4,opacity:0,duration:.62,ease:'elastic.out(1,.48)'});}
+mkDots();render();anim();
 </script>
 </body>
 </html>
