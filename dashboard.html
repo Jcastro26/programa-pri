@@ -8296,11 +8296,16 @@ window.cargarCuestionariosEst = async function() {
     const lista = document.getElementById('est-cuestionarios-lista');
     if (!lista) return;
     lista.innerHTML = '<p style="font-family:var(--fuente-t);font-size:.65rem;color:rgba(255,255,255,.25);text-align:center;padding:1.5rem;">Cargando…</p>';
-    const gradoUsuario = String(currentUser.grado || '').replace(/[°ºo]/gi,'').trim();
+    const gradoUsuario = String(currentUser?.grado || '').replace(/[°ºo]/gi,'').trim();
 
     try {
-        const snap = await getDocs(query(collection(db,'formularios_banco'), where('publicado','==',true), orderBy('creadoEn','desc')));
-        const forms = snap.docs.map(d => ({id:d.id,...d.data()})).filter(f => {
+        // orderBy removido — Firestore requeriría índice compuesto con publicado+creadoEn.
+        // Se ordena en JS después de obtener los docs.
+        const snap = await getDocs(query(collection(db,'formularios_banco'), where('publicado','==',true)));
+        const forms = snap.docs
+            .map(d => ({id:d.id,...d.data()}))
+            .sort((a,b) => (b.creadoEn?.toMillis?.()??0) - (a.creadoEn?.toMillis?.()??0))
+            .filter(f => {
             if (!f.grado || f.grado === 'todos') return true;
             if (f.grado === 'avanzado') return gradoUsuario === '10' || gradoUsuario === '11';
             return f.grado === gradoUsuario;
