@@ -645,17 +645,19 @@
             <p class="panel-title">Comunidad</p>
             <h2 class="panel-heading">Ágora <em>Digital</em></h2>
             <p class="panel-desc">Intercambia ideas y dudas con tus compañeros y mentores.</p>
-            <div class="section-box" style="padding:0;overflow:visible;">
-                <div id="chat-priv-banner" style="display:none;" class="chat-priv-header">
-                    <span>💬 Chat privado con: <strong id="chat-priv-con">—</strong></span>
-                    <button class="btn-cerrar-chat" onclick="cerrarChatPrivado()">✕ Volver al foro</button>
-                </div>
+            <!-- Banner chat privado: fuera del section-box para no ser recortado -->
+            <div id="chat-priv-banner" style="display:none;" class="chat-priv-header">
+                <span>💬 Chat privado con: <strong id="chat-priv-con">—</strong></span>
+                <button class="btn-cerrar-chat" onclick="cerrarChatPrivado()">✕ Volver al foro</button>
+            </div>
+            <div class="section-box" style="padding:0;margin-bottom:.75rem;">
                 <div class="foro-messages" id="forum-messages"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
-                <div id="foro-inputs">
-                    <div class="foro-input-row">
-                        <input class="foro-input" type="text" id="forum-input" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')enviarMensajeForo()">
-                        <button class="btn-send" onclick="enviarMensajeForo()">Enviar</button>
-                    </div>
+            </div>
+            <!-- Input FUERA del section-box: nunca recortado por overflow:hidden -->
+            <div id="foro-inputs">
+                <div class="foro-input-row">
+                    <input class="foro-input" type="text" id="forum-input" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')enviarMensajeForo()">
+                    <button class="btn-send" onclick="enviarMensajeForo()">Enviar</button>
                 </div>
             </div>
         </div>
@@ -1229,14 +1231,14 @@
             <p class="panel-title">Supervisión</p>
             <h2 class="panel-heading">Foro <em>Global</em></h2>
             <p class="panel-desc">Vista completa del foro comunitario. Puedes responder públicamente y en privado.</p>
-            <div class="section-box" style="padding:0;overflow:hidden;">
+            <div id="foro-admin-reply-banner" style="display:none;padding:.6rem 0;"></div>
+            <div class="section-box" style="padding:0;margin-bottom:.75rem;">
                 <div class="foro-messages" id="forum-messages-admin"><p style="font-family:var(--fuente-t);font-size:0.65rem;color:rgba(255,255,255,0.25);text-align:center;margin:auto;">Cargando mensajes...</p></div>
-                <div id="foro-admin-reply-banner" style="display:none;padding:.6rem 1rem;"></div>
-                <div id="foro-admin-inputs">
-                    <div class="foro-input-row">
-                        <input class="foro-input" type="text" id="forum-input-admin" placeholder="Responder como equipo PRI..." onkeydown="if(event.key==='Enter')enviarMensajeAdmin()">
-                        <button class="btn-send" onclick="enviarMensajeAdmin()">Enviar</button>
-                    </div>
+            </div>
+            <div id="foro-admin-inputs">
+                <div class="foro-input-row">
+                    <input class="foro-input" type="text" id="forum-input-admin" placeholder="Responder como equipo PRI..." onkeydown="if(event.key==='Enter')enviarMensajeAdmin()">
+                    <button class="btn-send" onclick="enviarMensajeAdmin()">Enviar</button>
                 </div>
             </div>
         </div>
