@@ -294,13 +294,13 @@
         /* ═══════════════════════════════════════════
            RESPONSIVE MÓVIL — MENÚ HAMBURGUESA
         ═══════════════════════════════════════════ */
-        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:8px;padding:4px 6px 2px;cursor:pointer;flex-shrink:0;width:auto;height:auto;transition:background 0.2s ease;}
+        .btn-hamburger{display:none;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(255,94,0,0.12);border:1.5px solid rgba(255,94,0,0.5);border-radius:8px;padding:4px 7px 3px;cursor:pointer;flex-shrink:0;width:auto;height:auto;transition:background 0.2s ease;}
         .btn-hamburger:hover,.btn-hamburger.is-active{background:rgba(255,94,0,0.22);border-color:rgba(255,94,0,0.8);}
-        .btn-hamburger .bar{display:block;width:16px;height:2px;background:var(--naranja);border-radius:2px;transition:all .3s ease-in-out;}
+        .btn-hamburger .bar{display:block;width:22px;height:2.5px;background:var(--naranja);border-radius:2px;transition:all .3s ease-in-out;}
         .btn-hamburger.is-active .bar:nth-child(2){opacity:0;}
-        .btn-hamburger.is-active .bar:nth-child(1){transform:translateY(6px) rotate(45deg);}
-        .btn-hamburger.is-active .bar:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
-        .btn-hamburger::after{content:'MENÚ';font-family:var(--fuente-t);font-size:0.38rem;font-weight:900;letter-spacing:1px;color:var(--naranja);margin-top:1px;}
+        .btn-hamburger.is-active .bar:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
+        .btn-hamburger.is-active .bar:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+        .btn-hamburger::after{content:'MENÚ';font-family:var(--fuente-t);font-size:0.45rem;font-weight:900;letter-spacing:1px;color:var(--naranja);margin-top:1px;}
         .btn-hamburger.is-active::after{content:'CERRAR';}
         #dash-mobile-pill{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--naranja);font-family:var(--fuente-t);font-weight:900;font-size:0.75rem;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,94,0,0.5);}
         #dash-mobile-pill img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
@@ -376,51 +376,8 @@
             .qa-label{font-size:.6rem;}
             .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
 
-            /* Foro global móvil — mismo enfoque flex que inbox: panel = columna, inputs anclados */
-            body.foro-abierto #panel-foro,
-            body.foro-abierto #panel-foro-admin{
-                display:flex !important;
-                flex-direction:column !important;
-                overflow:hidden !important;
-            }
-            /* Ocultar título/desc mientras el foro está abierto (igual que inbox) */
-            body.foro-abierto #panel-foro .panel-title,
-            body.foro-abierto #panel-foro .panel-heading,
-            body.foro-abierto #panel-foro .panel-desc,
-            body.foro-abierto #panel-foro-admin .panel-title,
-            body.foro-abierto #panel-foro-admin .panel-heading,
-            body.foro-abierto #panel-foro-admin .panel-desc{display:none !important;}
-            /* section-box crece para llenar el espacio Y se convierte en flex para
-               que .foro-messages pueda usar flex:1 en vez de height:100%
-               (height:100% tiene bugs en iOS Safari cuando el padre es flex item) */
-            body.foro-abierto #panel-foro .section-box,
-            body.foro-abierto #panel-foro-admin .section-box{
-                flex:1 !important;
-                min-height:0 !important;
-                display:flex !important;
-                flex-direction:column !important;
-                overflow:hidden !important;
-                margin-bottom:0 !important;
-                padding:0 !important;
-                background:none !important;
-                border:none !important;
-            }
-            /* Mensajes = flex:1 dentro de section-box → evita height:100% bugs en iOS */
-            body.foro-abierto #panel-foro .foro-messages,
-            body.foro-abierto #panel-foro-admin .foro-messages{
-                flex:1 !important;
-                min-height:0 !important;
-                height:auto !important;
-                max-height:none !important;
-                overflow-y:scroll !important;
-                -webkit-overflow-scrolling:touch !important;
-                overscroll-behavior-y:contain !important;
-                touch-action:pan-y !important;
-            }
-            /* Inputs anclados al fondo, nunca se comprimen */
-            body.foro-abierto #foro-inputs,
-            body.foro-abierto #foro-admin-inputs{flex-shrink:0 !important;}
-            /* Fallback cuando foro-abierto no está activo */
+            /* Foro global móvil — layout gestionado 100% por JS en _aplicarForoFixedMobile */
+            /* Fallback estático cuando el JS aún no ha corrido */
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             /* Footer: siempre oculto en móvil */
             .footer-industrial,.footer-minimal{display:none !important;}
@@ -7737,17 +7694,62 @@ window._removerChatFixedMobile = function() {
     window.scrollTo(0, scrollY);
 };
 
-// ── Foro global: mismo enfoque que inbox — altura en el PANEL, flex distribuye internamente ──
+// ── Foro global: layout 100% por inline styles (evita bugs de CSS media query en iOS) ──
 window._aplicarForoFixedMobile = function(panelId) {
     const panelEl    = document.getElementById(panelId);
     const siteHeader = document.querySelector('.site-header');
     const mainEl     = document.querySelector('.main-layout');
     if (!panelEl) return;
+
     const headerH = siteHeader ? siteHeader.offsetHeight : 65;
     const mainPT  = mainEl ? parseFloat(getComputedStyle(mainEl).paddingTop) : 14;
-    // Altura del panel = toda la pantalla menos header y padding del contenedor
-    panelEl.style.setProperty('height', `calc(100dvh - ${headerH + mainPT}px)`, 'important');
-    // iOS scroll-lock (idéntico al inbox)
+    const totalH  = `calc(100dvh - ${headerH + mainPT}px)`;
+
+    // 1. Panel = flex column con altura calculada
+    panelEl.style.setProperty('display',         'flex',   'important');
+    panelEl.style.setProperty('flex-direction',  'column', 'important');
+    panelEl.style.setProperty('overflow',        'hidden', 'important');
+    panelEl.style.setProperty('height',          totalH,   'important');
+
+    // 2. Ocultar título/heading/desc del panel
+    ['panel-title','panel-heading','panel-desc'].forEach(cls => {
+        const el = panelEl.querySelector('.' + cls);
+        if (el) el.style.setProperty('display','none','important');
+    });
+
+    // 3. section-box = flex:1 y también flex column para que .foro-messages use flex:1
+    const sectionBox = panelEl.querySelector('.section-box');
+    if (sectionBox) {
+        sectionBox.style.setProperty('flex',            '1',      'important');
+        sectionBox.style.setProperty('min-height',      '0',      'important');
+        sectionBox.style.setProperty('display',         'flex',   'important');
+        sectionBox.style.setProperty('flex-direction',  'column', 'important');
+        sectionBox.style.setProperty('overflow',        'hidden', 'important');
+        sectionBox.style.setProperty('margin-bottom',   '0',      'important');
+        sectionBox.style.setProperty('padding',         '0',      'important');
+        sectionBox.style.setProperty('background',      'none',   'important');
+        sectionBox.style.setProperty('border',          'none',   'important');
+    }
+
+    // 4. .foro-messages = flex:1 + scroll (evita height:100% que falla en iOS Safari)
+    const msgEl = panelEl.querySelector('.foro-messages');
+    if (msgEl) {
+        msgEl.style.setProperty('flex',                          '1',     'important');
+        msgEl.style.setProperty('min-height',                    '0',     'important');
+        msgEl.style.setProperty('height',                        'auto',  'important');
+        msgEl.style.setProperty('max-height',                    'none',  'important');
+        msgEl.style.setProperty('overflow-y',                    'scroll','important');
+        msgEl.style.setProperty('-webkit-overflow-scrolling',    'touch', 'important');
+        msgEl.style.setProperty('overscroll-behavior-y',         'contain','important');
+        msgEl.style.setProperty('touch-action',                  'pan-y', 'important');
+    }
+
+    // 5. #foro-inputs = anclado al fondo
+    const inputsId = panelId === 'panel-foro' ? 'foro-inputs' : 'foro-admin-inputs';
+    const inputsEl = document.getElementById(inputsId);
+    if (inputsEl) inputsEl.style.setProperty('flex-shrink','0','important');
+
+    // 6. iOS scroll-lock
     document.body.dataset.foroScrollY = window.scrollY;
     document.body.style.position  = 'fixed';
     document.body.style.top       = `-${window.scrollY}px`;
@@ -7759,7 +7761,26 @@ window._removerForoFixedMobile = function() {
     const panelId = document.body.dataset.foroActivoId;
     if (panelId) {
         const panelEl = document.getElementById(panelId);
-        if (panelEl) panelEl.style.removeProperty('height');
+        if (panelEl) {
+            ['display','flex-direction','overflow','height'].forEach(p => panelEl.style.removeProperty(p));
+            ['panel-title','panel-heading','panel-desc'].forEach(cls => {
+                const el = panelEl.querySelector('.' + cls);
+                if (el) el.style.removeProperty('display');
+            });
+            const sectionBox = panelEl.querySelector('.section-box');
+            if (sectionBox) {
+                ['flex','min-height','display','flex-direction','overflow','margin-bottom','padding','background','border']
+                    .forEach(p => sectionBox.style.removeProperty(p));
+            }
+            const msgEl = panelEl.querySelector('.foro-messages');
+            if (msgEl) {
+                ['flex','min-height','height','max-height','overflow-y','-webkit-overflow-scrolling','overscroll-behavior-y','touch-action']
+                    .forEach(p => msgEl.style.removeProperty(p));
+            }
+            const inputsId = panelId === 'panel-foro' ? 'foro-inputs' : 'foro-admin-inputs';
+            const inputsEl = document.getElementById(inputsId);
+            if (inputsEl) inputsEl.style.removeProperty('flex-shrink');
+        }
     }
     const scrollY = parseFloat(document.body.dataset.foroScrollY || '0');
     document.body.style.position  = '';
