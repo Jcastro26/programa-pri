@@ -368,7 +368,7 @@
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             /* Footer: siempre oculto en móvil */
             .footer-industrial,.footer-minimal{display:none !important;}
-            /* Inbox chat móvil — overflow scroll base (top/bottom puestos por JS con position:fixed) */
+            /* Inbox chat móvil — altura puesta por JS; overflow-y:scroll permite scroll interno */
             #inbox-chat-mensajes{overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             /* Cuando el chat está abierto: ocultar título/desc del panel */
             body.inbox-chat-abierto #panel-inbox .panel-title,
@@ -7514,54 +7514,47 @@ let _inboxOtroFotoUrl = ''; // foto del otro usuario en el chat activo
 
 // ── SCROLL MÓVIL INBOX — SOLUCIÓN DEFINITIVA iOS ────────────────────────────
 // iOS Safari da prioridad al scroll de la página sobre divs internos.
-// Única solución 100% confiable: extraer SOLO el div de mensajes y el área
-// de input del flujo normal con position:fixed, posicionados con coordenadas
-// exactas medidas desde el viewport. La página queda de ~100px → no scrollea
-// → iOS enruta todos los touches al div fijo. El sticky header NO se toca.
-
-// sp = setProperty con priority 'important' — única forma correcta de forzar
-// inline !important; cssText con '!important' es ignorado por los navegadores
-const _sp = (el, prop, val) => el.style.setProperty(prop, val, 'important');
-const _rp = (el, prop)      => el.style.removeProperty(prop);
+// Solución: bloquear html+body con overflow:hidden (la página no puede scrollear)
+// y darle al div de mensajes una altura exacta calculada desde el DOM real.
+// Ningún elemento cambia de position → header sticky y inputs quedan intactos.
 
 window._aplicarChatFixedMobile = function() {
     const mensajes = document.getElementById('inbox-chat-mensajes');
+    if (!mensajes) return;
+
+    // Medir todos los elementos que ocupan espacio arriba y abajo del div
+    const chatHdr  = document.querySelector('.chat-priv-header');
     const inputs   = document.getElementById('foro-inputs');
-    if (!mensajes || !inputs) return;
+    const panelEl  = document.getElementById('panel-inbox');
+    const mainEl   = document.querySelector('.main-layout');
 
-    // Medir ANTES de fijar (elementos todavía en flujo normal)
-    const inputsH       = inputs.getBoundingClientRect().height;
-    const chatHdr       = document.querySelector('.chat-priv-header');
-    const topMensajes   = chatHdr ? Math.ceil(chatHdr.getBoundingClientRect().bottom) : 101;
-    const bottomInputs  = Math.ceil(inputsH);
+    const chatHdrBottom = chatHdr ? chatHdr.getBoundingClientRect().bottom : 101;
+    const inputsH       = inputs  ? inputs.offsetHeight : 100;
+    const panelPB       = panelEl ? parseFloat(getComputedStyle(panelEl).paddingBottom) : 32;
+    const mainPB        = mainEl  ? parseFloat(getComputedStyle(mainEl).paddingBottom)  : 14;
+    const mensajesMarginB = parseFloat(getComputedStyle(mensajes).marginBottom) || 0;
 
-    // Anclar inputs al fondo del viewport
-    _sp(inputs, 'position', 'fixed');
-    _sp(inputs, 'bottom',   '0');
-    _sp(inputs, 'left',     '0');
-    _sp(inputs, 'right',    '0');
-    _sp(inputs, 'z-index',  '30');
-    _sp(inputs, 'background', 'rgba(2,14,36,0.97)');
-    _sp(inputs, 'box-shadow', '0 -2px 12px rgba(0,0,0,0.4)');
+    // Espacio consumido debajo del div de mensajes
+    const abajo = inputsH + mensajesMarginB + panelPB + mainPB;
+    // Altura disponible para mensajes = viewport - lo que hay arriba - lo que hay abajo
+    const alturaFinal = Math.max(120, window.innerHeight - chatHdrBottom - abajo);
 
-    // Anclar mensajes entre el chat-header y el área de inputs
-    _sp(mensajes, 'position',      'fixed');
-    _sp(mensajes, 'top',           topMensajes + 'px');
-    _sp(mensajes, 'left',          '0');
-    _sp(mensajes, 'right',         '0');
-    _sp(mensajes, 'bottom',        bottomInputs + 'px');
-    _sp(mensajes, 'height',        'auto');
-    _sp(mensajes, 'max-height',    'none');
-    _sp(mensajes, 'z-index',       '20');
-    _sp(mensajes, 'border-radius', '0');
-    _sp(mensajes, 'margin-bottom', '0');
+    mensajes.style.setProperty('height',     alturaFinal + 'px', 'important');
+    mensajes.style.setProperty('max-height', 'none',             'important');
+
+    // Bloquear scroll de la página: iOS deja de competir → touches van al div
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow            = 'hidden';
 };
 
 window._removerChatFixedMobile = function() {
     const mensajes = document.getElementById('inbox-chat-mensajes');
-    const inputs   = document.getElementById('foro-inputs');
-    ['position','top','left','right','bottom','height','max-height','z-index','border-radius','margin-bottom'].forEach(p => _rp(mensajes, p));
-    ['position','bottom','left','right','z-index','background','box-shadow'].forEach(p => _rp(inputs, p));
+    if (mensajes) {
+        mensajes.style.removeProperty('height');
+        mensajes.style.removeProperty('max-height');
+    }
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow            = '';
 };
 
 // Re-calcular al rotar pantalla o al aparecer/desaparecer el teclado virtual
