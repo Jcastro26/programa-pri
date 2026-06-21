@@ -142,10 +142,9 @@
         #ri-chart-wrap::-webkit-scrollbar-thumb:hover,#ri-chart-colegio-wrap::-webkit-scrollbar-thumb:hover{background:rgba(255,94,0,.7);}
         .ri-th-sort{cursor:pointer;user-select:none;}
         .ri-th-sort:hover{color:rgba(255,255,255,.9);}
-        .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(56,189,248,0.2);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;max-width:85%;border-radius:0 12px 12px 12px;}
+        .msg-item{background:rgba(255,255,255,0.03);border-left:3px solid rgba(56,189,248,0.2);padding:0.6rem 0.75rem;position:relative;display:flex;gap:0.6rem;align-items:flex-start;max-width:85%;border-radius:0 12px 12px 12px;align-self:flex-start;}
         .msg-item.mine{border-left:none;border-right:3px solid var(--naranja);background:rgba(255,94,0,0.07);flex-direction:row-reverse;align-self:flex-end;border-radius:12px 0 12px 12px;}
         .msg-item.mine .msg-author{color:rgba(255,190,130,0.7);}
-        .msg-item.mine .msg-author .msg-time{float:left;margin-right:.4rem;}
         .msg-avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.12);flex-shrink:0;background:linear-gradient(135deg,var(--naranja),#cc4400);display:flex;align-items:center;justify-content:center;font-family:var(--fuente-t);font-size:0.65rem;font-weight:900;color:var(--azul-deep);overflow:hidden;}
         .msg-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
         .msg-item-body{flex:1;min-width:0;}
@@ -7537,38 +7536,40 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
         });
     };
 
-    // Resolver nombre Y foto: primero del doc del CHAT (fiable, ya existe)
-    // luego del doc de USUARIO como refuerzo
+    // Resolver nombre Y foto: primero del doc del CHAT (ya cargado, rápido),
+    // luego del doc del USUARIO como refuerzo con datos más frescos.
+    // NO comparamos contra currentUser.nombre porque pueden tener el mismo nombre
+    // (e.g. admin y estudiante con el mismo apellido) y el header quedaría vacío.
     getDoc(doc(db,'chats_privados',chatId)).then(chatSnap => {
-        const _nr = s => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
         if (chatSnap.exists()) {
             const cd = chatSnap.data();
-            // Nombre desde el mapa del chat
-            const nChat = (uid && cd.nombres?.[uid]) || cd.ultimoAutorNombre || '';
-            if (nChat && _nr(nChat) !== _nr(currentUser.nombre) && !nombreValPN(nombreMostrar)) {
+            // Nombre: preferir el entry del UID específico en el mapa
+            const nChat = (uid && typeof cd.nombres?.[uid] === 'string' && cd.nombres[uid])
+                       || (cd.ultimoAutorUid && cd.ultimoAutorUid !== currentUser.uid && typeof cd.ultimoAutorNombre === 'string' && cd.ultimoAutorNombre)
+                       || '';
+            if (nChat && !nombreValPN(nombreMostrar)) {
                 document.getElementById('inbox-chat-nombre').textContent = nChat;
             }
             // Foto desde el mapa del chat
-            const fChat = uid && cd.fotos?.[uid] ? cd.fotos[uid] : '';
+            const fChat = uid && typeof cd.fotos?.[uid] === 'string' ? cd.fotos[uid] : '';
             if (fChat) _aplicarFotoOtro(fChat);
         }
-        // Refuerzo: doc del usuario (puede tener foto/nombre más actualizados)
-        if (!uid) return;
+        // Refuerzo: doc del usuario (datos más frescos)
+        if (!uid) return Promise.resolve(null);
         return getDoc(doc(db,'usuarios',uid));
     }).then(uSnap => {
         if (!uSnap || !uSnap.exists()) return;
         const ud = uSnap.data();
         const foto = ud.fotoUrl || ud.foto || ud.fotoPerfil || ud.photoURL || '';
         if (foto) _aplicarFotoOtro(foto);
-        const _nr = s => (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
-        const realName = (typeof ud.nombre === 'string' ? ud.nombre : '')
-                      || (typeof ud.nombreCompleto === 'string' ? ud.nombreCompleto : '')
-                      || (typeof ud.displayName === 'string' ? ud.displayName : '');
+        const realName = (typeof ud.nombre === 'string' && ud.nombre)
+                      || (typeof ud.nombreCompleto === 'string' && ud.nombreCompleto)
+                      || (typeof ud.displayName === 'string' && ud.displayName)
+                      || '';
         const headerEl = document.getElementById('inbox-chat-nombre');
-        if (realName && _nr(realName) !== _nr(currentUser.nombre)) {
-            headerEl.textContent = realName;
-        }
-        // Persistir todo para la próxima carga sin lookups
+        // Actualizar siempre que tengamos un nombre válido (sin comparar contra el nuestro)
+        if (realName) headerEl.textContent = realName;
+        // Persistir para la próxima carga sin lookups
         const updates = {};
         if (realName) updates[`nombres.${uid}`] = realName;
         if (foto)     updates[`fotos.${uid}`]   = foto;
@@ -7582,7 +7583,11 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
         cont.innerHTML = '';
         snap.forEach(d => {
             const m = d.data();
-            const esMio = m.autorUid === currentUser.uid;
+            // esMio: usa autorUid si existe, sino fallback al UID del chat-partner
+            // (si autorUid != inboxChatUid y != '' → es mío)
+            const esMio = m.autorUid
+                ? m.autorUid === currentUser.uid
+                : m.autorUid !== inboxChatUid; // mensajes sin autorUid: si no es del otro, es mío
             cont.appendChild(crearMsgItem(m, esMio));
         });
         cont.scrollTop = cont.scrollHeight;
