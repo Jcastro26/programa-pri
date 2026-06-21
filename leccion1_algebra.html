@@ -7,69 +7,207 @@
 <link rel="icon" type="image/png" href="logo.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
+/* ══════════════════════════════════════════
+   BASE RESET & VARIABLES
+══════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg: #06101f;
-  --card: #0d1e38;
-  --card2: #0a1829;
-  --purple: #7c3aed;
-  --purple-soft: rgba(124,58,237,.15);
-  --orange: #ff5e00;
-  --teal: #38bdf8;
-  --green: #10b981;
-  --red: #ef4444;
-  --text: #e8f4ff;
-  --muted: #6b9ab8;
-  --border: rgba(255,255,255,.09);
+  --bg:#04080f;
+  --card:#080f1e;
+  --purple:#7c3aed;
+  --purple-g:rgba(124,58,237,.6);
+  --orange:#ff5e00;
+  --orange-g:rgba(255,94,0,.5);
+  --teal:#38bdf8;
+  --teal-g:rgba(56,189,248,.5);
+  --green:#10b981;
+  --green-g:rgba(16,185,129,.5);
+  --red:#ef4444;
+  --text:#e8f4ff;
+  --muted:#6b9ab8;
+  --border:rgba(255,255,255,.07);
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;}
-#app{display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+
+/* ══ PARTICLE CANVAS ══ */
+#particle-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.15;}
+
+/* ══ APP SHELL ══ */
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;padding:1rem;gap:.75rem;max-width:860px;margin:0 auto;}
+
+/* ══ TOPBAR ══ */
 #topbar{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-#prog-track{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
-#prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange));border-radius:2px;transition:width .5s ease;}
-#slide-card{flex:1;background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+
+/* ══ PROGRESS BAR ══ */
+#prog-track{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:visible;position:relative;flex-shrink:0;}
+#prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));
+  border-radius:3px;
+  transition:width .65s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 14px var(--purple-g), 0 0 30px rgba(124,58,237,.25);
+}
+@keyframes prog-pulse{0%,100%{box-shadow:0 0 14px var(--purple-g);}50%{box-shadow:0 0 28px var(--purple-g),0 0 50px rgba(56,189,248,.25);}}
+#prog-fill{animation:prog-pulse 2.5s ease-in-out infinite;}
+
+/* ══ SLIDE CARD ══ */
+@keyframes card-border-pulse{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08),inset 0 1px 0 rgba(255,255,255,.04);}50%{box-shadow:0 0 60px rgba(124,58,237,.18),0 0 100px rgba(56,189,248,.05),inset 0 1px 0 rgba(255,255,255,.06);}}
+#slide-card{
+  flex:1;
+  background:rgba(8,15,30,.95);
+  border:1px solid rgba(124,58,237,.28);
+  border-radius:18px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  animation:card-border-pulse 3s ease-in-out infinite;
+}
 #slide-inner{flex:1;padding:2rem;overflow-y:auto;display:flex;flex-direction:column;justify-content:flex-start;}
+
+/* ══ NAV ══ */
 #nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.nav-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:600;letter-spacing:.4px;transition:all .2s;}
-.nav-btn:hover:not(:disabled){background:var(--purple);border-color:var(--purple);transform:translateY(-1px);}
-.nav-btn:disabled{opacity:.25;cursor:not-allowed;}
+.nav-btn{
+  background:rgba(124,58,237,.1);
+  border:1px solid rgba(124,58,237,.3);
+  color:var(--text);
+  padding:.55rem 1.4rem;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.5px;
+  transition:all .2s;
+  position:relative;
+  overflow:hidden;
+}
+.nav-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);
+  transform:translateX(-100%);transition:transform .45s ease;
+}
+.nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
+.nav-btn:hover:not(:disabled){
+  background:rgba(124,58,237,.32);
+  border-color:var(--purple);
+  box-shadow:0 0 22px var(--purple-g);
+  transform:translateY(-2px);
+}
+.nav-btn:disabled{opacity:.2;cursor:not-allowed;}
+
 #dots{display:flex;gap:6px;align-items:center;}
-.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .25s;}
-.dot.active{background:var(--purple);transform:scale(1.4);}
-.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .3s;}
+.dot.active{background:var(--purple);transform:scale(1.5);box-shadow:0 0 10px var(--purple-g);}
+
+/* ══ TYPOGRAPHY ══ */
+.s-tag{font-size:.58rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;text-shadow:0 0 12px var(--teal-g);}
 .s-title{font-size:1.75rem;font-weight:900;line-height:1.2;margin-bottom:.4rem;background:linear-gradient(120deg,#fff 30%,var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .s-sub{font-size:.88rem;color:var(--muted);margin-bottom:1.2rem;}
-.formula{background:var(--purple-soft);border:1px solid rgba(124,58,237,.35);border-radius:12px;padding:.9rem 1.4rem;font-size:1.3rem;font-weight:700;text-align:center;color:#c4b5fd;font-family:'Courier New',monospace;margin:.9rem 0;}
+
+/* ══ FORMULA BOX ══ */
+.formula{
+  background:rgba(124,58,237,.1);
+  border:1px solid rgba(124,58,237,.38);
+  border-radius:12px;
+  padding:.9rem 1.4rem;
+  font-size:1.25rem;
+  font-weight:700;
+  text-align:center;
+  color:#c4b5fd;
+  font-family:'Courier New',monospace;
+  margin:.9rem 0;
+  box-shadow:0 0 24px rgba(124,58,237,.12),inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+/* ══ STEPS ══ */
 .step{display:flex;align-items:flex-start;gap:.7rem;margin:.45rem 0;font-size:.87rem;line-height:1.5;}
-.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;}
-.example{background:rgba(56,189,248,.07);border-left:3px solid var(--teal);padding:.7rem 1rem;border-radius:0 8px 8px 0;margin:.7rem 0;font-size:.87rem;}
-.area{background:rgba(0,0,0,.25);border-radius:12px;padding:1rem;margin:.8rem 0;display:flex;flex-direction:column;align-items:center;gap:.7rem;}
+.step-n{min-width:26px;height:26px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0;margin-top:1px;box-shadow:0 0 12px var(--purple-g);}
+
+.example{background:rgba(56,189,248,.06);border-left:3px solid var(--teal);padding:.7rem 1rem;border-radius:0 8px 8px 0;margin:.7rem 0;font-size:.87rem;box-shadow:inset 0 0 20px rgba(56,189,248,.03);}
+
+/* ══ AREA (interactive zone) ══ */
+.area{
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+  padding:1rem;
+  margin:.8rem 0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.7rem;
+}
+
+/* ══ SLIDER ROWS ══ */
 .sl-row{display:flex;align-items:center;gap:.9rem;width:100%;max-width:380px;}
-.sl-lbl{font-size:.75rem;color:var(--muted);min-width:18px;}
+.sl-lbl{font-size:.75rem;color:var(--muted);min-width:18px;font-weight:700;}
 input[type=range]{flex:1;accent-color:var(--purple);}
-.sl-val{font-weight:700;color:var(--teal);min-width:22px;text-align:right;font-size:.85rem;}
+.sl-val{font-weight:900;color:var(--teal);min-width:22px;text-align:right;font-size:.9rem;text-shadow:0 0 10px var(--teal-g);}
+
+/* ══ SUMMARY CARDS ══ */
 .cards-grid{display:flex;flex-direction:column;gap:.7rem;margin-top:.5rem;}
-.n-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:.9rem 1.1rem;}
-.n-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.35rem;}
+.n-card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  padding:.9rem 1.1rem;
+  cursor:pointer;
+  transition:border-color .3s,box-shadow .3s,transform .15s;
+}
+.n-card:hover{
+  border-color:rgba(124,58,237,.45);
+  box-shadow:0 0 20px rgba(124,58,237,.12);
+  transform:translateX(4px);
+}
+.n-name{font-size:.58rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--orange);margin-bottom:.35rem;text-shadow:0 0 10px var(--orange-g);}
 .n-formula{font-family:'Courier New',monospace;font-size:.98rem;color:#c4b5fd;font-weight:600;}
 .n-ex{font-size:.73rem;color:var(--muted);margin-top:.25rem;}
+
+/* ══ QUIZ ══ */
 .q-q{font-size:.93rem;font-weight:600;margin-bottom:.9rem;}
 .q-opts{display:flex;flex-direction:column;gap:.45rem;}
-.q-opt{padding:.65rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);cursor:pointer;font-size:.84rem;transition:all .2s;text-align:left;color:var(--text);}
-.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);}
-.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;}
+.q-opt{
+  padding:.65rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.03);cursor:pointer;font-size:.84rem;
+  transition:all .2s;text-align:left;color:var(--text);
+}
+.q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);box-shadow:0 0 12px rgba(124,58,237,.2);}
+.q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;box-shadow:0 0 16px rgba(16,185,129,.2);}
 .q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
 .q-fb{margin-top:.65rem;font-size:.82rem;padding:.5rem .75rem;border-radius:8px;display:none;}
 .q-fb.ok{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:#a7f3d0;display:block;}
 .q-fb.bad{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#fca5a5;display:block;}
 details summary{color:#a78bfa;font-size:.84rem;cursor:pointer;margin-top:.35rem;}
 details div{color:#86efac;margin-top:.25rem;}
+
+/* ══ FACTOR COMÚN INTERACTIVE ══ */
+.eq-block{
+  padding:.4rem .9rem;
+  border-radius:8px;
+  font-family:'Courier New',monospace;
+  font-weight:800;
+  font-size:1.15rem;
+  display:inline-block;
+  cursor:pointer;
+  transition:transform .15s, filter .15s;
+  user-select:none;
+}
+.eq-block:hover{transform:scale(1.1);filter:brightness(1.35);}
+.eq-block:active{transform:scale(.95);}
+.eq-block.term1{background:rgba(124,58,237,.22);border:1.5px solid #7c3aed;color:#c4b5fd;box-shadow:0 0 14px rgba(124,58,237,.28);}
+.eq-block.term2{background:rgba(56,189,248,.16);border:1.5px solid #38bdf8;color:#7dd3fc;box-shadow:0 0 14px rgba(56,189,248,.25);}
+.eq-block.factor{background:rgba(16,185,129,.22);border:1.5px solid #10b981;color:#6ee7b7;box-shadow:0 0 14px rgba(16,185,129,.28);}
+.eq-op{color:var(--muted);font-size:1.2rem;margin:0 .25rem;font-weight:300;font-family:monospace;}
 </style>
 </head>
 <body>
+
+<!-- Floating math particle canvas -->
+<canvas id="particle-canvas"></canvas>
+
 <div id="app">
   <div id="topbar">
-    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.22);text-transform:uppercase;">PROGRAMA·PRI · MATEMÁTICAS</span>
+    <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;">PROGRAMA·PRI · MATEMÁTICAS</span>
     <span id="counter" style="font-size:.7rem;color:var(--muted);letter-spacing:.5px;">1 / 6</span>
   </div>
   <div id="prog-track"><div id="prog-fill" style="width:16.67%;"></div></div>
@@ -82,36 +220,116 @@ details div{color:#86efac;margin-top:.25rem;}
 </div>
 
 <script>
-const TOTAL = 6;
-let cur = 0, busy = false;
-const qAns = [null,null,null];
+/* ════════════════════════════════════════════════
+   PARTICLE CANVAS — símbolos matemáticos flotantes
+════════════════════════════════════════════════ */
+(function initParticles(){
+  const cv = document.getElementById('particle-canvas');
+  const ctx = cv.getContext('2d');
+  const syms = ['x','y','a','b','²','³','√','∑','π','÷','×','+','−','=','(',')','^','∞','n','k'];
+  const cols = ['#7c3aed','#38bdf8','#10b981','#ff5e00','#a78bfa'];
+  const P = [];
 
-const quiz = [
-  {q:'¿Cuál es la factorización correcta de x² − 49?',opts:['(x−7)(x−7)','(x+7)(x−7)','(x+49)(x−1)','No factoriza'],ok:1,fb:'x²−49 = x²−7² → diferencia de cuadrados = (x+7)(x−7)'},
-  {q:'Factoriza completamente: 15a² − 5a',opts:['5a(3a−1)','5(3a²−a)','15a(a−1)','a(15a−5)'],ok:0,fb:'MCD(15a², 5a) = 5a → 5a(3a−1) ✓'},
-  {q:'¿Qué tipo de factorización es x² + 10x + 25 = (x+5)²?',opts:['Diferencia de cuadrados','Factor común','Trinomio cuadrado perfecto','Factorización imposible'],ok:2,fb:'√(x²)=x, √25=5, y 2·x·5=10x ✓ → trinomio cuadrado perfecto (x+5)²'}
+  function resize(){ cv.width = window.innerWidth; cv.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for(let i=0;i<40;i++) P.push({
+    x: Math.random()*window.innerWidth,
+    y: Math.random()*window.innerHeight,
+    vx: (Math.random()-.5)*.35,
+    vy: -(Math.random()*.45+.08),
+    s: syms[Math.floor(Math.random()*syms.length)],
+    sz: 10+Math.random()*16,
+    a: .2+Math.random()*.65,
+    c: cols[Math.floor(Math.random()*cols.length)],
+    rot: Math.random()*Math.PI*2,
+    rv: (Math.random()-.5)*.012
+  });
+
+  (function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    P.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rv;
+      if(p.y<-30){p.y=cv.height+20; p.x=Math.random()*cv.width;}
+      if(p.x<-20) p.x=cv.width+20;
+      if(p.x>cv.width+20) p.x=-20;
+      ctx.save();
+      ctx.globalAlpha=p.a;
+      ctx.fillStyle=p.c;
+      ctx.font=`bold ${p.sz}px Courier New`;
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      ctx.fillText(p.s,0,0);
+      ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  })();
+})();
+
+/* ════════════════════════════════════════════════
+   PARTICLE BURST — explosión de partículas
+════════════════════════════════════════════════ */
+function burst(el, color, count){
+  count = count||12;
+  if(!el||!el.getBoundingClientRect) return;
+  const r=el.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    const sz=3+Math.random()*7;
+    p.style.cssText=`position:fixed;left:${cx}px;top:${cy}px;width:${sz}px;height:${sz}px;
+      background:${color};border-radius:50%;pointer-events:none;z-index:9999;
+      transform:translate(-50%,-50%);`;
+    document.body.appendChild(p);
+    const ang=Math.random()*Math.PI*2;
+    const d=35+Math.random()*75;
+    gsap.to(p,{
+      x:Math.cos(ang)*d, y:Math.sin(ang)*d-Math.random()*25,
+      opacity:0, scale:0,
+      duration:.5+Math.random()*.45,
+      ease:'power2.out',
+      onComplete:()=>p.remove()
+    });
+  }
+}
+
+/* ════════════════════════════════════════════════
+   CORE STATE
+════════════════════════════════════════════════ */
+const TOTAL=6;
+let cur=0, busy=false;
+const qAns=[null,null,null];
+let _fcExploded=false;
+
+const quiz=[
+  {q:'¿Cuál es la factorización correcta de x² − 49?',
+   opts:['(x−7)(x−7)','(x+7)(x−7)','(x+49)(x−1)','No factoriza'],ok:1,
+   fb:'x²−49 = x²−7² → diferencia de cuadrados = (x+7)(x−7)'},
+  {q:'Factoriza completamente: 15a² − 5a',
+   opts:['5a(3a−1)','5(3a²−a)','15a(a−1)','a(15a−5)'],ok:0,
+   fb:'MCD(15a², 5a) = 5a → 5a(3a−1) ✓'},
+  {q:'¿Qué tipo de factorización es x² + 10x + 25 = (x+5)²?',
+   opts:['Diferencia de cuadrados','Factor común','Trinomio cuadrado perfecto','Factorización imposible'],ok:2,
+   fb:'√(x²)=x, √25=5, y 2·x·5=10x ✓ → trinomio cuadrado perfecto (x+5)²'}
 ];
 
-function render(){
-  const el = document.getElementById('slide-inner');
-  const renders = [s0,s1,s2,s3,s4,s5];
-  renders[cur](el);
-}
-
-function animate(){
-  const fns = [a0,a1,a2,a3,a4,a5];
-  fns[cur]();
-}
-
+/* ════════════════════════════════════════════════
+   NAVEGACIÓN
+════════════════════════════════════════════════ */
 function go(dir){
   if(busy) return;
-  const nxt = cur+dir;
+  const nxt=cur+dir;
   if(nxt<0||nxt>=TOTAL) return;
   busy=true;
+  _fcExploded=false; // reset state entre slides
   const el=document.getElementById('slide-inner');
-  gsap.to(el,{opacity:0,x:dir<0?50:-50,duration:.28,ease:'power2.in',onComplete:()=>{
+  gsap.to(el,{opacity:0,x:dir<0?65:-65,scale:.94,duration:.28,ease:'power3.in',onComplete:()=>{
     cur=nxt; updateUI(); render();
-    gsap.fromTo(el,{opacity:0,x:dir<0?-50:50},{opacity:1,x:0,duration:.35,ease:'power2.out',onComplete:()=>{animate();busy=false;}});
+    gsap.fromTo(el,
+      {opacity:0,x:dir<0?-65:65,scale:.94},
+      {opacity:1,x:0,scale:1,duration:.38,ease:'power3.out',onComplete:()=>{animate();busy=false;}}
+    );
   }});
 }
 
@@ -120,9 +338,7 @@ function updateUI(){
   document.getElementById('prog-fill').style.width=`${((cur+1)/TOTAL)*100}%`;
   document.getElementById('btn-prev').disabled=cur===0;
   document.getElementById('btn-next').disabled=cur===TOTAL-1;
-  document.querySelectorAll('.dot').forEach((d,i)=>{
-    d.classList.toggle('active',i===cur);
-  });
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
 }
 
 function makeDots(){
@@ -130,53 +346,165 @@ function makeDots(){
   for(let i=0;i<TOTAL;i++){
     const d=document.createElement('div');
     d.className='dot'+(i===0?' active':'');
-    d.onclick=()=>{if(!busy){const dir=i-cur;if(dir===0)return;cur=i-dir;go(dir);}};
+    d.onclick=()=>{if(!busy){const dir=i-cur;if(!dir)return;cur=i-dir;go(dir);}};
     c.appendChild(d);
   }
 }
 
+function render(){
+  const el=document.getElementById('slide-inner');
+  [s0,s1,s2,s3,s4,s5][cur](el);
+}
+function animate(){
+  [a0,a1,a2,a3,a4,a5][cur]();
+}
+
+/* ════════════════════════════════════════════════
+   SLIDE 0 — INTRO: letras caen letra a letra
+════════════════════════════════════════════════ */
 function s0(el){
+  const letters=Array.from('ÁLGEBRA BÁSICA');
   el.innerHTML=`
-<div style="text-align:center;padding:.5rem 0;">
+<div style="text-align:center;padding:.4rem 0;">
   <div class="s-tag">Lección 1 · Matemáticas ICFES</div>
-  <div class="s-title" id="t0" style="font-size:2rem;">Álgebra Básica</div>
+  <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:0;margin-bottom:.4rem;" id="title-wrap">
+    ${letters.map((c,i)=>`<span id="tl${i}" style="display:inline-block;font-size:${c===' '?'.4rem':'2rem'};font-weight:900;${c===' '?'width:.55rem;':''}background:linear-gradient(135deg,#fff 30%,#38bdf8 80%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${c}</span>`).join('')}
+  </div>
   <div class="s-sub" id="sub0">Factorización visual y productos notables</div>
-  <div id="ico0" style="font-size:2.4rem;margin:1.2rem 0;">🔢 ✖️ 📐</div>
-  <div id="obj0" style="background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1.1rem 1.3rem;max-width:460px;margin:0 auto;text-align:left;">
-    <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.65rem;">🎯 OBJETIVOS</div>
-    ${['Entender qué significa factorizar una expresión','Aplicar los 3 productos notables del ICFES','Visualizar la geometría detrás de las fórmulas','Verificar tu aprendizaje con un mini quiz'].map(o=>`<div class="obj" style="display:flex;gap:.55rem;align-items:flex-start;margin:.35rem 0;font-size:.82rem;color:#c4b5fd;">✦ <span>${o}</span></div>`).join('')}
+  <div id="ico-row" style="display:flex;gap:1.2rem;justify-content:center;align-items:center;margin:1rem 0;font-size:2rem;">
+    <span id="ic0" style="display:inline-block;">🔢</span>
+    <span id="ic1" style="display:inline-block;">✖️</span>
+    <span id="ic2" style="display:inline-block;">📐</span>
+  </div>
+  <div id="obj-box" style="background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:14px;padding:1.1rem 1.3rem;max-width:460px;margin:0 auto;text-align:left;">
+    <div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:#a78bfa;margin-bottom:.65rem;">🎯 OBJETIVOS DE LA LECCIÓN</div>
+    ${['Entender qué significa factorizar una expresión','Aplicar los 3 productos notables del ICFES','Visualizar la geometría detrás de cada fórmula','Verificar tu aprendizaje con el mini quiz final'].map((o,i)=>`<div class="obj" id="ob${i}" style="display:flex;gap:.55rem;align-items:flex-start;margin:.35rem 0;font-size:.82rem;color:#c4b5fd;"><span style="color:var(--teal);flex-shrink:0;">✦</span><span>${o}</span></div>`).join('')}
   </div>
 </div>`;
 }
+
 function a0(){
-  gsap.timeline()
-    .from('#t0',{y:-35,opacity:0,duration:.6,ease:'power3.out'})
-    .from('#sub0',{y:-18,opacity:0,duration:.4},'-=.2')
-    .from('#ico0',{scale:.2,opacity:0,duration:.5,ease:'back.out(2)'},'-=.1')
-    .from('.obj',{x:-25,opacity:0,duration:.4,stagger:.12,ease:'power2.out'});
+  const letters=Array.from('ÁLGEBRA BÁSICA');
+  const tl=gsap.timeline();
+  // Letras caen desde arriba con bounce, escalonadas
+  letters.forEach((c,i)=>{
+    if(c!==' '){
+      tl.from(`#tl${i}`,{
+        y:-130, rotation:(Math.random()-.5)*40, scale:.3, opacity:0,
+        duration:.55, ease:'bounce.out'
+      }, i*.04);
+    }
+  });
+  tl.from('#sub0',{y:-25,opacity:0,duration:.4,ease:'power2.out'},'-=.25')
+    .from('#ic0',{y:-90,rotation:-35,opacity:0,duration:.6,ease:'elastic.out(1,.45)'},'-=.2')
+    .from('#ic1',{y:-90,rotation:25,opacity:0,duration:.6,ease:'elastic.out(1,.45)'},'<.1')
+    .from('#ic2',{y:-90,rotation:-20,opacity:0,duration:.6,ease:'elastic.out(1,.45)'},'<.1')
+    .from(['#ob0','#ob1','#ob2','#ob3'],{x:-50,opacity:0,duration:.42,stagger:.13,ease:'back.out(2.5)'},'-=.15');
 }
 
+/* ════════════════════════════════════════════════
+   SLIDE 1 — FACTOR COMÚN: explosión interactiva
+════════════════════════════════════════════════ */
 function s1(el){
+  _fcExploded=false;
   el.innerHTML=`
 <div>
-  <div class="s-tag">Técnica 1 de 3</div>
+  <div class="s-tag">Técnica 1 de 3 · Interactiva — ¡haz clic!</div>
   <div class="s-title" id="t1">Factor Común</div>
-  <div class="s-sub">Extraer el factor que comparten todos los términos</div>
-  <div class="formula" id="f1">6x² + 9x = 3x(2x + 3)</div>
-  <div id="st1" class="step"><div class="step-n">1</div><div><strong>Identifica los factores de cada término:</strong><br><span style="color:#a78bfa;">6x²</span> = 2·3·x·x &nbsp;&nbsp; <span style="color:#38bdf8;">9x</span> = 3·3·x</div></div>
-  <div id="st2" class="step"><div class="step-n">2</div><div><strong>Halla el MCD:</strong><br>El factor común entre 6x² y 9x es <span style="color:#10b981;font-weight:700;font-size:1.05rem;">3x</span></div></div>
-  <div id="st3" class="step"><div class="step-n">3</div><div><strong>Divide y reescribe:</strong><br>6x²÷3x = <span style="color:#a78bfa;">2x</span> &nbsp; 9x÷3x = <span style="color:#38bdf8;">3</span><br>∴ 6x² + 9x = <span style="color:#10b981;font-weight:700;">3x</span>(<span style="color:#a78bfa;">2x</span>+<span style="color:#38bdf8;">3</span>)</div></div>
+  <div class="s-sub">Extrae el factor que comparten todos los términos</div>
+
+  <div class="area" id="ar1" style="min-height:120px;">
+    <div id="fc-eq" style="display:flex;align-items:center;justify-content:center;gap:.3rem;flex-wrap:wrap;padding:.5rem;">
+      <span class="eq-block term1" id="fc-t1" onclick="explodeFC()">6x²</span>
+      <span class="eq-op" id="fc-op">+</span>
+      <span class="eq-block term2" id="fc-t2" onclick="explodeFC()">9x</span>
+      <span class="eq-op" id="fc-sign" style="opacity:0;">=</span>
+      <span class="eq-block factor" id="fc-factor" style="opacity:0;" onclick="implodeFC()">3x</span>
+      <span id="fc-rem" style="opacity:0;color:#c4b5fd;font-family:monospace;font-weight:700;font-size:1.1rem;">(2x + 3)</span>
+    </div>
+    <div id="fc-hint" style="font-size:.72rem;color:var(--muted);text-align:center;">👆 Haz clic en <strong style="color:#c4b5fd;">6x²</strong> o <strong style="color:#7dd3fc;">9x</strong> para factorizar</div>
+    <div id="fc-mcd" style="display:none;font-size:.78rem;color:#86efac;text-align:center;">✅ MCD(6x², 9x) = <strong>3x</strong> — haz clic en <strong style="color:#6ee7b7;">3x</strong> para revertir</div>
+  </div>
+
+  <div id="st1" class="step"><div class="step-n">1</div><div><strong>Identifica los factores de cada término:</strong><br><span style="color:#a78bfa;">6x²</span> = 2·3·x·x &nbsp;&nbsp;&nbsp; <span style="color:#38bdf8;">9x</span> = 3·3·x</div></div>
+  <div id="st2" class="step"><div class="step-n">2</div><div><strong>Halla el MCD:</strong> El factor común de 6x² y 9x es <span style="color:#10b981;font-weight:700;font-size:1.05rem;">3x</span></div></div>
+  <div id="st3" class="step"><div class="step-n">3</div><div><strong>Divide cada término por 3x:</strong><br>6x²÷3x = <span style="color:#a78bfa;">2x</span> &nbsp;·&nbsp; 9x÷3x = <span style="color:#38bdf8;">3</span><br>∴ 6x² + 9x = <span style="color:#10b981;font-weight:700;">3x</span>(<span style="color:#a78bfa;">2x</span> + <span style="color:#38bdf8;">3</span>)</div></div>
   <div class="example" id="e1"><div style="font-size:.58rem;font-weight:700;letter-spacing:2px;color:var(--teal);margin-bottom:.35rem;">⚡ TU TURNO</div><strong>Factoriza:</strong> 12a³ + 8a² − 4a<details><summary>Ver respuesta</summary><div>= 4a(3a² + 2a − 1)</div></details></div>
 </div>`;
 }
-function a1(){
+
+function explodeFC(){
+  if(_fcExploded) return;
+  _fcExploded=true;
+  const t1=document.getElementById('fc-t1');
+  const t2=document.getElementById('fc-t2');
+  const factor=document.getElementById('fc-factor');
+  const rem=document.getElementById('fc-rem');
+  const sign=document.getElementById('fc-sign');
+  const hint=document.getElementById('fc-hint');
+  const mcd=document.getElementById('fc-mcd');
+
+  burst(t1,'#7c3aed',14);
+  burst(t2,'#38bdf8',14);
+
   gsap.timeline()
-    .from('#t1',{y:-30,opacity:0,duration:.5,ease:'power2.out'})
-    .from('#f1',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1')
-    .from(['#st1','#st2','#st3'],{x:-28,opacity:0,duration:.38,stagger:.22,ease:'power2.out'})
-    .from('#e1',{y:18,opacity:0,duration:.4},'-=.1');
+    // Términos vibran y se separan
+    .to([t1,t2],{scale:1.25,rotation:5,duration:.08,yoyo:true,repeat:5,ease:'none'})
+    .to(t1,{x:-22,y:-18,scale:.88,duration:.32,ease:'power2.out'})
+    .to(t2,{x:22,y:-18,scale:.88,duration:.32,ease:'power2.out'},'<')
+    // El factor emerge del centro con elastic
+    .to(factor,{opacity:1,scale:1,duration:.55,ease:'elastic.out(1,.45)',
+      onStart:()=>{ gsap.set(factor,{scale:0}); }})
+    .to(sign,{opacity:1,duration:.3},'-=.2')
+    .to(rem,{opacity:1,duration:.35},'-=.15')
+    // Términos vuelven a su lugar
+    .to(t1,{x:0,y:0,scale:1,duration:.42,ease:'back.out(2)'},'-=.2')
+    .to(t2,{x:0,y:0,scale:1,duration:.42,ease:'back.out(2)'},'<')
+    .call(()=>{
+      mcd.style.display='block';
+      hint.style.display='none';
+      gsap.from(mcd,{y:8,opacity:0,duration:.3});
+    });
 }
 
+function implodeFC(){
+  if(!_fcExploded){ explodeFC(); return; }
+  _fcExploded=false;
+  const factor=document.getElementById('fc-factor');
+  const rem=document.getElementById('fc-rem');
+  const sign=document.getElementById('fc-sign');
+  const t1=document.getElementById('fc-t1');
+  const t2=document.getElementById('fc-t2');
+  const hint=document.getElementById('fc-hint');
+  const mcd=document.getElementById('fc-mcd');
+
+  burst(factor,'#10b981',10);
+
+  gsap.timeline()
+    .to([rem,sign],{opacity:0,x:10,duration:.22,stagger:.05,ease:'power2.in'})
+    .to(factor,{opacity:0,scale:0,rotation:-30,duration:.3,ease:'back.in(2)'})
+    .to([t1,t2],{scale:1.1,duration:.2,ease:'power2.out'})
+    .to([t1,t2],{scale:1,duration:.4,ease:'elastic.out(1,.5)'})
+    .call(()=>{
+      _fcExploded=false;
+      mcd.style.display='none';
+      hint.style.display='block';
+    });
+}
+
+function a1(){
+  gsap.timeline()
+    .from('#t1',{y:-60,rotation:-4,opacity:0,duration:.65,ease:'elastic.out(1,.5)'})
+    .from('#ar1',{scale:.78,opacity:0,duration:.5,ease:'back.out(2.5)'},'-=.2')
+    .from(['#st1','#st2','#st3'],{x:-45,opacity:0,duration:.42,stagger:.2,ease:'power3.out'})
+    .from('#e1',{y:22,opacity:0,duration:.4},'-=.1');
+  // Bloques caen desde arriba
+  gsap.from(['#fc-t1','#fc-t2'],{y:-80,rotation:18,opacity:0,duration:.7,stagger:.12,ease:'bounce.out',delay:.3});
+}
+
+/* ════════════════════════════════════════════════
+   SLIDE 2 — DIFERENCIA DE CUADRADOS
+════════════════════════════════════════════════ */
 function s2(el){
   el.innerHTML=`
 <div>
@@ -185,14 +513,16 @@ function s2(el){
   <div class="formula" id="f2">a² − b² = (a + b)(a − b)</div>
   <div class="area" id="ar2">
     <div style="display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap;justify-content:center;">
-      <svg id="svgdc" width="200" height="180" viewBox="0 0 200 180">
-        <rect id="ra" x="8" y="8" width="1" height="1" fill="rgba(124,58,237,.35)" stroke="#7c3aed" stroke-width="1.8" rx="3"/>
-        <rect id="rb" x="8" y="8" width="1" height="1" fill="rgba(239,68,68,.3)" stroke="#ef4444" stroke-width="1.5" rx="2"/>
-        <text id="la" x="50" y="160" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="bold">a</text>
-        <text id="lb" x="50" y="160" text-anchor="middle" fill="#fca5a5" font-size="12" font-weight="bold">b</text>
-        <text id="lres" x="100" y="90" text-anchor="middle" fill="#86efac" font-size="10" opacity="0">a²−b²=(a+b)(a−b)</text>
+      <svg id="svgdc" width="200" height="195" viewBox="0 0 200 195">
+        <rect id="ra" x="8" y="8" width="1" height="1" fill="rgba(124,58,237,.3)" stroke="#7c3aed" stroke-width="2" rx="3"/>
+        <text id="la-lbl" x="50" y="50" text-anchor="middle" fill="#c4b5fd" font-size="13" font-weight="bold" opacity="0">a²</text>
+        <rect id="rb" x="8" y="8" width="1" height="1" fill="rgba(239,68,68,.28)" stroke="#ef4444" stroke-width="2" rx="2" stroke-dasharray="4,3"/>
+        <text id="lb-lbl" x="50" y="50" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="bold" opacity="0">b²</text>
+        <text id="lres" x="100" y="182" text-anchor="middle" fill="#86efac" font-size="9.5" font-weight="bold" opacity="0">a²−b²=(a+b)(a−b)</text>
+        <text id="la-dim" x="50" y="185" text-anchor="middle" fill="#a78bfa" font-size="11" font-weight="bold">a</text>
+        <text id="lb-dim" x="50" y="185" text-anchor="middle" fill="#fca5a5" font-size="11" font-weight="bold">b</text>
       </svg>
-      <div id="dc-calc" style="font-family:monospace;font-size:.95rem;color:#c4b5fd;line-height:1.8;"></div>
+      <div id="dc-calc" style="font-family:monospace;font-size:.95rem;color:#c4b5fd;line-height:2;min-width:130px;"></div>
     </div>
     <div class="sl-row">
       <span class="sl-lbl" style="color:#a78bfa;">a</span>
@@ -208,30 +538,45 @@ function s2(el){
 </div>`;
   setTimeout(updDC,80);
 }
+
 function updDC(){
   const a=+document.getElementById('sla').value, b=+document.getElementById('slb').value;
   document.getElementById('va').textContent=a;
   document.getElementById('vb').textContent=b;
-  const sc=15, aW=a*sc, bW=b*sc, off=8;
-  const s=(id,x,y,w,h)=>{const e=document.getElementById(id);if(e){e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('width',w);e.setAttribute('height',h);}};
-  const tx=(id,x,y)=>{const e=document.getElementById(id);if(e){e.setAttribute('x',x);e.setAttribute('y',y);}};
-  s('ra',off,off,aW,aW);
-  s('rb',off+aW-bW,off,bW,bW);
-  tx('la',off+aW/2,off+aW+14);
-  tx('lb',off+aW-bW/2,off+aW+14);
+  const sc=14, aW=a*sc, bW=b*sc, off=8;
+  const setR=(id,x,y,w,h)=>{const e=document.getElementById(id);if(!e)return;e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('width',w);e.setAttribute('height',h);};
+  const setT=(id,x,y)=>{const e=document.getElementById(id);if(!e)return;e.setAttribute('x',x);e.setAttribute('y',y);};
+  setR('ra',off,off,aW,aW);
+  setR('rb',off+aW-bW,off,bW,bW);
+  setT('la-lbl',off+aW/2,off+aW/2+5);
+  setT('lb-lbl',off+aW-bW/2,off+bW/2+5);
+  setT('la-dim',off+aW/2,off+aW+18);
+  setT('lb-dim',off+aW-bW/2,off+aW+18);
   const c=document.getElementById('dc-calc');
-  if(c) c.innerHTML=`${a}² − ${b}² = <strong style="color:#86efac;">${a*a-b*b}</strong><br>(${a}+${b})(${a}−${b})<br>= ${a+b} × ${a-b} = <strong style="color:#86efac;">${(a+b)*(a-b)}</strong>`;
-}
-function a2(){
-  gsap.timeline()
-    .from('#t2',{y:-30,opacity:0,duration:.5,ease:'power2.out'})
-    .from('#f2',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1')
-    .from('#ar2',{y:22,opacity:0,duration:.45},'-=.1');
-  gsap.fromTo('#ra',{attr:{width:1,height:1}},{attr:{width:105,height:105},duration:.75,ease:'power2.out',delay:.7});
-  gsap.fromTo('#rb',{attr:{width:1,height:1}},{attr:{width:45,height:45},duration:.55,ease:'power2.out',delay:1.1});
-  gsap.to('#lres',{opacity:1,duration:.4,delay:1.5});
+  if(c) c.innerHTML=`${a}² − ${b}²<br>= <strong style="color:#86efac">${a*a-b*b}</strong><br><span style="color:#94a3b8">(${a}+${b})(${a}−${b})</span><br>= ${a+b} × ${a-b}<br>= <strong style="color:#86efac">${(a+b)*(a-b)}</strong>`;
+  gsap.set(['#la-lbl','#lb-lbl'],{opacity:1});
 }
 
+function a2(){
+  gsap.timeline()
+    .from('#t2',{y:-55,rotation:4,opacity:0,duration:.6,ease:'elastic.out(1,.5)'})
+    .from('#f2',{scaleX:.4,scaleY:.4,opacity:0,duration:.55,ease:'back.out(2.5)'},'-=.1')
+    .from('#ar2',{y:35,opacity:0,duration:.4},'-=.1');
+
+  // Bloque a² crece con elastic
+  gsap.fromTo('#ra',{attr:{width:1,height:1}},{attr:{width:98,height:98},duration:.85,ease:'elastic.out(1,.5)',delay:.55});
+  // Bloque b² irrumpe con burst
+  gsap.fromTo('#rb',{attr:{width:1,height:1}},{attr:{width:42,height:42},duration:.6,ease:'power3.out',delay:1.1,
+    onStart:()=>{
+      const ar=document.getElementById('ar2');
+      if(ar) burst(ar,'#ef4444',10);
+    }});
+  gsap.to(['#la-lbl','#lb-lbl','#lres'],{opacity:1,duration:.4,stagger:.15,delay:1.55});
+}
+
+/* ════════════════════════════════════════════════
+   SLIDE 3 — TRINOMIO CUADRADO PERFECTO
+════════════════════════════════════════════════ */
 function s3(el){
   el.innerHTML=`
 <div>
@@ -240,17 +585,18 @@ function s3(el){
   <div class="formula" id="f3">(a + b)² = a² + 2ab + b²</div>
   <div class="area" id="ar3">
     <div style="display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap;justify-content:center;">
-      <svg id="svgt" width="180" height="180" viewBox="0 0 180 180">
-        <rect id="ta2" x="5" y="5" width="1" height="1" fill="rgba(124,58,237,.4)" stroke="#7c3aed" stroke-width="1.5" rx="2"/>
-        <text id="tla2" x="5" y="5" fill="#c4b5fd" font-size="11" font-weight="bold">a²</text>
-        <rect id="tab1" x="5" y="5" width="1" height="1" fill="rgba(56,189,248,.22)" stroke="#38bdf8" stroke-width="1.5" rx="2"/>
-        <text id="tlab1" x="5" y="5" fill="#7dd3fc" font-size="10">ab</text>
-        <rect id="tab2" x="5" y="5" width="1" height="1" fill="rgba(56,189,248,.22)" stroke="#38bdf8" stroke-width="1.5" rx="2"/>
-        <text id="tlab2" x="5" y="5" fill="#7dd3fc" font-size="10">ab</text>
-        <rect id="tb2" x="5" y="5" width="1" height="1" fill="rgba(16,185,129,.28)" stroke="#10b981" stroke-width="1.5" rx="2"/>
-        <text id="tlb2" x="5" y="5" fill="#6ee7b7" font-size="11" font-weight="bold">b²</text>
+      <svg id="svgt" width="185" height="200" viewBox="0 0 185 200">
+        <rect id="ta2" x="5" y="5" width="1" height="1" fill="rgba(124,58,237,.38)" stroke="#7c3aed" stroke-width="2" rx="2" opacity="0"/>
+        <text id="tla2" x="5" y="5" fill="#c4b5fd" font-size="13" font-weight="bold" opacity="0">a²</text>
+        <rect id="tab1" x="5" y="5" width="1" height="1" fill="rgba(56,189,248,.22)" stroke="#38bdf8" stroke-width="2" rx="2" opacity="0"/>
+        <text id="tlab1" x="5" y="5" fill="#7dd3fc" font-size="11" opacity="0">ab</text>
+        <rect id="tab2" x="5" y="5" width="1" height="1" fill="rgba(56,189,248,.22)" stroke="#38bdf8" stroke-width="2" rx="2" opacity="0"/>
+        <text id="tlab2" x="5" y="5" fill="#7dd3fc" font-size="11" opacity="0">ab</text>
+        <rect id="tb2" x="5" y="5" width="1" height="1" fill="rgba(16,185,129,.28)" stroke="#10b981" stroke-width="2" rx="2" opacity="0"/>
+        <text id="tlb2" x="5" y="5" fill="#6ee7b7" font-size="13" font-weight="bold" opacity="0">b²</text>
+        <text id="ttot" x="92" y="193" text-anchor="middle" fill="#fbbf24" font-size="9.5" font-weight="bold" opacity="0">(a+b)² — área total</text>
       </svg>
-      <div id="t-vals" style="font-family:monospace;font-size:.87rem;color:#c4b5fd;line-height:2;"></div>
+      <div id="t-vals" style="font-family:monospace;font-size:.87rem;color:#c4b5fd;line-height:2;min-width:130px;"></div>
     </div>
     <div class="sl-row">
       <span class="sl-lbl" style="color:#a78bfa;">a</span>
@@ -266,66 +612,117 @@ function s3(el){
 </div>`;
   setTimeout(updT,80);
 }
+
 function updT(){
   const a=+document.getElementById('tsa').value, b=+document.getElementById('tsb').value;
   document.getElementById('tva').textContent=a;
   document.getElementById('tvb').textContent=b;
-  const tot=a+b, sc=160/tot, aW=a*sc, bW=b*sc, off=5;
-  const s=(id,x,y,w,h)=>{const e=document.getElementById(id);if(e){e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('width',w);e.setAttribute('height',h);}};
-  const tx=(id,x,y)=>{const e=document.getElementById(id);if(e){e.setAttribute('x',x);e.setAttribute('y',y);}};
-  s('ta2',off,off,aW,aW); tx('tla2',off+aW/2-7,off+aW/2+4);
-  s('tab1',off+aW,off,bW,aW); tx('tlab1',off+aW+bW/2-7,off+aW/2+4);
-  s('tab2',off,off+aW,aW,bW); tx('tlab2',off+aW/2-7,off+aW+bW/2+4);
-  s('tb2',off+aW,off+aW,bW,bW); tx('tlb2',off+aW+bW/2-7,off+aW+bW/2+4);
+  const tot=a+b, sc=170/tot, aW=a*sc, bW=b*sc, off=5;
+  const setR=(id,x,y,w,h)=>{const e=document.getElementById(id);if(!e)return;e.setAttribute('x',x);e.setAttribute('y',y);e.setAttribute('width',w);e.setAttribute('height',h);};
+  const setT=(id,x,y)=>{const e=document.getElementById(id);if(!e)return;e.setAttribute('x',x);e.setAttribute('y',y);};
+  setR('ta2',off,off,aW,aW); setT('tla2',off+aW/2-7,off+aW/2+4);
+  setR('tab1',off+aW,off,bW,aW); setT('tlab1',off+aW+bW/2-8,off+aW/2+4);
+  setR('tab2',off,off+aW,aW,bW); setT('tlab2',off+aW/2-8,off+aW+bW/2+4);
+  setR('tb2',off+aW,off+aW,bW,bW); setT('tlb2',off+aW+bW/2-8,off+aW+bW/2+4);
   const v=document.getElementById('t-vals');
-  if(v) v.innerHTML=`(${a}+${b})² = <strong style="color:#86efac;">${tot*tot}</strong><br><span style="color:#c4b5fd;">${a}²</span>+<span style="color:#7dd3fc;">2·${a}·${b}</span>+<span style="color:#6ee7b7;">${b}²</span><br>= ${a*a}+${2*a*b}+${b*b} = <strong style="color:#86efac;">${tot*tot}</strong>`;
-}
-function a3(){
-  gsap.timeline()
-    .from('#t3',{y:-30,opacity:0,duration:.5,ease:'power2.out'})
-    .from('#f3',{scale:.85,opacity:0,duration:.45,ease:'back.out(1.7)'},'-=.1')
-    .from('#ar3',{y:22,opacity:0,duration:.45},'-=.1');
-  setTimeout(()=>{
-    gsap.fromTo(['#ta2','#tab1','#tab2','#tb2'],{opacity:0},{opacity:1,duration:.4,stagger:.18,ease:'power2.out'});
-    gsap.fromTo(['#tla2','#tlab1','#tlab2','#tlb2'],{opacity:0},{opacity:1,duration:.3,stagger:.18,delay:.2});
-  },650);
+  if(v) v.innerHTML=`(${a}+${b})²<br>= <strong style="color:#86efac">${tot*tot}</strong><br><span style="color:#c4b5fd">${a}²</span>+<span style="color:#7dd3fc">2·${a}·${b}</span>+<span style="color:#6ee7b7">${b}²</span><br>= ${a*a}+${2*a*b}+${b*b}<br>= <strong style="color:#86efac">${tot*tot}</strong>`;
+  gsap.set(['#ta2','#tab1','#tab2','#tb2'],{opacity:1});
+  gsap.set(['#tla2','#tlab1','#tlab2','#tlb2','#ttot'],{opacity:1});
 }
 
+function a3(){
+  gsap.timeline()
+    .from('#t3',{y:-55,rotation:-3,opacity:0,duration:.6,ease:'elastic.out(1,.5)'})
+    .from('#f3',{scaleX:.4,scaleY:.4,opacity:0,duration:.55,ease:'back.out(2.5)'},'-=.1')
+    .from('#ar3',{y:35,opacity:0,duration:.42},'-=.1');
+
+  // Los 4 bloques caen de arriba y GOLPEAN su posición con elastic
+  setTimeout(()=>{
+    // Guardar las dimensiones target ya calculadas por updT
+    const ids=['ta2','tab1','tab2','tb2'];
+    const targets=ids.map(id=>{
+      const e=document.getElementById(id);
+      return {w:e.getAttribute('width'),h:e.getAttribute('height'),x:e.getAttribute('x'),y:e.getAttribute('y')};
+    });
+    // Resetear a 0,0
+    ids.forEach(id=>{
+      const e=document.getElementById(id);
+      e.setAttribute('width','1');e.setAttribute('height','1');
+      e.setAttribute('opacity','0');
+    });
+    gsap.set(['#tla2','#tlab1','#tlab2','#tlb2','#ttot'],{opacity:0});
+
+    const blockColors=['#7c3aed','#38bdf8','#38bdf8','#10b981'];
+    ids.forEach((id,i)=>{
+      const t=targets[i];
+      const e=document.getElementById(id);
+      gsap.to(e,{
+        attr:{width:t.w,height:t.h},
+        opacity:1,
+        duration:.52,
+        ease:'elastic.out(1,.45)',
+        delay:.12*i,
+        onStart:()=>{
+          // "impact" flash
+          gsap.fromTo(e,{attr:{opacity:0}},{attr:{opacity:1},duration:.08,yoyo:true,repeat:1});
+        },
+        onComplete:()=>{
+          // Mini burst at block position
+          const sv=document.getElementById('svgt');
+          if(sv) burst(sv,blockColors[i],6);
+        }
+      });
+    });
+
+    gsap.to(['#tla2','#tlab1','#tlab2','#tlb2'],{opacity:1,duration:.35,stagger:.12,delay:.65});
+    gsap.to('#ttot',{opacity:1,duration:.4,delay:.95});
+  }, 660);
+}
+
+/* ════════════════════════════════════════════════
+   SLIDE 4 — RESUMEN: cartas chocan desde abajo
+════════════════════════════════════════════════ */
 function s4(el){
   el.innerHTML=`
 <div>
   <div class="s-tag">Resumen · Los 3 Productos Notables</div>
   <div class="s-title" id="t4">Tres Fórmulas que Debes Dominar</div>
-  <div class="s-sub">El ICFES las incluye siempre — aquí las tienes:</div>
+  <div class="s-sub">El ICFES las incluye siempre — toca cada carta para activarla</div>
   <div class="cards-grid">
-    <div class="n-card" id="nc1">
+    <div class="n-card" id="nc1" onclick="burst(this,'#ff5e00',14)">
       <div class="n-name">1 · Factor común</div>
       <div class="n-formula">ka + kb = k(a + b)</div>
       <div class="n-ex">Ej: 8x³ + 12x² = 4x²(2x + 3)</div>
     </div>
-    <div class="n-card" id="nc2">
+    <div class="n-card" id="nc2" onclick="burst(this,'#7c3aed',14)">
       <div class="n-name">2 · Diferencia de cuadrados</div>
       <div class="n-formula">a² − b² = (a+b)(a−b)</div>
       <div class="n-ex">Ej: x² − 25 = (x+5)(x−5)</div>
     </div>
-    <div class="n-card" id="nc3">
+    <div class="n-card" id="nc3" onclick="burst(this,'#10b981',14)">
       <div class="n-name">3 · Trinomio cuadrado perfecto</div>
       <div class="n-formula">a² ± 2ab + b² = (a ± b)²</div>
       <div class="n-ex">Ej: x² + 6x + 9 = (x+3)²</div>
     </div>
   </div>
-  <div id="tip4" style="margin-top:.75rem;background:rgba(255,94,0,.1);border:1px solid rgba(255,94,0,.28);border-radius:10px;padding:.7rem 1rem;font-size:.8rem;">
+  <div id="tip4" style="margin-top:.75rem;background:rgba(255,94,0,.1);border:1px solid rgba(255,94,0,.28);border-radius:10px;padding:.7rem 1rem;font-size:.8rem;cursor:pointer;" onclick="burst(this,'#ff5e00',10)">
     💡 <strong>Truco ICFES:</strong> Para el trinomio, verifica que el término medio = 2 × √(primero) × √(último)
   </div>
 </div>`;
 }
+
 function a4(){
   gsap.timeline()
-    .from('#t4',{y:-30,opacity:0,duration:.5,ease:'power2.out'})
-    .from(['#nc1','#nc2','#nc3'],{y:28,opacity:0,duration:.45,stagger:.18,ease:'power2.out'})
-    .from('#tip4',{x:-18,opacity:0,duration:.4},'-=.1');
+    .from('#t4',{y:-60,rotation:2,opacity:0,duration:.65,ease:'elastic.out(1,.48)'})
+    .from('#nc1',{y:90,rotation:-6,opacity:0,duration:.6,ease:'back.out(2.2)'},'-=.1')
+    .from('#nc2',{y:90,rotation:4,opacity:0,duration:.6,ease:'back.out(2.2)'},'-=.35')
+    .from('#nc3',{y:90,rotation:-3,opacity:0,duration:.6,ease:'back.out(2.2)'},'-=.35')
+    .from('#tip4',{x:-35,opacity:0,duration:.42},'-=.15');
 }
 
+/* ════════════════════════════════════════════════
+   SLIDE 5 — MINI QUIZ con partículas de celebración
+════════════════════════════════════════════════ */
 function s5(el){
   el.innerHTML=`
 <div>
@@ -335,11 +732,12 @@ function s5(el){
   <div id="q-final" style="display:none;text-align:center;padding:1rem 0;">
     <div id="q-score" style="font-size:2.8rem;font-weight:900;margin-bottom:.4rem;"></div>
     <div id="q-msg" style="color:var(--muted);font-size:.88rem;margin-bottom:1rem;"></div>
-    <button onclick="restartQ()" style="background:var(--purple);border:none;color:#fff;padding:.55rem 1.4rem;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;">🔄 Reintentar</button>
+    <button onclick="restartQ()" style="background:var(--purple);border:none;color:#fff;padding:.55rem 1.4rem;border-radius:10px;font-size:.82rem;font-weight:700;cursor:pointer;box-shadow:0 0 22px var(--purple-g);">🔄 Reintentar</button>
   </div>
 </div>`;
   renderQ(0);
 }
+
 function renderQ(i){
   if(i>=quiz.length){setTimeout(showScore,400);return;}
   const q=quiz[i];
@@ -350,21 +748,36 @@ function renderQ(i){
 <div class="q-q">${q.q}</div>
 <div class="q-opts" id="qo${i}">${q.opts.map((o,j)=>`<button class="q-opt" onclick="ansQ(${i},${j})" id="qo${i}-${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}</div>
 <div class="q-fb" id="qf${i}"></div>`;
-  gsap.from('.q-opt',{y:6,duration:.22,ease:'power2.out'});
+  gsap.from('.q-opt',{y:18,opacity:0,duration:.32,stagger:.08,ease:'back.out(2)'});
 }
+
 function ansQ(qi,oi){
   if(qAns[qi]!==null)return;
   qAns[qi]=oi;
   const q=quiz[qi];
+  const isOk=oi===q.ok;
   document.querySelectorAll(`#qo${qi} .q-opt`).forEach((b,i)=>{
     b.classList.add('locked');b.style.pointerEvents='none';
     if(i===q.ok)b.classList.add('ok');
     else if(i===oi)b.classList.add('bad');
   });
   const fb=document.getElementById(`qf${qi}`);
-  if(fb){fb.className='q-fb '+(oi===q.ok?'ok':'bad');fb.textContent=(oi===q.ok?'✅ ':'❌ ')+q.fb;}
+  if(fb){fb.className='q-fb '+(isOk?'ok':'bad');fb.textContent=(isOk?'✅ ':'❌ ')+q.fb;}
+
+  if(isOk){
+    const btn=document.getElementById(`qo${qi}-${oi}`);
+    if(btn){
+      burst(btn,'#10b981',18);
+      gsap.from(btn,{scale:1.15,duration:.4,ease:'elastic.out(1,.4)'});
+    }
+  } else {
+    const btn=document.getElementById(`qo${qi}-${oi}`);
+    if(btn) gsap.to(btn,{keyframes:[{x:-6},{x:6},{x:-4},{x:4},{x:0}],duration:.45,ease:'none'});
+  }
+
   setTimeout(()=>renderQ(qi+1),2200);
 }
+
 function showScore(){
   const ok=qAns.filter((a,i)=>a===quiz[i].ok).length;
   const pct=Math.round(ok/quiz.length*100);
@@ -377,19 +790,36 @@ function showScore(){
     const m=pct===100?'¡Perfecto! Dominas esta lección.':pct>=66?'¡Bien! Sigue practicando.':'Repasa la lección e intenta de nuevo.';
     document.getElementById('q-score').textContent=`${e} ${ok}/${quiz.length}`;
     document.getElementById('q-msg').textContent=m;
-    gsap.from('#q-final',{scale:.8,opacity:0,duration:.5,ease:'back.out(1.7)'});
+    gsap.from('#q-final',{scale:.55,rotation:-8,opacity:0,duration:.75,ease:'elastic.out(1,.42)'});
+
+    // Lluvia de partículas si es perfecto
+    if(pct===100){
+      const cols=['#7c3aed','#38bdf8','#10b981','#ff5e00','#fbbf24'];
+      for(let i=0;i<28;i++){
+        setTimeout(()=>{
+          const proxy={getBoundingClientRect:()=>({left:window.innerWidth*.3+Math.random()*window.innerWidth*.4,top:window.innerHeight*.25,width:0,height:0})};
+          burst(proxy,cols[i%cols.length],5);
+        },i*90);
+      }
+    }
   }
 }
+
 function restartQ(){
   qAns.fill(null);
   const f=document.getElementById('q-final');
   if(f)f.style.display='none';
+  gsap.from('#t5',{scale:.9,opacity:.5,duration:.3,ease:'power2.out'});
   renderQ(0);
 }
+
 function a5(){
-  gsap.from('#t5',{y:-30,opacity:0,duration:.5,ease:'power2.out'});
+  gsap.from('#t5',{y:-55,rotation:-4,opacity:0,duration:.65,ease:'elastic.out(1,.48)'});
 }
 
+/* ════════════
+   INIT
+════════════ */
 makeDots();
 render();
 animate();
