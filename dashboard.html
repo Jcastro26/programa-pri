@@ -366,50 +366,15 @@
 
             /* Foro / Chat — scroll táctil + dvh para teclado virtual */
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
-            /* Inbox chat móvil — altura fija + scroll explícito */
-            #inbox-chat-mensajes{height:clamp(220px,38dvh,380px) !important;overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
-
-            /* ── CHAT ABIERTO: panel fixed para aislar scroll interno de iOS ──
-               iOS Safari prioriza el scroll de la página sobre divs internos.
-               Al hacer position:fixed el panel cubre el viewport exacto →
-               la página ya no puede scrollear → el único scroll posible
-               es #inbox-chat-mensajes. Sin body.overflow:hidden. */
-            #panel-inbox.chat-abierto{
-                position:fixed !important;
-                top:0;left:0;right:0;bottom:0;
-                z-index:49;               /* debajo de modales (~500) */
-                padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0 !important;
-                margin:0 !important;
-                background:var(--azul-deep) !important;
-                display:flex !important;
-                flex-direction:column !important;
-                overflow:hidden !important;
-                animation:none !important;
-            }
-            #panel-inbox.chat-abierto .panel-title,
-            #panel-inbox.chat-abierto .panel-heading,
-            #panel-inbox.chat-abierto .panel-desc{display:none !important;}
-            #panel-inbox.chat-abierto #inbox-lista-sec{display:none !important;}
-            #panel-inbox.chat-abierto #inbox-chat-box{
-                flex:1 !important;
-                display:flex !important;
-                flex-direction:column !important;
-                overflow:hidden !important;
-                min-height:0 !important;
-            }
-            #panel-inbox.chat-abierto #inbox-chat-mensajes{
-                flex:1 !important;
-                height:auto !important;
-                max-height:none !important;
-                min-height:0 !important;
-                overflow-y:scroll !important;
-                -webkit-overflow-scrolling:touch !important;
-                overscroll-behavior-y:contain !important;
-                touch-action:pan-y !important;
-                margin-bottom:0 !important;
-            }
-            #panel-inbox.chat-abierto .chat-priv-header{flex-shrink:0 !important;}
-            #panel-inbox.chat-abierto #foro-inputs{flex-shrink:0 !important;}
+            /* Inbox chat móvil — scroll explícito (altura puesta por JS al abrir) */
+            #inbox-chat-mensajes{overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
+            /* Cuando el chat está abierto: ocultar footer para liberar espacio vertical */
+            body.inbox-chat-abierto .footer-industrial,
+            body.inbox-chat-abierto .footer-minimal{display:none !important;}
+            /* Ocultar el título/desc del panel para maximizar espacio del chat */
+            body.inbox-chat-abierto #panel-inbox .panel-title,
+            body.inbox-chat-abierto #panel-inbox .panel-heading,
+            body.inbox-chat-abierto #panel-inbox .panel-desc{display:none !important;}
 
             /* Input táctil: apilado, fuente ≥16px para evitar zoom en iOS, safe-area para notch */
             .foro-input-row{flex-direction:column;}
@@ -2100,8 +2065,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // ===================== MENU =====================
 window.activarPanel = function(id) {
-    // Limpiar chat-abierto si el usuario cambia de panel con el chat abierto
-    document.getElementById('panel-inbox')?.classList.remove('chat-abierto');
+    // Limpiar estado chat si el usuario cambia de panel con el chat abierto
+    document.body.classList.remove('inbox-chat-abierto');
+    const _m = document.getElementById('inbox-chat-mensajes');
+    if (_m) _m.style.height = '';
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     const p = document.getElementById(id);
     if (p) p.classList.add('active');
@@ -7547,6 +7514,29 @@ async function cargarInbox() {
 
 let _inboxOtroFotoUrl = ''; // foto del otro usuario en el chat activo
 
+// Ajusta la altura del contenedor de mensajes para llenar el espacio disponible en móvil
+// sin depender de position:fixed — la página no scrollea → iOS ruta touch al div interno
+window._ajustarAlturaChat = function() {
+    const mensajes = document.getElementById('inbox-chat-mensajes');
+    if (!mensajes) return;
+    const header    = document.querySelector('.site-header');
+    const chatHdr   = document.querySelector('.chat-priv-header');
+    const inputs    = document.getElementById('foro-inputs');
+    const headerH   = header  ? header.getBoundingClientRect().height  : 55;
+    const chatHdrH  = chatHdr ? chatHdr.getBoundingClientRect().height : 46;
+    const inputsH   = inputs  ? inputs.getBoundingClientRect().height  : 110;
+    // Reservar 8px de margen inferior + margin-bottom del propio div (.75rem ≈ 12px)
+    const ocupado = headerH + chatHdrH + inputsH + 20;
+    mensajes.style.height = `calc(100dvh - ${ocupado}px)`;
+    mensajes.style.maxHeight = '';
+};
+// Re-calcular al rotar pantalla o aparecer/ocultar teclado virtual
+window.addEventListener('resize', () => {
+    if (document.body.classList.contains('inbox-chat-abierto')) {
+        window._ajustarAlturaChat();
+    }
+});
+
 window.abrirConversacionInbox = function(uid, nombre, chatId) {
     inboxChatUid = uid; inboxChatId = chatId;
     _inboxOtroFotoUrl = '';
@@ -7554,7 +7544,12 @@ window.abrirConversacionInbox = function(uid, nombre, chatId) {
     const chatBox = document.getElementById('inbox-chat-box');
     chatBox.style.display = 'block';
     chatBox.classList.add('inbox-open');
-    if (window.innerWidth <= 900) document.getElementById('panel-inbox').classList.add('chat-abierto');
+    if (window.innerWidth <= 900) {
+        document.body.classList.add('inbox-chat-abierto');
+        // Esperar un frame para que el DOM aplique los display:none del CSS
+        // antes de medir los elementos visibles
+        requestAnimationFrame(() => window._ajustarAlturaChat());
+    }
 
     // Nombre: prioridad → argumento → DOM del thread (ya actualizado por lookup previo) → Firestore
     const nombreDOM = document.getElementById(`inbox-nm-${chatId}`)?.textContent || '';
@@ -7648,7 +7643,9 @@ window.cerrarInboxChat = function() {
     const chatBox = document.getElementById('inbox-chat-box');
     chatBox.style.display = 'none';
     chatBox.classList.remove('inbox-open');
-    document.getElementById('panel-inbox').classList.remove('chat-abierto');
+    document.body.classList.remove('inbox-chat-abierto');
+    const mensajes = document.getElementById('inbox-chat-mensajes');
+    if (mensajes) mensajes.style.height = '';
 };
 
 window.enviarMensajeInbox = async function() {
