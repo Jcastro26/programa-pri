@@ -371,7 +371,35 @@
             .qa-label{font-size:.6rem;}
             .productos-grid{grid-template-columns:repeat(2,1fr);gap:.65rem;}
 
-            /* Foro / Chat — scroll táctil + dvh para teclado virtual */
+            /* Foro global móvil — layout flex + iOS scroll-lock (mismo patrón que inbox) */
+            body.foro-abierto #panel-foro,
+            body.foro-abierto #panel-foro-admin{
+                display:flex !important;flex-direction:column !important;
+                overflow:hidden !important;
+            }
+            body.foro-abierto #panel-foro .panel-title,
+            body.foro-abierto #panel-foro .panel-heading,
+            body.foro-abierto #panel-foro .panel-desc,
+            body.foro-abierto #panel-foro-admin .panel-title,
+            body.foro-abierto #panel-foro-admin .panel-heading,
+            body.foro-abierto #panel-foro-admin .panel-desc{display:none !important;}
+            body.foro-abierto #panel-foro .section-box,
+            body.foro-abierto #panel-foro-admin .section-box{
+                flex:1 !important;min-height:0 !important;
+                display:flex !important;flex-direction:column !important;
+                overflow:hidden !important;margin-bottom:0 !important;
+            }
+            body.foro-abierto .foro-messages{
+                flex:1 !important;min-height:0 !important;
+                height:auto !important;max-height:none !important;
+                overflow-y:scroll !important;
+                -webkit-overflow-scrolling:touch !important;
+                overscroll-behavior-y:contain !important;
+                touch-action:pan-y !important;
+            }
+            body.foro-abierto #foro-inputs,
+            body.foro-abierto #foro-admin-inputs{flex-shrink:0 !important;}
+            /* Foro / Chat — fallback height cuando foro-abierto no está activo */
             .foro-messages{height:clamp(220px,38dvh,380px);overflow-y:scroll !important;-webkit-overflow-scrolling:touch !important;overscroll-behavior-y:contain !important;touch-action:pan-y !important;}
             /* Footer: siempre oculto en móvil */
             .footer-industrial,.footer-minimal{display:none !important;}
@@ -2098,13 +2126,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // ===================== MENU =====================
 window.activarPanel = function(id) {
-    // Limpiar estado chat si el usuario cambia de panel con el chat abierto
+    // Limpiar estado chat inbox si el usuario cambia de panel
     document.body.classList.remove('inbox-chat-abierto');
     window._removerChatFixedMobile?.();
+    // Limpiar estado foro
+    if (document.body.classList.contains('foro-abierto')) {
+        document.body.classList.remove('foro-abierto');
+        window._removerForoFixedMobile?.();
+    }
+
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     const p = document.getElementById(id);
     if (p) p.classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+    // Activar scroll iOS para foro en móvil
+    if ((id === 'panel-foro' || id === 'panel-foro-admin') && window.innerWidth <= 900) {
+        document.body.classList.add('foro-abierto');
+        document.body.dataset.foroActivoId = id;
+        setTimeout(() => window._aplicarForoFixedMobile?.(id), 80);
+    }
 };
 // Activar panel y marcar botón activo del menú (para uso desde qa-grid)
 window.activarPanelMenu = function(id, cb) {
@@ -7615,11 +7656,51 @@ window._removerChatFixedMobile = function() {
     window.scrollTo(0, scrollY);
 };
 
+// ── Foro global: mismo patrón iOS que el inbox ──────────────────────────────
+window._aplicarForoFixedMobile = function(panelId) {
+    const panel      = document.getElementById(panelId);
+    const siteHeader = document.querySelector('.site-header');
+    const mainEl     = document.querySelector('.main-layout');
+    if (!panel) return;
+    const headerH = siteHeader ? siteHeader.offsetHeight : 65;
+    const mainPT  = mainEl ? parseFloat(getComputedStyle(mainEl).paddingTop) : 14;
+    panel.style.setProperty('height', `calc(100dvh - ${headerH + mainPT}px)`, 'important');
+    document.body.dataset.foroScrollY = window.scrollY;
+    document.body.style.position  = 'fixed';
+    document.body.style.top       = `-${window.scrollY}px`;
+    document.body.style.width     = '100%';
+    document.body.style.overflowY = 'hidden';
+};
+
+window._removerForoFixedMobile = function() {
+    const panelId = document.body.dataset.foroActivoId;
+    if (panelId) {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.style.removeProperty('height');
+    }
+    const scrollY = parseFloat(document.body.dataset.foroScrollY || '0');
+    document.body.style.position  = '';
+    document.body.style.top       = '';
+    document.body.style.width     = '';
+    document.body.style.overflowY = '';
+    delete document.body.dataset.foroScrollY;
+    delete document.body.dataset.foroActivoId;
+    window.scrollTo(0, scrollY);
+};
+// ────────────────────────────────────────────────────────────────────────────
+
 // Re-calcular al rotar pantalla o al aparecer/desaparecer el teclado virtual
 window.addEventListener('resize', () => {
     if (document.body.classList.contains('inbox-chat-abierto')) {
         window._removerChatFixedMobile();
         requestAnimationFrame(() => window._aplicarChatFixedMobile());
+    }
+    if (document.body.classList.contains('foro-abierto') && window.innerWidth <= 900) {
+        const foroId = document.body.dataset.foroActivoId;
+        if (foroId) {
+            window._removerForoFixedMobile();
+            requestAnimationFrame(() => window._aplicarForoFixedMobile(foroId));
+        }
     }
 });
 // ────────────────────────────────────────────────────────────────────────────
