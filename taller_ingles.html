@@ -17,7 +17,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 #prog-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--orange),var(--teal));border-radius:3px;transition:width .65s cubic-bezier(.34,1.56,.64,1);animation:_pg 2.5s ease-in-out infinite;}
 @keyframes _cp{0%,100%{box-shadow:0 0 30px rgba(124,58,237,.08);}50%{box-shadow:0 0 65px rgba(124,58,237,.22),0 0 110px rgba(56,189,248,.06);}}
 #slide-card{flex:1;background:rgba(8,15,30,.95);border:1px solid rgba(124,58,237,.28);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-height:0;animation:_cp 3s ease-in-out infinite;}
-#slide-inner{flex:1;padding:1.4rem 1.8rem;overflow-y:auto;display:flex;flex-direction:column;gap:.55rem;}#slide-inner>div{flex:1;display:flex;flex-direction:column;min-height:0;}
+#slide-inner{flex:1;padding:1.4rem 1.8rem;overflow-y:auto;display:flex;flex-direction:column;gap:.55rem;}#slide-inner>div{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;gap:.6rem;}
 #nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden;}
 .nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
