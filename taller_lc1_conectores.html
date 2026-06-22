@@ -32,7 +32,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 
 /* Nav */
 #nav{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:all .2s;position:relative;overflow:hidden;}
+.nav-btn{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.3);color:var(--text);padding:.55rem 1.4rem;border-radius:10px;cursor:pointer;font-size:.82rem;font-weight:700;letter-spacing:.5px;transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden;}
 .nav-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(124,58,237,.25),transparent);transform:translateX(-100%);transition:transform .4s;}
 .nav-btn:hover:not(:disabled)::before{transform:translateX(100%);}
 .nav-btn:hover:not(:disabled){background:rgba(124,58,237,.32);border-color:var(--purple);box-shadow:0 0 22px rgba(124,58,237,.6);transform:translateY(-2px);}
@@ -65,14 +65,14 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
   min-width:115px;height:34px;
   border:2px dashed rgba(124,58,237,.5);border-radius:8px;
   color:rgba(124,58,237,.55);font-size:.75rem;font-weight:700;letter-spacing:1px;
-  cursor:pointer;transition:all .2s;padding:0 .6rem;font-family:'Courier New',monospace;
+  cursor:pointer;transition:border-color .2s,box-shadow .2s;padding:0 .6rem;font-family:'Courier New',monospace;
 }
 .blank-slot:hover{border-color:var(--purple);background:rgba(124,58,237,.1);box-shadow:0 0 12px rgba(124,58,237,.22);}
 .blank-slot.filled{border-style:solid;color:var(--green);border-color:var(--green);background:rgba(16,185,129,.12);box-shadow:0 0 16px rgba(16,185,129,.22);cursor:default;}
 .chips-row{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
 .conn-chip{
   padding:.42rem 1rem;border-radius:20px;font-size:.79rem;font-weight:700;
-  cursor:pointer;transition:all .2s;border:1.5px solid;user-select:none;
+  cursor:pointer;transition:border-color .2s,box-shadow .2s;border:1.5px solid;user-select:none;
 }
 .conn-chip.type-adv{background:rgba(255,94,0,.15);border-color:rgba(255,94,0,.5);color:#fb923c;}
 .conn-chip.type-cons{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.5);color:#7dd3fc;}
@@ -89,7 +89,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);fon
 /* Quiz */
 .q-q{font-size:.92rem;font-weight:600;margin-bottom:.85rem;line-height:1.5;}
 .q-opts{display:flex;flex-direction:column;gap:.42rem;}
-.q-opt{padding:.62rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:all .2s;text-align:left;color:var(--text);}
+.q-opt{padding:.62rem 1rem;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:.83rem;transition:border-color .2s,box-shadow .2s;text-align:left;color:var(--text);}
 .q-opt:hover:not(.locked){background:rgba(124,58,237,.2);border-color:var(--purple);box-shadow:0 0 12px rgba(124,58,237,.2);}
 .q-opt.ok{background:rgba(16,185,129,.18);border-color:var(--green);color:#a7f3d0;box-shadow:0 0 16px rgba(16,185,129,.22);}
 .q-opt.bad{background:rgba(239,68,68,.14);border-color:var(--red);color:#fca5a5;}
@@ -374,7 +374,7 @@ function a3(){
   gsap.timeline()
     .from('#t3',{y:-55,rotation:-3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'})
     .from('#ca3',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15')
-    .from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1')
+    .from('.conn-chip',{y:32,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1')
     .from('#ex3',{x:-25,opacity:0,duration:.36},'-=.1');
 }
 
@@ -415,7 +415,7 @@ function a4(){
   gsap.timeline()
     .from('#t4',{y:-55,rotation:3,opacity:0,duration:.62,ease:'elastic.out(1,.5)'})
     .from('#ca4',{scale:.83,opacity:0,duration:.5,ease:'back.out(2)'},'-=.15')
-    .from('.conn-chip',{y:32,opacity:0,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1')
+    .from('.conn-chip',{y:32,scale:.55,duration:.44,stagger:.09,ease:'elastic.out(1,.5)'},'-=.1')
     .from('#ex4',{x:-25,opacity:0,duration:.36},'-=.1');
 }
 
